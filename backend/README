@@ -1,0 +1,3 @@
+This folder contains the backend of the 'ReadRumble. 
+Spring boot is used for ajax requests while pure java is used for database requests. 
+The structure of the backend follows the best practice rules seen at the seminar. 
