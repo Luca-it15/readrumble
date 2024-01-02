@@ -18,9 +18,7 @@ import RegistrationForm from './pages/Registration';
   const App = () => {
    
 
-    const isLoggedIn = true; 
-
-    
+    const [isLoggedIn, setIsLoggedIn]=useState(false)
 
     return (
       <BrowserRouter>
@@ -42,12 +40,13 @@ import RegistrationForm from './pages/Registration';
              </Routes>
              </AuthenticationLayout>
               ) : 
-              (  <GuestLayout> 
-               <Routes>   
-               <Route path="/" element={<Login />} />
+              (  <GuestLayout>
+               <Routes>
+               <Route path="/login" element={<Login />} />
                <Route path="/registration" element={<RegistrationForm />} />
-               </Routes> 
-               </GuestLayout> 
+               </Routes>
+
+               </GuestLayout>
               )}
            </Col>
           </Row>

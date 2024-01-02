@@ -7,6 +7,7 @@
   pointer-events: none;
 }
 
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
@@ -42,4 +43,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+/*Registration*/
+form {
+    text-align:center;
+    height: 10 px;
+    width: 100 px;
+}
+input > .mb-3 {
+    background-color:red;
+    height: 30 px;
+    width: 100 px;
 }

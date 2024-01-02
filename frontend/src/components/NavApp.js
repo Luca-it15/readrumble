@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from '../img/logoRR.png';
 import { Navbar, Container, Nav } from 'react-bootstrap';
@@ -7,7 +7,6 @@ import { Navbar, Container, Nav } from 'react-bootstrap';
 
 const NavApp = () => {
   return (
-    <>
     <Navbar bg="light" expand="md">
       <Container>
         <Navbar.Brand href="/dashboard" className="fs-1">
@@ -21,7 +20,6 @@ const NavApp = () => {
               Home
             </Nav.Link>
             <Nav.Link className='fs-5' as={NavLink} to="/explore">
-              <Link to="/path"></Link>
               Explore
             </Nav.Link>
             <Nav.Link className='fs-5' as={NavLink} to="/profile">
@@ -31,7 +29,6 @@ const NavApp = () => {
         </Navbar.Collapse>
       </Container>
     </Navbar>
-    </>
   );
 };
 
