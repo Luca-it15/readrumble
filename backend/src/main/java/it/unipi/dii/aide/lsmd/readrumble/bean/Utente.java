@@ -1,10 +1,11 @@
-package com.project.flm;
+
+package it.unipi.dii.inginf.lsmd.readrumble.backend.bean;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 
-@Document(collection = "Utenti")
+
+
 public class Utente {
 
     @Id

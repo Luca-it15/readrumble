@@ -1,13 +1,13 @@
-package com.project.flm;
+package it.unipi.dii.aide.lsmd.readrumble;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-
-public class FlmApplication {
+@SpringBootApplication
+public class ReadrumbleApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(FlmApplication.class, args);
+		SpringApplication.run(ReadrumbleApplication.class, args);
 	}
 
 }

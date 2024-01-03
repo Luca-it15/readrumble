@@ -1,10 +1,10 @@
-package com.project.flm;
+package it.unipi.dii.aide.lsmd.readrumble;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class FlmApplicationTests {
+class ReadrumbleApplicationTests {
 
 	@Test
 	void contextLoads() {
