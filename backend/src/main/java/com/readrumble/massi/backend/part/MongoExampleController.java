@@ -1,41 +1,43 @@
 package com.readrumble.massi.backend.part;
-
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.mongodb.client.*;
+import com.mongodb.ConnectionString;
+import org.bson.Document;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.gt;
+
 @CrossOrigin(origins = "http://localhost:3000")
+
 @RestController
 @RequestMapping("/api")
-public class MongoExampleController
-{
-    // Iniezione di dipendenza del MongoTemplate (oggetto principale per interagire con MongoDB)
-    @Autowired
-    private MongoTemplate mongoTemplate;
 
-    @GetMapping("/dati")
-    public List<Utente> getDati(@RequestParam String nome) {
-        // Effettua una query per recuperare tutti i documenti con "nome" uguale al parametro fornito
-        Query query = new Query(Criteria.where("nome").is(nome));
-        List<Utente> utenti = mongoTemplate.find(query, Utente.class);
+//Create connection string
+public class MongoExampleController{
+    ConnectionString uri = new ConnectionString("mongodb://localhost:27017");
+    MongoClient myClient = MongoClients.create(uri);
+    MongoDatabase database = myClient.getDatabase("TestMongo");
+    MongoCollection<Document> collection = database.getCollection("Utenti");
 
-        return utenti;
-    }
     @PostMapping("/login")
     public ResponseEntity<String> goLogin(@RequestBody Utente utente) {
         String username = utente.getUsername();
         String password = utente.getPassword();
-        Query query = new Query(Criteria.where("username").is(username));
-        List<Utente> utenti = mongoTemplate.find(query, Utente.class);
-        Utente utente_registrato = utenti.get(0);
-        System.out.println(password + " " + utente_registrato.getPassword());
-        if(password.equals(utente_registrato.getPassword()))
+        List<Document> utenti = collection.find(eq("Username",username)).into(new ArrayList<>());
+        System.out.println(utenti);
+        Document utente_registrato = utenti.get(0);
+
+        System.out.println(utente_registrato);
+        System.out.println(utente_registrato.get("Username"));
+
+        if(password.equals(utente_registrato.get("Password")))
         {
             return ResponseEntity.ok("Login Succeded ! You will now be redirected to your home ! ");
         }
@@ -49,17 +51,24 @@ public class MongoExampleController
     public ResponseEntity<String> inserisciDati(@RequestBody Utente utente) {
         System.out.println(utente);
         String usernameDaControllare = utente.getUsername();
-        Query query = new Query(Criteria.where("username").is(usernameDaControllare));
-        List<Utente> utenti = mongoTemplate.find(query, Utente.class);
-
-        if (utenti.isEmpty()) {
-            mongoTemplate.save(utente);
+        List<Document> utenti = collection.find(eq("Username",usernameDaControllare)).into(new ArrayList<>());
+        if(utenti.isEmpty())
+        {
+            Document new_doc = new Document();
+            new_doc.replace("Name",utente.getName());
+            new_doc.replace("Surname",utente.getSurname());
+            new_doc.replace("Username",utente.getUsername());
+            new_doc.replace("Password",utente.getPassword());
+            collection.insertOne(new_doc);
             return ResponseEntity.ok("Registration Succeded ! You will now be redirected to the Login page ! ");
-        } else {
+        }
+        else
+        {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already in use, please choose another one!");
         }
-    }
-}
 
+    }
+
+}
 
 
