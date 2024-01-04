@@ -25,6 +25,9 @@ const NavApp = () => {
             <Nav.Link className='fs-5' as={NavLink} to="/profile">
               Profile
             </Nav.Link>
+            <Nav.Link className='fs-5' as={NavLink} to="/logout">
+             Logout
+            </Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>

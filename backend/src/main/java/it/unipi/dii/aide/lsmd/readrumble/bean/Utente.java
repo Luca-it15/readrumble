@@ -1,5 +1,5 @@
 
-package it.unipi.dii.inginf.lsmd.readrumble.backend.bean;
+package it.unipi.dii.aide.lsmd.readrumble.bean;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 

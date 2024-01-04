@@ -8,7 +8,7 @@ const user = {
   image: 'https://example.com/profile.jpg'
 };
 
-const App = () => {
+const ProfilePage = () => {
   return (
     <div>
       <Profile {...user} />
@@ -16,4 +16,4 @@ const App = () => {
   );
 }
 
-export default App;
+export default ProfilePage;

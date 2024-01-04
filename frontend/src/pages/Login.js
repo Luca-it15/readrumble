@@ -45,11 +45,12 @@ function LoginForm() {
 
       // Gestisci la risposta qui
       setLoginStatus({ message: response.data, variant: 'success' });
-
+          // Imposta il flag di login nello stato e in localStorage
+       const isLoggedIn = true;
+       setLoginStatus(true);
+       localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
       // Attendere 3 secondi e poi reindirizzare
-      setTimeout(() => {
-        window.location.href = 'http://localhost:3000/';
-      }, 3000); // 3000 millisecondi = 3 secondi
+       window.location.href = 'http://localhost:3000/dashboard';
     } catch (error) {
       // Gestisci gli errori qui
       setLoginStatus({ message: error.response ? error.response.data : error.message, variant: 'danger' });

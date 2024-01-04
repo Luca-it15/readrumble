@@ -1,4 +1,4 @@
-package com.readrumble.massi.backend.part;
+package it.unipi.dii.aide.lsmd.readrumble;
 
 
 // ClientApplication.java
@@ -11,6 +11,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
+
+import it.unipi.dii.aide.lsmd.readrumble.bean.Utente;
 
 public class ClientApplication {
     public static void main(String[] args) throws Exception {
