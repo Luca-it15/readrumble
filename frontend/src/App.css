@@ -56,3 +56,17 @@ input > .mb-3 {
     height: 30 px;
     width: 100 px;
 }
+
+/*LOGIN E REGISTRAZIONE*/
+.LoginDiv {
+    position: relative;
+    background-color : blanchedalmond;
+    width: 50%;
+    left: 25%;
+}
+.buttonlogreg {
+    position: relative;
+    left: 45%;
+}
+
+

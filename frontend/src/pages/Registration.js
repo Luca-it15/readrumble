@@ -53,7 +53,7 @@ function RegistrationForm() {
   };
 
   return (
-    <div>
+    <div className = "LoginDiv">
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="formBasicName">
           <Form.Label>Name</Form.Label>

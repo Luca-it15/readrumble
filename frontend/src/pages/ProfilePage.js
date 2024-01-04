@@ -1,6 +1,9 @@
 import React from 'react';
 import Profile from '../components/Profile';
-
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import '../App.css'
 const user = {
   firstName: 'Mario',
   lastName: 'Rossi',
@@ -10,9 +13,36 @@ const user = {
 
 const ProfilePage = () => {
   return (
-    <div>
-      <Profile {...user} />
-    </div>
+    <Container fluid>
+        <Row>
+            <Col>
+                <Profile {...user} />
+            </Col>
+        </Row>
+
+        <Row>
+            <Col>
+                <Row>
+                    <h1>Amici</h1>
+                </Row>
+                <Row>
+                    <h1>Competizioni</h1>
+                </Row>
+            </Col>
+            <Col>
+
+                <h2>Post</h2>
+            </Col>
+            <Col>
+                <Row>
+                    <h1>Libri Preferiti</h1>
+                </Row>
+                <Row>
+                    <h1>Libri Letti</h1>
+                </Row>
+            </Col>
+        </Row>
+    </Container>
   );
 }
 

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import axios from 'axios';
+import '../App.css';
 
 function GoRegister() {
     console.log("ciaooo");
-    window.location.href="http://localhost:3000/registration"
+    window.location.href="http://localhost:3000/registration";
 }
 
 function LoginForm() {
@@ -58,7 +59,7 @@ function LoginForm() {
   };
 
   return (
-    <div>
+    <div className ="LoginDiv">
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="formBasicUsername">
           <Form.Label>Username</Form.Label>
@@ -72,7 +73,7 @@ function LoginForm() {
           Submit
         </Button>
       </Form>
-      <Button onClick={GoRegister}>
+      <Button className = "buttonlogreg" onClick={GoRegister}>
        Register
       </Button>
 
