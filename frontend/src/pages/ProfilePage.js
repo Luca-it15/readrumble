@@ -1,5 +1,6 @@
 import React from 'react';
 import Profile from '../components/Profile';
+import BookList from './BookList';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -39,6 +40,8 @@ const ProfilePage = () => {
                 </Row>
                 <Row>
                     <h1>Libri Letti</h1>
+                    <p>10 libri a caso:</p>
+                    <BookList />
                 </Row>
             </Col>
         </Row>
