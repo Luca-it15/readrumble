@@ -1,22 +1,38 @@
 import React from 'react';
 import Profile from '../components/Profile';
+import UserSettings from './UserSettings';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
 import '../App.css'
-const user = {
-  firstName: 'Mario',
-  lastName: 'Rossi',
-  email: 'mario.rossi@example.com',
-  image: 'https://example.com/profile.jpg'
-};
+import { BrowserRouter, Route, Routes, Navigate, redirect} from 'react-router-dom';
+var storedData = localStorage.getItem('logged_user');
 
+// Verifica se il valore è presente
+if (storedData) {
+  // Il valore è presente, lo converte da stringa JSON a oggetto JavaScript
+  var user = JSON.parse(storedData);
+
+  // Ora puoi utilizzare la variabile 'isLoggedIn' come desideri
+  console.log(user["Name"]);
+} else {
+  // La chiave 'isLoggedIn' non è presente in localStorage
+  console.log('La chiave "logged_user" non è presente in localStorage.');
+}
+function goSettings()
+{
+    return window.location.href= "http://localhost:3000/settings";
+}
 const ProfilePage = () => {
   return (
     <Container fluid>
         <Row>
             <Col>
                 <Profile {...user} />
+            </Col>
+            <Col>
+                <Button onClick={goSettings}>CIAO</Button>
             </Col>
         </Row>
 

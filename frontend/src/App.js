@@ -7,6 +7,7 @@ import Col from 'react-bootstrap/Col';
 import Home from './pages/Home';
 import ProfilePage from './pages/ProfilePage';
 import Explore from './pages/Explore';
+import UserSettings from './pages/UserSettings';
 import Error from './pages/Error';
 import './App.css';
 import AuthenticationLayout from './layout/AuthenticationLayout';
@@ -30,6 +31,7 @@ const App = () => {
   const handleLogout = () => {
     setIsLoggedIn(false);
     localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('logged_user');
   };
 
   return (
@@ -52,6 +54,12 @@ const App = () => {
                     element={
                       isLoggedIn ? <Explore /> : <Navigate to="/" />
                     }
+                  />
+                  <Route
+                     path="/settings"
+                     element={
+                       isLoggedIn ? <UserSettings /> : <Navigate to="/" />
+                     }
                   />
                   <Route
                     path="/profile"

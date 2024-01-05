@@ -57,6 +57,35 @@ public class MongoExampleController{
             MongoConfig.closeConnection();
         }
     }
+    @PostMapping("/personalinfo")
+    public Document retrieveInfo(@RequestBody Utente utente) {
+        String username = utente.getUsername();
+        String password = utente.getPassword();
+
+        try (MongoCursor<Document> cursor = MongoConfig.getCollection("user")
+                .find(eq("Username", username)).iterator()) {
+
+            if (cursor.hasNext()) {
+                Document utente_registrato = cursor.next();
+
+                System.out.println(utente_registrato);
+                System.out.println(utente_registrato.get("Username"));
+
+                if (password.equals(utente_registrato.get("Password"))) {
+                    return utente_registrato;
+                } else {
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            // Gestisci eventuali eccezioni qui
+            return null;
+        } finally {
+            MongoConfig.closeConnection();
+        }
+    }
     @PostMapping("/registration")
     public ResponseEntity<String> inserisciDati(@RequestBody Utente utente) {
         System.out.println(utente);

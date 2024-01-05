@@ -41,15 +41,18 @@ function LoginForm() {
     }
 
     try {
+    console.log(formData);
       // Invia la richiesta HTTP qui usando axios
       const response = await axios.post('http://localhost:8080/api/login', formData);
-
+      const retrieve = await axios.post('http://localhost:8080/api/personalinfo', formData);
       // Gestisci la risposta qui
+
       setLoginStatus({ message: response.data, variant: 'success' });
           // Imposta il flag di login nello stato e in localStorage
        const isLoggedIn = true;
        setLoginStatus(true);
        localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
+       localStorage.setItem('logged_user', JSON.stringify(retrieve.data));
       // Attendere 3 secondi e poi reindirizzare
        window.location.href = 'http://localhost:3000/dashboard';
     } catch (error) {
