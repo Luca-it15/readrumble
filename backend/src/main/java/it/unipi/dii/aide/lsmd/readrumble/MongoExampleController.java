@@ -2,10 +2,10 @@ package it.unipi.dii.aide.lsmd.readrumble;
 
 
 import com.mongodb.client.*;
-import com.mongodb.ConnectionString;
+import it.unipi.dii.aide.lsmd.readrumble.bean.Book;
 import org.bson.Document;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Filters.gt;
+import static com.mongodb.client.model.Filters.*;
 
 import it.unipi.dii.aide.lsmd.readrumble.bean.Utente;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
@@ -110,6 +109,13 @@ public class MongoExampleController{
 
     }
 
+    @Autowired
+    private BookRepository bookRepository;
+
+    @GetMapping("/books")
+    public List<Book> getBooks() {
+        return bookRepository.findAll(PageRequest.of(0, 10)).getContent();
+    }
 }
 
 
