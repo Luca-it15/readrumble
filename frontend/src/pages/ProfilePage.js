@@ -1,5 +1,5 @@
 import React from 'react';
-import Profile from '../components/Profile';
+import User from '../components/User';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -16,7 +16,7 @@ const ProfilePage = () => {
     <Container fluid>
         <Row>
             <Col>
-                <Profile {...user} />
+                <User {...user} />
             </Col>
         </Row>
 

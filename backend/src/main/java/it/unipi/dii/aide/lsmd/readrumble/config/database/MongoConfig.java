@@ -49,7 +49,7 @@ public final class MongoConfig {
       * we return the connection to the collection for make the CRUD operation
       */
   public static MongoCollection<Document> getCollection(String collectionName) {
-      
+
          MongoDatabase database = getConnection().getDatabase(dbName);
          return database.getCollection(collectionName);
      }
