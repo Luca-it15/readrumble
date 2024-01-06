@@ -6,7 +6,7 @@ function BookList() {
     const [showBooks, setShowBooks] = useState(false);
 
     const fetchBooks = async (e) => {
-<<<<<<< HEAD
+/*
     e.preventDefault();
     try{
         const response = await axios.get('http://localhost:8080/api/books2');
@@ -18,9 +18,8 @@ function BookList() {
     {
         console.log(error.response)
     }
+*/
 
-
-=======
         e.preventDefault();
         try {
             const response = await axios.get('http://localhost:8080/api/10books');
@@ -30,7 +29,7 @@ function BookList() {
         } catch (error) {
             console.log(error.response)
         }
->>>>>>> 320e324b951640c39a5124284b468a40eaa4c2fe
+
     };
 
     return (
