@@ -1,10 +1,18 @@
 import React from 'react';
 import Profile from '../components/Profile';
+<<<<<<< HEAD
 //<<<<<<< HEAD
 import UserSettings from './UserSettings';
 //=======
 import BookList from './BookList';
 //>>>>>>> 47b176210639ec7a2894b7b2519420d3e31f7e97
+=======
+// <<<<<<< HEAD
+import UserSettings from './UserSettings';
+// =======
+import BookList from './BookList';
+// >>>>>>> 47b176210639ec7a2894b7b2519420d3e31f7e97
+>>>>>>> 7f5109848bc7229196d13b1674a771d16953dd26
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
