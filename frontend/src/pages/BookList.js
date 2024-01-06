@@ -5,10 +5,20 @@ function BookList() {
     const [books, setBooks] = useState([]);
     const [showBooks, setShowBooks] = useState(false);
 
-    const fetchBooks = async () => {
-        const response = await axios.get('/api/books');
+    const fetchBooks = async (e) => {
+    e.preventDefault();
+    try{
+        const response = await axios.get('http://localhost:8080/api/books');
         setBooks(response.data);
         setShowBooks(true);
+        console.log(response.data)
+    }
+    catch (error)
+    {
+        console.log(error.response)
+    }
+
+
     };
 
     return (

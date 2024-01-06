@@ -9,9 +9,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import static com.mongodb.client.model.Filters.*;
 
@@ -115,6 +115,41 @@ public class MongoExampleController{
     @GetMapping("/books")
     public List<Book> getBooks() {
         return bookRepository.findAll(PageRequest.of(0, 10)).getContent();
+    }
+    @GetMapping("/books2")
+    public List<Document> getBooks2() {
+        //ritorna dieci libri a caso
+        MongoCollection<Document> collection = MongoConfig.getCollection("Book_sub");
+        List<Document> books = collection.find().into(new ArrayList<>());
+        List<Document> selectedDocuments = new ArrayList<>();
+        Random random = new Random();
+        int numberOfDocumentsToSelect = 10;
+        if(books.isEmpty())
+        {
+            Document libro_nullo = new Document();
+            libro_nullo.append("Title","Ops, You don't have any book");
+            return null;
+        }
+        else
+        {
+
+            if (books.size() >= numberOfDocumentsToSelect) {
+                // Loop per selezionare documenti casuali
+                for (int i = 0; i < numberOfDocumentsToSelect; i++) {
+                    // Genera un indice casuale
+                    int randomIndex = random.nextInt(books.size());
+
+                    // Aggiungi il documento corrispondente all'indice casuale alla lista selezionata
+                    selectedDocuments.add(books.get(randomIndex));
+
+                    // Rimuovi il documento dalla lista originale per evitare la selezione duplicata
+                    books.remove(randomIndex);
+                }
+
+            }
+            return selectedDocuments;
+        }
+
     }
 }
 
