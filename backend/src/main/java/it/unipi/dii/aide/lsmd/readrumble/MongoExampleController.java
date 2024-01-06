@@ -106,6 +106,7 @@ public class MongoExampleController {
 
     /**
      * Questo metodo restituisce i primi 10 libri presenti nel database
+     * (Per ora non è utile, ma potrebbe tornare utile in futuro)
      *
      * @return Lista con 10 documenti
      */
@@ -115,11 +116,7 @@ public class MongoExampleController {
         List<Document> Book_subDocuments = Book_subCollection.find().limit(10).into(new ArrayList<>()); // Limita a 10 documenti
 
         if (Book_subDocuments.isEmpty()) { // La collezione è vuota
-            Document no_books = new Document();
-            no_books.append("Title", "Oops, You don't have any book");
-
             System.out.println("No books found");
-
             return null;
         }
 
