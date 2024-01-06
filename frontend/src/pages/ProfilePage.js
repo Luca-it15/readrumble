@@ -2,10 +2,6 @@ import React from 'react';
 import Profile from '../components/Profile';
 
 
-import UserSettings from './UserSettings';
-
-import BookList from './BookList';
-
 
 import UserSettings from './UserSettings';
 import BookList from './BookList';
@@ -36,7 +32,7 @@ function goSettings() {
 }
 
 const ProfilePage = () => {
-<<<<<<< HEAD
+
   return (
     <Container fluid>
         <Row>
@@ -47,18 +43,7 @@ const ProfilePage = () => {
                 <Button onClick={goSettings}>Settings</Button>
             </Col>
         </Row>
-=======
-    return (
-        <Container fluid>
-            <Row>
-                <Col>
-                    <Profile {...user} />
-                </Col>
-                <Col>
-                    <Button onClick={goSettings}>CIAO</Button>
-                </Col>
-            </Row>
->>>>>>> 320e324b951640c39a5124284b468a40eaa4c2fe
+
 
             <Row>
                 <Col>
