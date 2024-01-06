@@ -8,7 +8,7 @@ function BookList() {
     const fetchBooks = async (e) => {
     e.preventDefault();
     try{
-        const response = await axios.get('http://localhost:8080/api/books');
+        const response = await axios.get('http://localhost:8080/api/books2');
         setBooks(response.data);
         setShowBooks(true);
         console.log(response.data)

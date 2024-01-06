@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Random;
 
 import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Updates.set;
 
 import it.unipi.dii.aide.lsmd.readrumble.bean.Utente;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
@@ -55,6 +56,25 @@ public class MongoExampleController{
         } finally {
             MongoConfig.closeConnection();
         }
+    }
+    @PostMapping("/change")
+    public ResponseEntity<String> goChange(@RequestBody Document changes) {
+        String old_field = (String) changes.get("old_field");
+        String new_field = (String) changes.get("new_field");
+        String type_of_change_request = (String) changes.get("type_of_change_request");
+        String username_to_use = (String) changes.get("username_to_use");
+        MongoCollection<Document> collection = MongoConfig.getCollection("user");
+        if(collection.find(eq("Username", username_to_use)).cursor().hasNext())
+        {
+            collection.updateOne(eq("Username",username_to_use),set(type_of_change_request,new_field));
+            String result = (String) type_of_change_request + " Changed from " + old_field + " To " + new_field;
+            return ResponseEntity.ok(result);
+        }
+        else
+        {
+            return ResponseEntity.ok("NOT FOUND");
+        }
+
     }
     @PostMapping("/personalinfo")
     public Document retrieveInfo(@RequestBody Utente utente) {

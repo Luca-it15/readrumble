@@ -53,8 +53,13 @@ function LoginForm() {
        setLoginStatus(true);
        localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
        localStorage.setItem('logged_user', JSON.stringify(retrieve.data));
-      // Attendere 3 secondi e poi reindirizzare
-       window.location.href = 'http://localhost:3000/dashboard';
+      // Attendere 1 secondo e poi reindirizzare
+
+      setTimeout(function() {
+          // Azione da compiere dopo 1 secondo
+          window.location.href = 'http://localhost:3000/dashboard';
+        }, 1000)
+
     } catch (error) {
       // Gestisci gli errori qui
       setLoginStatus({ message: error.response ? error.response.data : error.message, variant: 'danger' });
