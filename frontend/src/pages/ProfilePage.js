@@ -1,15 +1,15 @@
 import React from 'react';
 import Profile from '../components/Profile';
-<<<<<<< HEAD
+
 
 import UserSettings from './UserSettings';
 
 import BookList from './BookList';
 
-=======
+
 import UserSettings from './UserSettings';
 import BookList from './BookList';
->>>>>>> 320e324b951640c39a5124284b468a40eaa4c2fe
+
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
