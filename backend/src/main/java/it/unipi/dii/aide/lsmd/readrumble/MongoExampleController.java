@@ -2,13 +2,11 @@ package it.unipi.dii.aide.lsmd.readrumble;
 
 
 import com.mongodb.client.*;
-import it.unipi.dii.aide.lsmd.readrumble.bean.Book;
 import org.bson.Document;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -24,8 +22,7 @@ import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 @RequestMapping("/api")
 
 //Create connection string
-public class MongoExampleController{
-
+public class MongoExampleController {
 
     @PostMapping("/login")
     public ResponseEntity<String> goLogin(@RequestBody Utente utente) {
@@ -56,6 +53,7 @@ public class MongoExampleController{
             MongoConfig.closeConnection();
         }
     }
+
     @PostMapping("/personalinfo")
     public Document retrieveInfo(@RequestBody Utente utente) {
         String username = utente.getUsername();
@@ -85,37 +83,57 @@ public class MongoExampleController{
             MongoConfig.closeConnection();
         }
     }
+
     @PostMapping("/registration")
     public ResponseEntity<String> inserisciDati(@RequestBody Utente utente) {
         System.out.println(utente);
         String usernameDaControllare = utente.getUsername();
         MongoCollection<Document> collection = MongoConfig.getCollection("user");
-        List<Document> utenti = collection.find(eq("Username",usernameDaControllare)).into(new ArrayList<>());
-        if(utenti.isEmpty())
-        {
-            Document new_doc = new Document("Name",utente.getName())
-                    .append("Surname",utente.getSurname())
+        List<Document> utenti = collection.find(eq("Username", usernameDaControllare)).into(new ArrayList<>());
+        if (utenti.isEmpty()) {
+            Document new_doc = new Document("Name", utente.getName())
+                    .append("Surname", utente.getSurname())
                     .append("Username", utente.getUsername())
-                    .append("Password",utente.getPassword());
+                    .append("Password", utente.getPassword());
             collection.insertOne(new_doc);
             MongoConfig.closeConnection();
             return ResponseEntity.ok("Registration Succeded ! You will now be redirected to the Login page ! ");
-        }
-        else
-        {
+        } else {
             MongoConfig.closeConnection();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already in use, please choose another one!");
         }
-
     }
 
-    @Autowired
-    private BookRepository bookRepository;
+    /**
+     * Questo metodo restituisce i primi 10 libri presenti nel database
+     *
+     * @return Lista con 10 documenti
+     */
+    @GetMapping("/10books")
+    public List<Document> get10Books() {
+        MongoCollection<Document> Book_subCollection = MongoConfig.getCollection("Book_sub");
+        List<Document> Book_subDocuments = Book_subCollection.find().limit(10).into(new ArrayList<>()); // Limita a 10 documenti
 
-    @GetMapping("/books")
-    public List<Book> getBooks() {
-        return bookRepository.findAll(PageRequest.of(0, 10)).getContent();
+        if (Book_subDocuments.isEmpty()) { // La collezione è vuota
+            Document no_books = new Document();
+            no_books.append("Title", "Oops, You don't have any book");
+
+            System.out.println("No books found");
+
+            return null;
+        }
+
+        // Crea una lista e riempila con i documenti trovati
+        List<Document> books = new ArrayList<>();
+        for (Document doc : Book_subDocuments) {
+            books.add(doc);
+        }
+
+        System.out.println("Found " + books.size() + " books");
+
+        return books;
     }
+
     @GetMapping("/books2")
     public List<Document> getBooks2() {
         //ritorna dieci libri a caso
@@ -124,14 +142,11 @@ public class MongoExampleController{
         List<Document> selectedDocuments = new ArrayList<>();
         Random random = new Random();
         int numberOfDocumentsToSelect = 10;
-        if(books.isEmpty())
-        {
+        if (books.isEmpty()) {
             Document libro_nullo = new Document();
-            libro_nullo.append("Title","Ops, You don't have any book");
+            libro_nullo.append("Title", "Ops, You don't have any book");
             return null;
-        }
-        else
-        {
+        } else {
 
             if (books.size() >= numberOfDocumentsToSelect) {
                 // Loop per selezionare documenti casuali
@@ -149,7 +164,6 @@ public class MongoExampleController{
             }
             return selectedDocuments;
         }
-
     }
 }
 
