@@ -1,25 +1,8 @@
 import React from 'react';
 import Profile from '../components/Profile';
-import {Link} from 'react-router-dom';
-
-import UserSettings from './UserSettings';
 import BookList from './BookList';
-
-import { Container, Grid, Button, Typography } from '@mui/material';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Button from '@mui/material/Button';
-import '../App.css'
-import {BrowserRouter, Route, Routes, Navigate, redirect} from 'react-router-dom';
-
-import React from 'react';
-import Profile from '../components/Profile';
-
-import UserSettings from './UserSettings';
-import BookList from './BookList';
+import { Container, Button, Grid, Typography } from '@mui/material';
 import ReviewsList from '../components/ReviewsList';
-
 
 var storedData = localStorage.getItem('logged_user');
 
@@ -49,44 +32,36 @@ function goReview() {
 
 const ProfilePage = () => {
 
-  return (
-    <Container fluid>
-        <Row>
-            <Col>
-                <Profile {...user} />
-            </Col>
-            <Col>
-                <Button onClick={goSettings}>Settings</Button>
-            </Col>
-        </Row>
-            <Row>
-                <Col>
-                    <Row>
-                        <h1>Amici</h1>
-                    </Row>
-                    <Row>
-                        <h1>Competizioni</h1>
-                    </Row>
-                </Col>
-                <Col>
-
-                    <h2>Post</h2>
-                    <Button variant="contained" onClick={goReview} className=" bg-blue-500 text-white dark:text-gray-200 rounded-full border-2 border-blue-500">
-                   Make Review
-                 </Button>
-                 <ReviewsList />
-                </Col>
-                <Col>
-                    <Row>
-                        <h1>Libri Preferiti</h1>
-                    </Row>
-                    <Row>
-                        <h1>Libri Letti</h1>
-                        <p>10 libri a caso:</p>
-                        <BookList/>
-                    </Row>
-                </Col>
-            </Row>
+    return (
+        <Container maxWidth="xl">
+            <Grid container spacing={3} direction="row" alignItems="center" justifyContent="center">
+                <Grid item xs={6} md={4}>
+                    <Profile {...user} />
+                </Grid>
+                <Grid item xs={6} md={4}>
+                    <Button variant="contained" onClick={goSettings}>Settings</Button>
+                    <Button variant="contained" onClick={goDashboard}>Dashboard</Button>
+                </Grid>
+            </Grid>
+            <Grid container spacing={3} textAlign="center">
+                <Grid item xs={4} md={4}>
+                    <Typography variant="h4">Amici</Typography>
+                    <Typography variant="h4">Competizioni</Typography>
+                </Grid>
+                <Grid item xs={4} md={4}>
+                    <Typography variant="h5">Post</Typography>
+                    <Button variant="contained" onClick={goReview}>
+                        Make Review
+                    </Button>
+                    <ReviewsList/>
+                </Grid>
+                <Grid item xs={4} md={4}>
+                    <Typography variant="h4">Libri Preferiti</Typography>
+                    <Typography variant="h4">Libri Letti</Typography>
+                    <Typography variant="body1">10 libri a caso:</Typography>
+                    <BookList/>
+                </Grid>
+            </Grid>
         </Container>
     );
 }
