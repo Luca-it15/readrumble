@@ -1,6 +1,6 @@
 import React from 'react';
 
-function BookDetails({ book }) {
+function BookDetails({book}) {
     return (
         <div>
             {

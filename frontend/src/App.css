@@ -69,4 +69,29 @@ input > .mb-3 {
     left: 45%;
 }
 
+/*BUTTONs*/
+.style_of_the_button_unpressed{
+    background-color:cadetblue;
+    width:20%;
+    left:40%;
+    margin:5pt;
+    position:relative;
 
+}
+
+.style_of_the_button{
+    background-color:cornflowerblue;
+    width:30%;
+    height:20%;
+    left:35%;
+    margin:5pt;
+    position:relative;
+
+}
+
+.label {
+  font-size: 18pt;
+  font-weight: bold;
+  width: 100%;
+  margin: 1%; 
+}

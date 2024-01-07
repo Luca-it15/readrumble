@@ -11,7 +11,7 @@ public class Utente {
     @Id
     private String id;
 
-    private String  name;
+    private String name;
     private String surname;
     private String username;
     private String password;
