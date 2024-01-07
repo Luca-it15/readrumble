@@ -63,14 +63,14 @@ const App = () => {
                                     <Route
                                         path="/profile"
                                         element={
-                                            isLoggedIn ? (<ProfilePage/>) : redirect("/")
+                                            isLoggedIn ? (<ProfilePage/>) : <Navigate to="/" />
                                         }
                                     />
 
                                     <Route
                                         path="/review"
                                         element={
-                                            isLoggedIn ? (<ReviewForm/>) : redirect("/")
+                                            isLoggedIn ? (<ReviewForm/>) : <Navigate to="/" />
                                         }
                                     />
                                     <Route

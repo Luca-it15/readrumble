@@ -5,6 +5,7 @@ import {DataGrid} from '@mui/x-data-grid';
 import {CategoryScale} from 'chart.js';
 import axios from 'axios';
 import Chart from 'chart.js/auto';
+import { Navigate } from "react-router-dom";
 
 var storedData = localStorage.getItem('logged_user')
 if (storedData) {
@@ -12,7 +13,7 @@ if (storedData) {
 } else {
     console.log('La chiave "logged_user" non è presente in localStorage.');
     // Redirect to login
-    window.location.href = 'http://localhost:3000/login';
+    <Navigate to="/login" />;
 }
 
 const Dashboard = () => {

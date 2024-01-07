@@ -1,7 +1,7 @@
 import React from 'react';
 import Profile from '../components/Profile';
 import BookList from './BookList';
-import { Container, Button, Grid, Typography } from '@mui/material';
+import {Container, Button, Grid, Typography} from '@mui/material';
 import ReviewsList from '../components/ReviewsList';
 
 var storedData = localStorage.getItem('logged_user');
@@ -49,7 +49,7 @@ const ProfilePage = () => {
                     <Typography variant="h4">Competizioni</Typography>
                 </Grid>
                 <Grid item xs={4} md={4}>
-                    <Typography variant="h5">Post</Typography>
+                    <Typography variant="h4">Post</Typography>
                     <Button variant="contained" onClick={goReview}>
                         Make Review
                     </Button>
