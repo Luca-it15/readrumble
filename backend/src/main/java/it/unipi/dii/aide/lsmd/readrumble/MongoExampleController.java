@@ -54,7 +54,7 @@ public class MongoExampleController {
             MongoConfig.closeConnection();
         }
     }
-<<<<<<< HEAD
+
     @PostMapping("/change")
     public ResponseEntity<String> goChange(@RequestBody Document changes) {
         String old_field = (String) changes.get("old_field");
@@ -74,9 +74,7 @@ public class MongoExampleController {
         }
 
     }
-=======
 
->>>>>>> 320e324b951640c39a5124284b468a40eaa4c2fe
     @PostMapping("/personalinfo")
     public Document retrieveInfo(@RequestBody Utente utente) {
         String username = utente.getUsername();

@@ -15,9 +15,10 @@ import LoginForm from './pages/Login';
 import Logout from './components/Logout';
 import GuestLayout from './layout/GuestLayout';
 import RegistrationForm from './pages/Registration';
+import Dashboard from "./pages/UserDashboard";
 
 const App = () => {
-    let [isLoggedIn, setIsLoggedIn] = useState(
+    const [isLoggedIn, setIsLoggedIn] = useState(
         JSON.parse(localStorage.getItem('isLoggedIn')) || false
     );
 
@@ -30,8 +31,6 @@ const App = () => {
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('logged_user');
     };
-
-    isLoggedIn = true;
 
     return (
         <BrowserRouter>
@@ -69,6 +68,12 @@ const App = () => {
                                     <Route
                                         path="/logout"
                                         element={<Logout onLogout={handleLogout}/>}
+                                    />
+                                    <Route
+                                        path="/userDashboard"
+                                        element={
+                                            isLoggedIn ? <Dashboard/> : <Navigate to="/"/>
+                                        }
                                     />
                                     <Route path="*" element={<Error/>}/>
                                 </Routes>

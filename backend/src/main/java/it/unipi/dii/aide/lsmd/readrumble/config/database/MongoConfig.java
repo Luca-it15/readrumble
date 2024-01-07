@@ -23,14 +23,8 @@ public final class MongoConfig {
      * function for create mongodb connection
      */
     private static void makeConnection() {
-
         ConnectionString cs = new ConnectionString(protocol + "://" + hostname + ":" + port + "/");
-        conn = MongoClients.create(
-                MongoClientSettings.builder()
-                        .applyConnectionString(cs)
-                        .build()
-        );
-
+        conn = MongoClients.create(MongoClientSettings.builder().applyConnectionString(cs).build());
     }
 
     /**
@@ -39,8 +33,7 @@ public final class MongoConfig {
      * @return conn
      */
     private static MongoClient getConnection() {
-        if (conn == null)
-            makeConnection();
+        if (conn == null) makeConnection();
         return conn;
     }
 
@@ -52,7 +45,6 @@ public final class MongoConfig {
      * we return the connection to the collection for make the CRUD operation
      */
     public static MongoCollection<Document> getCollection(String collectionName) {
-
         MongoDatabase database = getConnection().getDatabase(dbName);
         return database.getCollection(collectionName);
     }
@@ -67,5 +59,4 @@ public final class MongoConfig {
             conn = null;
         }
     }
-
 }

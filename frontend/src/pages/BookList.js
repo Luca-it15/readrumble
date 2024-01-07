@@ -1,25 +1,14 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import axios from 'axios';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
 
 function BookList() {
     const [books, setBooks] = useState([]);
     const [showBooks, setShowBooks] = useState(false);
 
     const fetchBooks = async (e) => {
-/*
-    e.preventDefault();
-    try{
-        const response = await axios.get('http://localhost:8080/api/books2');
-        setBooks(response.data);
-        setShowBooks(true);
-        console.log(response.data)
-    }
-    catch (error)
-    {
-        console.log(error.response)
-    }
-*/
-
         e.preventDefault();
         try {
             const response = await axios.get('http://localhost:8080/api/10books');
@@ -29,16 +18,19 @@ function BookList() {
         } catch (error) {
             console.log(error.response)
         }
-
     };
 
     return (
-        <div>
-            <button onClick={fetchBooks}>Carica 10 libri</button>
+        <Container>
+            <Button variant="contained" color="primary" onClick={fetchBooks}>
+                Carica 10 libri
+            </Button>
             {showBooks && Array.isArray(books) && books.map((book, index) => (
-                <p key={index}>{book.title}</p>
+                <Typography key={index} variant="h6">
+                    {book.title}
+                </Typography>
             ))}
-        </div>
+        </Container>
     );
 }
 

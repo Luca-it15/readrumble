@@ -1,15 +1,11 @@
 import React from 'react';
 import Profile from '../components/Profile';
-
-
+import {Link} from 'react-router-dom';
 
 import UserSettings from './UserSettings';
 import BookList from './BookList';
 
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
+import { Container, Grid, Button, Typography } from '@mui/material';
 import '../App.css'
 import {BrowserRouter, Route, Routes, Navigate, redirect} from 'react-router-dom';
 
@@ -31,44 +27,36 @@ function goSettings() {
     return window.location.href = "http://localhost:3000/settings";
 }
 
+function goDashboard() {
+    return window.location.href = "http://localhost:3000/userDashboard";
+}
+
 const ProfilePage = () => {
 
-  return (
-    <Container fluid>
-        <Row>
-            <Col>
-                <Profile {...user} />
-            </Col>
-            <Col>
-                <Button onClick={goSettings}>Settings</Button>
-            </Col>
-        </Row>
-
-
-            <Row>
-                <Col>
-                    <Row>
-                        <h1>Amici</h1>
-                    </Row>
-                    <Row>
-                        <h1>Competizioni</h1>
-                    </Row>
-                </Col>
-                <Col>
-
-                    <h2>Post</h2>
-                </Col>
-                <Col>
-                    <Row>
-                        <h1>Libri Preferiti</h1>
-                    </Row>
-                    <Row>
-                        <h1>Libri Letti</h1>
-                        <p>10 libri a caso:</p>
-                        <BookList/>
-                    </Row>
-                </Col>
-            </Row>
+    return (
+        <Container maxWidth="lg">
+            <Grid container spacing={2}>
+                <Grid item xs={6} md={6}>
+                    <Profile {...user} />
+                </Grid>
+                <Grid item xs={6} md={6}>
+                    <Button variant="contained" color="primary" onClick={goSettings}>Settings</Button>
+                    <Button variant="contained" color="primary" onClick={goDashboard}>Dashboard</Button>
+                </Grid>
+                <Grid item xs={4} md={4}>
+                    <Typography variant="h4">Competizioni</Typography>
+                    <Typography variant="h4">Amici</Typography>
+                </Grid>
+                <Grid item xs={4} md={4}>
+                    <Typography variant="h4">Post</Typography>
+                </Grid>
+                <Grid item xs={4} md={4}>
+                    <Typography variant="h4">Libri Preferiti</Typography>
+                    <Typography variant="h4">Libri Letti</Typography>
+                    <Typography variant="body1">10 libri a caso:</Typography>
+                    <BookList/>
+                </Grid>
+            </Grid>
         </Container>
     );
 }
