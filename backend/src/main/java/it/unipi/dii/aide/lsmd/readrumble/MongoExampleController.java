@@ -1,6 +1,7 @@
 package it.unipi.dii.aide.lsmd.readrumble;
 
 
+import com.mongodb.MongoException;
 import com.mongodb.client.*;
 import org.bson.Document;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import static com.mongodb.client.model.Updates.set;
 
 import it.unipi.dii.aide.lsmd.readrumble.bean.Utente;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
+import it.unipi.dii.aide.lsmd.readrumble.bean.Review;
 
 @CrossOrigin(origins = "http://localhost:3000")
 
@@ -183,6 +185,69 @@ public class MongoExampleController {
             return selectedDocuments;
         }
     }
+
+    /**
+     * <h3>Review functionality</h3>
+     *
+     * Funcion for insert a review into the reviews collection
+     * @param review
+     * review is a Review riferiment
+     * @return String
+     * return the response
+     */
+    @PostMapping("/review")
+    public String submitReview(@RequestBody Review review) {
+        try {
+            // Creazione di un oggetto Review a partire dai dati ricevuti dal frontend
+            MongoCollection<Document> collection = MongoConfig.getCollection("review");
+            System.out.println("recensione dal titolo: " + review.getTitle());
+            Document new_doc = new Document("title", review.getTitle())
+                    .append("username", review.getUsername())
+                    .append("numberOfPagesRead", review.getNumberOfPagesRead())
+                    .append("review", review.getReview())
+                    .append("rating", review.getRating());
+            collection.insertOne(new_doc);
+            MongoConfig.closeConnection();
+            // Restituisci una risposta al frontend
+            return "Recensione salvata con successo!";
+        } catch (MongoException e) {
+            e.printStackTrace();
+            return "Errore durante il salvataggio della recensione.";
+        }
+
+    }
+
+    /**
+     * Function for retrieve the first 10 review and send them at the frontend
+     * @return List<Review> include the first 10 review
+     */
+    @GetMapping("/reviews")
+    public List<Review> getAllReviews() {
+          List<Review> reviews = new ArrayList<>();
+
+           MongoCollection<Document> collection = MongoConfig.getCollection("review");
+
+         // Ottieni le prime 10 recensioni
+           for (Document doc : collection.find().limit(10)) {
+               Review review = new Review(
+                       doc.getString("title"),
+                       doc.getString("username"),
+                       doc.getInteger("numberOfPagesRead"),
+                       doc.getString("review"),
+                       doc.getDouble("rating")
+               );
+               reviews.add(review);
+            }
+
+            // Chiudi il client MongoDB
+           MongoConfig.closeConnection();
+
+           return reviews;
+    }
+
+
+
+
 }
 
 

@@ -15,6 +15,7 @@ import LoginForm from './pages/Login';
 import Logout from './components/Logout';
 import GuestLayout from './layout/GuestLayout';
 import RegistrationForm from './pages/Registration';
+import ReviewForm from './pages/ReviewForm';
 import Dashboard from "./pages/UserDashboard";
 
 const App = () => {
@@ -65,6 +66,13 @@ const App = () => {
                                             isLoggedIn ? (<ProfilePage/>) : redirect("/")
                                         }
                                     />
+
+                                    <Route
+                                        path="/review"
+                                        element={
+                                            isLoggedIn ? (<ReviewForm/>) : redirect("/")
+                                        }
+                                    />
                                     <Route
                                         path="/logout"
                                         element={<Logout onLogout={handleLogout}/>}
@@ -93,8 +101,8 @@ const App = () => {
                                 </Routes>
                             </GuestLayout>
                         )}
-                    </Col>
-                </Row>
+                     </Col>
+                  </Row>
             </Container>
         </BrowserRouter>
     );
