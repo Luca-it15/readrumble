@@ -4,6 +4,7 @@ import {BrowserRouter, Route, Routes, Navigate, redirect} from 'react-router-dom
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+
 import Home from './pages/Home';
 import ProfilePage from './pages/ProfilePage';
 import Explore from './pages/Explore';
@@ -15,6 +16,7 @@ import LoginForm from './pages/Login';
 import Logout from './components/Logout';
 import GuestLayout from './layout/GuestLayout';
 import RegistrationForm from './pages/Registration';
+import ReviewForm from './pages/ReviewForm';
 
 const App = () => {
     let [isLoggedIn, setIsLoggedIn] = useState(
@@ -30,8 +32,6 @@ const App = () => {
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('logged_user');
     };
-
-    isLoggedIn = true;
 
     return (
         <BrowserRouter>
@@ -66,6 +66,13 @@ const App = () => {
                                             isLoggedIn ? (<ProfilePage/>) : redirect("/")
                                         }
                                     />
+
+                                    <Route
+                                        path="/review"
+                                        element={
+                                            isLoggedIn ? (<ReviewForm/>) : redirect("/")
+                                        }
+                                    />
                                     <Route
                                         path="/logout"
                                         element={<Logout onLogout={handleLogout}/>}
@@ -88,8 +95,8 @@ const App = () => {
                                 </Routes>
                             </GuestLayout>
                         )}
-                    </Col>
-                </Row>
+                     </Col>   
+                  </Row>      
             </Container>
         </BrowserRouter>
     );

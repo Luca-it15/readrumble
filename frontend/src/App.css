@@ -88,3 +88,10 @@ input > .mb-3 {
     position:relative;
 
 }
+
+.label {
+  font-size: 18pt;
+  font-weight: bold;
+  width: 100%;
+  margin: 1%; 
+}
