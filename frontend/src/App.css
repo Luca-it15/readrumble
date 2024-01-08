@@ -61,9 +61,15 @@ input > .mb-3 {
 .LoginDiv {
     position: relative;
     background-color : blanchedalmond;
+    width:50%;
+    left:25%;
 }
 .buttonlogreg {
+    width:10%;
+    left:45%;
     position: relative;
+    margin:2pt;
+    text-align:center;
 }
 
 /*BUTTONs*/

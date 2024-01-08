@@ -1,8 +1,21 @@
 import React, {useState} from 'react';
 import {Form, Button, Alert} from 'react-bootstrap';
+import { useNavigate  } from 'react-router-dom';
 import axios from 'axios';
 
 function RegistrationForm() {
+const navigate = useNavigate();
+function timeout_text() {
+        setTimeout(function () {
+            // Azione da compiere dopo 1 secondo
+            setRegistrationStatus({message: '', variant: 'success'});
+            setValidationError('');
+        }, 1500)
+    }
+    const GoLogin = () =>
+    {
+        navigate('/login');
+    }
     const [formData, setFormData] = useState({
         name: '',
         surname: '',
@@ -32,6 +45,7 @@ function RegistrationForm() {
         // Validazione: Verifica se almeno un campo è vuoto
         if (Object.values(formData).some((value) => value === '')) {
             setValidationError('All fields must be filled !');
+            timeout_text();
             return;
         }
 
@@ -41,14 +55,15 @@ function RegistrationForm() {
 
             // Gestisci la risposta qui
             setRegistrationStatus({message: response.data, variant: 'success'});
-
+            timeout_text();
             // Attendere 3 secondi e poi reindirizzare
             setTimeout(() => {
                 window.location.href = 'http://localhost:3000/login';
-            }, 3000); // 3000 millisecondi = 3 secondi
+            }, 1300); // 3000 millisecondi = 3 secondi
         } catch (error) {
             // Gestisci gli errori qui
             setRegistrationStatus({message: error.response ? error.response.data : error.message, variant: 'danger'});
+            timeout_text();
         }
     };
 
@@ -71,14 +86,13 @@ function RegistrationForm() {
                     <Form.Label>Password</Form.Label>
                     <Form.Control type="password" name="password" placeholder="Password" onChange={handleChange}/>
                 </Form.Group>
-                <Form.Group className="mb-3" controlId="formBasicCheckbox">
-                    <Form.Check type="checkbox" label="Check me out" name="checked" onChange={handleChange}/>
-                </Form.Group>
-                <Button variant="primary" type="submit">
-                    Submit
-                </Button>
-            </Form>
 
+                <Button variant="primary" type="submit">Submit</Button>
+
+
+
+            </Form>
+            <Button className="buttonlogreg" onClick={GoLogin}>Login</Button>
             {validationError && (
                 <Alert variant="danger">
                     {validationError}

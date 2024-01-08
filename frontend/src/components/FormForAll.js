@@ -65,16 +65,18 @@ const FormForAll = ({prop}) => {
             timeout_text()
             var storedData = localStorage.getItem('logged_user');
 
-            // Verifica se il valore è presente
+
             if (storedData) {
-                // Il valore è presente, lo converte da stringa JSON a oggetto JavaScript
+
                 var user = JSON.parse(storedData);
 
-                // Ora puoi utilizzare la variabile 'isLoggedIn' come desideri
+
                 user[prop.name] = formData.new_field
                 localStorage.setItem('logged_user', JSON.stringify(user));
+                setTimeout(function(){window.location.reload()},500);
+
             } else {
-                // La chiave 'isLoggedIn' non è presente in localStorage
+
                 console.log('La chiave "logged_user" non è presente in localStorage.');
             }
         } catch (error) {

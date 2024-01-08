@@ -1,16 +1,17 @@
 import React, {useState} from 'react';
-import {TextField, Button, Alert, Container, Box} from '@mui/material';
+import {Form, Button, Alert} from 'react-bootstrap';
 import axios from 'axios';
 import '../App.css';
-import { Navigate } from 'react-router-dom';
+import {useNavigate  } from 'react-router-dom';
 
-function GoRegister() {
-    console.log("ciaooo");
-    return <Navigate to="/registration" />;
-}
 
 function LoginForm() {
-    const [redirect, setRedirect] = useState(false);
+const navigate = useNavigate();
+    const GoRegister = () =>
+    {
+        navigate('/registration');
+    }
+
 
     const [formData, setFormData] = useState({
         username: '',
@@ -58,7 +59,9 @@ function LoginForm() {
 
             // Attendere 1 secondo e poi reindirizzare
             setTimeout(function () {
-                setRedirect(true);
+
+                window.location.href="/dashboard"
+                navigate("/dashboard");
             }, 1000)
         } catch (error) {
             // Gestisci gli errori qui
@@ -67,19 +70,24 @@ function LoginForm() {
     };
 
     return (
-        <Container className="LoginDiv">
-            {redirect && <Navigate to="/dashboard" />}
-            <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
-                <TextField margin="normal" required fullWidth id="username" label="Username" name="username"
-                           autoComplete="username" autoFocus onChange={handleChange} />
-                <TextField margin="normal" required fullWidth name="password" label="Password" type="password"
-                           id="password" autoComplete="current-password" onChange={handleChange}
-                />
-                <Button type="submit" variant="contained" color="success" size="small">
-                    Submit
-                </Button>
-            </Box>
-            <Button className="buttonlogreg" onClick={GoRegister} variant="contained" color="secondary" size="small">
+        <div className="LoginDiv">
+                    <Form onSubmit={handleSubmit}>
+
+
+                        <Form.Group className="mb-3" controlId="formBasicUsername">
+                            <Form.Label>Username</Form.Label>
+                            <Form.Control type="text" name="username" placeholder="Username" onChange={handleChange}/>
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="formBasicPassword">
+                            <Form.Label>Password</Form.Label>
+                            <Form.Control type="password" name="password" placeholder="Password" onChange={handleChange}/>
+                        </Form.Group>
+
+                        <Button variant="primary" type="submit">
+                            Submit
+                        </Button>
+                    </Form>
+            <Button className="buttonlogreg" onClick={GoRegister}>
                 Register
             </Button>
 
@@ -94,7 +102,7 @@ function LoginForm() {
                     {loginStatus.message}
                 </Alert>
             )}
-        </Container>
+        </div>
     );
 }
 
