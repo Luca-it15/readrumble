@@ -17,6 +17,7 @@ import GuestLayout from './layout/GuestLayout';
 import RegistrationForm from './pages/Registration';
 import ReviewForm from './pages/ReviewForm';
 import Dashboard from "./pages/UserDashboard";
+import CompetitionPage from "./pages/Competition";
 
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -81,6 +82,12 @@ const App = () => {
                                         path="/userDashboard"
                                         element={
                                             isLoggedIn ? <Dashboard/> : <Navigate to="/"/>
+                                        }
+                                    />
+                                    <Route
+                                        path="/competitions"
+                                        element={
+                                            isLoggedIn ? <CompetitionPage/> : <Navigate to="/"/>
                                         }
                                     />
                                     <Route path="*" element={<Error/>}/>

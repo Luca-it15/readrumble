@@ -70,10 +70,12 @@ const FormForAll = ({prop}) => {
 
                 var user = JSON.parse(storedData);
 
-
-                user[prop.name] = formData.new_field
-                localStorage.setItem('logged_user', JSON.stringify(user));
-                setTimeout(function(){window.location.reload()},500);
+                if(response.data !== "Username already in use")
+                {
+                    user[prop.name] = formData.new_field
+                    localStorage.setItem('logged_user', JSON.stringify(user));
+                    setTimeout(function(){window.location.reload()},500);
+                }
 
             } else {
 

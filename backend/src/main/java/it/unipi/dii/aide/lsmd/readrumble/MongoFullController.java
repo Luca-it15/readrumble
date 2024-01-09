@@ -4,6 +4,8 @@ package it.unipi.dii.aide.lsmd.readrumble;
 import com.mongodb.MongoException;
 import com.mongodb.client.*;
 import org.bson.Document;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,117 +17,26 @@ import java.util.Random;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Updates.set;
 
-import it.unipi.dii.aide.lsmd.readrumble.bean.Utente;
+import it.unipi.dii.aide.lsmd.readrumble.bean.UserDTO;
+
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.bean.Review;
-
-@CrossOrigin(origins = "http://localhost:3000")
-
+import it.unipi.dii.aide.lsmd.readrumble.UserController;
+import it.unipi.dii.aide.lsmd.readrumble.CompetitionController;
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:3000")
+public class MongoFullController {
 
-//Create connection string
-public class MongoExampleController {
-
-    @PostMapping("/login")
-    public ResponseEntity<String> goLogin(@RequestBody Utente utente) {
-        String username = utente.getUsername();
-        String password = utente.getPassword();
-
-        try (MongoCursor<Document> cursor = MongoConfig.getCollection("user")
-                .find(eq("Username", username)).iterator()) {
-
-            if (cursor.hasNext()) {
-                Document utente_registrato = cursor.next();
-
-                System.out.println(utente_registrato);
-                System.out.println(utente_registrato.get("Username"));
-
-                if (password.equals(utente_registrato.get("Password"))) {
-                    return ResponseEntity.ok("Login succeeded! You will now be redirected to your home!");
-                } else {
-                    return ResponseEntity.badRequest().body("Username or password incorrect!");
-                }
-            } else {
-                return ResponseEntity.badRequest().body("Username does not exist!");
-            }
-        } catch (Exception e) {
-            // Gestisci eventuali eccezioni qui
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
-        } finally {
-            MongoConfig.closeConnection();
-        }
+    private final UserController userController;
+    private final CompetitionController competitionController;
+    @Autowired
+    public MongoFullController(UserController userController, CompetitionController competitionController) {
+        this.userController = userController;
+        this.competitionController = competitionController;
     }
 
-    @PostMapping("/change")
-    public ResponseEntity<String> goChange(@RequestBody Document changes) {
-        String old_field = (String) changes.get("old_field");
-        String new_field = (String) changes.get("new_field");
-        String type_of_change_request = (String) changes.get("type_of_change_request");
-        String username_to_use = (String) changes.get("username_to_use");
-        MongoCollection<Document> collection = MongoConfig.getCollection("user");
-        if(collection.find(eq("Username", username_to_use)).cursor().hasNext())
-        {
-            collection.updateOne(eq("Username",username_to_use),set(type_of_change_request,new_field));
-            String result = (String) type_of_change_request + " Changed from " + old_field + " To " + new_field;
-            return ResponseEntity.ok(result);
-        }
-        else
-        {
-            return ResponseEntity.ok("NOT FOUND");
-        }
 
-    }
-
-    @PostMapping("/personalinfo")
-    public Document retrieveInfo(@RequestBody Utente utente) {
-        String username = utente.getUsername();
-        String password = utente.getPassword();
-
-        try (MongoCursor<Document> cursor = MongoConfig.getCollection("user")
-                .find(eq("Username", username)).iterator()) {
-
-            if (cursor.hasNext()) {
-                Document utente_registrato = cursor.next();
-
-                System.out.println(utente_registrato);
-                System.out.println(utente_registrato.get("Username"));
-
-                if (password.equals(utente_registrato.get("Password"))) {
-                    return utente_registrato;
-                } else {
-                    return null;
-                }
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            // Gestisci eventuali eccezioni qui
-            return null;
-        } finally {
-            MongoConfig.closeConnection();
-        }
-    }
-
-    @PostMapping("/registration")
-    public ResponseEntity<String> inserisciDati(@RequestBody Utente utente) {
-        System.out.println(utente);
-        String usernameDaControllare = utente.getUsername();
-        MongoCollection<Document> collection = MongoConfig.getCollection("user");
-        List<Document> utenti = collection.find(eq("Username", usernameDaControllare)).into(new ArrayList<>());
-        if (utenti.isEmpty()) {
-            Document new_doc = new Document("Name", utente.getName())
-                    .append("Surname", utente.getSurname())
-                    .append("Username", utente.getUsername())
-                    .append("Password", utente.getPassword());
-            collection.insertOne(new_doc);
-            MongoConfig.closeConnection();
-            return ResponseEntity.ok("Registration Succeded ! You will now be redirected to the Login page ! ");
-        } else {
-            MongoConfig.closeConnection();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already in use, please choose another one!");
-        }
-    }
 
     /**
      * Questo metodo restituisce i primi 10 libri presenti nel database

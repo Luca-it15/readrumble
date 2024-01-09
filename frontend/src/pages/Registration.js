@@ -16,6 +16,11 @@ function timeout_text() {
     {
         navigate('/login');
     }
+    const Quest = () =>
+    {
+        setQuestStatus(!isQuest);
+        console.log(isQuest);
+    }
     const [formData, setFormData] = useState({
         name: '',
         surname: '',
@@ -30,7 +35,7 @@ function timeout_text() {
     });
 
     const [validationError, setValidationError] = useState('');
-
+    const [isQuest, setQuestStatus] = useState(false);
     const handleChange = (e) => {
         const {name, value, type, checked} = e.target;
         setFormData((prevData) => ({
@@ -50,16 +55,28 @@ function timeout_text() {
         }
 
         try {
-            // Invia la richiesta HTTP qui usando axios
-            const response = await axios.post('http://localhost:8080/api/registration', formData);
+            if(isQuest === true)
+            {
+            console.log("Siamo in Quest");
+                const response = await axios.post('http://localhost:8080/api/user/quest', formData);
+                    setRegistrationStatus({message: response.data, variant: 'success'});
+                    timeout_text();
 
-            // Gestisci la risposta qui
-            setRegistrationStatus({message: response.data, variant: 'success'});
-            timeout_text();
-            // Attendere 3 secondi e poi reindirizzare
-            setTimeout(() => {
-                window.location.href = 'http://localhost:3000/login';
-            }, 1300); // 3000 millisecondi = 3 secondi
+
+            }
+            else{
+                // Invia la richiesta HTTP qui usando axios
+                            const response = await axios.post('http://localhost:8080/api/registration', formData);
+
+                            // Gestisci la risposta qui
+                            setRegistrationStatus({message: response.data, variant: 'success'});
+                            timeout_text();
+                            // Attendere 3 secondi e poi reindirizzare
+                            setTimeout(() => {
+                                window.location.href = 'http://localhost:3000/login';
+                            }, 1300);
+            }
+            // 3000 millisecondi = 3 secondi
         } catch (error) {
             // Gestisci gli errori qui
             setRegistrationStatus({message: error.response ? error.response.data : error.message, variant: 'danger'});
@@ -93,6 +110,7 @@ function timeout_text() {
 
             </Form>
             <Button className="buttonlogreg" onClick={GoLogin}>Login</Button>
+            <Button className="buttonlogreg" onClick={Quest}>Quest</Button>
             {validationError && (
                 <Alert variant="danger">
                     {validationError}

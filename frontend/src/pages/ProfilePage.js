@@ -3,7 +3,7 @@ import Profile from '../components/Profile';
 import BookList from './BookList';
 import {Container, Button, Grid, Typography} from '@mui/material';
 import ReviewsList from '../components/ReviewsList';
-
+import CompetitionProfBlock from '../components/CompetitionBlock';
 var storedData = localStorage.getItem('logged_user');
 
 // Verifica se il valore è presente
@@ -47,6 +47,7 @@ const ProfilePage = () => {
                 <Grid item xs={4} md={4}>
                     <Typography variant="h4">Amici</Typography>
                     <Typography variant="h4">Competizioni</Typography>
+                    <CompetitionProfBlock />
                 </Grid>
                 <Grid item xs={4} md={4}>
                     <Typography variant="h4">Post</Typography>

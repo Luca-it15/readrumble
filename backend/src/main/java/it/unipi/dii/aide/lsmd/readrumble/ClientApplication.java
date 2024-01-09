@@ -12,7 +12,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-import it.unipi.dii.aide.lsmd.readrumble.bean.Utente;
+import it.unipi.dii.aide.lsmd.readrumble.bean.UserDTO;
 
 public class ClientApplication {
     public static void main(String[] args) throws Exception {
@@ -43,7 +43,7 @@ public class ClientApplication {
 
                 System.out.println(paramNome + " " + paramCognome + " " + paramUsername + " " + paramPassword);
 
-                Utente utente = new Utente();
+                UserDTO utente = new UserDTO();
 
                 utente.setSurname(paramCognome);
                 utente.setUsername(paramUsername);
