@@ -1,4 +1,4 @@
-package it.unipi.dii.aide.lsmd.readrumble.bean;
+package it.unipi.dii.aide.lsmd.readrumble.user;
 
 import org.springframework.data.annotation.Id;
 

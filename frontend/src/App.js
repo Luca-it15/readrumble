@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {BrowserRouter, Route, Routes, Navigate, redirect} from 'react-router-dom';
+import {BrowserRouter, Router, Route, Routes, Navigate, redirect} from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -18,6 +18,7 @@ import RegistrationForm from './pages/Registration';
 import ReviewForm from './pages/ReviewForm';
 import Dashboard from "./pages/UserDashboard";
 import CompetitionPage from "./pages/Competition";
+import CompetitionSpec from "./components/CompetitionSpecification";
 
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -90,6 +91,12 @@ const App = () => {
                                             isLoggedIn ? <CompetitionPage/> : <Navigate to="/"/>
                                         }
                                     />
+                                    <Route path="/competition/:name"
+                                    element={
+                                        <CompetitionSpec />}
+                                    />
+
+
                                     <Route path="*" element={<Error/>}/>
                                 </Routes>
                             </AuthenticationLayout>

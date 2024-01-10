@@ -3,26 +3,19 @@ package it.unipi.dii.aide.lsmd.readrumble;
 
 import com.mongodb.MongoException;
 import com.mongodb.client.*;
+import it.unipi.dii.aide.lsmd.readrumble.competition.CompetitionController;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static com.mongodb.client.model.Filters.*;
-import static com.mongodb.client.model.Updates.set;
-
-import it.unipi.dii.aide.lsmd.readrumble.bean.UserDTO;
-
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.bean.Review;
-import it.unipi.dii.aide.lsmd.readrumble.UserController;
-import it.unipi.dii.aide.lsmd.readrumble.CompetitionController;
+import it.unipi.dii.aide.lsmd.readrumble.user.UserController;
+
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:3000")

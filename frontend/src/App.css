@@ -105,3 +105,10 @@ input > .mb-3 {
   width: 100%;
   margin: 1%;
 }
+
+.CompCon {
+    width:50%;
+    position:relative;
+    background-color:cadetblue;
+    text-align:center;
+}
