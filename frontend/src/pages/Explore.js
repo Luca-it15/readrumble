@@ -1,45 +1,48 @@
 import React, { Component } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Form from 'react-bootstrap/Form';
-import FormControl from 'react-bootstrap/FormControl';
-import Button from 'react-bootstrap/Button';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 
 class SearchBar extends Component {
-  render() {
-    return (
-      <Form inline>
-        <FormControl type="text" placeholder="Cerca" className="mr-sm-2" />
-        <Button variant="outline-success">Cerca</Button>
-      </Form>
-    );
-  }
+    render() {
+        return (
+            <Box component="form" sx={{ display: 'flex', alignItems: 'center' }}>
+                <TextField type="text" placeholder="Cerca" variant="outlined" sx={{ mr: 2 }} />
+                <Button variant="contained" color="primary">Cerca</Button>
+            </Box>
+        );
+    }
 }
 
 class SearchResults extends Component {
-  render() {
-    return (
-      <div>
-        <h3>Risultati della ricerca:</h3>
-        <ul>
-          <li>Risultato 1</li>
-          <li>Risultato 2</li>
-          <li>Risultato 3</li>
-        </ul>
-      </div>
-    );
-  }
+    render() {
+        return (
+            <Box sx={{ mt: 2 }}>
+                <Typography variant="h5">Risultati della ricerca:</Typography>
+                <List>
+                    <ListItem>Risultato 1</ListItem>
+                    <ListItem>Risultato 2</ListItem>
+                    <ListItem>Risultato 3</ListItem>
+                </List>
+            </Box>
+        );
+    }
 }
 
 class Explore extends Component {
-  render() {
-    return (
-      <div>
-        <h1>Esplora</h1>
-        <SearchBar />
-        <SearchResults />
-      </div>
-    );
-  }
+    render() {
+        return (
+            <Container>
+                <Typography variant="h3">Esplora</Typography>
+                <SearchBar />
+                <SearchResults />
+            </Container>
+        );
+    }
 }
 
 export default Explore;

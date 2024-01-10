@@ -49,7 +49,7 @@
 form {
     text-align:center;
     height: 10 px;
-    width: 100 px;
+    min-width: 100 px;
 }
 input > .mb-3 {
     background-color:red;
@@ -61,12 +61,15 @@ input > .mb-3 {
 .LoginDiv {
     position: relative;
     background-color : blanchedalmond;
-    width: 50%;
-    left: 25%;
+    width:50%;
+    left:25%;
 }
 .buttonlogreg {
+    width:10%;
+    left:45%;
     position: relative;
-    left: 45%;
+    margin:2pt;
+    text-align:center;
 }
 
 /*BUTTONs*/
@@ -89,9 +92,16 @@ input > .mb-3 {
 
 }
 
+.MuiContainer-root {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
 .label {
   font-size: 18pt;
   font-weight: bold;
   width: 100%;
-  margin: 1%; 
+  margin: 1%;
 }

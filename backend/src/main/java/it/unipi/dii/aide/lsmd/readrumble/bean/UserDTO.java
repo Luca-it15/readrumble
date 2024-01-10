@@ -1,9 +1,8 @@
 package it.unipi.dii.aide.lsmd.readrumble.bean;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 
-public class Utente {
+public class UserDTO {
 
     @Id
     private String id;
@@ -13,15 +12,14 @@ public class Utente {
     private String username;
     private String password;
 
-    @Transient
-    private String _class;
+
     // Costruttori
 
-    public Utente() {
+    public UserDTO() {
         // Costruttore vuoto necessario per MongoDB
     }
 
-    public Utente(String name, String surname, String username, String password) {
+    public UserDTO(String name, String surname, String username, String password) {
         this.name = name;
         this.surname = surname;
         this.username = username;

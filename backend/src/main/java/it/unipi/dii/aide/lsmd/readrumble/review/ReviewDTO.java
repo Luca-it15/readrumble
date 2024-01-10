@@ -1,11 +1,13 @@
-package it.unipi.dii.aide.lsmd.readrumble.bean;
+package it.unipi.dii.aide.lsmd.readrumble.review;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.Id;
 
+import java.util.Date;
+
 @Document(collection = "review")
-public class Review {
+public class ReviewDTO {
 
     @Id
     private int id;
@@ -15,22 +17,24 @@ public class Review {
     private String review;
     private double rating;
 
+    private Date date;
 
     @Transient
     private String _class;
     // Costruttori
 
-    public Review() {
+    public ReviewDTO() {
         // Costruttore vuoto necessario per MongoDB
     }
 
 
-    public Review(String title, String username, int numberOfPagesRead, String review, double rating) {
+    public ReviewDTO(String title, String username, int numberOfPagesRead, String review, double rating, Date date) {
         this.title = title;
         this.username = username;
         this.numberOfPagesRead = numberOfPagesRead;
         this.review = review;
         this.rating = rating;
+        this.date = date;
     }
 
     public String getTitle() {
@@ -52,15 +56,20 @@ public class Review {
         return rating;
     }
 
+    public Date getDate() {
+        return date;
+    }
+
     @Override
     public String toString() {
-        return "Utente {" +
+        return "review {" +
                 "id='" + id + '\'' +
                 ",  title'" +  title + '\'' +
                 ", username='" + username + '\'' +
                 ", numberOfPagesRead='" + numberOfPagesRead + '\'' +
                 ", review='" + review + '\'' +
                 ", rating='" + rating + '\'' +
+                ", data='" + date + '\'' +
                 '}';
     }
 }

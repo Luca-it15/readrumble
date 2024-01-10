@@ -4,8 +4,12 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import RatingStars from './RatingStars'; // Assicurati che il percorso sia corretto
+import DateFormatter from './DataFormatter';
 
-export default function ReviewRow({ title, username, pagesRead, review, rating, readOnly }) {
+export default function ReviewRow({ title, username, pagesRead, review, rating, readOnly, date }) {
+
+
+
   return (
     <Box sx={{ minWidth: 275 }}>
       <Card variant="outlined">
@@ -25,11 +29,14 @@ export default function ReviewRow({ title, username, pagesRead, review, rating, 
           <Typography variant="h6" component="div">
             Valutazione: 
             <RatingStars 
-              onChange={(newValue) => console.log(newValue)} 
+              onChange={rating}
               readOnly={readOnly} 
+              isStatic={true}
+              stars={rating}
             />
           </Typography>
         </CardContent>
+        <DateFormatter originalTimestamp={date}/>
       </Card>
     </Box>
   );

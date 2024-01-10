@@ -4,7 +4,6 @@ import {BrowserRouter, Route, Routes, Navigate, redirect} from 'react-router-dom
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-
 import Home from './pages/Home';
 import ProfilePage from './pages/ProfilePage';
 import Explore from './pages/Explore';
@@ -17,9 +16,11 @@ import Logout from './components/Logout';
 import GuestLayout from './layout/GuestLayout';
 import RegistrationForm from './pages/Registration';
 import ReviewForm from './pages/ReviewForm';
+import Dashboard from "./pages/UserDashboard";
+import CompetitionPage from "./pages/Competition";
 
 const App = () => {
-    let [isLoggedIn, setIsLoggedIn] = useState(
+    const [isLoggedIn, setIsLoggedIn] = useState(
         JSON.parse(localStorage.getItem('isLoggedIn')) || false
     );
 
@@ -63,19 +64,31 @@ const App = () => {
                                     <Route
                                         path="/profile"
                                         element={
-                                            isLoggedIn ? (<ProfilePage/>) : redirect("/")
+                                            isLoggedIn ? (<ProfilePage/>) : <Navigate to="/" />
                                         }
                                     />
 
                                     <Route
                                         path="/review"
                                         element={
-                                            isLoggedIn ? (<ReviewForm/>) : redirect("/")
+                                            isLoggedIn ? (<ReviewForm/>) : <Navigate to="/" />
                                         }
                                     />
                                     <Route
                                         path="/logout"
                                         element={<Logout onLogout={handleLogout}/>}
+                                    />
+                                    <Route
+                                        path="/userDashboard"
+                                        element={
+                                            isLoggedIn ? <Dashboard/> : <Navigate to="/"/>
+                                        }
+                                    />
+                                    <Route
+                                        path="/competitions"
+                                        element={
+                                            isLoggedIn ? <CompetitionPage/> : <Navigate to="/"/>
+                                        }
                                     />
                                     <Route path="*" element={<Error/>}/>
                                 </Routes>
@@ -95,8 +108,8 @@ const App = () => {
                                 </Routes>
                             </GuestLayout>
                         )}
-                     </Col>   
-                  </Row>      
+                     </Col>
+                  </Row>
             </Container>
         </BrowserRouter>
     );
