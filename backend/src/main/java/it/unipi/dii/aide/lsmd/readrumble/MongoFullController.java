@@ -2,8 +2,10 @@ package it.unipi.dii.aide.lsmd.readrumble;
 
 
 import com.mongodb.client.*;
+import it.unipi.dii.aide.lsmd.readrumble.competition.CompetitionController;
 import it.unipi.dii.aide.lsmd.readrumble.library.ActiveBookController;
 import it.unipi.dii.aide.lsmd.readrumble.review.ReviewController;
+import it.unipi.dii.aide.lsmd.readrumble.user.UserController;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
