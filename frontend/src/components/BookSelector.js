@@ -26,7 +26,7 @@ const BookSelector = ({ handleChangeBookTitle }) => {
         axios.get(`http://localhost:8080/api/library/title/${user["Username"]}`
         )
             .then(response => {
-                const bookTitles = response.data.map(book => ({ value: book.title, label: book.title }));
+                const bookTitles = response.data.map(book => ({ value: book.bookName, label: book.bookName }));
                 setOptions(bookTitles);
             })
             .catch(error => console.error('Errore durante il recupero dei titoli dei libri:', error));

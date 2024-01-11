@@ -10,10 +10,10 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:3000")
 public class ActiveBookController {
 
-    private ActiveBookDAO abd;
+    private LibraryBookDAO abd;
     @GetMapping("/title/{username}")
-    public List<ActiveBookDTO> getBookTitlesByUsername(@PathVariable String username) {
-        abd = new ActiveBookDAO();
-        return abd.getActiveBooks(username);
+    public List<LibraryBookDTO> getBookTitlesByUsername(@PathVariable String username) {
+        abd = new LibraryBookDAO();
+        return abd.getLibraryBooks(username);
     }
 }

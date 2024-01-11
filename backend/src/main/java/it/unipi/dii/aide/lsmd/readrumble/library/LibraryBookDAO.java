@@ -8,27 +8,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ActiveBookDAO {
+public class LibraryBookDAO {
 
-    private static List<ActiveBook> activeBooks;
-    List<LibraryBookDTO> getActiveBooks(String username) {
+    private static List<LibraryBookDAO> activeBooks;
+    List<LibraryBookDTO> getLibraryBooks(String username) {
         MongoCollection<Document> collection = MongoConfig.getCollection("Active_books");
         Document query = new Document("username", username);
         Document userDocument = collection.find(query).first();
-        List<LibraryBookDTO> activeBooks = new ArrayList<>();
+        List<LibraryBookDTO> libraryBooks = new ArrayList<>();
         if (userDocument != null) {
             List<Document> books = (List<Document>) userDocument.get("books");
             for (Document book : books) {
-               LibraryBookDTO lb = new LibraryBookDTO(
-                   book.getString("title"),
-                   book.getString("genre")
+                LibraryBookDTO lb = new LibraryBookDTO(
+                        book.getString("book_name"),
+                        book.getString("genre")
                 );
-                List<String> arrayTags = (List<String>)book.get("tags");
+                List<String> arrayTags = (List<String>) book.get("tags");
                 lb.setTags(arrayTags);
+                libraryBooks.add(lb);
             }
-
         }
         MongoConfig.closeConnection();
-        return activeBooks;
+        return libraryBooks;
     }
 }

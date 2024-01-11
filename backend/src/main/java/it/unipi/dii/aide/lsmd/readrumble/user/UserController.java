@@ -7,12 +7,11 @@ import org.bson.Document;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.set;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Updates.set;
 
 @RestController
 @RequestMapping("/api")
@@ -39,6 +38,15 @@ public class UserController {
                 System.out.println(utente_registrato.get("Username"));
 
                 if (password.equals(utente_registrato.get("Password"))) {
+                    //add the user into the AuthenticationUser list
+                    AuthenticationUserDTO newUser = new AuthenticationUserDTO(
+                            utente_registrato.get("Name").toString(),
+                            utente_registrato.get("Surname").toString(),
+                            utente_registrato.get("Username").toString()
+                    );
+
+                    AuthenticationUserDAO.addAuthenticationUser(newUser);
+
                     return ResponseEntity.ok("Login succeeded! You will now be redirected to your home!");
                 } else {
                     return ResponseEntity.badRequest().body("Username or password incorrect!");
