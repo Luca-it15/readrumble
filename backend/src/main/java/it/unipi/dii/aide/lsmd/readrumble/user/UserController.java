@@ -25,7 +25,7 @@ public class UserController {
         return ResponseEntity.ok("I'm Picking Up Good Vibrations");
     }
     @PostMapping("/login")
-    public ResponseEntity<String> goLogin(@RequestBody UserDTO utente) {
+    public Document goLogin(@RequestBody UserDTO utente) {
         String username = utente.getUsername();
         String password = utente.getPassword();
 
@@ -39,16 +39,16 @@ public class UserController {
                 System.out.println(utente_registrato.get("Username"));
 
                 if (password.equals(utente_registrato.get("Password"))) {
-                    return ResponseEntity.ok("Login succeeded! You will now be redirected to your home!");
+                    return utente_registrato;
                 } else {
-                    return ResponseEntity.badRequest().body("Username or password incorrect!");
+                    return null;
                 }
             } else {
-                return ResponseEntity.badRequest().body("Username does not exist!");
+                return null;
             }
         } catch (Exception e) {
             // Gestisci eventuali eccezioni qui
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+            return null;
         } finally {
             MongoConfig.closeConnection();
         }
