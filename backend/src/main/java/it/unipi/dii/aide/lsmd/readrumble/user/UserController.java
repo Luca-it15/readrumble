@@ -72,6 +72,7 @@ public class UserController {
                 else
                 {
                     collection.updateOne(eq("Username",username_to_use),set(type_of_change_request,new_field));
+                    collection.updateOne(eq("Username",username_to_use),set(type_of_change_request,new_field));
                     String result = (String) type_of_change_request + " Changed from " + old_field + " To " + new_field;
                     return ResponseEntity.ok(result);
                 }
