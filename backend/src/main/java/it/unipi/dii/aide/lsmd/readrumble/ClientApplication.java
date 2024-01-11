@@ -12,7 +12,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-import it.unipi.dii.aide.lsmd.readrumble.user.UserDTO;
+import it.unipi.dii.aide.lsmd.readrumble.bean.UserDTO;
 
 public class ClientApplication {
     public static void main(String[] args) throws Exception {

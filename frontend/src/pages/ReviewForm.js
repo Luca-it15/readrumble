@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import {Container, Row, Col, Alert} from 'react-bootstrap';
 import RatingStars from '../components/RatingStars';
 import axios from 'axios';
+import BookSelector from '../components/BookSelector';
 
 export default function ReviewForm() {
 
@@ -26,7 +27,7 @@ export default function ReviewForm() {
             // Azione da compiere dopo 1 secondo
             setLoginStatus({message: '', variant: 'success'});
             return window.location.href = "http://localhost:3000/profile";
-        }, 2000)
+        }, 12000)
     }
 
     const [loginStatus, setLoginStatus] = useState({
@@ -35,6 +36,7 @@ export default function ReviewForm() {
     });
 
     const [validationError, setValidationError] = useState('');
+    const [selectedTitle, setSelectedTitle] = useState('');
 
     const [formData, setFormData] = useState({
         title: '',
@@ -42,8 +44,9 @@ export default function ReviewForm() {
         numberOfPagesRead: 0,
         review: '',
         rating: 0,
+        date: ""
     });
-
+    
     const handleChange = (e) => {
         const {name, value} = e.target;
         setFormData({
@@ -52,12 +55,38 @@ export default function ReviewForm() {
         });
     };
 
-    const handleChangeRating = (newRating) => {
+    function handleChangeBookTitle(selectedTitle) {
+        setSelectedTitle(selectedTitle);
         setFormData({
             ...formData,
-            rating: newRating,
+            title: selectedTitle,
+        });
+        // Additional logic if needed
+    };
+    
+
+     // Ottieni la data corrente
+     let current_date = new Date();
+
+
+    let formatted_date = 
+     current_date.getFullYear() + "-" + 
+     ("0" + (current_date.getMonth() + 1)).slice(-2) + "-" + 
+     ("0" + current_date.getDate()).slice(-2) + "T" + 
+     ("0" + current_date.getHours()).slice(-2) + ":" + 
+     ("0" + current_date.getMinutes()).slice(-2) + ":" + 
+     ("0" + current_date.getSeconds()).slice(-2);
+
+
+     const handleChangeRating = (newRating) => {
+        setFormData({
+            ...formData,
+            rating: newRating, 
+            date: formatted_date
         });
     };
+
+   
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -65,20 +94,20 @@ export default function ReviewForm() {
         // Validazione: Verifica se almeno un campo è vuoto
         if (Object.values(formData).some((value) => value === '')) {
             setValidationError('All fields must be filled !');
-            timeout_text()
+            //timeout_text()
             return;
         }
 
         try {
             // Invia i dati al server usando Axios
-            const response = await axios.post('http://localhost:8080/api/review', formData);
+            const response = await axios.post('http://localhost:8080/api/review/submit', formData);
             setLoginStatus({message: response.data, variant: 'success'});
             timeout_text()
             // Esegui altre azioni dopo la submit se necessario
             console.log('Recensione inviata con successo!');
         } catch (error) {
             console.error('Errore durante l\'invio della recensione:', error);
-            setLoginStatus({message: error.response ? error.response.data : error.message, variant: 'danger'});
+            setLoginStatus({message: error.response ? JSON.stringify(error.response.data) : error.message, variant: 'danger'});
             timeout_text()
         }
     };
@@ -94,14 +123,8 @@ export default function ReviewForm() {
                                 <div className="flex justify-center items-center h-screen text-center">
                                     <div className="space-y-1">
                                         <label className="label">Review Title</label>
-                                        <TextField
-                                            id="title"
-                                            name="title"
-                                            label="Title"
-                                            variant="standard"
-                                            required
-                                            onChange={handleChange}
-                                        />
+                                        <p>Choose the title of book</p>
+                                     <BookSelector handleChangeBookTitle={handleChangeBookTitle} />
                                     </div>
                                     <div className="space-y-1">
                                         <label className="label">Number of pages read</label>
@@ -128,7 +151,7 @@ export default function ReviewForm() {
                                     </div>
                                     <div className="space-y-1">
                                         <label className="label">Rating</label>
-                                        <RatingStars onChange={handleChangeRating} readOnly={false}/>
+                                        <RatingStars onChange={handleChangeRating} readOnly={false} isStatic={false} stars={0}/>
                                     </div>
                                     <div className="flex justify-center mt-3 mb-5">
                                         <Button
