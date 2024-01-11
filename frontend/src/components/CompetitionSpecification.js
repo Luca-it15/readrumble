@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Alert, Button, Container, Row } from 'react-bootstrap';
 import axios from 'axios';
-import { useParams} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import '../App.css'
 
 function CompetitionSpec(){
     var isJoined = false
     const { name } = useParams();
+    const navigate = useNavigate();
     const [joinStatus, setJoinStatus] = useState({
             message: '',
             variant: 'success', // o 'danger' in caso di errore
@@ -76,6 +77,9 @@ function CompetitionSpec(){
                     {joinStatus.message}
                 </Alert>
             )}
+        </Row>
+        <Row>
+            <Button onClick={()=>{navigate("/competitions")}}> Back To Competitions </Button>
         </Row>
     </Container>
 

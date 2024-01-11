@@ -18,7 +18,7 @@ import RegistrationForm from './pages/Registration';
 import ReviewForm from './pages/ReviewForm';
 import Dashboard from "./pages/UserDashboard";
 import CompetitionPage from "./pages/Competition";
-
+import CompetitionSpec from "./components/CompetitionSpecification";
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(
         JSON.parse(localStorage.getItem('isLoggedIn')) || false
@@ -88,6 +88,12 @@ const App = () => {
                                         path="/competitions"
                                         element={
                                             isLoggedIn ? <CompetitionPage/> : <Navigate to="/"/>
+                                        }
+                                    />
+                                    <Route
+                                        path="/competition/:name"
+                                        element={
+                                            isLoggedIn ? <CompetitionSpec /> : <Navigate to="/"/>
                                         }
                                     />
                                     <Route path="*" element={<Error/>}/>

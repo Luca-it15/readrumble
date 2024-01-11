@@ -46,20 +46,25 @@ const navigate = useNavigate();
             console.log(formData);
             // Invia la richiesta HTTP qui usando axios
             const response = await axios.post('http://localhost:8080/api/login', formData);
-            const retrieve = await axios.post('http://localhost:8080/api/personalinfo', formData);
             // Gestisci la risposta qui
 
             console.log(response.data);
-            setLoginStatus({message: response.data, variant: 'success'});
+            if(response.data === null)
+            {
+                setLoginStatus({message: "Username or Password are incorrect", variant: 'danger'});
+            }
+            else
+            {
+                setLoginStatus({message: "You Logged in Successfully, you will now be redirected to your home ", variant: 'success'});
+            }
             // Imposta il flag di login nello stato e in localStorage
             const isLoggedIn = true;
             setLoginStatus(true);
             localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
-            localStorage.setItem('logged_user', JSON.stringify(retrieve.data));
+            localStorage.setItem('logged_user', JSON.stringify(response.data));
 
             // Attendere 1 secondo e poi reindirizzare
             setTimeout(function () {
-
                 window.location.href="/dashboard"
                 navigate("/dashboard");
             }, 1000)

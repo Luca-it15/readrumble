@@ -32,23 +32,25 @@ public class CompetitionController {
         Document userDocument = new Document(username, 0);
         String userField = "Users." + username;
         MongoCollection<Document> collection = MongoConfig.getCollection("competition");
-        Document competitionFilter = new Document("Name", competitionTitle);
-        Document competition = collection.find(competitionFilter).first();
+        //Document competitionFilter = new Document("Name", competitionTitle);
+        Document competition = collection.find(eq("Name",competitionTitle)).first();
 
         if (competition != null) {
+            //I get the embedded Document Users as a proper document
             Document usersObject = competition.get("Users", Document.class);
-
+            System.out.println(usersObject);
             if (usersObject != null && usersObject.containsKey(username)) {
                 //The user is already in the competition, this means that the user wants to leave the competition
                 usersObject.remove(username);
-                collection.updateOne(competitionFilter, new Document("$set", new Document("Users", usersObject)));
+                //In this operation I update all the embedded document Users
+                collection.updateOne(eq("Name",competitionTitle), Updates.set("Users", usersObject));
 
                 System.out.println("You Left The Competition !");
                 return ResponseEntity.ok("You Left The Competition !");
             } else {
                 //The user is not in the competition, so we will make the user join the competition
                 usersObject.put(username, 0);
-                collection.updateOne(competitionFilter, new Document("$set", new Document("Users", usersObject)));
+                collection.updateOne(eq("Name",competitionTitle), Updates.set("Users", usersObject));
                 System.out.println(username +" You joined the " + competitionTitle + " Competititon !");
                 return ResponseEntity.ok(username +" You joined the " + competitionTitle + " Competititon !");
             }
@@ -58,13 +60,36 @@ public class CompetitionController {
         }
     }
 
-    @GetMapping("/retrieve")
-    public List<Document> retrieveCompetitions()
+    @GetMapping("/retrieve/all")
+    public List<Document> retrieveALlCompetitions()
     {
         MongoCollection<Document> collection = MongoConfig.getCollection("competition");
         List<Document> competitions = collection.find().into(new ArrayList<Document>());
         System.out.println(competitions);
         return competitions;
+    }
+    @PostMapping("/retrieve/personal")
+    public List<Document> retrievePersonalCompetitions(@RequestBody String Username)
+    {
+        MongoCollection<Document> collection = MongoConfig.getCollection("competition");
+        List<Document> competitions = collection.find().into(new ArrayList<Document>());
+        List<Document> results = new ArrayList<Document>();
+        Integer i = 0;
+        for(Document com : competitions)
+        {
+            if(i == 3)
+            {
+                break;
+            }
+            Document emb_users = (Document) com.get("Users");
+            if(emb_users != null && emb_users.containsKey(Username))
+            {
+                results.add(com);
+            }
+            i = i+1;
+        }
+        System.out.println(results);
+        return results;
     }
     @PostMapping("/getcompinfo")
     public Document getCompetitionInfo(@RequestBody Document docx)

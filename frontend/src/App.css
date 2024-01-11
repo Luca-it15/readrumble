@@ -105,3 +105,45 @@ input > .mb-3 {
   width: 100%;
   margin: 1%;
 }
+
+.CompCon {
+    width:50%;
+    position:relative;
+    background-color:cadetblue;
+    text-align:center;
+}
+.competitionPage {
+
+    position:relative;
+    background-color:cadetblue;
+    text-align:center;
+}
+.competitionLinkTrue {
+    background-color:red;
+    position:relative;
+    width:50%;
+    left:25%;
+    text-align:center;
+}
+.competitionLinkFalse {
+    background-color:green;
+    position:relative;
+    width:50%;
+    left:25%;
+    text-align:center;
+}
+.compButton {
+    width:50%;
+    position:relative;
+    left:25%;
+    height:70%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.compMoreComp{
+    width:70%;
+    position:relative;
+    left:15%;
+
+}
