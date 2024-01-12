@@ -97,10 +97,10 @@ public class CompetitionController {
         String Name = (String) docx.get("CompetitionTitle");
         String Username = (String) docx.get("Username");
         MongoCollection<Document> collection = MongoConfig.getCollection("competition");
-        MongoCursor competition = collection.find(eq("Name",Name)).cursor();
+        MongoCursor<Document> competition = collection.find(eq("Name",Name)).cursor();
         if(competition.hasNext())
         {
-            Document doc = (Document) competition.next();
+            Document doc = competition.next();
             Document users_doc = (Document) doc.get("Users");
             if(users_doc.get(Username) == null)
             {
