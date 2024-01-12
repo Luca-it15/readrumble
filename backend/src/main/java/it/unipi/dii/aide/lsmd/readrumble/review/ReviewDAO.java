@@ -21,7 +21,9 @@ public class ReviewDAO {
                     .append("numberOfPagesRead", review.getNumberOfPagesRead())
                     .append("review", review.getReview())
                     .append("rating", review.getRating())
-                    .append("date", review.getDate());
+                    .append("date", review.getDate())
+                            .append("tags", review.getTags()
+                    );
 
             collection.insertOne(new_doc);
             MongoConfig.closeConnection();

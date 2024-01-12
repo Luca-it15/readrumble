@@ -20,8 +20,7 @@ public class LibraryBookDAO {
             List<Document> books = (List<Document>) userDocument.get("books");
             for (Document book : books) {
                 LibraryBookDTO lb = new LibraryBookDTO(
-                        book.getString("book_name"),
-                        book.getString("genre")
+                        book.getString("book_name")
                 );
                 List<String> arrayTags = (List<String>) book.get("tags");
                 lb.setTags(arrayTags);
