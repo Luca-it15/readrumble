@@ -12,7 +12,7 @@ function CompetitionAdmin()
     const Username = JSON.parse(logged_user)["Username"]
     const goSpecificComp =(Name) =>{
             console.log("ecco il nome: " + Name);
-            var dynamic_path = "/competition/"+Name;
+            var dynamic_path = "/admin_competition/"+Name;
             navigate(dynamic_path);
 
         }

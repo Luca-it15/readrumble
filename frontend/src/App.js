@@ -24,8 +24,10 @@ import DashboardAdmin from './pages/admin/DashboardAdmin';
 import BookAdmin from './pages/admin/BookAdmin';
 import CompetitionAdmin from './pages/admin/CompetitionAdmin';
 import AddCompetition from './pages/admin/AddCompetition';
+import CompetitionSpecAdmin from './pages/admin/CompetitionSpecAdmin';
 import UserAdmin from './pages/admin/UserAdmin';
 import ReviewAdmin from './pages/admin/ReviewAdmin';
+
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(
         JSON.parse(localStorage.getItem('isLoggedIn')) || false
@@ -70,6 +72,11 @@ const App = () => {
                                         path="/admin_competition"
                                         element={
                                             <CompetitionAdmin/>}
+                                 />
+                                 <Route
+                                        path="/admin_competition/:name"
+                                        element={
+                                            <CompetitionSpecAdmin/>}
                                  />
                                  <Route
                                         path="/admin_competition/add_comp"
