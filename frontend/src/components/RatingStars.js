@@ -5,7 +5,7 @@ import StarIcon from '@mui/icons-material/Star';
 
 // ... (import React e useState)
 
-const RatingStars = ({ onChange, readOnly}) => {
+const RatingStars = ({ onChange, readOnly, isStatic, star}) => {
   const labels = {
     0.5: 'Useless',
     1: 'Useless+',
@@ -34,7 +34,7 @@ const RatingStars = ({ onChange, readOnly}) => {
   >
     <Rating
       name="hover-feedback"
-      value={value}
+    value={isStatic ? value : star }
       precision={0.5}
       getLabelText={getLabelText}
       readOnly = {readOnly}
@@ -45,7 +45,7 @@ const RatingStars = ({ onChange, readOnly}) => {
       emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
     />
     {value !== null && (
-      <Box sx={{ ml: 2 }}>{labels[hover !== -1 ? hover : value]}</Box>
+      <Box sx={{ ml: 2 }}>{labels[hover !== -1 ? hover : (isStatic? value : star)]}</Box>
     )}
   </Box>
 );

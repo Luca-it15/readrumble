@@ -19,6 +19,12 @@ import ReviewForm from './pages/ReviewForm';
 import Dashboard from "./pages/UserDashboard";
 import CompetitionPage from "./pages/Competition";
 import CompetitionSpec from "./components/CompetitionSpecification";
+import AdminLayout from './layout/AdminLayout';
+import DashboardAdmin from './pages/admin/DashboardAdmin';
+import BookAdmin from './pages/admin/BookAdmin';
+import CompetitionAdmin from './pages/admin/CompetitionAdmin';
+import UserAdmin from './pages/admin/UserAdmin';
+import ReviewAdmin from './pages/admin/ReviewAdmin';
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(
         JSON.parse(localStorage.getItem('isLoggedIn')) || false
@@ -33,13 +39,45 @@ const App = () => {
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('logged_user');
     };
+    
+    const admin = true; 
 
     return (
         <BrowserRouter>
             <Container fluid="false">
                 <Row>
                     <Col>
-                        {isLoggedIn ? (
+                        {isLoggedIn ? (admin? 
+                             (<AdminLayout>
+                                 <Routes>
+                                  <Route
+                                        exact
+                                        path="/dashboard"
+                                        element={
+                                            <DashboardAdmin/>}
+                                 />
+                                 <Route
+                                        path="/admin_book"
+                                        element={
+                                            <BookAdmin/>}
+                                 />
+                                 <Route
+                                        path="/admin_competition"
+                                        element={
+                                            <CompetitionAdmin/>}
+                                 />
+                                 <Route
+                                        path="/admin_user"
+                                        element={
+                                            <UserAdmin/>}
+                                 />
+                                 <Route
+                                        path="/admin_review"
+                                        element={
+                                            <ReviewAdmin/>}
+                                 />
+                               </Routes>
+                            </AdminLayout>) : ( 
                             <AuthenticationLayout>
                                 <Routes>
                                     <Route
@@ -99,7 +137,7 @@ const App = () => {
                                     <Route path="*" element={<Error/>}/>
                                 </Routes>
                             </AuthenticationLayout>
-                        ) : (
+                        )) : (
                             <GuestLayout>
                                 <Routes>
                                     <Route

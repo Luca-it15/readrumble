@@ -18,7 +18,7 @@ const ReviewsList = () => {
       // La chiave 'isLoggedIn' non è presente in localStorage
       console.log('La chiave "logged_user" non è presente in localStorage.');
   }
-
+  let username = user["Username"]; 
   useEffect(() => {
     // Sostituisci 'http://localhost:8080/reviews' con l'URL del tuo server
     axios.get(`http://localhost:8080/api/review/all/${user["Username"]}`)

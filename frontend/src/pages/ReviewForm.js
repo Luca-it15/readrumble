@@ -37,6 +37,7 @@ export default function ReviewForm() {
 
     const [validationError, setValidationError] = useState('');
     const [selectedTitle, setSelectedTitle] = useState('');
+    const [tags, setTags] = useState([]);
 
     const [formData, setFormData] = useState({
         title: '',
@@ -44,7 +45,8 @@ export default function ReviewForm() {
         numberOfPagesRead: 0,
         review: '',
         rating: 0,
-        date: ""
+        date: "", 
+        tag: ""
     });
     
     const handleChange = (e) => {
@@ -55,15 +57,15 @@ export default function ReviewForm() {
         });
     };
 
-    function handleChangeBookTitle(selectedTitle) {
+    const handleChangeBookTitle = (selectedTitle, selectedTags) => {
         setSelectedTitle(selectedTitle);
+        setTags(selectedTags);
         setFormData({
             ...formData,
             title: selectedTitle,
-        });
-        // Additional logic if needed
-    };
-    
+            tag: tags
+        }); 
+    }
 
      // Ottieni la data corrente
      let current_date = new Date();

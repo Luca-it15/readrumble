@@ -4,7 +4,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.Id;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Document(collection = "review")
 public class ReviewDTO {
@@ -16,6 +18,7 @@ public class ReviewDTO {
     private int numberOfPagesRead;
     private String review;
     private double rating;
+    private List<String> tags;
 
     private Date date;
 
@@ -35,6 +38,7 @@ public class ReviewDTO {
         this.review = review;
         this.rating = rating;
         this.date = date;
+        this.tags = new ArrayList<>();
     }
 
     public String getTitle() {
@@ -59,6 +63,7 @@ public class ReviewDTO {
     public Date getDate() {
         return date;
     }
+    public List<String>getTags() {return tags;}
 
     @Override
     public String toString() {

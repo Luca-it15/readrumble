@@ -32,7 +32,7 @@ export default function ReviewRow({ title, username, pagesRead, review, rating, 
               onChange={rating}
               readOnly={readOnly} 
               isStatic={true}
-              stars={rating}
+              star={rating}
             />
           </Typography>
         </CardContent>
