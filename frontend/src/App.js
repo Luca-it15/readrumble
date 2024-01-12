@@ -23,6 +23,7 @@ import AdminLayout from './layout/AdminLayout';
 import DashboardAdmin from './pages/admin/DashboardAdmin';
 import BookAdmin from './pages/admin/BookAdmin';
 import CompetitionAdmin from './pages/admin/CompetitionAdmin';
+import AddCompetition from './pages/admin/AddCompetition';
 import UserAdmin from './pages/admin/UserAdmin';
 import ReviewAdmin from './pages/admin/ReviewAdmin';
 const App = () => {
@@ -69,6 +70,11 @@ const App = () => {
                                         path="/admin_competition"
                                         element={
                                             <CompetitionAdmin/>}
+                                 />
+                                 <Route
+                                        path="/admin_competition/add_comp"
+                                        element={
+                                            <AddCompetition/>}
                                  />
                                  <Route
                                         path="/admin_user"
