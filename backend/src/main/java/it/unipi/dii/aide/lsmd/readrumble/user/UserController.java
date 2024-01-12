@@ -19,11 +19,6 @@ import static com.mongodb.client.model.Updates.set;
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
-    @PostMapping("/user/quest")
-    @ResponseBody
-    public ResponseEntity<String> quest() {
-        return ResponseEntity.ok("I'm Picking Up Good Vibrations");
-    }
     @PostMapping("/login")
     public Document goLogin(@RequestBody UserDTO utente) {
         String username = utente.getUsername();

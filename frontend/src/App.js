@@ -29,6 +29,9 @@ const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(
         JSON.parse(localStorage.getItem('isLoggedIn')) || false
     );
+    const [isAdmin, setIsAdmin] = useState(
+            JSON.parse(localStorage.getItem('isAdmin')) || false
+        );
 
     const handleLogin = () => {
         setIsLoggedIn(true);
@@ -38,16 +41,17 @@ const App = () => {
         setIsLoggedIn(false);
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('logged_user');
+        localStorage.removeItem('isAdmin');
     };
     
-    const admin = true; 
+
 
     return (
         <BrowserRouter>
             <Container fluid="false">
                 <Row>
                     <Col>
-                        {isLoggedIn ? (admin? 
+                        {isLoggedIn ? (isAdmin?
                              (<AdminLayout>
                                  <Routes>
                                   <Route

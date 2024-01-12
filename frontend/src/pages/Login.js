@@ -49,19 +49,26 @@ const navigate = useNavigate();
             // Gestisci la risposta qui
 
             console.log(response.data);
-            if(response.data === null)
+            if(response.data === '')
             {
                 setLoginStatus({message: "Username or Password are incorrect", variant: 'danger'});
             }
             else
             {
                 setLoginStatus({message: "You Logged in Successfully, you will now be redirected to your home ", variant: 'success'});
+                const isLoggedIn = true;
+                setLoginStatus(true);
+                var isAdmin = false
+                if(response.data.isAdmin == 1)
+                {
+                    isAdmin = true;
+                }
+                localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
+                localStorage.setItem('isAdmin', JSON.stringify(isAdmin));
+                localStorage.setItem('logged_user', JSON.stringify(response.data));
             }
             // Imposta il flag di login nello stato e in localStorage
-            const isLoggedIn = true;
-            setLoginStatus(true);
-            localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
-            localStorage.setItem('logged_user', JSON.stringify(response.data));
+
 
             // Attendere 1 secondo e poi reindirizzare
             setTimeout(function () {

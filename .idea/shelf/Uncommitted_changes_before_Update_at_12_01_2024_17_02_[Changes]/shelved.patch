@@ -1,0 +1,638 @@
+Index: frontend/src/App.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>.App {\r\n  text-align: center;\r\n}\r\n\r\n.App-logo {\r\n  height: 40vmin;\r\n  pointer-events: none;\r\n}\r\n\r\n\r\n@media (prefers-reduced-motion: no-preference) {\r\n  .App-logo {\r\n    animation: App-logo-spin infinite 20s linear;\r\n  }\r\n}\r\n\r\n.App-header {\r\n  background-color: #282c34;\r\n  min-height: 100vh;\r\n  display: flex;\r\n  flex-direction: column;\r\n  align-items: center;\r\n  justify-content: center;\r\n  font-size: calc(10px + 2vmin);\r\n  color: white;\r\n}\r\n\r\n.App-link {\r\n  color: #61dafb;\r\n}\r\n\r\n@keyframes App-logo-spin {\r\n  from {\r\n    transform: rotate(0deg);\r\n  }\r\n  to {\r\n    transform: rotate(360deg);\r\n  }\r\n}\r\n\r\n\r\n.login-wrapper {\r\n  display: flex;\r\n  flex-direction: column;\r\n  align-items: center;\r\n}\r\n\r\n/*Registration*/\r\nform {\r\n    text-align:center;\r\n    height: 10 px;\r\n    min-width: 100 px;\r\n}\r\ninput > .mb-3 {\r\n    background-color:red;\r\n    height: 30 px;\r\n    width: 100 px;\r\n}\r\n\r\n/*LOGIN E REGISTRAZIONE*/\r\n.LoginDiv {\r\n    position: relative;\r\n    background-color : blanchedalmond;\r\n    width:50%;\r\n    left:25%;\r\n}\r\n.buttonlogreg {\r\n    width:10%;\r\n    left:45%;\r\n    position: relative;\r\n    margin:2pt;\r\n    text-align:center;\r\n}\r\n\r\n/*BUTTONs*/\r\n.style_of_the_button_unpressed{\r\n    background-color:cadetblue;\r\n    width:20%;\r\n    left:40%;\r\n    margin:5pt;\r\n    position:relative;\r\n\r\n}\r\n\r\n.style_of_the_button{\r\n    background-color:cornflowerblue;\r\n    width:30%;\r\n    height:20%;\r\n    left:35%;\r\n    margin:5pt;\r\n    position:relative;\r\n\r\n}\r\n\r\n.MuiContainer-root {\r\n    display: flex !important;\r\n    flex-direction: column;\r\n    align-items: center;\r\n    gap: 10px;\r\n}\r\n\r\n.label {\r\n  font-size: 18pt;\r\n  font-weight: bold;\r\n  width: 100%;\r\n  margin: 1%;\r\n}\r\n\r\n.CompCon {\r\n    width:50%;\r\n    position:relative;\r\n    background-color:cadetblue;\r\n    text-align:center;\r\n}\r\n.competitionPage {\r\n\r\n    position:relative;\r\n    background-color:cadetblue;\r\n    text-align:center;\r\n}\r\n.competitionLinkTrue {\r\n    background-color:red;\r\n    position:relative;\r\n    width:50%;\r\n    left:25%;\r\n    text-align:center;\r\n}\r\n.competitionLinkFalse {\r\n    background-color:green;\r\n    position:relative;\r\n    width:50%;\r\n    left:25%;\r\n    text-align:center;\r\n}\r\n.compButton {\r\n    width:50%;\r\n    position:relative;\r\n    left:25%;\r\n    height:70%;\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n}\r\n.compMoreComp{\r\n    width:70%;\r\n    position:relative;\r\n    left:15%;\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/frontend/src/App.css b/frontend/src/App.css
+--- a/frontend/src/App.css	(revision 70c4612c748f1b7c4fb527b9d1c3bd7b636ab8fc)
++++ b/frontend/src/App.css	(date 1705072212159)
+@@ -141,6 +141,12 @@
+     align-items: center;
+     justify-content: center;
+ }
++.AddCompetition{
++    width:70%;
++    position:relative;
++    left:15%;
++    text-align:center;
++}
+ .compMoreComp{
+     width:70%;
+     position:relative;
+Index: frontend/src/pages/OLDREGISTRATION.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import React, {useState} from 'react';\r\nimport {Form, Button} from 'react-bootstrap';\r\nimport axios from 'axios';\r\n\r\nfunction RegistrationForm() {\r\n    const [formData, setFormData] = useState({\r\n        email: '',\r\n        name: '',\r\n        surname: '',\r\n        username: '',\r\n        password: '',\r\n        checked: false,\r\n    });\r\n\r\n    const handleChange = (e) => {\r\n        const {name, value, type, checked} = e.target;\r\n        setFormData((prevData) => ({\r\n            ...prevData,\r\n            [name]: type === 'checkbox' ? checked : value,\r\n        }));\r\n    };\r\n\r\n    const handleSubmit = async (e) => {\r\n        e.preventDefault();\r\n\r\n        try {\r\n            // Invia la richiesta HTTP qui usando axios\r\n            const response = await axios.post('http://localhost:8080/api/registration', formData);\r\n\r\n            // Verifica che 'response' e 'response.data' siano definiti prima di utilizzarli\r\n            if (response && response.data) {\r\n                // Gestisci la risposta qui (puoi aggiungere log o altri handling)\r\n                console.log(response.data);\r\n            } else {\r\n                console.error('Risposta non valida:', response);\r\n            }\r\n        } catch (error) {\r\n            // Gestisci gli errori qui (puoi aggiungere log o altri handling)\r\n            console.error('Errore durante la registrazione:', error.response ? error.response.data : error.message);\r\n        }\r\n    };\r\n\r\n    return (\r\n        <Form onSubmit={handleSubmit}>\r\n            <Form.Group className=\"mb-3\" controlId=\"formBasicEmail\">\r\n                <Form.Label>Email address</Form.Label>\r\n                <Form.Control type=\"email\" name=\"email\" placeholder=\"Enter email\" onChange={handleChange}/>\r\n                <Form.Text className=\"text-muted\">\r\n                    We'll never share your email with anyone else.\r\n                </Form.Text>\r\n            </Form.Group>\r\n            <Form.Group className=\"mb-3\" controlId=\"formBasicName\">\r\n                <Form.Label>Name</Form.Label>\r\n                <Form.Control type=\"text\" name=\"name\" placeholder=\"Name\" onChange={handleChange}/>\r\n            </Form.Group>\r\n            <Form.Group className=\"mb-3\" controlId=\"formBasicSurname\">\r\n                <Form.Label>Surname</Form.Label>\r\n                <Form.Control type=\"text\" name=\"surname\" placeholder=\"Surname\" onChange={handleChange}/>\r\n            </Form.Group>\r\n            <Form.Group className=\"mb-3\" controlId=\"formBasicUsername\">\r\n                <Form.Label>Username</Form.Label>\r\n                <Form.Control type=\"text\" name=\"username\" placeholder=\"Username\" onChange={handleChange}/>\r\n            </Form.Group>\r\n            <Form.Group className=\"mb-3\" controlId=\"formBasicPassword\">\r\n                <Form.Label>Password</Form.Label>\r\n                <Form.Control type=\"password\" name=\"password\" placeholder=\"Password\" onChange={handleChange}/>\r\n            </Form.Group>\r\n\r\n            <Form.Group className=\"mb-3\" controlId=\"formBasicCheckbox\">\r\n                <Form.Check type=\"checkbox\" label=\"Check me out\" name=\"checked\" onChange={handleChange}/>\r\n            </Form.Group>\r\n\r\n            <Button variant=\"primary\" type=\"submit\">\r\n                Submit\r\n            </Button>\r\n        </Form>\r\n    );\r\n}\r\n\r\nexport default RegistrationForm;\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/frontend/src/pages/OLDREGISTRATION.js b/frontend/src/pages/OLDREGISTRATION.js
+--- a/frontend/src/pages/OLDREGISTRATION.js	(revision 70c4612c748f1b7c4fb527b9d1c3bd7b636ab8fc)
++++ b/frontend/src/pages/OLDREGISTRATION.js	(date 1705075330860)
+@@ -1,80 +1,146 @@
+ import React, {useState} from 'react';
+-import {Form, Button} from 'react-bootstrap';
+-import axios from 'axios';
+-
+-function RegistrationForm() {
+-    const [formData, setFormData] = useState({
+-        email: '',
+-        name: '',
+-        surname: '',
+-        username: '',
+-        password: '',
+-        checked: false,
+-    });
++import 'bootstrap/dist/css/bootstrap.min.css';
++import {BrowserRouter, Route, Routes, Navigate, redirect} from 'react-router-dom';
++import Container from 'react-bootstrap/Container';
++import Row from 'react-bootstrap/Row';
++import Col from 'react-bootstrap/Col';
++import Home from './pages/Home';
++import ProfilePage from './pages/ProfilePage';
++import Explore from './pages/Explore';
++import UserSettings from './pages/UserSettings';
++import Error from './pages/Error';
++import './App.css';
++import AuthenticationLayout from './layout/AuthenticationLayout';
++import LoginForm from './pages/Login';
++import Logout from './components/Logout';
++import GuestLayout from './layout/GuestLayout';
++import RegistrationForm from './pages/Registration';
++import ReviewForm from './pages/ReviewForm';
++import Dashboard from "./pages/UserDashboard";
++import CompetitionPage from "./pages/Competition";
++import CompetitionSpec from "./components/CompetitionSpecification";
+ 
+-    const handleChange = (e) => {
+-        const {name, value, type, checked} = e.target;
+-        setFormData((prevData) => ({
+-            ...prevData,
+-            [name]: type === 'checkbox' ? checked : value,
+-        }));
++const App = () => {
++    const [isLoggedIn, setIsLoggedIn] = useState(
++        JSON.parse(localStorage.getItem('isLoggedIn')) || false
++    );
++    const [isAdmin, setIsAdmin] = useState(
++        JSON.parse(localStorage.getItem('isAdmin')) || false
++    );
++    const handleLogin = () => {
++        setIsLoggedIn(true);
+     };
+ 
+-    const handleSubmit = async (e) => {
+-        e.preventDefault();
+-
+-        try {
+-            // Invia la richiesta HTTP qui usando axios
+-            const response = await axios.post('http://localhost:8080/api/registration', formData);
+-
+-            // Verifica che 'response' e 'response.data' siano definiti prima di utilizzarli
+-            if (response && response.data) {
+-                // Gestisci la risposta qui (puoi aggiungere log o altri handling)
+-                console.log(response.data);
+-            } else {
+-                console.error('Risposta non valida:', response);
+-            }
+-        } catch (error) {
+-            // Gestisci gli errori qui (puoi aggiungere log o altri handling)
+-            console.error('Errore durante la registrazione:', error.response ? error.response.data : error.message);
+-        }
++    const handleLogout = () => {
++        setIsLoggedIn(false);
++        localStorage.removeItem('isLoggedIn');
++        localStorage.removeItem('logged_user');
++        localStorage.removeItem('isAdmin');
+     };
+ 
+     return (
+-        <Form onSubmit={handleSubmit}>
+-            <Form.Group className="mb-3" controlId="formBasicEmail">
+-                <Form.Label>Email address</Form.Label>
+-                <Form.Control type="email" name="email" placeholder="Enter email" onChange={handleChange}/>
+-                <Form.Text className="text-muted">
+-                    We'll never share your email with anyone else.
+-                </Form.Text>
+-            </Form.Group>
+-            <Form.Group className="mb-3" controlId="formBasicName">
+-                <Form.Label>Name</Form.Label>
+-                <Form.Control type="text" name="name" placeholder="Name" onChange={handleChange}/>
+-            </Form.Group>
+-            <Form.Group className="mb-3" controlId="formBasicSurname">
+-                <Form.Label>Surname</Form.Label>
+-                <Form.Control type="text" name="surname" placeholder="Surname" onChange={handleChange}/>
+-            </Form.Group>
+-            <Form.Group className="mb-3" controlId="formBasicUsername">
+-                <Form.Label>Username</Form.Label>
+-                <Form.Control type="text" name="username" placeholder="Username" onChange={handleChange}/>
+-            </Form.Group>
+-            <Form.Group className="mb-3" controlId="formBasicPassword">
+-                <Form.Label>Password</Form.Label>
+-                <Form.Control type="password" name="password" placeholder="Password" onChange={handleChange}/>
+-            </Form.Group>
++        <BrowserRouter>
++            <Container fluid="false">
++                <Row>
++                    <Col>
++                        {isLoggedIn ? (
++                            <AuthenticationLayout>
++                                <Routes>
++                                    <Route
++                                        path="/admin/addcompetition"
++                                        element={
++                                            isAdmin ? <AdminAddComp/> : <Navigate to = "/"/>
++                                        }
++                                    />
++                                    <Route
++                                        path="/admin/competition"
++                                        element={
++                                            isAdmin ? <AdminComp/> : <Navigate to = "/"/>
++                                        }
++                                    />
++                                    <Route
++                                        path="admin/competition/:name"
++                                        element={
++                                            isLoggedIn ? <AdminCompSpec /> : <Navigate to="/"/>
++                                        }
++                                    />
++                                    <Route
++                                        exact
++                                        path="/dashboard"
++                                        element={
++                                            isLoggedIn ? <Home/> : <Navigate to="/"/>
++                                        }
++                                    />
++                                    <Route
++                                        path="/explore"
++                                        element={
++                                            isLoggedIn ? <Explore/> : <Navigate to="/"/>
++                                        }
++                                    />
++                                    <Route
++                                        path="/settings"
++                                        element={
++                                            isLoggedIn ? <UserSettings/> : <Navigate to="/"/>
++                                        }
++                                    />
++                                    <Route
++                                        path="/profile"
++                                        element={
++                                            isLoggedIn ? (<ProfilePage/>) : <Navigate to="/" />
++                                        }
++                                    />
+ 
+-            <Form.Group className="mb-3" controlId="formBasicCheckbox">
+-                <Form.Check type="checkbox" label="Check me out" name="checked" onChange={handleChange}/>
+-            </Form.Group>
+-
+-            <Button variant="primary" type="submit">
+-                Submit
+-            </Button>
+-        </Form>
+-    );
+-}
++                                    <Route
++                                        path="/review"
++                                        element={
++                                            isLoggedIn ? (<ReviewForm/>) : <Navigate to="/" />
++                                        }
++                                    />
++                                    <Route
++                                        path="/logout"
++                                        element={<Logout onLogout={handleLogout}/>}
++                                    />
++                                    <Route
++                                        path="/userDashboard"
++                                        element={
++                                            isLoggedIn ? <Dashboard/> : <Navigate to="/"/>
++                                        }
++                                    />
++                                    <Route
++                                        path="/competitions"
++                                        element={
++                                            isLoggedIn ? <CompetitionPage/> : <Navigate to="/"/>
++                                        }
++                                    />
++                                    <Route
++                                        path="/competition/:name"
++                                        element={
++                                            isLoggedIn ? <CompetitionSpec /> : <Navigate to="/"/>
++                                        }
++                                    />
++                                    <Route path="*" element={<Error/>}/>
++                                </Routes>
++                            </AuthenticationLayout>
++                        ) : (
++                            <GuestLayout>
++                                <Routes>
++                                    <Route
++                                        path="/"
++                                        element={<LoginForm onLogin={handleLogin}/>}
++                                    />
++                                    <Route
++                                        path="/registration"
++                                        element={<RegistrationForm/>}
++                                    />
++                                    <Route path="*" element={<Navigate to="/"/>}/>
++                                </Routes>
++                            </GuestLayout>
++                        )}
++                     </Col>
++                  </Row>
++            </Container>
++        </BrowserRouter>
++    );
++};
+ 
+-export default RegistrationForm;
++export default App;
+Index: frontend/src/pages/Login.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import React, {useState} from 'react';\r\nimport {Form, Button, Alert} from 'react-bootstrap';\r\nimport axios from 'axios';\r\nimport '../App.css';\r\nimport {useNavigate  } from 'react-router-dom';\r\n\r\n\r\nfunction LoginForm() {\r\nconst navigate = useNavigate();\r\n    const GoRegister = () =>\r\n    {\r\n        navigate('/registration');\r\n    }\r\n\r\n\r\n    const [formData, setFormData] = useState({\r\n        username: '',\r\n        password: ''\r\n    });\r\n\r\n    const [loginStatus, setLoginStatus] = useState({\r\n        message: '',\r\n        variant: 'success', // o 'danger' in caso di errore\r\n    });\r\n\r\n    const [validationError, setValidationError] = useState('');\r\n\r\n    const handleChange = (e) => {\r\n        const {name, value, type, checked} = e.target;\r\n        setFormData((prevData) => ({\r\n            ...prevData,\r\n            [name]: type === 'checkbox' ? checked : value,\r\n        }));\r\n    };\r\n\r\n    const handleSubmit = async (e) => {\r\n        e.preventDefault();\r\n\r\n        // Validazione: Verifica se almeno un campo è vuoto\r\n        if (Object.values(formData).some((value) => value === '')) {\r\n            setValidationError('All fields must be filled !');\r\n            return;\r\n        }\r\n\r\n        try {\r\n            console.log(formData);\r\n            // Invia la richiesta HTTP qui usando axios\r\n            const response = await axios.post('http://localhost:8080/api/login', formData);\r\n            // Gestisci la risposta qui\r\n\r\n            console.log(response.data);\r\n            if(response.data === null)\r\n            {\r\n                setLoginStatus({message: \"Username or Password are incorrect\", variant: 'danger'});\r\n            }\r\n            else\r\n            {\r\n                setLoginStatus({message: \"You Logged in Successfully, you will now be redirected to your home \", variant: 'success'});\r\n            }\r\n            // Imposta il flag di login nello stato e in localStorage\r\n            const isLoggedIn = true;\r\n            setLoginStatus(true);\r\n            localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));\r\n            localStorage.setItem('logged_user', JSON.stringify(response.data));\r\n\r\n            // Attendere 1 secondo e poi reindirizzare\r\n            setTimeout(function () {\r\n                window.location.href=\"/dashboard\"\r\n                navigate(\"/dashboard\");\r\n            }, 1000)\r\n        } catch (error) {\r\n            // Gestisci gli errori qui\r\n            setLoginStatus({message: error.response ? error.response.data : error.message, variant: 'danger'});\r\n        }\r\n    };\r\n\r\n    return (\r\n        <div className=\"LoginDiv\">\r\n                    <Form onSubmit={handleSubmit}>\r\n\r\n\r\n                        <Form.Group className=\"mb-3\" controlId=\"formBasicUsername\">\r\n                            <Form.Label>Username</Form.Label>\r\n                            <Form.Control type=\"text\" name=\"username\" placeholder=\"Username\" onChange={handleChange}/>\r\n                        </Form.Group>\r\n                        <Form.Group className=\"mb-3\" controlId=\"formBasicPassword\">\r\n                            <Form.Label>Password</Form.Label>\r\n                            <Form.Control type=\"password\" name=\"password\" placeholder=\"Password\" onChange={handleChange}/>\r\n                        </Form.Group>\r\n\r\n                        <Button variant=\"primary\" type=\"submit\">\r\n                            Submit\r\n                        </Button>\r\n                    </Form>\r\n            <Button className=\"buttonlogreg\" onClick={GoRegister}>\r\n                Register\r\n            </Button>\r\n\r\n            {validationError && (\r\n                <Alert severity=\"error\">\r\n                    {validationError}\r\n                </Alert>\r\n            )}\r\n\r\n            {loginStatus.message && (\r\n                <Alert severity={loginStatus.variant}>\r\n                    {loginStatus.message}\r\n                </Alert>\r\n            )}\r\n        </div>\r\n    );\r\n}\r\n\r\nexport default LoginForm;\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/frontend/src/pages/Login.js b/frontend/src/pages/Login.js
+--- a/frontend/src/pages/Login.js	(revision 70c4612c748f1b7c4fb527b9d1c3bd7b636ab8fc)
++++ b/frontend/src/pages/Login.js	(date 1705071903366)
+@@ -6,7 +6,8 @@
+ 
+ 
+ function LoginForm() {
+-const navigate = useNavigate();
++    var isAdmin = false;
++    const navigate = useNavigate();
+     const GoRegister = () =>
+     {
+         navigate('/registration');
+@@ -49,25 +50,38 @@
+             // Gestisci la risposta qui
+ 
+             console.log(response.data);
+-            if(response.data === null)
++            if(response.data == '')
+             {
+-                setLoginStatus({message: "Username or Password are incorrect", variant: 'danger'});
++                setLoginStatus({message: "Username or Password are incorrect", variant: 'success'});
++                setTimeout(()=>{setLoginStatus({message: "", variant: 'success'});},1000)
+             }
+             else
+             {
+-                setLoginStatus({message: "You Logged in Successfully, you will now be redirected to your home ", variant: 'success'});
+-            }
+-            // Imposta il flag di login nello stato e in localStorage
+-            const isLoggedIn = true;
+-            setLoginStatus(true);
+-            localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
+-            localStorage.setItem('logged_user', JSON.stringify(response.data));
++                setLoginStatus({message: "Logged in successfully ", variant: 'danger'});
++                const isLoggedIn = true;
++
++                if(response.data.isAdmin === 1)
++                {
++                    console.log("isAdmin")
++                    isAdmin = true;
++                }
++                else
++                {
++                    isAdmin = false;
++                }
++                localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
++                localStorage.setItem('isAdmin', JSON.stringify(isAdmin));
++                localStorage.setItem('logged_user', JSON.stringify(response.data));
+ 
+-            // Attendere 1 secondo e poi reindirizzare
+-            setTimeout(function () {
+-                window.location.href="/dashboard"
+-                navigate("/dashboard");
+-            }, 1000)
++               // Attendere 1 secondo e poi reindirizzare
++                setTimeout(function () {
++                    window.location.href="/dashboard"
++                    navigate("/dashboard");
++                }, 1000)
++            }
++
++            // Imposta il flag di login nello stato e in localStorage
++
+         } catch (error) {
+             // Gestisci gli errori qui
+             setLoginStatus({message: error.response ? error.response.data : error.message, variant: 'danger'});
+Index: frontend/src/pages/AdminCompetition.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/frontend/src/pages/AdminCompetition.js b/frontend/src/pages/AdminCompetition.js
+new file mode 100644
+--- /dev/null	(date 1705075278379)
++++ b/frontend/src/pages/AdminCompetition.js	(date 1705075278379)
+@@ -0,0 +1,64 @@
++import React, { useState, useEffect } from 'react';
++import { Button, Container, Row} from 'react-bootstrap';
++import axios from 'axios';
++import '../App.css';
++import {useNavigate} from 'react-router-dom';
++/*
++import AdminCompSpec from "./components/AdminCompetitionSpecification";
++import AdminAddComp from "./components/AdminAddCompetitionBlock";
++import AdminComp from "./pages/AdminCompetition";
++*/
++
++function AdminComp()
++{
++    const [data, setData] = useState([]);
++    const navigate = useNavigate();
++    const logged_user = localStorage.getItem("logged_user");
++    const Username = JSON.parse(logged_user)["Username"]
++
++    const goSpecificAdminComp = (Name) =>{
++            console.log("ecco il nome: " + Name);
++            var dynamic_path = "/admin/competition/"+Name;
++            navigate(dynamic_path);
++
++        }
++    function goAddComp(){
++        navigate("/admin/addcompetition");
++    }
++    useEffect(() => {
++            // Effettua la richiesta GET al tuo backend
++            axios.get('http://localhost:8080/api/competition/retrieve/all')
++              .then(response => {
++                // Converti i documenti MongoDB in JSON
++                const jsonData = response.data.map(document => JSON.parse(JSON.stringify(document)));
++                setData(jsonData);
++              })
++              .catch(error => console.error('Errore nella richiesta GET:', error));
++        }, []);
++    return(
++
++        <Container className= "competitionPage">
++            <Row>
++                <h1>Competitions</h1>
++            </Row>
++            <Row>
++                <Button className="AddCompetition" onClick={()=>goAddComp()}>
++                    <h2>Add a Competition</h2>
++                </Button>
++            </Row>
++            <Row>
++                {data.map(item => (
++                    <Row>
++                        <Button className="competitionLinkFalse" onClick={()=>{goSpecificAdminComp(item.Name)}}>
++                            <h1>{item.Name}</h1>
++                        </Button>
++                    </Row>
++                ))}
++            </Row>
++        </Container>
++    )
++
++
++}
++
++export default AdminComp;
+\ No newline at end of file
+Index: frontend/src/components/AdminAddCompetitionBlock.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/frontend/src/components/AdminAddCompetitionBlock.js b/frontend/src/components/AdminAddCompetitionBlock.js
+new file mode 100644
+--- /dev/null	(date 1705074278372)
++++ b/frontend/src/components/AdminAddCompetitionBlock.js	(date 1705074278372)
+@@ -0,0 +1,128 @@
++import React, {useState} from 'react';
++import {Form, Button, Alert} from 'react-bootstrap';
++import axios from 'axios';
++import '../App.css';
++import {useNavigate  } from 'react-router-dom';
++
++
++function LoginForm() {
++    var isAdmin = false;
++    const navigate = useNavigate();
++    const GoRegister = () =>
++    {
++        navigate('/registration');
++    }
++
++
++    const [formData, setFormData] = useState({
++        username: '',
++        password: ''
++    });
++
++    const [loginStatus, setLoginStatus] = useState({
++        message: '',
++        variant: 'success', // o 'danger' in caso di errore
++    });
++
++    const [validationError, setValidationError] = useState('');
++
++    const handleChange = (e) => {
++        const {name, value, type, checked} = e.target;
++        setFormData((prevData) => ({
++            ...prevData,
++            [name]: type === 'checkbox' ? checked : value,
++        }));
++    };
++
++    const handleSubmit = async (e) => {
++        e.preventDefault();
++
++        // Validazione: Verifica se almeno un campo è vuoto
++        if (Object.values(formData).some((value) => value === '')) {
++            setValidationError('All fields must be filled !');
++            return;
++        }
++
++        try {
++            console.log(formData);
++            // Invia la richiesta HTTP qui usando axios
++            const response = await axios.post('http://localhost:8080/api/login', formData);
++            // Gestisci la risposta qui
++
++            console.log(response.data);
++            if(response.data == '')
++            {
++                setLoginStatus({message: "Username or Password are incorrect", variant: 'success'});
++                setTimeout(()=>{setLoginStatus({message: "", variant: 'success'});},1000)
++            }
++            else
++            {
++                setLoginStatus({message: "Logged in successfully ", variant: 'danger'});
++                const isLoggedIn = true;
++
++                if(response.data.isAdmin === 1)
++                {
++                    console.log("isAdmin")
++                    isAdmin = true;
++                }
++                else
++                {
++                    isAdmin = false;
++                }
++                localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
++                localStorage.setItem('isAdmin', JSON.stringify(isAdmin));
++                localStorage.setItem('logged_user', JSON.stringify(response.data));
++
++               // Attendere 1 secondo e poi reindirizzare
++                setTimeout(function () {
++                    window.location.href="/dashboard"
++                    navigate("/dashboard");
++                }, 1000)
++            }
++
++            // Imposta il flag di login nello stato e in localStorage
++
++        } catch (error) {
++            // Gestisci gli errori qui
++            setLoginStatus({message: error.response ? error.response.data : error.message, variant: 'danger'});
++        }
++    };
++
++    return (
++        <div className="LoginDiv">
++                    <Form onSubmit={handleSubmit}>
++
++
++                        <Form.Group className="mb-3" controlId="formBasicUsername">
++                            <Form.Label>Username</Form.Label>
++                            <Form.Control type="text" name="username" placeholder="Username" onChange={handleChange}/>
++                        </Form.Group>
++                        <Form.Group className="mb-3" controlId="formBasicPassword">
++                            <Form.Label>Password</Form.Label>
++                            <Form.Control type="password" name="password" placeholder="Password" onChange={handleChange}/>
++                        </Form.Group>
++
++                        <Button variant="primary" type="submit">
++                            Submit
++                        </Button>
++                    </Form>
++            <Button className="buttonlogreg" onClick={GoRegister}>
++                Register
++            </Button>
++
++            {validationError && (
++                <Alert severity="error">
++                    {validationError}
++                </Alert>
++            )}
++
++            {loginStatus.message && (
++                <Alert severity={loginStatus.variant}>
++                    {loginStatus.message}
++                </Alert>
++            )}
++        </div>
++    );
++}
++
++export default LoginForm;
+Index: frontend/src/components/AdminCompetitionSpecification.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/frontend/src/components/AdminCompetitionSpecification.js b/frontend/src/components/AdminCompetitionSpecification.js
+new file mode 100644
+--- /dev/null	(date 1705073374234)
++++ b/frontend/src/components/AdminCompetitionSpecification.js	(date 1705073374234)
+@@ -0,0 +1,90 @@
++import React, { useState, useEffect } from 'react';
++import { Alert, Button, Container, Row, Col } from 'react-bootstrap';
++import axios from 'axios';
++import {useNavigate, useParams} from 'react-router-dom';
++import '../App.css'
++
++function CompetitionSpec(){
++    const [load,setLoad] = useState(false);
++    var isJoined = false;
++    const { name } = useParams();
++    const navigate = useNavigate();
++    const [joinStatus, setJoinStatus] = useState({
++            message: '',
++            variant: 'success', // o 'danger' in caso di errore
++    });
++    const [data, setData] = useState([]);
++    const [isJoin, setJoin] = useState();
++    const username = JSON.parse(localStorage.getItem('logged_user'));
++
++    function BuildRank()
++    {
++        console.log("BUILDRANK");
++        const rank_div = document.getElementById("rank");
++        rank_div.innerHTML = null;
++        let i = 0;
++        const keys = Object.keys(data.Users);
++        while(keys[i] != null && i != 10)
++        {
++            console.log(keys[i]);
++            rank_div.innerHTML += '<div class="row"><div class="col"><h3>'+keys[i]+'</h3></div><div class="col"><h3>'+data.Users[keys[i]]+'</h3></div></div>';
++            i=i+1;
++        }
++    }
++    function deleteCompetition()
++    {
++        axios.post('http://localhost:8080/api/competition/delete',{CompetitionTitle: name})
++        .then(response => {
++            console.log("Competition Deleted");
++            console.log(response);
++            console.log(response.data);
++        })
++    }
++    function call()
++    {
++        axios.post('http://localhost:8080/api/competition/getcompinfo',{
++                CompetitionTitle: name,
++                Username: "getAllCompetitions"
++                })
++                .then(response => {
++                    setData(response.data);
++                    setLoad(true);
++                 })
++                 .catch(error => console.error('Errore nella richiesta POST:', error));
++    }
++    useEffect(() => { call()
++        }, []);
++
++    // [] means "Execute this action just at the start of the page"
++    return(
++    <Container className="CompCon">
++        <Row>
++            <h1> {data.Name} </h1>
++        </Row>
++        <Row>
++            <h2> The tag is : {data.Tag} </h2>
++        </Row>
++        <Row>
++            <h3>Rank</h3>
++            {load ? BuildRank() : "not loaded"}
++            <div id="rank"></div>
++        </Row>
++        <Row>
++            <Button onClick={()=>{deleteCompetition(data.Name)}}> <h2> Delete Competition </h2> </Button>
++        </Row>
++        <Row>
++            {joinStatus.message && (
++                <Alert variant={joinStatus.variant}>
++                    {joinStatus.message}
++                </Alert>
++            )}
++        </Row>
++        <Row>
++            <Button onClick={()=>{navigate("/admin/competition")}}> Back To Competitions </Button>
++        </Row>
++    </Container>
++
++    )
++}
++
++export default CompetitionSpec;
+\ No newline at end of file
