@@ -16,7 +16,7 @@ if (storedData) {
     var user = JSON.parse(storedData);
 
     // Ora puoi utilizzare la variabile 'isLoggedIn' come desideri
-    console.log("ecco il nome da user['Name'] " + user["Name"]);
+    console.log("ecco il nome da user['Name'] " + user["name"]);
 } else {
     // La chiave 'isLoggedIn' non è presente in localStorage
     console.log('La chiave "logged_user" non è presente in localStorage.');
@@ -25,10 +25,10 @@ if (storedData) {
 const UserSettings = () => {
     const [selectedForm, setSelectedForm] = useState(null);
 
-    var obj1 = {"name": "Username", "Username": user["Username"]};
-    var obj2 = {"name": "Name", "Username": user["Username"]};
-    var obj3 = {"name": "Surname", "Username": user["Username"]};
-    var obj4 = {"name": "Password", "Username": user["Username"]};
+    var obj1 = {"name": "_id", "_id": user["_id"]};
+    var obj2 = {"name": "name", "_id": user["_id"]};
+    var obj3 = {"name": "surname", "_id": user["_id"]};
+    var obj4 = {"name": "password", "_id": user["_id"]};
 
     return (
         <Container a>
@@ -40,7 +40,7 @@ const UserSettings = () => {
                     aria-label="form selection"
                     color={"primary"}
                 >
-                    <ToggleButton value="username" aria-label="change username">
+                    <ToggleButton value="_id" aria-label="change username">
                         Change Username
                     </ToggleButton>
                     <ToggleButton value="name" aria-label="change name">

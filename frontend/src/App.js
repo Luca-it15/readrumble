@@ -57,6 +57,10 @@ const App = () => {
                         {isLoggedIn ? (isAdmin?
                              (<AdminLayout>
                                  <Routes>
+                                    <Route
+                                        path="/logout"
+                                        element={<Logout onLogout={handleLogout}/>}
+                                    />
                                   <Route
                                         exact
                                         path="/dashboard"

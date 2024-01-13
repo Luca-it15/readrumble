@@ -23,17 +23,17 @@ public class UserController {
     public Document goLogin(@RequestBody UserDTO utente) {
         String username = utente.getUsername();
         String password = utente.getPassword();
-
-        try (MongoCursor<Document> cursor = MongoConfig.getCollection("user")
-                .find(eq("Username", username)).iterator()) {
+        System.out.println(username + " " + password);
+        System.out.println(utente);
+        try (MongoCursor<Document> cursor = MongoConfig.getCollection("User")
+                .find(eq("_id", username)).iterator()) {
 
             if (cursor.hasNext()) {
                 Document utente_registrato = cursor.next();
-
                 System.out.println(utente_registrato);
-                System.out.println(utente_registrato.get("Username"));
+                System.out.println(utente_registrato.get("_id"));
 
-                if (password.equals(utente_registrato.get("Password"))) {
+                if (password.equals(utente_registrato.get("password"))) {
                     return utente_registrato;
                 } else {
                     return null;
@@ -55,26 +55,27 @@ public class UserController {
         String new_field = (String) changes.get("new_field");
         String type_of_change_request = (String) changes.get("type_of_change_request");
         String username_to_use = (String) changes.get("username_to_use");
-        MongoCollection<Document> collection = MongoConfig.getCollection("user");
-        if(collection.find(eq("Username", username_to_use)).cursor().hasNext())
+        System.out.println(username_to_use);
+        MongoCollection<Document> collection = MongoConfig.getCollection("User");
+        if(collection.find(eq("_id", username_to_use)).cursor().hasNext())
         {
-            if(type_of_change_request.equals("Username"))
+            if(type_of_change_request.equals("_id"))
             {
-                if(collection.find(eq("Username",new_field)).cursor().hasNext())
+                if(collection.find(eq("_id",new_field)).cursor().hasNext())
                 {
                     return ResponseEntity.ok("Username already in use");
                 }
                 else
                 {
-                    collection.updateOne(eq("Username",username_to_use),set(type_of_change_request,new_field));
-                    collection.updateOne(eq("Username",username_to_use),set(type_of_change_request,new_field));
+                    collection.updateOne(eq("_id",username_to_use),set(type_of_change_request,new_field));
+                    collection.updateOne(eq("_id",username_to_use),set(type_of_change_request,new_field));
                     String result = (String) type_of_change_request + " Changed from " + old_field + " To " + new_field;
                     return ResponseEntity.ok(result);
                 }
             }
             else
             {
-                collection.updateOne(eq("Username",username_to_use),set(type_of_change_request,new_field));
+                collection.updateOne(eq("_id",username_to_use),set(type_of_change_request,new_field));
                 String result = (String) type_of_change_request + " Changed from " + old_field + " To " + new_field;
                 return ResponseEntity.ok(result);
             }
@@ -92,14 +93,14 @@ public class UserController {
         String username = utente.getUsername();
         String password = utente.getPassword();
 
-        try (MongoCursor<Document> cursor = MongoConfig.getCollection("user")
-                .find(eq("Username", username)).iterator()) {
+        try (MongoCursor<Document> cursor = MongoConfig.getCollection("User")
+                .find(eq("_id", username)).iterator()) {
 
             if (cursor.hasNext()) {
                 Document utente_registrato = cursor.next();
 
                 System.out.println(utente_registrato);
-                System.out.println(utente_registrato.get("Username"));
+                System.out.println(utente_registrato.get("_id"));
 
                 if (password.equals(utente_registrato.get("Password"))) {
                     return utente_registrato;
@@ -121,13 +122,13 @@ public class UserController {
     public ResponseEntity<String> inserisciDati(@RequestBody UserDTO utente) {
         System.out.println(utente);
         String usernameDaControllare = utente.getUsername();
-        MongoCollection<Document> collection = MongoConfig.getCollection("user");
-        List<Document> utenti = collection.find(eq("Username", usernameDaControllare)).into(new ArrayList<>());
+        MongoCollection<Document> collection = MongoConfig.getCollection("User");
+        List<Document> utenti = collection.find(eq("_id", usernameDaControllare)).into(new ArrayList<>());
         if (utenti.isEmpty()) {
-            Document new_doc = new Document("Name", utente.getName())
-                    .append("Surname", utente.getSurname())
-                    .append("Username", utente.getUsername())
-                    .append("Password", utente.getPassword());
+            Document new_doc = new Document("name", utente.getName())
+                    .append("surname", utente.getSurname())
+                    .append("_id", utente.getUsername())
+                    .append("password", utente.getPassword());
             collection.insertOne(new_doc);
             MongoConfig.closeConnection();
             return ResponseEntity.ok("Registration Succeded ! You will now be redirected to the Login page ! ");

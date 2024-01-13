@@ -5,9 +5,9 @@ const Profile = (props) => {
     <div>
       <h1>Profilo Utente</h1>
       <img src={props.image} alt="Immagine del profilo" />
-      <p>Name: <strong>{props.Name}</strong></p>
-      <p>Surname: <strong>{props.Surname}</strong></p>
-      <p>Username: <strong>{props.Username}</strong></p>
+      <p>Name: <strong>{props.name}</strong></p>
+      <p>Surname: <strong>{props.surname}</strong></p>
+      <p>Username: <strong>{props._id}</strong></p>
     </div>
   );
 }

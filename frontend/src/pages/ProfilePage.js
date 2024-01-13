@@ -12,7 +12,7 @@ if (storedData) {
     var user = JSON.parse(storedData);
 
     // Ora puoi utilizzare la variabile 'isLoggedIn' come desideri
-    console.log(user["Name"]);
+    console.log(user["name"]);
 } else {
     // La chiave 'isLoggedIn' non è presente in localStorage
     console.log('La chiave "logged_user" non è presente in localStorage.');
