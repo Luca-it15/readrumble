@@ -1,23 +1,19 @@
 package it.unipi.dii.aide.lsmd.readrumble.competition;
 
-import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
 
-import static com.mongodb.client.model.Aggregates.set;
-import static com.mongodb.client.model.Filters.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.mongodb.client.model.Filters.eq;
 
 @RestController
 @RequestMapping("/api/competition")

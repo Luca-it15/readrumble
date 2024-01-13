@@ -5,11 +5,12 @@ import {useNavigate, useParams} from 'react-router-dom';
 import '../../App.css'
 
 function CompetitionSpecAdmin(){
+
     const [load,setLoad] = useState(false);
     var isJoined = false;
     const { name } = useParams();
     const navigate = useNavigate();
-    const [joinStatus, setJoinStatus] = useState({
+    const [deleteStatus, setDeleteStatus] = useState({
             message: '',
             variant: 'success', // o 'danger' in caso di errore
     });
@@ -17,7 +18,6 @@ function CompetitionSpecAdmin(){
     const [isJoin, setJoin] = useState();
     const username = JSON.parse(localStorage.getItem('logged_user'));
     var usernameToAdd = username["Username"];
-
     function BuildRank()
     {
         console.log("BUILDRANK");
@@ -32,18 +32,8 @@ function CompetitionSpecAdmin(){
             i=i+1;
         }
     }
-     function givename()
-     {
-        if(isJoin===true)
-        {
-            return "Leave Competition"
-        }
-        else
-        {
-            return "Join Competition"
-        }
 
-     }
+
     function call()
     {
         axios.post('http://localhost:8080/api/competition/getcompinfo',{
@@ -59,49 +49,19 @@ function CompetitionSpecAdmin(){
                  .catch(error => console.error('Errore nella richiesta POST:', error));
     }
     useEffect(() => { call()
-        }, []);
-    function joinCompetition(Name){
+        }, []);    // [] means "Execute this action just at the start of the page"
 
-        const response = axios.post("http://localhost:8080/api/competition/join",{
-        parametro1: usernameToAdd,
-        parametro2: Name
+    function deleteCompetition(Name){
+
+        const response = axios.post("http://localhost:8080/api/competition/delete",{
+        CompName: Name
         })
         .then(response => {
-                    setJoinStatus({message:response.data,variant:'success'});
+                    setDeleteStatus({message:response.data,variant:'success'});
         })
-        setTimeout(function () {setJoinStatus({message:"",variant:'success'});},4000);
-        setJoin(!isJoin);
-        if(isJoin == false)
-        {
-            data.Users[usernameToAdd]=0;
-        }
-        else
-        {
-            delete(data.Users[usernameToAdd])
-        }
-        rankPosition();
+        setTimeout(function () {setDeleteStatus({message:"",variant:'success'});},4000);
         BuildRank();
     }
-    function rankPosition()
-    {
-        const keys = Object.keys(data.Users)
-        var i = 0;
-        while(keys[i] != null)
-        {
-            if(keys[i] === usernameToAdd)
-            {
-                i = i+1;
-                var result = "You are in " + i + " position !";
-                return result
-            }
-            else
-            {
-                i = i+1;
-            }
-
-        }
-    }
-    // [] means "Execute this action just at the start of the page"
     return(
     <Container className="CompCon">
         <Row>
@@ -116,21 +76,19 @@ function CompetitionSpecAdmin(){
             <div id="rank"></div>
         </Row>
         <Row>
-            {isJoin ? <h4>{rankPosition()}</h4> : <h4>You do not partecipate in the competition</h4>}
+            <Button onClick={()=>{deleteCompetition(data.Name)}}> <h3>Delete Competition</h3> </Button>
         </Row>
         <Row>
-            <Button onClick={()=>{joinCompetition(data.Name)}}> {givename()} </Button>
-        </Row>
-        <Row>
-            {joinStatus.message && (
-                <Alert variant={joinStatus.variant}>
-                    {joinStatus.message}
+            {deleteStatus.message && (
+                <Alert variant={deleteStatus.variant}>
+                    {deleteStatus.message}
                 </Alert>
             )}
         </Row>
         <Row>
             <Button onClick={()=>{navigate("/admin_competition")}}> Back To Competitions </Button>
         </Row>
+
     </Container>
 
     )

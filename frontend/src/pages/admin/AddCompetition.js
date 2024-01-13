@@ -5,6 +5,23 @@ import '../../App.css';
 import {useNavigate} from 'react-router-dom';
 
 const AddCompetition = () =>{
+    const tags = ["Mystery",
+          "Fantasy",
+          "Non-fiction",
+          "Romance",
+          "Young-adult",
+          "Children",
+          "Comics",
+          "Fiction",
+          "Poetry",
+          "History",
+          "Crime",
+          "Paranormal",
+          "Biography",
+          "Thriller",
+          "Historical-fiction",
+          "Graphic"]
+    const SortedTags = tags.sort();
     const [formData, setFormData] = useState({
         CompName: '',
         CompTag: ''
@@ -14,7 +31,6 @@ const AddCompetition = () =>{
         message: '',
         variant: 'success', // o 'danger' in caso di errore
     });
-
     const [validationError, setValidationError] = useState('');
 
     const handleChange = (e) => {
@@ -62,7 +78,14 @@ const AddCompetition = () =>{
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="CompTag">
                             <Form.Label>Name of the Tag</Form.Label>
-                            <Form.Control type="text" name="CompTag" placeholder="Tag for this competition" onChange={handleChange}/>
+                            <Form.Select name="CompTag" onChange={handleChange}>
+                                <option value="">Select Tag</option>
+                                {SortedTags.map(tag => (
+                                    <option key={tag} value={tag}>
+                                        {tag}
+                                    </option>
+                                ))}
+                            </Form.Select>
                         </Form.Group>
 
                         <Button variant="primary" type="submit">
