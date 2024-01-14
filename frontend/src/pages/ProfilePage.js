@@ -2,7 +2,7 @@ import React from 'react';
 import Profile from '../components/Profile';
 import BookList from '../components/BookList';
 import FollowingList from '../components/FollowingList';
-import {Container, Button, Grid, Typography} from '@mui/material';
+import {Container, Button, Grid, Typography, Paper} from '@mui/material';
 import ReviewsList from '../components/ReviewsList';
 import CompetitionProfBlock from '../components/CompetitionBlock';
 import BookListShow from '../components/BookListShow';
@@ -38,35 +38,47 @@ const ProfilePage = () => {
         <Container maxWidth="xl">
             <Grid container spacing={3} direction="row" alignItems="center" justifyContent="center">
                 <Grid item xs={6} md={4}>
-                    <Profile {...user} />
+                    <Paper elevation={3} style={{backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '10px'}}>
+                        <Profile {...user} />
+                    </Paper>
                 </Grid>
                 <Grid item xs={6} md={4}>
-                    <Button variant="contained" onClick={goSettings}>Settings</Button>
-                    <Button variant="contained" onClick={goDashboard}>Dashboard</Button>
+                    <Paper elevation={3} style={{backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '10px'}}>
+                        <Button variant="contained" onClick={goSettings}>Settings</Button>
+                        <Button variant="contained" onClick={goDashboard}>Dashboard</Button>
+                    </Paper>
                 </Grid>
             </Grid>
             <Grid container spacing={3} textAlign="center">
                 <Grid item xs={4} md={4}>
-                    <Grid item xs={12} md={12}>
-                        <Typography variant="h4">Users you follow</Typography>
+                    <Paper elevation={3} style={{backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '10px'}}>
+                    <Typography variant="h4">Users you follow</Typography>
                         <FollowingList/>
-                    </Grid>
+                    </Paper>
+                    <Paper elevation={3} style={{backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '10px'}}>
                     <Typography variant="h4">Competizioni</Typography>
-                    <CompetitionProfBlock />
+                        <CompetitionProfBlock />
+                    </Paper>
                 </Grid>
                 <Grid item xs={4} md={4}>
+                    <Paper elevation={3} style={{backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '10px'}}>
                     <Typography variant="h4">Post</Typography>
                     <Button variant="contained" onClick={goReview}>
                         Make Review
                     </Button>
-                    <ReviewsList/>
+                        <ReviewsList/>
+                    </Paper>
                 </Grid>
                 <Grid item xs={4} md={4}>
+                    <Paper elevation={3} style={{backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '10px'}}>
                     <Typography variant="h4">Your favorite boooks</Typography>
                         <BookList/>
+                    </Paper>
+                    <Paper elevation={3} style={{backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '10px'}}>
                     <Typography variant="h4">Libri Letti</Typography>
                     <Typography variant="body1">10 libri a caso:</Typography>
-                    <BookListShow/>
+                        <BookListShow/>
+                    </Paper>
                 </Grid>
             </Grid>
         </Container>
