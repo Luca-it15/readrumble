@@ -12,11 +12,10 @@ import java.util.List;
 
 public class ReviewDAO {
 
-
     public String addReview(ReviewDTO review) {
         try {
             // Creazione di un oggetto Review a partire dai dati ricevuti dal frontend
-            MongoCollection<Document> collection = MongoConfig.getCollection("Review");
+            MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
             System.out.println("recensione dal titolo: " + review.getTitle());
             System.out.println(review.getTags());
 
@@ -39,12 +38,10 @@ public class ReviewDAO {
 
     }
 
-
-
     public List<ReviewDTO> allReviewUser(String username) {
         List<ReviewDTO> reviews = new ArrayList<>();
 
-        MongoCollection<Document> collection = MongoConfig.getCollection("Review");
+        MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
 
         // Ottieni le prime 10 recensioni
         Document query = new Document("_id", username);
@@ -70,7 +67,7 @@ public class ReviewDAO {
     public List<ReviewDTO> allReview() {
         List<ReviewDTO> reviews = new ArrayList<>();
 
-        MongoCollection<Document> collection = MongoConfig.getCollection("Review");
+        MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
 
         // Ottieni le prime 10 recensioni
         for (Document doc : collection.find().sort(new Document("date", -1)).limit(10)) {

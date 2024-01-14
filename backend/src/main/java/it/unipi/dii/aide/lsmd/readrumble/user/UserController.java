@@ -31,20 +31,22 @@ public class UserController {
         return ResponseEntity.ok("I'm Picking Up Good Vibrations");
     }
     @PostMapping("/login")
-    public Document goLogin(@RequestBody User utente) {
-        String username = utente.getUsername();
-        String password = utente.getPassword();
+    public Document goLogin(@RequestBody Document utente) {
+        String username = utente.get("username").toString();
+        String password = utente.get("password").toString();
+
+        System.out.println(username + " " + password);
 
         try (MongoCursor<Document> cursor = MongoConfig.getCollection("Users")
-                .find(eq("Username", username)).iterator()) {
+                .find(eq("_id", username)).iterator()) {
 
             if (cursor.hasNext()) {
                 Document utente_registrato = cursor.next();
 
                 System.out.println(utente_registrato);
-                System.out.println(utente_registrato.get("Username"));
+                System.out.println(utente_registrato.get("_id"));
 
-                if (password.equals(utente_registrato.get("Password"))) {
+                if (password.equals(utente_registrato.get("password"))) {
                     return utente_registrato;
                 } else {
                     return null;
@@ -67,25 +69,25 @@ public class UserController {
         String type_of_change_request = (String) changes.get("type_of_change_request");
         String username_to_use = (String) changes.get("username_to_use");
         MongoCollection<Document> collection = MongoConfig.getCollection("Users");
-        if(collection.find(eq("Username", username_to_use)).cursor().hasNext())
+        if(collection.find(eq("_id", username_to_use)).cursor().hasNext())
         {
             if(type_of_change_request.equals("Username"))
             {
-                if(collection.find(eq("Username",new_field)).cursor().hasNext())
+                if(collection.find(eq("_id",new_field)).cursor().hasNext())
                 {
                     return ResponseEntity.ok("Username already in use");
                 }
                 else
                 {
-                    collection.updateOne(eq("Username",username_to_use),set(type_of_change_request,new_field));
-                    collection.updateOne(eq("Username",username_to_use),set(type_of_change_request,new_field));
+                    collection.updateOne(eq("_id",username_to_use),set(type_of_change_request,new_field));
+                    collection.updateOne(eq("_id",username_to_use),set(type_of_change_request,new_field));
                     String result = (String) type_of_change_request + " Changed from " + old_field + " To " + new_field;
                     return ResponseEntity.ok(result);
                 }
             }
             else
             {
-                collection.updateOne(eq("Username",username_to_use),set(type_of_change_request,new_field));
+                collection.updateOne(eq("_id",username_to_use),set(type_of_change_request,new_field));
                 String result = (String) type_of_change_request + " Changed from " + old_field + " To " + new_field;
                 return ResponseEntity.ok(result);
             }
@@ -104,7 +106,7 @@ public class UserController {
         String password = utente.getPassword();
 
         try (MongoCursor<Document> cursor = MongoConfig.getCollection("Users")
-                .find(eq("Username", username)).iterator()) {
+                .find(eq("_id", username)).iterator()) {
 
             if (cursor.hasNext()) {
                 Document utente_registrato = cursor.next();
@@ -133,7 +135,7 @@ public class UserController {
         System.out.println(utente);
         String usernameDaControllare = utente.getUsername();
         MongoCollection<Document> collection = MongoConfig.getCollection("Users");
-        List<Document> utenti = collection.find(eq("Username", usernameDaControllare)).into(new ArrayList<>());
+        List<Document> utenti = collection.find(eq("_id", usernameDaControllare)).into(new ArrayList<>());
         if (utenti.isEmpty()) {
             Document new_doc = new Document("Name", utente.getName())
                     .append("Surname", utente.getSurname())

@@ -3,17 +3,14 @@ package it.unipi.dii.aide.lsmd.readrumble.user;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "User")
+@Document(collection = "Users")
 public class User {
 
-    @Id
-    private String id;
-
+    private String _id;
     private String name;
     private String surname;
-    private String username;
-    private String password;
 
+    private String password;
 
     // Costruttori
 
@@ -21,21 +18,21 @@ public class User {
         // Costruttore vuoto necessario per MongoDB
     }
 
-    public User(String name, String surname, String username, String password) {
+    public User(String _id, String name, String surname) {
+        this._id = _id;
         this.name = name;
         this.surname = surname;
-        this.username = username;
         this.password = password;
     }
 
     // Getter e Setter
 
     public String getId() {
-        return id;
+        return _id;
     }
 
     public void setId(String id) {
-        this.id = id;
+        this._id = id;
     }
 
     public String getName() {
@@ -54,14 +51,6 @@ public class User {
         this.surname = surname;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -75,11 +64,13 @@ public class User {
     @Override
     public String toString() {
         return "Utente {" +
-                "id='" + id + '\'' +
+                "id='" + _id + '\'' +
                 ",  name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
                 '}';
+    }
+
+    public String getUsername() {
+        return _id;
     }
 }
