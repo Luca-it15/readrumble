@@ -46,7 +46,7 @@ public class MongoFullController {
      */
     @GetMapping("/10books")
     public List<Document> get10Books() {
-        MongoCollection<Document> Book_subCollection = MongoConfig.getCollection("Book_sub");
+        MongoCollection<Document> Book_subCollection = MongoConfig.getCollection("Books");
         List<Document> Book_subDocuments = Book_subCollection.find().limit(10).into(new ArrayList<>()); // Limita a 10 documenti
 
         if (Book_subDocuments.isEmpty()) { // La collezione è vuota
@@ -67,7 +67,7 @@ public class MongoFullController {
     @GetMapping("/books2")
     public List<Document> getBooks2() {
         //ritorna dieci libri a caso
-        MongoCollection<Document> collection = MongoConfig.getCollection("Book_sub");
+        MongoCollection<Document> collection = MongoConfig.getCollection("Books");
         List<Document> books = collection.find().into(new ArrayList<>());
         List<Document> selectedDocuments = new ArrayList<>();
         Random random = new Random();

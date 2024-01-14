@@ -9,7 +9,7 @@ public final class MongoConfig {
     private static final String protocol = "mongodb";
     private static final String hostname = "localhost";
     private static final String port = "27017";
-    private static final String dbName = "readrumbleDB";
+    private static final String dbName = "ReadRumbleDB";
     private static final String options = null;
     private static MongoClient conn = null;
 

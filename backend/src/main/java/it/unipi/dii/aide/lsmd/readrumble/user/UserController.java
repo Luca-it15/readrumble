@@ -35,7 +35,7 @@ public class UserController {
         String username = utente.getUsername();
         String password = utente.getPassword();
 
-        try (MongoCursor<Document> cursor = MongoConfig.getCollection("user")
+        try (MongoCursor<Document> cursor = MongoConfig.getCollection("Users")
                 .find(eq("Username", username)).iterator()) {
 
             if (cursor.hasNext()) {
@@ -66,7 +66,7 @@ public class UserController {
         String new_field = (String) changes.get("new_field");
         String type_of_change_request = (String) changes.get("type_of_change_request");
         String username_to_use = (String) changes.get("username_to_use");
-        MongoCollection<Document> collection = MongoConfig.getCollection("user");
+        MongoCollection<Document> collection = MongoConfig.getCollection("Users");
         if(collection.find(eq("Username", username_to_use)).cursor().hasNext())
         {
             if(type_of_change_request.equals("Username"))
@@ -103,7 +103,7 @@ public class UserController {
         String username = utente.getUsername();
         String password = utente.getPassword();
 
-        try (MongoCursor<Document> cursor = MongoConfig.getCollection("user")
+        try (MongoCursor<Document> cursor = MongoConfig.getCollection("Users")
                 .find(eq("Username", username)).iterator()) {
 
             if (cursor.hasNext()) {
@@ -132,7 +132,7 @@ public class UserController {
     public ResponseEntity<String> inserisciDati(@RequestBody User utente) {
         System.out.println(utente);
         String usernameDaControllare = utente.getUsername();
-        MongoCollection<Document> collection = MongoConfig.getCollection("user");
+        MongoCollection<Document> collection = MongoConfig.getCollection("Users");
         List<Document> utenti = collection.find(eq("Username", usernameDaControllare)).into(new ArrayList<>());
         if (utenti.isEmpty()) {
             Document new_doc = new Document("Name", utente.getName())

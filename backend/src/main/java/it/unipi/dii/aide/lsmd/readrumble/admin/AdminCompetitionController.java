@@ -23,7 +23,7 @@ public class AdminCompetitionController {
     @PostMapping("/delete")
     public ResponseEntity<String> deleteCompetition(@RequestBody Document params) {
         String CompName = (String) params.get("CompName");
-        MongoCollection<Document> collection = MongoConfig.getCollection("competition");
+        MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         MongoCursor<Document> competitions = collection.find(eq("Name", CompName)).cursor();
         if (competitions.hasNext()) {
             collection.deleteOne(eq("Name", CompName));
@@ -38,7 +38,7 @@ public class AdminCompetitionController {
     public ResponseEntity<String> addCompetition(@RequestBody Document params) {
         String CompName = (String) params.get("CompName");
         String CompTag = (String) params.get("CompTag");
-        MongoCollection<Document> collection = MongoConfig.getCollection("competition");
+        MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         MongoCursor<Document> competitions = collection.find(eq("Name", CompName)).cursor();
         if (competitions.hasNext()) {
             return ResponseEntity.ok("Competition Already Exists !");

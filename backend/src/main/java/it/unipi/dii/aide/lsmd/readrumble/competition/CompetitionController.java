@@ -29,7 +29,7 @@ public class CompetitionController {
         System.out.println(competitionTitle);
         Document userDocument = new Document(username, 0);
         String userField = "Users." + username;
-        MongoCollection<Document> collection = MongoConfig.getCollection("competition");
+        MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         //Document competitionFilter = new Document("Name", competitionTitle);
         Document competition = collection.find(eq("Name",competitionTitle)).first();
 
@@ -61,7 +61,7 @@ public class CompetitionController {
     @GetMapping("/retrieve/all")
     public List<Document> retrieveALlCompetitions()
     {
-        MongoCollection<Document> collection = MongoConfig.getCollection("competition");
+        MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         List<Document> competitions = collection.find().into(new ArrayList<Document>());
         System.out.println(competitions);
         return competitions;
@@ -69,7 +69,7 @@ public class CompetitionController {
     @PostMapping("/retrieve/personal")
     public List<Document> retrievePersonalCompetitions(@RequestBody String Username)
     {
-        MongoCollection<Document> collection = MongoConfig.getCollection("competition");
+        MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         List<Document> competitions = collection.find().into(new ArrayList<Document>());
         List<Document> results = new ArrayList<Document>();
         Integer i = 0;
@@ -94,7 +94,7 @@ public class CompetitionController {
     {
         String Name = (String) docx.get("CompetitionTitle");
         String Username = (String) docx.get("Username");
-        MongoCollection<Document> collection = MongoConfig.getCollection("competition");
+        MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         MongoCursor<Document> competition = collection.find(eq("Name",Name)).cursor();
         if(competition.hasNext())
         {
