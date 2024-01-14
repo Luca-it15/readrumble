@@ -31,9 +31,10 @@ const BookSelector = ({ handleChangeBookTitle }) => {
                 }));
                 const bookTags = response.data.map((book) => ({
                     value: book.tags,
-                    label: book.tags,
+                    label: book.bookName,
                 }));
                 setOptions(bookTitles);
+                console.log(bookTags); 
                 setTags(bookTags);
             })
             .catch((error) =>
@@ -43,7 +44,8 @@ const BookSelector = ({ handleChangeBookTitle }) => {
 
     const handleInputChange = (inputValue) => {
         setSelectedOption(inputValue);
-        handleChangeBookTitle(inputValue.value, tags);
+        console.log(  tags.find(tag => tag.label === inputValue.value).value); 
+        handleChangeBookTitle(inputValue.value, tags.find(tag => tag.label === inputValue.value).value);
     };
 
     return (

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Document(collection = "review")
+@Document(collection = "Review")
 public class ReviewDTO {
 
     @Id
@@ -17,10 +17,9 @@ public class ReviewDTO {
     private String username;
     private int numberOfPagesRead;
     private String review;
-    private double rating;
-    private List<String> tags;
-
+    private int rating;
     private Date date;
+    private List<String> tags;
 
     @Transient
     private String _class;
@@ -31,14 +30,14 @@ public class ReviewDTO {
     }
 
 
-    public ReviewDTO(String title, String username, int numberOfPagesRead, String review, double rating, Date date) {
+    public ReviewDTO(String title, String username, int numberOfPagesRead, String review, int rating, Date date, List<String> tags) {
         this.title = title;
         this.username = username;
         this.numberOfPagesRead = numberOfPagesRead;
         this.review = review;
         this.rating = rating;
         this.date = date;
-        this.tags = new ArrayList<>();
+        this.tags = tags;
     }
 
     public String getTitle() {
@@ -63,7 +62,7 @@ public class ReviewDTO {
     public Date getDate() {
         return date;
     }
-    public List<String>getTags() {return tags;}
+    public List<String> getTags() {return tags;}
 
     @Override
     public String toString() {
@@ -75,6 +74,7 @@ public class ReviewDTO {
                 ", review='" + review + '\'' +
                 ", rating='" + rating + '\'' +
                 ", data='" + date + '\'' +
+                ", tags='" + tags + '\'' +
                 '}';
     }
 }

@@ -38,8 +38,12 @@ public class ReviewController {
      * @return List<Review> include the first 10 review
      */
     @GetMapping("/all/{username}")
-    public List<ReviewDTO> getAllReviews(@PathVariable String username) {
+    public List<ReviewDTO> getAllReviewsUsers(@PathVariable String username) {
       return reviewDAO.allReviewUser(username);
+    }
+    @GetMapping("/all")
+    public List<ReviewDTO> getAllReviews() {
+        return reviewDAO.allReview();
     }
 
 

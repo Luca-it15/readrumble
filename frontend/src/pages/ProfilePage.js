@@ -1,9 +1,9 @@
 import React from 'react';
 import Profile from '../components/Profile';
-import BookList from './BookList';
 import {Container, Button, Grid, Typography} from '@mui/material';
 import ReviewsList from '../components/ReviewsList';
 import CompetitionProfBlock from '../components/CompetitionBlock';
+import BookListShow from '../components/BookListShow';
 var storedData = localStorage.getItem('logged_user');
 
 // Verifica se il valore è presente
@@ -60,7 +60,7 @@ const ProfilePage = () => {
                     <Typography variant="h4">Libri Preferiti</Typography>
                     <Typography variant="h4">Libri Letti</Typography>
                     <Typography variant="body1">10 libri a caso:</Typography>
-                    <BookList/>
+                    <BookListShow/>
                 </Grid>
             </Grid>
         </Container>

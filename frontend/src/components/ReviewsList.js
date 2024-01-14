@@ -21,14 +21,14 @@ const ReviewsList = () => {
   let username = user["Username"]; 
   useEffect(() => {
     // Sostituisci 'http://localhost:8080/reviews' con l'URL del tuo server
-    axios.get(`http://localhost:8080/api/review/all/${user["Username"]}`)
+    axios.get(`http://localhost:8080/api/review/all/${username}`)
       .then(response => {
         setReviews(response.data);
       })
       .catch(error => {
         console.error('There was an error!', error);
       });
-  }, []);
+  }, [username]);
 
   return (
     <div>

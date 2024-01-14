@@ -46,7 +46,7 @@ export default function ReviewForm() {
         review: '',
         rating: 0,
         date: "", 
-        tag: ""
+        tags: ""
     });
     
     const handleChange = (e) => {
@@ -63,7 +63,7 @@ export default function ReviewForm() {
         setFormData({
             ...formData,
             title: selectedTitle,
-            tag: tags
+            tags: selectedTags
         }); 
     }
 

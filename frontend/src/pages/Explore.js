@@ -1,48 +1,89 @@
-import React, { Component } from 'react';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
+import React, { useState } from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
+import ToggleButton from '@mui/material/ToggleButton'; 
+import ToggleButtonGroup from '@mui/material/ToggleButton'; 
+import '../App.css';
+import BookListShow from '../components/BookListShow';
+import SearchBar from '../components/SearchBar';
+import UserList from '../components/UserList';
+import ReviewsListAll from '../components/ReviewsListAll';
 
-class SearchBar extends Component {
-    render() {
+export default function Explore() {
+ const [value, setValue] = useState(0); 
+  
+
+  function getBook() {
+    setValue(0); 
+  }
+
+  function getReview() {
+    setValue(1); 
+  }
+
+  function getUser() {
+    setValue(2); 
+  }
+
+  const Choiche = ({value}) => {
+
+   if(value === 0) {
+    return(
+    <>   
+      <div className='choiche'>
+     <h3>Books</h3>
+      < BookListShow />
+      </div>
+     </>
+    ); 
+  }
+   else if(value === 1) {
+    return (
+     <>   
+           <div className='choiche'>
+      <h3>Reviews</h3>
+      < ReviewsListAll/>
+      </div>
+      </>
+       ); 
+     }
+    else {
         return (
-            <Box component="form" sx={{ display: 'flex', alignItems: 'center' }}>
-                <TextField type="text" placeholder="Cerca" variant="outlined" sx={{ mr: 2 }} />
-                <Button variant="contained" color="primary">Cerca</Button>
-            </Box>
-        );
-    }
-}
+            <>   
+             <div className='choiche'>
+             <h3>Users</h3>
+             <UserList />
+             </div>
+             </>
+        ); 
+     }
+   }
 
-class SearchResults extends Component {
-    render() {
-        return (
-            <Box sx={{ mt: 2 }}>
-                <Typography variant="h5">Risultati della ricerca:</Typography>
-                <List>
-                    <ListItem>Risultato 1</ListItem>
-                    <ListItem>Risultato 2</ListItem>
-                    <ListItem>Risultato 3</ListItem>
-                </List>
-            </Box>
-        );
-    }
-}
-
-class Explore extends Component {
-    render() {
         return (
             <Container>
-                <Typography variant="h3">Esplora</Typography>
+                <Typography variant="h2">Esplora</Typography>
                 <SearchBar />
-                <SearchResults />
+                <Container className='explore'>
+                <ToggleButtonGroup
+                    exclusive
+                    aria-label="explore"
+                    color={"primary"}
+                    size="large"
+                    role="group"
+                >
+                    <ToggleButton onClick={getBook} className='toggle' value="book" aria-label="book">
+                       <h4>Book</h4>
+                    </ToggleButton>
+                    <ToggleButton onClick={getReview} className='toggle' value="review" aria-label="review">
+                       <h4>Review</h4>
+                    </ToggleButton>
+                    <ToggleButton onClick={getUser} className='toggle' value="user" aria-label="user">
+                       <h4>User</h4>
+                    </ToggleButton>
+                </ToggleButtonGroup>
+                  <Choiche  value={value} />
+                </Container>
             </Container>
         );
-    }
-}
 
-export default Explore;
+}

@@ -34,7 +34,7 @@ const RatingStars = ({ onChange, readOnly, isStatic, star}) => {
   >
     <Rating
       name="hover-feedback"
-    value={isStatic ? value : star }
+    value={isStatic ? star : value }
       precision={0.5}
       getLabelText={getLabelText}
       readOnly = {readOnly}
@@ -45,7 +45,7 @@ const RatingStars = ({ onChange, readOnly, isStatic, star}) => {
       emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
     />
     {value !== null && (
-      <Box sx={{ ml: 2 }}>{labels[hover !== -1 ? hover : (isStatic? value : star)]}</Box>
+      <Box sx={{ ml: 2 }}>{labels[hover !== -1 ? hover : (isStatic? star : value)]}</Box>
     )}
   </Box>
 );

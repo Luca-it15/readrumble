@@ -61,7 +61,6 @@ public class MongoFullController {
         }
 
         System.out.println("Found " + books.size() + " books");
-
         return books;
     }
 

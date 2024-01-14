@@ -110,7 +110,6 @@ function timeout_text() {
 
             </Form>
             <Button className="buttonlogreg" onClick={GoLogin}>Login</Button>
-            <Button className="buttonlogreg" onClick={Quest}>Quest</Button>
             {validationError && (
                 <Alert variant="danger">
                     {validationError}

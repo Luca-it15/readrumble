@@ -1,35 +1,41 @@
 package it.unipi.dii.aide.lsmd.readrumble.user;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-public class UserDTO {
+@Document(collection = "User")
+public class User {
 
-    private String _id;
+    @Id
+    private String id;
+
     private String name;
     private String surname;
-
+    private String username;
+    private String password;
 
 
     // Costruttori
 
-    public UserDTO() {
+    public User() {
         // Costruttore vuoto necessario per MongoDB
     }
 
-    public UserDTO(String _id, String name, String surname) {
-        this._id = _id;
+    public User(String name, String surname, String username, String password) {
         this.name = name;
         this.surname = surname;
+        this.username = username;
+        this.password = password;
     }
 
     // Getter e Setter
 
     public String getId() {
-        return _id;
+        return id;
     }
 
     public void setId(String id) {
-        this._id = id;
+        this.id = id;
     }
 
     public String getName() {
@@ -48,17 +54,32 @@ public class UserDTO {
         this.surname = surname;
     }
 
+    public String getUsername() {
+        return username;
+    }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     // Altro
 
     @Override
     public String toString() {
         return "Utente {" +
-                "id='" + _id + '\'' +
+                "id='" + id + '\'' +
                 ",  name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
                 '}';
     }
 }

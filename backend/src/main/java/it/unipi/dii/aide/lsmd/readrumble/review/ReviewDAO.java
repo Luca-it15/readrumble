@@ -6,6 +6,8 @@ import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import org.bson.Document;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class ReviewDAO {
@@ -14,10 +16,12 @@ public class ReviewDAO {
     public String addReview(ReviewDTO review) {
         try {
             // Creazione di un oggetto Review a partire dai dati ricevuti dal frontend
-            MongoCollection<Document> collection = MongoConfig.getCollection("review");
+            MongoCollection<Document> collection = MongoConfig.getCollection("Review");
             System.out.println("recensione dal titolo: " + review.getTitle());
+            System.out.println(review.getTags());
+
             Document new_doc = new Document("title", review.getTitle())
-                    .append("username", review.getUsername())
+                    .append("_id", review.getUsername())
                     .append("numberOfPagesRead", review.getNumberOfPagesRead())
                     .append("review", review.getReview())
                     .append("rating", review.getRating())
@@ -26,7 +30,6 @@ public class ReviewDAO {
                     );
 
             collection.insertOne(new_doc);
-            MongoConfig.closeConnection();
             // Restituisci una risposta al frontend
             return "Recensione salvata con successo!";
         } catch (MongoException e) {
@@ -41,25 +44,51 @@ public class ReviewDAO {
     public List<ReviewDTO> allReviewUser(String username) {
         List<ReviewDTO> reviews = new ArrayList<>();
 
-        MongoCollection<Document> collection = MongoConfig.getCollection("review");
+        MongoCollection<Document> collection = MongoConfig.getCollection("Review");
 
         // Ottieni le prime 10 recensioni
-        Document query = new Document("username", username);
-        for (Document doc : collection.find(query).limit(10)) {
+        Document query = new Document("_id", username);
+        for (Document doc : collection.find(query).sort(new Document("date", -1)).limit(10)) {
+            List<String> arrayTags = (List<String>) doc.get("tags");
+
             ReviewDTO review = new ReviewDTO(
                     doc.getString("title"),
                     doc.getString("username"),
                     doc.getInteger("numberOfPagesRead"),
                     doc.getString("review"),
-                    doc.getDouble("rating"),
-                    doc.getDate("date")
+                    doc.getInteger("rating"),
+                    doc.getDate("date"),
+                    arrayTags
             );
             reviews.add(review);
         }
 
         // Chiudi il client MongoDB
-        MongoConfig.closeConnection();
+        return reviews;
+    }
 
+    public List<ReviewDTO> allReview() {
+        List<ReviewDTO> reviews = new ArrayList<>();
+
+        MongoCollection<Document> collection = MongoConfig.getCollection("Review");
+
+        // Ottieni le prime 10 recensioni
+        for (Document doc : collection.find().sort(new Document("date", -1)).limit(10)) {
+            List<String> arrayTags = (List<String>) doc.get("tags");
+
+            ReviewDTO review = new ReviewDTO(
+                    doc.getString("book_title"),
+                    doc.getString("username"),
+                    doc.getInteger("pages_read"),
+                    doc.getString("review_text"),
+                    doc.getInteger("rating"),
+                    doc.getDate("date"),
+                    arrayTags
+            );
+            reviews.add(review);
+        }
+
+        // Chiudi il client MongoDB
         return reviews;
     }
 }

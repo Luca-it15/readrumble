@@ -3,6 +3,7 @@ package it.unipi.dii.aide.lsmd.readrumble.user;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
+import it.unipi.dii.aide.lsmd.readrumble.review.ReviewDTO;
 import org.bson.Document;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,21 +20,31 @@ import static com.mongodb.client.model.Updates.set;
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
+    private UserDAO userDAO;
+    public UserController() {
+        userDAO = new UserDAO();
+    }
+
+    @PostMapping("/user/quest")
+    @ResponseBody
+    public ResponseEntity<String> quest() {
+        return ResponseEntity.ok("I'm Picking Up Good Vibrations");
+    }
     @PostMapping("/login")
-    public Document goLogin(@RequestBody UserDTO utente) {
+    public Document goLogin(@RequestBody User utente) {
         String username = utente.getUsername();
         String password = utente.getPassword();
-        System.out.println(username + " " + password);
-        System.out.println(utente);
-        try (MongoCursor<Document> cursor = MongoConfig.getCollection("User")
-                .find(eq("_id", username)).iterator()) {
+
+        try (MongoCursor<Document> cursor = MongoConfig.getCollection("user")
+                .find(eq("Username", username)).iterator()) {
 
             if (cursor.hasNext()) {
                 Document utente_registrato = cursor.next();
-                System.out.println(utente_registrato);
-                System.out.println(utente_registrato.get("_id"));
 
-                if (password.equals(utente_registrato.get("password"))) {
+                System.out.println(utente_registrato);
+                System.out.println(utente_registrato.get("Username"));
+
+                if (password.equals(utente_registrato.get("Password"))) {
                     return utente_registrato;
                 } else {
                     return null;
@@ -55,62 +66,51 @@ public class UserController {
         String new_field = (String) changes.get("new_field");
         String type_of_change_request = (String) changes.get("type_of_change_request");
         String username_to_use = (String) changes.get("username_to_use");
-        System.out.println("This is the type of change request " + type_of_change_request);
-        System.out.println("we are in change and this is your username " + username_to_use);
-        MongoCollection<Document> collection = MongoConfig.getCollection("User");
-        try(MongoCursor cursor = collection.find(eq("_id", username_to_use)).cursor())
+        MongoCollection<Document> collection = MongoConfig.getCollection("user");
+        if(collection.find(eq("Username", username_to_use)).cursor().hasNext())
         {
-            if(cursor.hasNext())
+            if(type_of_change_request.equals("Username"))
             {
-                if(type_of_change_request.equals("_id"))
+                if(collection.find(eq("Username",new_field)).cursor().hasNext())
                 {
-                    if(collection.find(eq("_id",new_field)).cursor().hasNext())
-                    {
-                        return ResponseEntity.ok("Username already in use");
-                    }
-                    else
-                    {
-                        collection.updateOne(eq("_id",username_to_use),set(type_of_change_request,new_field));
-                        collection.updateOne(eq("_id",username_to_use),set(type_of_change_request,new_field));
-                        String result = (String) type_of_change_request + " Changed from " + old_field + " To " + new_field;
-                        return ResponseEntity.ok(result);
-                    }
+                    return ResponseEntity.ok("Username already in use");
                 }
                 else
                 {
-                    collection.updateOne(eq("_id",username_to_use),set(type_of_change_request,new_field));
+                    collection.updateOne(eq("Username",username_to_use),set(type_of_change_request,new_field));
+                    collection.updateOne(eq("Username",username_to_use),set(type_of_change_request,new_field));
                     String result = (String) type_of_change_request + " Changed from " + old_field + " To " + new_field;
                     return ResponseEntity.ok(result);
                 }
-
             }
             else
             {
-                return ResponseEntity.ok("NOT FOUND");
+                collection.updateOne(eq("Username",username_to_use),set(type_of_change_request,new_field));
+                String result = (String) type_of_change_request + " Changed from " + old_field + " To " + new_field;
+                return ResponseEntity.ok(result);
             }
-        }
-        catch(Exception e)
-        {
-            System.err.println("Captured Exception: " + e.getMessage());
-            return ResponseEntity.ok("EXCEPTION IN SERVER");
-        }
 
+        }
+        else
+        {
+            return ResponseEntity.ok("NOT FOUND");
+        }
 
     }
 
     @PostMapping("/personalinfo")
-    public Document retrieveInfo(@RequestBody UserDTO utente) {
+    public Document retrieveInfo(@RequestBody User utente) {
         String username = utente.getUsername();
         String password = utente.getPassword();
 
-        try (MongoCursor<Document> cursor = MongoConfig.getCollection("User")
-                .find(eq("_id", username)).iterator()) {
+        try (MongoCursor<Document> cursor = MongoConfig.getCollection("user")
+                .find(eq("Username", username)).iterator()) {
 
             if (cursor.hasNext()) {
                 Document utente_registrato = cursor.next();
 
                 System.out.println(utente_registrato);
-                System.out.println(utente_registrato.get("_id"));
+                System.out.println(utente_registrato.get("Username"));
 
                 if (password.equals(utente_registrato.get("Password"))) {
                     return utente_registrato;
@@ -129,16 +129,16 @@ public class UserController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<String> inserisciDati(@RequestBody UserDTO utente) {
+    public ResponseEntity<String> inserisciDati(@RequestBody User utente) {
         System.out.println(utente);
         String usernameDaControllare = utente.getUsername();
-        MongoCollection<Document> collection = MongoConfig.getCollection("User");
-        List<Document> utenti = collection.find(eq("_id", usernameDaControllare)).into(new ArrayList<>());
+        MongoCollection<Document> collection = MongoConfig.getCollection("user");
+        List<Document> utenti = collection.find(eq("Username", usernameDaControllare)).into(new ArrayList<>());
         if (utenti.isEmpty()) {
-            Document new_doc = new Document("name", utente.getName())
-                    .append("surname", utente.getSurname())
-                    .append("_id", utente.getUsername())
-                    .append("password", utente.getPassword());
+            Document new_doc = new Document("Name", utente.getName())
+                    .append("Surname", utente.getSurname())
+                    .append("Username", utente.getUsername())
+                    .append("Password", utente.getPassword());
             collection.insertOne(new_doc);
             MongoConfig.closeConnection();
             return ResponseEntity.ok("Registration Succeded ! You will now be redirected to the Login page ! ");
@@ -146,5 +146,10 @@ public class UserController {
             MongoConfig.closeConnection();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already in use, please choose another one!");
         }
+    }
+
+    @GetMapping("/user/all")
+    public List<UserDTO> getAllReviews() {
+        return userDAO.allUser();
     }
 }
