@@ -53,7 +53,7 @@ function CompetitionSpecAdmin(){
 
     function deleteCompetition(Name){
 
-        const response = axios.post("http://localhost:8080/api/competition/delete",{
+        const response = axios.post("http://localhost:8080/api/admin/competition/delete",{
         CompName: Name
         })
         .then(response => {

@@ -53,7 +53,7 @@ const AddCompetition = () =>{
         try {
                 console.log(formData);
                 // Invia la richiesta HTTP qui usando axios
-                const response = await axios.post('http://localhost:8080/api/competition/add', formData);
+                const response = await axios.post('http://localhost:8080/api/admin/competition/add', formData);
                 // Gestisci la risposta qui
 
                 console.log(response.data);

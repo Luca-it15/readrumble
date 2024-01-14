@@ -3,6 +3,7 @@ package it.unipi.dii.aide.lsmd.readrumble;
 
 import com.mongodb.client.*;
 import it.unipi.dii.aide.lsmd.readrumble.competition.CompetitionController;
+import it.unipi.dii.aide.lsmd.readrumble.admin.AdminCompetitionController;
 import it.unipi.dii.aide.lsmd.readrumble.library.ActiveBookController;
 import it.unipi.dii.aide.lsmd.readrumble.review.ReviewController;
 import it.unipi.dii.aide.lsmd.readrumble.user.UserController;
@@ -23,12 +24,14 @@ public class MongoFullController {
 
     private final UserController userController;
     private final CompetitionController competitionController;
+    private final AdminCompetitionController adminCompetitionController;
     private final ReviewController reviewController;
     private final ActiveBookController libraryController;
     @Autowired
-    public MongoFullController(UserController userController, CompetitionController competitionController, ReviewController reviewController, ActiveBookController libraryController) {
+    public MongoFullController(UserController userController, CompetitionController competitionController, ReviewController reviewController, ActiveBookController libraryController, AdminCompetitionController adminCompetitionController) {
         this.userController = userController;
         this.competitionController = competitionController;
+        this.adminCompetitionController = adminCompetitionController;
         this.reviewController = reviewController;
         this.libraryController = libraryController;
     }
