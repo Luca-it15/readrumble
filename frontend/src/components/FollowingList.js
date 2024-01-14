@@ -24,8 +24,6 @@ function FollowingList({user}) {
 
     const [displayCount, setDisplayCount] = useState(10);
 
-    following = ['Pinco', 'Pallino', 'Pippo', 'Pluto', 'Paperino', 'Paperone']
-
     const style = {
         py: 0,
         width: '100%',
