@@ -36,19 +36,17 @@ const ProfilePage = () => {
 
     return (
         <Container maxWidth="xl">
-            <Grid container spacing={3} direction="row" alignItems="center" justifyContent="center">
-                <Grid item xs={6} md={4}>
-                    <Paper elevation={3} style={{backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '10px'}}>
-                        <Profile {...user} />
-                    </Paper>
-                </Grid>
-                <Grid item xs={6} md={4}>
-                    <Paper elevation={3} style={{backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '10px'}}>
+            <Paper elevation={3} style={{backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '10px', width: '90vw'}}>
+                <Grid container direction="row" alignItems="center" justifyContent="space-around">
+                    <Grid item xs={6} md={4}>
+                            <Profile {...user} />
+                    </Grid>
+                    <Grid item xs={6} md={4}>
                         <Button variant="contained" onClick={goSettings}>Settings</Button>
                         <Button variant="contained" onClick={goDashboard}>Dashboard</Button>
-                    </Paper>
+                    </Grid>
                 </Grid>
-            </Grid>
+            </Paper>
             <Grid container spacing={3} textAlign="center">
                 <Grid item xs={4} md={4}>
                     <Paper elevation={3} style={{backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '10px'}}>
