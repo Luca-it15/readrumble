@@ -1,16 +1,20 @@
-import { Avatar } from '@mui/material';
+import {Avatar, Grid} from '@mui/material';
 import React from 'react';
+import Typography from "@mui/material/Typography";
 
 const Profile = (props) => {
-  return (
-    <div>
-      <h1>Profilo Utente</h1>
-      <Avatar alt="users" src="../img/avatar.png" />
-      <p>Name: <strong>{props.name}</strong></p>
-      <p>Surname: <strong>{props.surname}</strong></p>
-      <p>Username: <strong>{props._id}</strong></p>
-    </div>
-  );
+    return (
+        <Grid container direction="row" alignItems="center" justifyContent="center">
+            <Grid item xs={6} md={4}>
+                <Avatar alt="users" src="../img/avatar.png" style={{ width: '100px', height: '100px'}}/>
+            </Grid>
+            <Grid item xs={6} md={4}>
+                <Typography variant="h4" fontWeight="bold">{props._id}</Typography>
+                <Typography>Name: <strong>{props.name}</strong></Typography>
+                <Typography>Surname: <strong>{props.surname}</strong></Typography>
+            </Grid>
+        </Grid>
+    );
 }
 
 export default Profile;

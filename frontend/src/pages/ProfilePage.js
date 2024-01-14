@@ -1,20 +1,27 @@
 import React from 'react';
 import Profile from '../components/Profile';
-import BookList from '../components/BookList';
+import FavoriteBookList from '../components/FavoriteBookList';
 import FollowingList from '../components/FollowingList';
-import {Container, Button, Grid, Typography, Paper} from '@mui/material';
+import {Container, Grid, Typography, Paper} from '@mui/material';
+import Button from '@mui/material-next/Button';
 import ReviewsList from '../components/ReviewsList';
 import CompetitionProfBlock from '../components/CompetitionBlock';
 import BookListShow from '../components/BookListShow';
-var storedData = localStorage.getItem('logged_user');
+import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';
+import LeaderboardTwoToneIcon from '@mui/icons-material/LeaderboardTwoTone';
+import EditNoteTwoToneIcon from '@mui/icons-material/EditNoteTwoTone';
+import {blue} from "@mui/material/colors";
+
+var currentUser = localStorage.getItem('logged_user');
 
 // Verifica se il valore è presente
-if (storedData) {
+if (currentUser) {
     // Il valore è presente, lo converte da stringa JSON a oggetto JavaScript
-    var user = JSON.parse(storedData);
+    currentUser = JSON.parse(currentUser);
 
     // Ora puoi utilizzare la variabile 'isLoggedIn' come desideri
-    console.log(user["name"]);
+    console.log(currentUser["name"]);
+    console.log(currentUser["_id"]);
 } else {
     // La chiave 'isLoggedIn' non è presente in localStorage
     console.log('La chiave "logged_user" non è presente in localStorage.');
@@ -32,49 +39,65 @@ function goReview() {
     return window.location.href = "http://localhost:3000/review";
 }
 
+const PaperStyle = {
+    backgroundColor: '#f1f7fa',
+    padding: '10px',
+    margin: '10px',
+    borderRadius: 18,
+    width: '100%'
+}
+
 const ProfilePage = () => {
 
     return (
         <Container maxWidth="xl">
-            <Paper elevation={3} style={{backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '10px', width: '90vw'}}>
-                <Grid container direction="row" alignItems="center" justifyContent="space-around">
+            <Paper elevation={2} style={PaperStyle}>
+                <Grid container direction="row" justifyContent="space-around">
                     <Grid item xs={6} md={4}>
-                            <Profile {...user} />
+                        <Profile {...currentUser} />
                     </Grid>
-                    <Grid item xs={6} md={4}>
-                        <Button variant="contained" onClick={goSettings}>Settings</Button>
-                        <Button variant="contained" onClick={goDashboard}>Dashboard</Button>
+                    <Grid container xs={6} direction="column" alignItems="center" justifyContent="space-around">
+                        <Button sx={{backgroundColor: blue[200], '&:hover': {backgroundColor: blue[100]}}}
+                                variant="filledTonal" onClick={goSettings} startIcon={<SettingsTwoToneIcon/>}>
+                            <Typography>Settings</Typography>
+                        </Button>
+                        <Button sx={{backgroundColor: blue[200], '&:hover': {backgroundColor: blue[100]}}}
+                                variant="filledTonal" onClick={goDashboard} startIcon={<LeaderboardTwoToneIcon/>}>
+                            <Typography>Dashboard</Typography>
+                        </Button>
                     </Grid>
                 </Grid>
             </Paper>
             <Grid container spacing={3} textAlign="center">
                 <Grid item xs={4} md={4}>
-                    <Paper elevation={3} style={{backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '10px'}}>
-                    <Typography variant="h4">Users you follow</Typography>
-                        <FollowingList/>
+                    <Paper elevation={2} style={PaperStyle}>
+                        <Typography variant="h4">Users you follow</Typography>
+                        <FollowingList user={currentUser['_id']}/>
                     </Paper>
-                    <Paper elevation={3} style={{backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '10px'}}>
-                    <Typography variant="h4">Competizioni</Typography>
-                        <CompetitionProfBlock />
+                    <Paper elevation={2} style={PaperStyle}>
+                        <Typography variant="h4">Competitions</Typography>
+                        <CompetitionProfBlock/>
                     </Paper>
                 </Grid>
                 <Grid item xs={4} md={4}>
-                    <Paper elevation={3} style={{backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '10px'}}>
-                    <Typography variant="h4">Post</Typography>
-                    <Button variant="contained" onClick={goReview}>
-                        Make Review
-                    </Button>
+                    <Paper elevation={2} style={PaperStyle}>
+                        <Typography variant="h4">Post</Typography>
+                        <Button sx={{backgroundColor: blue[200], '&:hover': {backgroundColor: blue[100]}}}
+                                variant="filledTonal" onClick={goReview} startIcon={<EditNoteTwoToneIcon/>}>
+                            <Typography>Make a post</Typography>
+                        </Button>
+                        {/* TODO (Luca o anche Francesco): aggiungere parametro user a ReviewList e gestirlo lì */}
                         <ReviewsList/>
                     </Paper>
                 </Grid>
                 <Grid item xs={4} md={4}>
-                    <Paper elevation={3} style={{backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '10px'}}>
-                    <Typography variant="h4">Your favorite boooks</Typography>
-                        <BookList/>
+                    <Paper elevation={2} style={PaperStyle}>
+                        <Typography variant="h4">Your favorite books</Typography>
+                        <FavoriteBookList user={currentUser['_id']}/>
                     </Paper>
-                    <Paper elevation={3} style={{backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '10px'}}>
-                    <Typography variant="h4">Libri Letti</Typography>
-                    <Typography variant="body1">10 libri a caso:</Typography>
+                    <Paper elevation={2} style={PaperStyle}>
+                        <Typography variant="h4">Books you have read</Typography>
+                        <Typography>10 random books:</Typography>
                         <BookListShow/>
                     </Paper>
                 </Grid>

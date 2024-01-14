@@ -7,10 +7,8 @@ import axios from 'axios';
 import Chart from 'chart.js/auto';
 import { Navigate } from "react-router-dom";
 
-var storedData = localStorage.getItem('logged_user')
-if (storedData) {
-    var user = JSON.parse(storedData);
-} else {
+var currentUser = JSON.parse(localStorage.getItem('logged_user'));
+if (!currentUser) {
     console.log('La chiave "logged_user" non è presente in localStorage.');
     // Redirect to login
     <Navigate to="/login" />;
@@ -77,8 +75,8 @@ const Dashboard = () => {
         <div>
             <AppBar position="static">
                 <Toolbar>
-                    <Typography variant="h6">
-                        {user['Name']}'s dashboard
+                    <Typography variant="h5">
+                        {currentUser['_id']}'s dashboard
                     </Typography>
                 </Toolbar>
             </AppBar>

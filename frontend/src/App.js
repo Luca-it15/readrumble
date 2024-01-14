@@ -27,14 +27,15 @@ import AddCompetition from './pages/admin/AddCompetition';
 import CompetitionSpecAdmin from './pages/admin/CompetitionSpecAdmin';
 import UserAdmin from './pages/admin/UserAdmin';
 import ReviewAdmin from './pages/admin/ReviewAdmin';
+import OtherUserProfile from './pages/OtherUserProfile';
 
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(
         JSON.parse(localStorage.getItem('isLoggedIn')) || false
     );
     const [isAdmin, setIsAdmin] = useState(
-            JSON.parse(localStorage.getItem('isAdmin')) || false
-        );
+        JSON.parse(localStorage.getItem('isAdmin')) || false
+    );
 
     const handleLogin = () => {
         setIsLoggedIn(true);
@@ -46,119 +47,124 @@ const App = () => {
         localStorage.removeItem('logged_user');
         localStorage.removeItem('isAdmin');
     };
-    
-
 
     return (
         <BrowserRouter>
             <Container fluid="false">
                 <Row>
                     <Col>
-                        {isLoggedIn ? (isAdmin?
-                             (<AdminLayout>
-                                 <Routes>
+                        {isLoggedIn ? (isAdmin ?
+                            (<AdminLayout>
+                                <Routes>
                                     <Route
                                         path="/logout"
                                         element={<Logout onLogout={handleLogout}/>}
                                     />
-                                  <Route
+                                    <Route
                                         exact
                                         path="/dashboard"
                                         element={
                                             <DashboardAdmin/>}
-                                 />
-                                 <Route
+                                    />
+                                    <Route
                                         path="/admin_book"
                                         element={
                                             <BookAdmin/>}
-                                 />
-                                 <Route
+                                    />
+                                    <Route
                                         path="/admin_competition"
                                         element={
                                             <CompetitionAdmin/>}
-                                 />
-                                 <Route
+                                    />
+                                    <Route
                                         path="/admin_competition/:name"
                                         element={
                                             <CompetitionSpecAdmin/>}
-                                 />
-                                 <Route
+                                    />
+                                    <Route
                                         path="/admin_competition/add_comp"
                                         element={
                                             <AddCompetition/>}
-                                 />
-                                 <Route
+                                    />
+                                    <Route
                                         path="/admin_user"
                                         element={
                                             <UserAdmin/>}
-                                 />
-                                 <Route
+                                    />
+                                    <Route
                                         path="/admin_review"
                                         element={
                                             <ReviewAdmin/>}
-                                 />
-                               </Routes>
-                            </AdminLayout>) : ( 
-                            <AuthenticationLayout>
-                                <Routes>
-                                    <Route
-                                        exact
-                                        path="/dashboard"
-                                        element={
-                                            isLoggedIn ? <Home/> : <Navigate to="/"/>
-                                        }
                                     />
-                                    <Route
-                                        path="/explore"
-                                        element={
-                                            isLoggedIn ? <Explore/> : <Navigate to="/"/>
-                                        }
-                                    />
-                                    <Route
-                                        path="/settings"
-                                        element={
-                                            isLoggedIn ? <UserSettings/> : <Navigate to="/"/>
-                                        }
-                                    />
-                                    <Route
-                                        path="/profile"
-                                        element={
-                                            isLoggedIn ? (<ProfilePage/>) : <Navigate to="/" />
-                                        }
-                                    />
-
-                                    <Route
-                                        path="/review"
-                                        element={
-                                            isLoggedIn ? (<ReviewForm/>) : <Navigate to="/" />
-                                        }
-                                    />
-                                    <Route
-                                        path="/logout"
-                                        element={<Logout onLogout={handleLogout}/>}
-                                    />
-                                    <Route
-                                        path="/userDashboard"
-                                        element={
-                                            isLoggedIn ? <Dashboard/> : <Navigate to="/"/>
-                                        }
-                                    />
-                                    <Route
-                                        path="/competitions"
-                                        element={
-                                            isLoggedIn ? <CompetitionPage/> : <Navigate to="/"/>
-                                        }
-                                    />
-                                    <Route
-                                        path="/competition/:name"
-                                        element={
-                                            isLoggedIn ? <CompetitionSpec /> : <Navigate to="/"/>
-                                        }
-                                    />
-                                    <Route path="*" element={<Error/>}/>
                                 </Routes>
-                            </AuthenticationLayout>
-                        )) : (
+                            </AdminLayout>) : (
+                                <AuthenticationLayout>
+                                    <Routes>
+                                        <Route
+                                            exact
+                                            path="/dashboard"
+                                            element={
+                                                isLoggedIn ? <Home/> : <Navigate to="/"/>
+                                            }
+                                        />
+                                        <Route
+                                            path="/explore"
+                                            element={
+                                                isLoggedIn ? <Explore/> : <Navigate to="/"/>
+                                            }
+                                        />
+                                        <Route
+                                            path="/settings"
+                                            element={
+                                                isLoggedIn ? <UserSettings/> : <Navigate to="/"/>
+                                            }
+                                        />
+                                        <Route
+                                            path="/profile"
+                                            element={
+                                                isLoggedIn ? (<ProfilePage/>) : <Navigate to="/"/>
+                                            }
+                                        />
+                                        <Route
+                                            /* !!! UNTESTED !!! */
+                                            path="/user/:username"
+                                            render={({match}) => (
+                                                isLoggedIn ? <OtherUserProfile user={match.params.username}/> :
+                                                    <Navigate to="/"/>
+                                            )}
+                                        />
+                                        <Route
+                                            path="/review"
+                                            element={
+                                                isLoggedIn ? (<ReviewForm/>) : <Navigate to="/"/>
+                                            }
+                                        />
+                                        <Route
+                                            path="/logout"
+                                            element={<Logout onLogout={handleLogout}/>}
+                                        />
+                                        <Route
+                                            path="/userDashboard"
+                                            element={
+                                                isLoggedIn ? <Dashboard/> : <Navigate to="/"/>
+                                            }
+                                        />
+                                        <Route
+                                            path="/competitions"
+                                            element={
+                                                isLoggedIn ? <CompetitionPage/> : <Navigate to="/"/>
+                                            }
+                                        />
+                                        <Route
+                                            path="/competition/:name"
+                                            element={
+                                                isLoggedIn ? <CompetitionSpec/> : <Navigate to="/"/>
+                                            }
+                                        />
+                                        <Route path="*" element={<Error/>}/>
+                                    </Routes>
+                                </AuthenticationLayout>
+                            )) : (
                             <GuestLayout>
                                 <Routes>
                                     <Route
@@ -173,8 +179,8 @@ const App = () => {
                                 </Routes>
                             </GuestLayout>
                         )}
-                     </Col>
-                  </Row>
+                    </Col>
+                </Row>
             </Container>
         </BrowserRouter>
     );

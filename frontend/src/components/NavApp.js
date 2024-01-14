@@ -6,8 +6,9 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Box } from '@mui/system';
-import { Button } from '@mui/material';
+import Button from '@mui/material-next/Button';
 import logo from '../img/logoRR.png';
+import {red} from "@mui/material/colors";
 
 const NavApp = () => {
     return (
@@ -17,17 +18,17 @@ const NavApp = () => {
                     <img src={logo} alt="Logo" width="60" height="60" className="d-inline-block me-2"/>
                     ReadRumble
                 </Typography>
-                    <Button color="inherit" component={NavLink} to="/dashboard" exact>
-                        Home
+                    <Button sx={{color: '#ffffff'}} component={NavLink} to="/dashboard" exact>
+                        <Typography>Home</Typography>
                     </Button>
-                    <Button color="inherit" component={NavLink} to="/explore">
-                        Explore
+                    <Button sx={{color: '#ffffff'}} component={NavLink} to="/explore">
+                        <Typography>Explore</Typography>
                     </Button>
-                    <Button color="inherit" component={NavLink} to="/profile">
-                        Profile
+                    <Button sx={{color: '#ffffff'}} component={NavLink} to="/profile">
+                        <Typography>Profile</Typography>
                     </Button>
-                    <Button color="warning" component={NavLink} to="/logout">
-                        Logout
+                    <Button sx={{color: red[200], border: "2px solid", width: "80px", height: "30px"}} variant="outlined" component={NavLink} to="/logout">
+                        <Typography>Logout</Typography>
                     </Button>
             </Toolbar>
         </AppBar>

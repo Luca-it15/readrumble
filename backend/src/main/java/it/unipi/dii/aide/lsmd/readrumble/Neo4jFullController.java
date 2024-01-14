@@ -2,10 +2,15 @@ package it.unipi.dii.aide.lsmd.readrumble;
 
 import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
 import org.neo4j.driver.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
+// !!! UNTESTED !!!
+// A parte favoriteBooks, che funziona
 
 @RestController
 @RequestMapping("/api")
@@ -32,6 +37,45 @@ public class Neo4jFullController {
     }
 
     /**
+     * This method creates the relation :FOLLOWS from follower to followee
+     *
+     * @param follower the username of the follower
+     * @param followee the username of the "soon to be" followed
+     * @return a ResponseEntity with the result of the operation
+     */
+    @PostMapping("/follow/{follower}/{followee}")
+    public ResponseEntity<String> follow(@PathVariable String follower, @PathVariable String followee) {
+        try (Session session = Neo4jConfig.getSession()) {
+            session.run("MERGE (a:User {name: $follower}) " +
+                            "MERGE (b:User {name: $followee}) " +
+                            "MERGE (a)-[r:FOLLOWS]->(b)",
+                    Values.parameters("follower", follower, "followee", followee));
+            return ResponseEntity.ok("Follow operation successful.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Follow operation failed: " + e.getMessage());
+        }
+    }
+
+    /**
+     * This method deletes the relation :FOLLOWS from follower to followee
+     *
+     * @param follower the username of the follower
+     * @param followee the username of the "soon to be" unfollowed
+     * @return a ResponseEntity with the result of the operation
+     */
+    @DeleteMapping("/unfollow/{follower}/{followee}")
+    public ResponseEntity<String> unfollow(@PathVariable String follower, @PathVariable String followee) {
+        try (Session session = Neo4jConfig.getSession()) {
+            session.run("MATCH (a:User {name: $follower})-[r:FOLLOWS]->(b:User {name: $followee}) " +
+                            "DELETE r",
+                    Values.parameters("follower", follower, "followee", followee));
+            return ResponseEntity.ok("Unfollow operation successful.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unfollow operation failed: " + e.getMessage());
+        }
+    }
+
+    /**
      * This method returns the favorite books of a user
      *
      * @param username the username of the user
@@ -40,22 +84,47 @@ public class Neo4jFullController {
     @GetMapping("/favoriteBooks")
     public List<String> getFavoriteBooks(@RequestParam String username) {
         try (Session session = Neo4jConfig.getSession()) {
-            // Controlla se l'username esiste
+            // Control if the username exists
             Result userExists = session.run("MATCH (u:User {name: $username}) RETURN u",
                     Values.parameters("username", username));
             if (!userExists.hasNext()) {
                 throw new RuntimeException("Username " + username + " non esiste nel grafo.");
             }
 
-            // Se l'username esiste, procedi con la query originale
+            // If the username exists, proceed with the query
             Result result = session.run("MATCH (u:User {name: $username})-[:FAVORS]->(b:Book) RETURN b.title AS favorite_books",
                     Values.parameters("username", username));
             List<String> favoriteBooks = new ArrayList<>();
             while (result.hasNext()) {
-                // aggiungi virgolette per evitare problemi con i titoli dei libri
+                // Add double quotes to the book title to avoid problems with the frontend
                 favoriteBooks.add("\"" + result.next().get("favorite_books").asString() + "\"");
             }
             return favoriteBooks;
+        }
+    }
+
+    /**
+     * This method removes a book from the favorite books of a user
+     *
+     * @param username the username of the user
+     * @return a ResponseEntity with the result of the operation
+     */
+    @DeleteMapping("/removeFavoriteBook/{username}/{book}")
+    public ResponseEntity<String> removeFavoriteBook(@PathVariable String username, @PathVariable String book) {
+        try (Session session = Neo4jConfig.getSession()) {
+            // Control if the username exists
+            Result userExists = session.run("MATCH (u:User {name: $username}) RETURN u",
+                    Values.parameters("username", username));
+            if (!userExists.hasNext()) {
+                throw new RuntimeException("Username " + username + " non esiste nel grafo.");
+            }
+
+            // If the username exists, proceed with the removing of the book
+            session.run("MATCH (u:User {name: $username})-[r:FAVORS]->(b:Book {title: $book}) DELETE r",
+                    Values.parameters("username", username, "book", book));
+            return ResponseEntity.ok("Remove favorite book operation successful.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Remove favorite book operation failed: " + e.getMessage());
         }
     }
 
