@@ -18,7 +18,7 @@ const FormForAll = ({prop}) => {
         old_field: '',
         new_field: '',
         type_of_change_request: prop.name,
-        username_to_use: prop.Username,
+        username_to_use: prop._id,
 
     });
 
@@ -47,12 +47,6 @@ const FormForAll = ({prop}) => {
             return;
         }
 
-
-        if (formData.type_of_change_request === "Username" && formData.old_field !== formData.username_to_use) {
-            setValidationError('Current Usernames do not correspond');
-            timeout_text();
-            return;
-        }
         try {
             console.log(formData);
 
@@ -70,12 +64,10 @@ const FormForAll = ({prop}) => {
 
                 var user = JSON.parse(storedData);
 
-                if(response.data !== "Username already in use")
-                {
-                    user[prop.name] = formData.new_field
-                    localStorage.setItem('logged_user', JSON.stringify(user));
-                    setTimeout(function(){window.location.reload()},500);
-                }
+                user[prop.name] = formData.new_field
+                localStorage.setItem('logged_user', JSON.stringify(user));
+                setTimeout(function(){window.location.reload()},500);
+
 
             } else {
 

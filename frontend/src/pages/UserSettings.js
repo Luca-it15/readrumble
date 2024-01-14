@@ -25,7 +25,6 @@ if (storedData) {
 const UserSettings = () => {
     const [selectedForm, setSelectedForm] = useState(null);
 
-    var obj1 = {"name": "_id", "_id": user["_id"]};
     var obj2 = {"name": "name", "_id": user["_id"]};
     var obj3 = {"name": "surname", "_id": user["_id"]};
     var obj4 = {"name": "password", "_id": user["_id"]};
@@ -40,9 +39,6 @@ const UserSettings = () => {
                     aria-label="form selection"
                     color={"primary"}
                 >
-                    <ToggleButton value="_id" aria-label="change username">
-                        Change Username
-                    </ToggleButton>
                     <ToggleButton value="name" aria-label="change name">
                         Change Name
                     </ToggleButton>
@@ -55,7 +51,6 @@ const UserSettings = () => {
                 </ToggleButtonGroup>
             </Grid>
             <Grid item xs={12} sm={8} md={6}>
-                {selectedForm === 'username' && <FormForAll prop={obj1}/>}
                 {selectedForm === 'name' && <FormForAll prop={obj2}/>}
                 {selectedForm === 'surname' && <FormForAll prop={obj3}/>}
                 {selectedForm === 'password' && <FormForAll prop={obj4}/>}

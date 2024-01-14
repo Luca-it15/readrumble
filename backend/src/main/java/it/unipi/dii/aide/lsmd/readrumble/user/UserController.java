@@ -55,36 +55,46 @@ public class UserController {
         String new_field = (String) changes.get("new_field");
         String type_of_change_request = (String) changes.get("type_of_change_request");
         String username_to_use = (String) changes.get("username_to_use");
-        System.out.println(username_to_use);
+        System.out.println("This is the type of change request " + type_of_change_request);
+        System.out.println("we are in change and this is your username " + username_to_use);
         MongoCollection<Document> collection = MongoConfig.getCollection("User");
-        if(collection.find(eq("_id", username_to_use)).cursor().hasNext())
+        try(MongoCursor cursor = collection.find(eq("_id", username_to_use)).cursor())
         {
-            if(type_of_change_request.equals("_id"))
+            if(cursor.hasNext())
             {
-                if(collection.find(eq("_id",new_field)).cursor().hasNext())
+                if(type_of_change_request.equals("_id"))
                 {
-                    return ResponseEntity.ok("Username already in use");
+                    if(collection.find(eq("_id",new_field)).cursor().hasNext())
+                    {
+                        return ResponseEntity.ok("Username already in use");
+                    }
+                    else
+                    {
+                        collection.updateOne(eq("_id",username_to_use),set(type_of_change_request,new_field));
+                        collection.updateOne(eq("_id",username_to_use),set(type_of_change_request,new_field));
+                        String result = (String) type_of_change_request + " Changed from " + old_field + " To " + new_field;
+                        return ResponseEntity.ok(result);
+                    }
                 }
                 else
                 {
                     collection.updateOne(eq("_id",username_to_use),set(type_of_change_request,new_field));
-                    collection.updateOne(eq("_id",username_to_use),set(type_of_change_request,new_field));
                     String result = (String) type_of_change_request + " Changed from " + old_field + " To " + new_field;
                     return ResponseEntity.ok(result);
                 }
+
             }
             else
             {
-                collection.updateOne(eq("_id",username_to_use),set(type_of_change_request,new_field));
-                String result = (String) type_of_change_request + " Changed from " + old_field + " To " + new_field;
-                return ResponseEntity.ok(result);
+                return ResponseEntity.ok("NOT FOUND");
             }
-
         }
-        else
+        catch(Exception e)
         {
-            return ResponseEntity.ok("NOT FOUND");
+            System.err.println("Captured Exception: " + e.getMessage());
+            return ResponseEntity.ok("EXCEPTION IN SERVER");
         }
+
 
     }
 
