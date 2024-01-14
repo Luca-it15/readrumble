@@ -5,7 +5,7 @@ import org.neo4j.driver.*;
 public final class Neo4jConfig {
     private static final String URI = "bolt://localhost:7687";
     private static final String USERNAME = "neo4j";
-    private static final String PASSWORD = "password1";
+    private static final String PASSWORD = "password";
     private static final String DATABASE = "readrumble";
     private static Driver conn = null;
 
