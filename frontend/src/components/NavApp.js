@@ -3,9 +3,6 @@ import { NavLink } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import { Box } from '@mui/system';
 import Button from '@mui/material-next/Button';
 import logo from '../img/logoRR.png';
 import {red} from "@mui/material/colors";
@@ -27,7 +24,7 @@ const NavApp = () => {
                     <Button sx={{color: '#ffffff'}} component={NavLink} to="/profile">
                         <Typography>Profile</Typography>
                     </Button>
-                    <Button sx={{color: red[200], border: "2px solid", width: "80px", height: "30px"}} variant="outlined" component={NavLink} to="/logout">
+                    <Button sx={{color: "#ffffff", backgroundColor: red[300], width: "70px", height: "25px"}} variant="filled" component={NavLink} to="/logout">
                         <Typography>Logout</Typography>
                     </Button>
             </Toolbar>

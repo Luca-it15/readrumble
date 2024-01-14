@@ -12,17 +12,19 @@ import {blue, red} from "@mui/material/colors";
 
 let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
-// Check se following è vuoto
-if (currentUser['following'] === undefined) {
-    currentUser['following'] = [];
-}
-
 function FollowingList({user}) {
+    // Check se following è vuoto
+    if (currentUser['following'] === undefined) {
+        currentUser['following'] = [];
+    }
+
     // if user is current user, then show currentUser['following'], otherwise will fetch the user's following list
     var initialFollowing = (user === currentUser['_id']) ? currentUser['following'] : [];
     var [following, setFollowing] = useState(initialFollowing);
 
     const [displayCount, setDisplayCount] = useState(10);
+
+    following = ['Pinco', 'Pallino', 'Pippo', 'Pluto', 'Paperino', 'Paperone']
 
     const style = {
         py: 0,

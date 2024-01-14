@@ -7,10 +7,18 @@ import { Divider, List, ListItem, Tooltip } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemoveTwoTone';
 import {blue, red} from "@mui/material/colors";
+import {Navigate} from "react-router-dom";
 
-let currentUser = JSON.parse(localStorage.getItem('logged_user'));
+let currentUser = localStorage.getItem('logged_user');
+if (!currentUser) {
+    console.log('La chiave "logged_user" non è presente in localStorage.');
+    // Redirect to login
+    <Navigate to="/login" />;
+}
 
 function FavoriteBookList({user}) {
+    currentUser = JSON.parse(localStorage.getItem('logged_user'));
+
     const [books, setBooks] = useState([]);
     const [displayCount, setDisplayCount] = useState(10);
 
@@ -28,7 +36,7 @@ function FavoriteBookList({user}) {
 
     const fetchBooks = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/favoriteBooks?username=${currentUser["_id"]}`);
+            const response = await axios.get(`http://localhost:8080/api/favoriteBooks?username=${user}`);
             console.log("Received: " + response.data);
 
             setBooks(JSON.parse(`[${response.data}]`).map(book => book.replace(/"/g, '')));

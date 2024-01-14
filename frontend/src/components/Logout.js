@@ -1,6 +1,8 @@
 import React from 'react';
-import Button from '@mui/material/Button';
+import Button from '@mui/material-next/Button';
 import Box from '@mui/material/Box';
+import {red} from "@mui/material/colors";
+import Typography from "@mui/material/Typography";
 
 const Logout = ({onLogout}) => {
     const handleLogout = () => {
@@ -19,8 +21,8 @@ const Logout = ({onLogout}) => {
                 height: '20vh',
             }}
         >
-            <Button variant="contained" color="primary" onClick={handleLogout}>
-                Logout
+            <Button sx={{backgroundColor: red[300], color: "#ffffff"}} variant="contained" color="primary" onClick={handleLogout}>
+                <Typography>Logout</Typography>
             </Button>
         </Box>
     );
