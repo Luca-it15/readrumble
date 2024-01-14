@@ -58,6 +58,11 @@
 			<artifactId>mongodb-driver-sync</artifactId>
 			<version>4.11.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.neo4j.driver</groupId>
+			<artifactId>neo4j-java-driver</artifactId>
+			<version>5.13.0</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

@@ -1,5 +1,7 @@
 import React from 'react';
 import Profile from '../components/Profile';
+import BookList from '../components/BookList';
+import FollowingList from '../components/FollowingList';
 import {Container, Button, Grid, Typography} from '@mui/material';
 import ReviewsList from '../components/ReviewsList';
 import CompetitionProfBlock from '../components/CompetitionBlock';
@@ -45,7 +47,10 @@ const ProfilePage = () => {
             </Grid>
             <Grid container spacing={3} textAlign="center">
                 <Grid item xs={4} md={4}>
-                    <Typography variant="h4">Amici</Typography>
+                    <Grid item xs={12} md={12}>
+                        <Typography variant="h4">Users you follow</Typography>
+                        <FollowingList/>
+                    </Grid>
                     <Typography variant="h4">Competizioni</Typography>
                     <CompetitionProfBlock />
                 </Grid>
@@ -57,7 +62,8 @@ const ProfilePage = () => {
                     <ReviewsList/>
                 </Grid>
                 <Grid item xs={4} md={4}>
-                    <Typography variant="h4">Libri Preferiti</Typography>
+                    <Typography variant="h4">Your favorite boooks</Typography>
+                        <BookList/>
                     <Typography variant="h4">Libri Letti</Typography>
                     <Typography variant="body1">10 libri a caso:</Typography>
                     <BookListShow/>

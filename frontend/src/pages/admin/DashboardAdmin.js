@@ -1,6 +1,6 @@
 import React from 'react';
 import Profile from '../../components/Profile';
-import BookList from '../../components/BookList'; 
+import BookList from '../../components/BookList';
 import {Container, Button, Grid, Typography} from '@mui/material';
 import ReviewsList from '../../components/ReviewsList';
 import CompetitionProfBlock from '../../components/CompetitionBlock';
@@ -69,4 +69,4 @@ const DashboardAdmin = () => {
     );
 }
 
-export default Da
+export default DashboardAdmin;
