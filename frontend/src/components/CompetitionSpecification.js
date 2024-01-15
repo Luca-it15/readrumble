@@ -16,11 +16,10 @@ function CompetitionSpec(){
     const [data, setData] = useState([]);
     const [isJoin, setJoin] = useState();
     const username = JSON.parse(localStorage.getItem('logged_user'));
-    var usernameToAdd = username["Username"];
+    var usernameToAdd = username["_id"];
 
     function BuildRank()
     {
-        console.log("BUILDRANK");
         const rank_div = document.getElementById("rank");
         rank_div.innerHTML = null;
         let i = 0;
@@ -46,6 +45,7 @@ function CompetitionSpec(){
      }
     function call()
     {
+        
         axios.post('http://localhost:8080/api/competition/getcompinfo',{
                 CompetitionTitle: name,
                 Username: usernameToAdd
@@ -61,7 +61,7 @@ function CompetitionSpec(){
     useEffect(() => { call()
         }, []);
     function joinCompetition(Name){
-
+        ;
         const response = axios.post("http://localhost:8080/api/competition/join",{
         parametro1: usernameToAdd,
         parametro2: Name
