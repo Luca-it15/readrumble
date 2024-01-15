@@ -14,7 +14,7 @@ const navigate = useNavigate();
 
 
     const [formData, setFormData] = useState({
-        username: '',
+        _id: '',
         password: ''
     });
 
@@ -88,7 +88,7 @@ const navigate = useNavigate();
 
                         <Form.Group className="mb-3" controlId="formBasicUsername">
                             <Form.Label>Username</Form.Label>
-                            <Form.Control type="text" name="username" placeholder="Username" onChange={handleChange}/>
+                            <Form.Control type="text" name="_id" placeholder="Username" onChange={handleChange}/>
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="formBasicPassword">
                             <Form.Label>Password</Form.Label>

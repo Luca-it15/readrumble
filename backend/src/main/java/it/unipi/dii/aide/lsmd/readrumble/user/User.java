@@ -1,9 +1,10 @@
 package it.unipi.dii.aide.lsmd.readrumble.user;
 
+import org.bson.conversions.Bson;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.bson.Document;
 
-@Document(collection = "Users")
+
 public class User {
 
     private String _id;
@@ -18,11 +19,17 @@ public class User {
         // Costruttore vuoto necessario per MongoDB
     }
 
-    public User(String _id, String name, String surname) {
+    public User(String _id, String name, String surname, String password) {
         this._id = _id;
         this.name = name;
         this.surname = surname;
         this.password = password;
+    }
+    public User(Document doc) {
+        this._id = (String) doc.get("_id");
+        this.name = (String) doc.get("name");
+        this.surname = (String) doc.get("surname");
+        this.password = (String) doc.get("password");
     }
 
     // Getter e Setter
@@ -67,6 +74,7 @@ public class User {
                 "id='" + _id + '\'' +
                 ",  name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
+                ", password='" + password +'\''+
                 '}';
     }
 
