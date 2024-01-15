@@ -26,11 +26,7 @@ public class UserController {
         userDAO = new UserDAO();
     }
 
-    @PostMapping("/user/quest")
-    @ResponseBody
-    public ResponseEntity<String> quest() {
-        return ResponseEntity.ok("I'm Picking Up Good Vibrations");
-    }
+
     @PostMapping("/login")
     public Document goLogin(@RequestBody Document utente) {
         User user = new User(utente);

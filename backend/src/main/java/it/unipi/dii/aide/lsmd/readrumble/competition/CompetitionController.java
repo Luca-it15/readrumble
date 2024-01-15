@@ -4,6 +4,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Updates;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
+import it.unipi.dii.aide.lsmd.readrumble.user.UserDAO;
 import org.bson.Document;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,10 @@ import static com.mongodb.client.model.Filters.eq;
 @CrossOrigin(origins = "http://localhost:3000")
 public class CompetitionController {
     private CompetitionDAO competitionDAO;
+
+    public CompetitionController() {
+        competitionDAO = new CompetitionDAO();
+    }
     @PostMapping("/join")
     public ResponseEntity<String> joinCompetition(@RequestBody Document userDoc) {
         return competitionDAO.makeUserJoinCompetition(userDoc);
