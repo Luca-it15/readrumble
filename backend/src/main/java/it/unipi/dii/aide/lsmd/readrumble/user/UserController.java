@@ -131,17 +131,13 @@ public class UserController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<String> inserisciDati(@RequestBody User utente) {
-        System.out.println(utente);
-        String usernameDaControllare = utente.getUsername();
+    public ResponseEntity<String> inserisciDati(@RequestBody Document user) {
+        System.out.println(user);
+        String usernameDaControllare =(String) user.get("username");
         MongoCollection<Document> collection = MongoConfig.getCollection("Users");
         List<Document> utenti = collection.find(eq("_id", usernameDaControllare)).into(new ArrayList<>());
         if (utenti.isEmpty()) {
-            Document new_doc = new Document("Name", utente.getName())
-                    .append("Surname", utente.getSurname())
-                    .append("Username", utente.getUsername())
-                    .append("Password", utente.getPassword());
-            collection.insertOne(new_doc);
+            collection.insertOne(user);
             MongoConfig.closeConnection();
             return ResponseEntity.ok("Registration Succeded ! You will now be redirected to the Login page ! ");
         } else {

@@ -16,17 +16,11 @@ function timeout_text() {
     {
         navigate('/login');
     }
-    const Quest = () =>
-    {
-        setQuestStatus(!isQuest);
-        console.log(isQuest);
-    }
     const [formData, setFormData] = useState({
         name: '',
         surname: '',
-        username: '',
+        _id: '',
         password: '',
-        checked: false,
     });
 
     const [registrationStatus, setRegistrationStatus] = useState({
@@ -35,47 +29,36 @@ function timeout_text() {
     });
 
     const [validationError, setValidationError] = useState('');
-    const [isQuest, setQuestStatus] = useState(false);
     const handleChange = (e) => {
         const {name, value, type, checked} = e.target;
         setFormData((prevData) => ({
             ...prevData,
             [name]: type === 'checkbox' ? checked : value,
+
         }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        console.log(formData);
         // Validazione: Verifica se almeno un campo è vuoto
         if (Object.values(formData).some((value) => value === '')) {
             setValidationError('All fields must be filled !');
             timeout_text();
             return;
         }
-
+        console.log(formData);
         try {
-            if(isQuest === true)
-            {
-            console.log("Siamo in Quest");
-                const response = await axios.post('http://localhost:8080/api/user/quest', formData);
-                    setRegistrationStatus({message: response.data, variant: 'success'});
-                    timeout_text();
-
-
-            }
-            else{
                 // Invia la richiesta HTTP qui usando axios
-                            const response = await axios.post('http://localhost:8080/api/registration', formData);
+                const response = await axios.post('http://localhost:8080/api/registration', formData);
 
-                            // Gestisci la risposta qui
-                            setRegistrationStatus({message: response.data, variant: 'success'});
-                            timeout_text();
-                            // Attendere 3 secondi e poi reindirizzare
-                            setTimeout(() => {
-                                window.location.href = 'http://localhost:3000/login';
-                            }, 1300);
-            }
+                // Gestisci la risposta qui
+                setRegistrationStatus({message: response.data, variant: 'success'});
+                timeout_text();
+                // Attendere 3 secondi e poi reindirizzare
+                setTimeout(() => {
+                    window.location.href = 'http://localhost:3000/login';
+                }, 1300);
             // 3000 millisecondi = 3 secondi
         } catch (error) {
             // Gestisci gli errori qui
@@ -97,7 +80,7 @@ function timeout_text() {
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicUsername">
                     <Form.Label>Username</Form.Label>
-                    <Form.Control type="text" name="username" placeholder="Username" onChange={handleChange}/>
+                    <Form.Control type="text" name="_id" placeholder="Username" onChange={handleChange}/>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicPassword">
                     <Form.Label>Password</Form.Label>
