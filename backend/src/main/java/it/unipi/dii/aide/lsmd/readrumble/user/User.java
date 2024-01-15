@@ -66,6 +66,15 @@ public class User {
         this.password = password;
     }
 
+    public Document transformIntoDocument()
+    {
+        Document doc = new Document();
+        doc.append("_id",this._id);
+        doc.append("name",this.name);
+        doc.append("surname",this.surname);
+        doc.append("password",this.password);
+        return doc;
+    }
     // Altro
 
     @Override
