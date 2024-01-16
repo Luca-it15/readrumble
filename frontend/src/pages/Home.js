@@ -5,7 +5,8 @@ import Box from '@mui/material/Box';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import image from '../img/emptyPage.jpg';
-
+import CompetitionProfBlock from '../components/CompetitionBlock';
+import { Grid, Paper } from '@mui/material';
 const Home = () => {
     return (
         <Container sx={{alignItems: "center", display: "flex"}}>
@@ -13,7 +14,7 @@ const Home = () => {
                 Benvenuto nella mia applicazione React!
             </Typography>
             <Typography variant="body1">
-                There is nothing to see here, please move along.
+                There is something to see here, please stay here.
             </Typography>
             <Box>
                 <img
@@ -23,6 +24,23 @@ const Home = () => {
                     width="200"
                 />
             </Box>
+        <Grid container spacing={2} sx={{textAlign:"center"}}>
+            {/* Colonna 1 */}
+            <Grid item xs={4}>
+                <Paper><h1>Competitions</h1></Paper>
+                <CompetitionProfBlock />
+            </Grid>
+
+            {/* Colonna 2 */}
+            <Grid item xs={4}>
+                <Paper><h1>Posts</h1></Paper>
+            </Grid>
+
+            {/* Colonna 3 */}
+            <Grid item xs={4}>
+                <Paper><h1>Friends books</h1></Paper>
+            </Grid>
+        </Grid>
         </Container>
     );
 }

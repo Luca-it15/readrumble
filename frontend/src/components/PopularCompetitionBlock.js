@@ -5,12 +5,9 @@ import {useNavigate, Route, Routes, Router} from 'react-router-dom';
 import CompetitionSpec from './CompetitionSpecification';
 import LoginForm from '../pages/Login';
 import '../App.css';
-function CompetitionProfBlock() {
+function PopularCompetitionBlock() {
   const [data, setData] = useState([]);
   const navigate = useNavigate();
-  const logged_user = JSON.parse(localStorage.getItem("logged_user"));
-  const Username = logged_user["Username"];
-  console.log(Username);
 
   const goComp = () =>
       {
@@ -67,4 +64,4 @@ function CompetitionProfBlock() {
   );
 };
 
-export default CompetitionProfBlock;
+export default PopularCompetitionBlock;
