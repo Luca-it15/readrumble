@@ -1,19 +1,17 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import Button from '@mui/material-next/Button';
-import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import { Divider, List, ListItem, Tooltip } from "@mui/material";
+import {Divider, Link, List, ListItem, Paper, Tooltip} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemoveTwoTone';
 import {blue, red} from "@mui/material/colors";
-import {Navigate} from "react-router-dom";
+import {Navigate, useNavigate} from "react-router-dom";
 
 let currentUser = localStorage.getItem('logged_user');
 if (!currentUser) {
-    console.log('La chiave "logged_user" non è presente in localStorage.');
     // Redirect to login
-    <Navigate to="/login" />;
+    Navigate({to: "/login"});
 }
 
 function FavoriteBookList({user}) {
@@ -22,10 +20,9 @@ function FavoriteBookList({user}) {
     const [books, setBooks] = useState([]);
     const [displayCount, setDisplayCount] = useState(10);
 
-    console.log("Username: " + currentUser["_id"]);
-    console.log("User: " + user);
+    const navigate = useNavigate();
 
-    const style = {
+    const ListStyle = {
         py: 0,
         width: '100%',
         borderRadius: 5,
@@ -37,11 +34,17 @@ function FavoriteBookList({user}) {
     const fetchBooks = async () => {
         try {
             const response = await axios.get(`http://localhost:8080/api/favoriteBooks?username=${user}`);
-            console.log("Received: " + response.data);
 
-            setBooks(JSON.parse(`[${response.data}]`).map(book => book.replace(/"/g, '')));
+            // Returns book.id and book.title
+            setBooks(response.data.map(book => ({
+                id: book.id.replace(/"/g, ''),
+                title: book.title.replace(/"/g, '')
+            })));
 
-            currentUser['favoriteBooks'] = JSON.parse(`[${response.data}]`).map(book => book.replace(/"/g, ''));
+            // Save all book ids in favoriteBooks
+            currentUser['favoriteBooks'] = response.data.map(book => book.id.replace(/"/g, ''));
+
+            localStorage.setItem('logged_user', JSON.stringify(currentUser));
         } catch (error) {
             console.log(error.response)
         }
@@ -49,7 +52,7 @@ function FavoriteBookList({user}) {
 
     useEffect(() => {
         fetchBooks();
-    }, []);
+    }, [user]);
 
     const loadAllBooks = () => {
         setDisplayCount(books.length);
@@ -64,9 +67,22 @@ function FavoriteBookList({user}) {
         currentUser['favoriteBooks'].splice(currentUser["favoriteBooks"].indexOf(book), 1);
     }
 
+    function seeDetails(id) {
+        navigate(`/bookdetails/${id}`);
+    }
+
+    const PaperStyle = {
+        backgroundColor: '#f1f7fa',
+        padding: '10px',
+        margin: '20px 10px 0px 10px',
+        borderRadius: 5,
+        width: '100%'
+    }
+
     return (
-        <Container>
-            <List sx={style}>
+        <Paper sx={PaperStyle}>
+            <Typography variant="h5">Favorite books</Typography>
+            <List sx={ListStyle}>
                 {books.length === 0 ? (
                     <ListItem>
                         <Typography>No books to show</Typography>
@@ -74,26 +90,31 @@ function FavoriteBookList({user}) {
                 ) : (
                     Array.isArray(books) && books.slice(0, displayCount).map((book, index) => (
                         <React.Fragment key={index}>
-                            <ListItem>
-                                {book}
+                            <ListItem onClick={ () => {seeDetails(book.id)}} sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
+                                <Link onClick={ () => {seeDetails(book.id)}} sx={{color: "#000000"}}>
+                                    <Typography>{book.title}</Typography>
+                                </Link>
                                 {/* Allow to remove favorite books only on personal profile */}
                                 {currentUser["_id"] === user && (
                                     <Tooltip title="Remove from favorites">
-                                        <IconButton sx={{color: blue[500], '&:hover': {color: red[500]}}} onClick={() => removeFavorite(book)}>
-                                            <BookmarkRemoveIcon />
+                                        <IconButton sx={{color: blue[500], '&:hover': {color: red[500]}}}
+                                                    onClick={() => removeFavorite(book)}>
+                                            <BookmarkRemoveIcon/>
                                         </IconButton>
                                     </Tooltip>
                                 )}
                             </ListItem>
-                            <Divider variant="middle" component="li" />
+                            <Divider variant="middle" component="li"/>
                         </React.Fragment>
                     ))
                 )}
             </List>
             {books.length > displayCount && (
-                <Button variant="filledTonal" onClick={loadAllBooks}><Typography>Show all</Typography></Button>
+                <Button variant="filledTonal" onClick={loadAllBooks}>
+                    <Typography>Show all</Typography>
+                </Button>
             )}
-        </Container>
+        </Paper>
     );
 }
 

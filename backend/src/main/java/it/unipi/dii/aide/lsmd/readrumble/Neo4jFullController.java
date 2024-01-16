@@ -2,12 +2,12 @@ package it.unipi.dii.aide.lsmd.readrumble;
 
 import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
 import org.neo4j.driver.*;
+import org.neo4j.driver.Record;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 // !!! UNTESTED !!!
 // A parte favoriteBooks, che funziona
@@ -82,7 +82,7 @@ public class Neo4jFullController {
      * @return the list of favorite books
      */
     @GetMapping("/favoriteBooks")
-    public List<String> getFavoriteBooks(@RequestParam String username) {
+    public List<Map<String, Object>> getFavoriteBooks(@RequestParam String username) {
         try (Session session = Neo4jConfig.getSession()) {
             // Control if the username exists
             Result userExists = session.run("MATCH (u:User {name: $username}) RETURN u",
@@ -92,12 +92,16 @@ public class Neo4jFullController {
             }
 
             // If the username exists, proceed with the query
-            Result result = session.run("MATCH (u:User {name: $username})-[:FAVORS]->(b:Book) RETURN b.title AS favorite_books",
+            Result result = session.run("MATCH (u:User {name: $username})-[:FAVORS]->(b:Book) RETURN b.id AS id, b.title AS title",
                     Values.parameters("username", username));
-            List<String> favoriteBooks = new ArrayList<>();
+            List<Map<String, Object>> favoriteBooks = new ArrayList<>();
             while (result.hasNext()) {
-                // Add double quotes to the book title to avoid problems with the frontend
-                favoriteBooks.add("\"" + result.next().get("favorite_books").asString() + "\"");
+                Record record = result.next();
+
+                Map<String, Object> book = new HashMap<>();
+                book.put("id", record.get("id").toString());
+                book.put("title", record.get("title").toString());
+                favoriteBooks.add(book);
             }
             return favoriteBooks;
         }

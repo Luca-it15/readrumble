@@ -12,16 +12,12 @@ import LeaderboardTwoToneIcon from '@mui/icons-material/LeaderboardTwoTone';
 import EditNoteTwoToneIcon from '@mui/icons-material/EditNoteTwoTone';
 import {blue} from "@mui/material/colors";
 
-var currentUser = localStorage.getItem('logged_user');
+let currentUser = localStorage.getItem('logged_user');
 
 // Verifica se il valore è presente
 if (currentUser) {
     // Il valore è presente, lo converte da stringa JSON a oggetto JavaScript
     currentUser = JSON.parse(currentUser);
-
-    // Ora puoi utilizzare la variabile 'isLoggedIn' come desideri
-    console.log(currentUser["name"]);
-    console.log(currentUser["_id"]);
 } else {
     // La chiave 'isLoggedIn' non è presente in localStorage
     console.log('La chiave "logged_user" non è presente in localStorage.');
@@ -42,7 +38,7 @@ function goReview() {
 const PaperStyle = {
     backgroundColor: '#f1f7fa',
     padding: '10px',
-    margin: '10px',
+    margin: '20px 10px 0px 10px',
     borderRadius: 18,
     width: '100%'
 }
@@ -56,24 +52,25 @@ const ProfilePage = () => {
                     <Grid item xs={6} md={4}>
                         <Profile {...currentUser} />
                     </Grid>
-                    <Grid container xs={6} direction="column" alignItems="center" justifyContent="space-around">
-                        <Button sx={{backgroundColor: blue[200], '&:hover': {backgroundColor: blue[100]}}}
-                                variant="filledTonal" onClick={goSettings} startIcon={<SettingsTwoToneIcon/>}>
-                            <Typography>Settings</Typography>
-                        </Button>
-                        <Button sx={{backgroundColor: blue[200], '&:hover': {backgroundColor: blue[100]}}}
-                                variant="filledTonal" onClick={goDashboard} startIcon={<LeaderboardTwoToneIcon/>}>
-                            <Typography>Dashboard</Typography>
-                        </Button>
+                    <Grid container xs={6} direction="row" alignItems="center">
+                        <Grid item xs={6} md={3}>
+                            <Button sx={{backgroundColor: blue[200], '&:hover': {backgroundColor: blue[100]}}}
+                                    variant="filledTonal" onClick={goSettings} startIcon={<SettingsTwoToneIcon sx={{color: blue[700]}}/>}>
+                                <Typography>Settings</Typography>
+                            </Button>
+                        </Grid>
+                        <Grid item xs={6} md={3}>
+                            <Button sx={{backgroundColor: blue[200], '&:hover': {backgroundColor: blue[100]}}}
+                                    variant="filledTonal" onClick={goDashboard} startIcon={<LeaderboardTwoToneIcon sx={{color: blue[700]}}/>}>
+                                <Typography>Dashboard</Typography>
+                            </Button>
+                        </Grid>
                     </Grid>
                 </Grid>
             </Paper>
             <Grid container spacing={3} textAlign="center">
                 <Grid item xs={4} md={4}>
-                    <Paper elevation={2} style={PaperStyle}>
-                        <Typography variant="h4">Users you follow</Typography>
                         <FollowingList user={currentUser['_id']}/>
-                    </Paper>
                     <Paper elevation={2} style={PaperStyle}>
                         <Typography variant="h4">Competitions</Typography>
                         <CompetitionProfBlock/>
@@ -81,9 +78,9 @@ const ProfilePage = () => {
                 </Grid>
                 <Grid item xs={4} md={4}>
                     <Paper elevation={2} style={PaperStyle}>
-                        <Typography variant="h4">Post</Typography>
+                        <Typography variant="h4">Posts</Typography>
                         <Button sx={{backgroundColor: blue[200], '&:hover': {backgroundColor: blue[100]}}}
-                                variant="filledTonal" onClick={goReview} startIcon={<EditNoteTwoToneIcon/>}>
+                                variant="filledTonal" onClick={goReview} startIcon={<EditNoteTwoToneIcon sx={{color: blue[700]}}/>}>
                             <Typography>Make a post</Typography>
                         </Button>
                         {/* TODO (Luca o anche Francesco): aggiungere parametro user a ReviewList e gestirlo lì */}
@@ -91,10 +88,7 @@ const ProfilePage = () => {
                     </Paper>
                 </Grid>
                 <Grid item xs={4} md={4}>
-                    <Paper elevation={2} style={PaperStyle}>
-                        <Typography variant="h4">Your favorite books</Typography>
-                        <FavoriteBookList user={currentUser['_id']}/>
-                    </Paper>
+                    <FavoriteBookList user={currentUser['_id']}/>
                     <Paper elevation={2} style={PaperStyle}>
                         <Typography variant="h4">Books you have read</Typography>
                         <Typography>10 random books:</Typography>

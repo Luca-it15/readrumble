@@ -7,6 +7,7 @@ import it.unipi.dii.aide.lsmd.readrumble.admin.AdminCompetitionController;
 import it.unipi.dii.aide.lsmd.readrumble.library.ActiveBookController;
 import it.unipi.dii.aide.lsmd.readrumble.review.ReviewController;
 import it.unipi.dii.aide.lsmd.readrumble.user.UserController;
+import it.unipi.dii.aide.lsmd.readrumble.book.BookController;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,16 +28,22 @@ public class MongoFullController {
     private final AdminCompetitionController adminCompetitionController;
     private final ReviewController reviewController;
     private final ActiveBookController libraryController;
+    private final BookController bookController;
+
     @Autowired
-    public MongoFullController(UserController userController, CompetitionController competitionController, ReviewController reviewController, ActiveBookController libraryController, AdminCompetitionController adminCompetitionController) {
+    public MongoFullController(UserController userController,
+                               CompetitionController competitionController,
+                               ReviewController reviewController,
+                               ActiveBookController libraryController,
+                               AdminCompetitionController adminCompetitionController,
+                               BookController bookController) {
         this.userController = userController;
         this.competitionController = competitionController;
         this.adminCompetitionController = adminCompetitionController;
         this.reviewController = reviewController;
         this.libraryController = libraryController;
+        this.bookController = bookController;
     }
-
-
 
     /**
      * Questo metodo restituisce i primi 10 libri presenti nel database

@@ -8,7 +8,6 @@ import java.util.List;
 
 @Document(collection = "Book")
 public class Book {
-
     @Id
     private int id;
     private String isbn;
@@ -49,12 +48,15 @@ public class Book {
     public String getTitle() {
         return title;
     }
+
     public String getIsbn() {
         return isbn;
     }
+
     public String getDescription() {
         return description;
     }
+
     public String getLink() {
         return link;
     }
@@ -62,12 +64,15 @@ public class Book {
     public List<String> getAuthors() {
         return authors;
     }
+
     public String getPublisher() {
         return publisher;
     }
+
     public int getNum_pages() {
         return num_pages;
     }
+
     public int getPublication_year() {
         return publication_year;
     }
@@ -83,6 +88,7 @@ public class Book {
     public List<String> getTags() {
         return tags;
     }
+
     public void setId(int i) {
         id = i;
     }
@@ -90,7 +96,6 @@ public class Book {
     public void setTitle(String s) {
         title = s;
     }
-
 }
 
 

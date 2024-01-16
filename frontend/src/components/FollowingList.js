@@ -1,12 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import Button from '@mui/material-next/Button';
-import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import {Divider, List, ListItem, Tooltip} from "@mui/material";
+import {Divider, Link, List, ListItem, Paper, Tooltip} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import PersonRemoveTwoToneIcon from "@mui/icons-material/PersonRemoveTwoTone";
 import {blue, red} from "@mui/material/colors";
+import {useNavigate} from "react-router-dom";
 
 // !!! UNTESTED !!!
 
@@ -19,12 +19,14 @@ function FollowingList({user}) {
     }
 
     // if user is current user, then show currentUser['following'], otherwise will fetch the user's following list
-    var initialFollowing = (user === currentUser['_id']) ? currentUser['following'] : [];
-    var [following, setFollowing] = useState(initialFollowing);
+    const initialFollowing = (user === currentUser['_id']) ? currentUser['following'] : [];
+    const [following, setFollowing] = useState(initialFollowing);
+
+    const navigate = useNavigate();
 
     const [displayCount, setDisplayCount] = useState(10);
 
-    const style = {
+    const ListStyle = {
         py: 0,
         width: '100%',
         borderRadius: 5,
@@ -33,8 +35,16 @@ function FollowingList({user}) {
         backgroundColor: 'background.paper',
     };
 
+    const PaperStyle = {
+        backgroundColor: '#f1f7fa',
+        padding: '10px',
+        margin: '20px 10px 0px 10px',
+        borderRadius: 5,
+        width: '100%'
+    }
+
     // Works in both cases: if "user" is current user or another user, because we are on their profile, and have to show their following list
-    async function fetchFollowing({user}) {
+    async function fetchFollowing() {
         try {
             const response = await axios.get(`http://localhost:8080/api/following?username=${user}`);
             setFollowing(JSON.parse(response.data));
@@ -45,7 +55,7 @@ function FollowingList({user}) {
     }
 
     // Works only if "user" is current user, because only on the personal profile we can unfollow users in the following list
-    async function unfollow(user) {
+    async function unfollow() {
         try {
             await axios.delete(`/api/unfollow/${currentUser['_id']}/${user}`);
 
@@ -60,16 +70,21 @@ function FollowingList({user}) {
     }
 
     useEffect(() => {
-        fetchFollowing(user);
-    }, []);
+        fetchFollowing();
+    }, [currentUser['_id']]);
 
     const loadAllFollowings = () => {
         setDisplayCount(following.length);
     };
 
+    function seeProfile(username) {
+        navigate(`/user/${username}`)
+    }
+
     return (
-        <Container>
-            <List sx={style}>
+        <Paper sx={PaperStyle}>
+            <Typography variant="h5">Users you follow</Typography>
+            <List sx={ListStyle}>
                 {following.length === 0 ? (
                     <ListItem>
                         <Typography>This list is empty</Typography>
@@ -77,14 +92,16 @@ function FollowingList({user}) {
                 ) : (
                     following.slice(0, displayCount).map((username, index) => (
                         <React.Fragment key={index}>
-                            <ListItem key={index}>
-                                {username}
+                            <ListItem key={index} onClick={ () => {seeProfile(username)}} sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
+                                <Link onClick={ () => {seeProfile(username)}} sx={{color: "#000000"}}>
+                                    <Typography>{username}</Typography>
+                                </Link>
 
                                 {/* Show the button to unfollow users only on personal profile */}
                                 {user === currentUser['_id'] && (
                                     <Tooltip title="Unfollow">
                                         <IconButton sx={{color: blue[500], '&:hover': {color: red[500]}}}
-                                                    onClick={() => unfollow(username)}>
+                                                    onClick={() => unfollow()}>
                                             <PersonRemoveTwoToneIcon/>
                                         </IconButton>
                                     </Tooltip>
@@ -97,7 +114,7 @@ function FollowingList({user}) {
             {following.length > displayCount && (
                 <Button variant="contained" onClick={loadAllFollowings}>Show all</Button>
             )}
-        </Container>
+        </Paper>
     );
 }
 
