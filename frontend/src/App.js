@@ -28,6 +28,7 @@ import CompetitionSpecAdmin from './pages/admin/CompetitionSpecAdmin';
 import UserAdmin from './pages/admin/UserAdmin';
 import ReviewAdmin from './pages/admin/ReviewAdmin';
 import OtherUserProfile from './pages/OtherUserProfile';
+import BookDetails from "./components/BookDetails";
 import BanUnbanProfile from './pages/admin/BanUnbanProfile';
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -132,10 +133,9 @@ const App = () => {
                                         <Route
                                             /* !!! UNTESTED !!! */
                                             path="/user/:username"
-                                            render={({match}) => (
-                                                isLoggedIn ? <OtherUserProfile user={match.params.username}/> :
-                                                    <Navigate to="/"/>
-                                            )}
+                                            element={
+                                                isLoggedIn ? (<OtherUserProfile/>) : <Navigate to="/"/>
+                                            }
                                         />
                                         <Route
                                             path="/review"
@@ -164,6 +164,10 @@ const App = () => {
                                             element={
                                                 isLoggedIn ? <CompetitionSpec/> : <Navigate to="/"/>
                                             }
+                                        />
+                                        <Route
+                                            path="/bookdetails/:id"
+                                            element={<BookDetails/>}
                                         />
                                         <Route path="*" element={<Error/>}/>
                                     </Routes>
