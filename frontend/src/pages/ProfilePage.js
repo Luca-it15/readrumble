@@ -4,7 +4,7 @@ import FavoriteBookList from '../components/FavoriteBookList';
 import FollowingList from '../components/FollowingList';
 import {Container, Grid, Typography, Paper} from '@mui/material';
 import Button from '@mui/material-next/Button';
-import ReviewsList from '../components/ReviewsList';
+import PostsList from '../components/PostList';
 import CompetitionProfBlock from '../components/CompetitionBlock';
 import BookListShow from '../components/BookListShow';
 import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';
@@ -13,7 +13,6 @@ import EditNoteTwoToneIcon from '@mui/icons-material/EditNoteTwoTone';
 import {blue, green} from "@mui/material/colors";
 
 let currentUser = localStorage.getItem('logged_user');
-
 // Verifica se il valore è presente
 if (currentUser) {
     // Il valore è presente, lo converte da stringa JSON a oggetto JavaScript
@@ -32,7 +31,7 @@ function goDashboard() {
 }
 
 function goReview() {
-    return window.location.href = "http://localhost:3000/review";
+    return window.location.href = "http://localhost:3000/post";
 }
 
 const PaperStyle = {
@@ -87,7 +86,7 @@ const ProfilePage = () => {
                             <Typography>Make a post!</Typography>
                         </Button>
                         {/* TODO (Luca o anche Francesco): aggiungere parametro user a ReviewList e gestirlo lì */}
-                        <ReviewsList/>
+                        <PostsList/>
                     </Paper>
                 </Grid>
                 <Grid item xs={3} md={3}>

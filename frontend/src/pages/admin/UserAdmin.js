@@ -29,7 +29,7 @@ function UserAdmin() {
     }
     function goProfile(_id)
     {
-        if(_id=='')
+        if(_id==='')
         {
             setSearchVal({message:"The searched username doesn't exists", validation:'error'})
             setTimeout(()=>{setSearchVal({message:"", validation:'success'});},2500)

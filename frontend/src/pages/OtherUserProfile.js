@@ -4,14 +4,14 @@ import FavoriteBookList from '../components/FavoriteBookList';
 import FollowingList from '../components/FollowingList';
 import {Container, Grid, Typography, Paper} from '@mui/material';
 import Button from '@mui/material-next/Button';
-import ReviewsList from '../components/ReviewsList';
-import CompetitionProfBlock from '../components/CompetitionBlock';
+import PostsList from '../components/PostList';
 import BookListShow from "../components/BookListShow";
 import axios from "axios";
 import PersonAddTwoToneIcon from '@mui/icons-material/PersonAddTwoTone';
 import PersonRemoveTwoToneIcon from '@mui/icons-material/PersonRemoveTwoTone';
 import {blue} from "@mui/material/colors";
 import {useParams} from "react-router-dom";
+import CompetitionProfBlock from '../components/CompetitionBlock';
 
 // !!! UNTESTED !!!
 
@@ -120,7 +120,7 @@ function OtherUserProfile() {
                 <Grid item xs={4} md={4}>
                     <Paper elevation={3} style={PaperStyle}>
                         <Typography variant="h4">Posts</Typography>
-                        <ReviewsList/>
+                        <PostsList/>
                     </Paper>
                 </Grid>
                 <Grid item xs={4} md={4}>
