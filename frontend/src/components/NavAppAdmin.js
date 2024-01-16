@@ -23,7 +23,7 @@ const NavAppAdmin = () => {
                     <Button color="inherit" component={NavLink} to="/dashboard" exact>
                      Home
                     </Button>
-                    <Button color="inherit" component={NavLink} to="/admin_review">
+                    <Button color="inherit" component={NavLink} to="/admin_post">
                        Review
                     </Button>
                     <Button color="inherit" component={NavLink} to="/admin_user">

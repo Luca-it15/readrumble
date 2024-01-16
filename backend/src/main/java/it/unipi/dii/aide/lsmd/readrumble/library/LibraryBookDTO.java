@@ -4,27 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 class LibraryBookDTO {
-    private String title;
-    private List<String> tags;
 
-    public LibraryBookDTO(String title) {
-        this.title = title;
-        this.tags = new ArrayList<>();
+    private int book_id;
+    private String book_title;
+
+    public LibraryBookDTO(int book_id, String book_title) {
+        this.book_id = book_id;
+        this.book_title = book_title;
     }
     // getters
-    public String getBookName() {
-        return title;
+    public int getBook_id() {
+        return book_id;
     }
 
-    public List<String> getTags() {
-        return tags;
-    }
-    // setters
-    public void setBookName(String book_name) {
-        this.title = book_name;
-    }
-    public void setTags(List<String> tags) {
-        this.tags = tags;
+    public String getBook_title() {
+        return book_title;
     }
 
 }

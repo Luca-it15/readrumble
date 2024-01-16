@@ -5,7 +5,7 @@ import Select from 'react-select';
 const BookSelector = ({ handleChangeBookTitle }) => {
     const [options, setOptions] = useState([]);
     const [selectedOption, setSelectedOption] = useState(null);
-    const [tags, setTags] = useState([]);
+    const [book_id, setBook_id] = useState([]);
 
     var storedData = localStorage.getItem('logged_user');
 
@@ -14,7 +14,7 @@ const BookSelector = ({ handleChangeBookTitle }) => {
         var user = JSON.parse(storedData);
 
         // Ora puoi utilizzare la variabile 'isLoggedIn' come desideri
-        console.log(user['Username']);
+        console.log(user['_id']);
     } else {
         // La chiave 'isLoggedIn' non è presente in localStorage
         console.log('La chiave "logged_user" non è presente in localStorage.');
@@ -23,19 +23,18 @@ const BookSelector = ({ handleChangeBookTitle }) => {
     useEffect(() => {
         // Ottieni i titoli dei libri dal server
         axios
-            .get(`http://localhost:8080/api/library/title/${user['Username']}`)
+            .get(`http://localhost:8080/api/library/title/${user['_id']}`)
             .then((response) => {
                 const bookTitles = response.data.map((book) => ({
-                    value: book.bookName,
-                    label: book.bookName,
+                    value: book.book_title,
+                    label: book.book_title,
                 }));
-                const bookTags = response.data.map((book) => ({
-                    value: book.tags,
-                    label: book.bookName,
+                const book_ids = response.data.map((book) => ({
+                    value: book.book_id,
+                    label: book.book_title,
                 }));
                 setOptions(bookTitles);
-                console.log(bookTags); 
-                setTags(bookTags);
+                setBook_id(book_ids); 
             })
             .catch((error) =>
                 console.error('Errore durante il recupero dei titoli dei libri:', error)
@@ -44,8 +43,7 @@ const BookSelector = ({ handleChangeBookTitle }) => {
 
     const handleInputChange = (inputValue) => {
         setSelectedOption(inputValue);
-        console.log(  tags.find(tag => tag.label === inputValue.value).value); 
-        handleChangeBookTitle(inputValue.value, tags.find(tag => tag.label === inputValue.value).value);
+        handleChangeBookTitle(inputValue.value, book_id.find(book => book.label === inputValue.value).value);
     };
 
     return (

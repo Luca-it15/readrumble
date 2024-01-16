@@ -2,7 +2,7 @@ import React from 'react';
 import Profile from '../../components/Profile';
 import BookList from '../../components/FavoriteBookList';
 import {Container, Button, Grid, Typography} from '@mui/material';
-import ReviewsList from '../../components/ReviewsList';
+import PostsList from '../../components/PostList';
 import CompetitionProfBlock from '../../components/CompetitionBlock';
 var storedData = localStorage.getItem('logged_user');
 
@@ -26,8 +26,8 @@ function goDashboard() {
     return window.location.href = "http://localhost:3000/userDashboard";
 }
 
-function goReview() {
-    return window.location.href = "http://localhost:3000/review";
+function goPost() {
+    return window.location.href = "http://localhost:3000/post";
 }
 
 const DashboardAdmin = () => {
@@ -52,9 +52,9 @@ const DashboardAdmin = () => {
                     <CompetitionProfBlock />
                 </Grid>
                 <Grid item xs={4} md={4}>
-                    <Typography variant="h3">Review</Typography>
-                    <Typography variant="h4">Show Review</Typography>
-                    <Typography variant="h4">Delete Review</Typography>
+                    <Typography variant="h3">Post</Typography>
+                    <Typography variant="h4">Show Post</Typography>
+                    <Typography variant="h4">Delete Post</Typography>
                 </Grid>
                 <Grid item xs={4} md={4}>
                     <Typography variant="h3">Book</Typography>

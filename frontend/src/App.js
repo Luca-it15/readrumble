@@ -4,6 +4,7 @@ import {BrowserRouter, Route, Routes, Navigate, redirect} from 'react-router-dom
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+
 import Home from './pages/Home';
 import ProfilePage from './pages/ProfilePage';
 import Explore from './pages/Explore';
@@ -15,7 +16,7 @@ import LoginForm from './pages/Login';
 import Logout from './components/Logout';
 import GuestLayout from './layout/GuestLayout';
 import RegistrationForm from './pages/Registration';
-import ReviewForm from './pages/ReviewForm';
+import PostForm from './pages/PostForm';
 import Dashboard from "./pages/UserDashboard";
 import CompetitionPage from "./pages/Competition";
 import CompetitionSpec from "./components/CompetitionSpecification";
@@ -26,7 +27,7 @@ import CompetitionAdmin from './pages/admin/CompetitionAdmin';
 import AddCompetition from './pages/admin/AddCompetition';
 import CompetitionSpecAdmin from './pages/admin/CompetitionSpecAdmin';
 import UserAdmin from './pages/admin/UserAdmin';
-import ReviewAdmin from './pages/admin/ReviewAdmin';
+import PostAdmin from './pages/admin/PostAdmin';
 import OtherUserProfile from './pages/OtherUserProfile';
 import BookDetails from "./components/BookDetails";
 import BanUnbanProfile from './pages/admin/BanUnbanProfile';
@@ -97,9 +98,9 @@ const App = () => {
                                             <UserAdmin/>}
                                     />
                                     <Route
-                                        path="/admin_review"
+                                        path="/admin_post"
                                         element={
-                                            <ReviewAdmin/>}
+                                            <PostAdmin/>}
                                     />
                                 </Routes>
                             </AdminLayout>) : (
@@ -138,9 +139,9 @@ const App = () => {
                                             }
                                         />
                                         <Route
-                                            path="/review"
+                                            path="/post"
                                             element={
-                                                isLoggedIn ? (<ReviewForm/>) : <Navigate to="/"/>
+                                                isLoggedIn ? (<PostForm/>) : <Navigate to="/"/>
                                             }
                                         />
                                         <Route

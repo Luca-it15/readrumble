@@ -6,17 +6,17 @@ import {Container, Row, Col, Alert} from 'react-bootstrap';
 import RatingStars from '../components/RatingStars';
 import axios from 'axios';
 import BookSelector from '../components/BookSelector';
+import { ArrowDropDown } from '@mui/icons-material';
+import { Typography} from '@mui/material';
+import {blue} from "@mui/material/colors";
 
-export default function ReviewForm() {
+export default function PostForm() {
 
-    var storedData = localStorage.getItem('logged_user');
-
-    if (storedData) {
+    let currentUser = localStorage.getItem('logged_user');
+    // Verifica se il valore è presente
+    if (currentUser) {
         // Il valore è presente, lo converte da stringa JSON a oggetto JavaScript
-        var user = JSON.parse(storedData);
-
-        // Ora puoi utilizzare la variabile 'isLoggedIn' come desideri
-        console.log(user["Name"]);
+        currentUser = JSON.parse(currentUser);
     } else {
         // La chiave 'isLoggedIn' non è presente in localStorage
         console.log('La chiave "logged_user" non è presente in localStorage.');
@@ -30,6 +30,14 @@ export default function ReviewForm() {
         }, 12000)
     }
 
+    function timeout_text_error() {
+        setTimeout(function () {
+            // Azione da compiere dopo 1 secondo
+            setLoginStatus({message: '', variant: 'error'});
+            return window.location.href = "http://localhost:3000/profile";
+        }, 24000)
+    }
+
     const [loginStatus, setLoginStatus] = useState({
         message: '',
         variant: 'success', // o 'danger' in caso di errore
@@ -37,16 +45,17 @@ export default function ReviewForm() {
 
     const [validationError, setValidationError] = useState('');
     const [selectedTitle, setSelectedTitle] = useState('');
-    const [tags, setTags] = useState([]);
+    const [book_id, setBook_id] = useState([]);
 
     const [formData, setFormData] = useState({
-        title: '',
-        username: user.Username,
-        numberOfPagesRead: 0,
-        review: '',
-        rating: 0,
-        date: "", 
-        tags: ""
+        _id: 0,
+        book_id: '',
+        rating: 0, 
+        review_text: '',
+        date_added: ' ',
+        book_title: '', 
+        username: currentUser['_id'], 
+        bookmark: 0
     });
     
     const handleChange = (e) => {
@@ -57,34 +66,24 @@ export default function ReviewForm() {
         });
     };
 
-    const handleChangeBookTitle = (selectedTitle, selectedTags) => {
+    const handleChangeBookTitle = (selectedTitle, selectedBook_id) => {
         setSelectedTitle(selectedTitle);
-        setTags(selectedTags);
+        setBook_id(selectedBook_id)
         setFormData({
             ...formData,
-            title: selectedTitle,
-            tags: selectedTags
+            book_title: selectedTitle,
+            book_id: selectedBook_id
         }); 
     }
 
-     // Ottieni la data corrente
-     let current_date = new Date();
-
-
-    let formatted_date = 
-     current_date.getFullYear() + "-" + 
-     ("0" + (current_date.getMonth() + 1)).slice(-2) + "-" + 
-     ("0" + current_date.getDate()).slice(-2) + "T" + 
-     ("0" + current_date.getHours()).slice(-2) + ":" + 
-     ("0" + current_date.getMinutes()).slice(-2) + ":" + 
-     ("0" + current_date.getSeconds()).slice(-2);
-
 
      const handleChangeRating = (newRating) => {
-        setFormData({
+        const currentDate = new Date();
+        const isoString = currentDate.toISOString();
+          setFormData({
             ...formData,
             rating: newRating, 
-            date: formatted_date
+            date_added: isoString
         });
     };
 
@@ -102,7 +101,7 @@ export default function ReviewForm() {
 
         try {
             // Invia i dati al server usando Axios
-            const response = await axios.post('http://localhost:8080/api/review/submit', formData);
+            const response = await axios.post('http://localhost:8080/api/post/submit', formData);
             setLoginStatus({message: response.data, variant: 'success'});
             timeout_text()
             // Esegui altre azioni dopo la submit se necessario
@@ -110,7 +109,7 @@ export default function ReviewForm() {
         } catch (error) {
             console.error('Errore durante l\'invio della recensione:', error);
             setLoginStatus({message: error.response ? JSON.stringify(error.response.data) : error.message, variant: 'danger'});
-            timeout_text()
+            timeout_text_error()
         }
     };
 
@@ -132,8 +131,8 @@ export default function ReviewForm() {
                                         <label className="label">Number of pages read</label>
                                         <input
                                             type="number"
-                                            id="numberOfPagesRead"
-                                            name="numberOfPagesRead"
+                                            id="bookmark"
+                                            name="bookmark"
                                             min="0"
                                             required
                                             onChange={handleChange}
@@ -142,8 +141,8 @@ export default function ReviewForm() {
                                     <div className="space-y-1">
                                         <label className="label">Your Review</label>
                                         <TextareaAutosize
-                                            id="review"
-                                            name="review"
+                                            id="review_text"
+                                            name="review_text"
                                             aria-label="minimum height"
                                             minRows={3}
                                             placeholder="Your review"
@@ -156,13 +155,11 @@ export default function ReviewForm() {
                                         <RatingStars onChange={handleChangeRating} readOnly={false} isStatic={false} stars={0}/>
                                     </div>
                                     <div className="flex justify-center mt-3 mb-5">
-                                        <Button
-                                            className="w-full md:w-auto bg-blue-500 text-white dark:text-gray-200 rounded-full border-2 border-blue-500"
-                                            variant="contained"
-                                            type="submit"
-                                        >
-                                            Submit Review
-                                        </Button>
+                                    <Button sx={{backgroundColor: blue[200], height: "40px", '&:hover': {backgroundColor: '#23d984'}}}
+                                variant="filledTonal" type='submit'
+                                startIcon={<ArrowDropDown sx={{color: blue[700]}}/>}>
+                            <Typography>Invia!</Typography>
+                        </Button>
                                     </div>
                                 </div>
                             </form>
