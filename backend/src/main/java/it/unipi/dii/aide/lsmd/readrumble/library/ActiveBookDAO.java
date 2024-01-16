@@ -10,7 +10,6 @@ import java.util.List;
 
 public class ActiveBookDAO {
 
-    private static List<ActiveBook> activeBooks;
     List<LibraryBookDTO> getActiveBooks(String username) {
         MongoCollection<Document> collection = MongoConfig.getCollection("Active_books");
         Document query = new Document("username", username);
@@ -30,4 +29,5 @@ public class ActiveBookDAO {
         MongoConfig.closeConnection();
         return activeBooks;
     }
+    
 }

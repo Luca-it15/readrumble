@@ -2,7 +2,7 @@ import React from 'react';
 import Profile from '../../components/Profile';
 import BookList from '../../components/FavoriteBookList';
 import {Container, Button, Grid, Typography} from '@mui/material';
-import ReviewsList from '../../components/ReviewsList';
+import ReviewsList from '../../components/PostList';
 import CompetitionProfBlock from '../../components/CompetitionBlock';
 var storedData = localStorage.getItem('logged_user');
 

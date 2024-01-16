@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import RatingStars from './RatingStars'; // Assicurati che il percorso sia corretto
 import DateFormatter from './DataFormatter';
 
-export default function ReviewRow({ title, username, pagesRead, review, rating, readOnly, date }) {
+export default function PostRow({ title, username, pagesRead, review, rating, readOnly, date }) {
 
 
 

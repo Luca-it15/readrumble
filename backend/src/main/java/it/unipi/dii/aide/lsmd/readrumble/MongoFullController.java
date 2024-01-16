@@ -5,7 +5,7 @@ import com.mongodb.client.*;
 import it.unipi.dii.aide.lsmd.readrumble.competition.CompetitionController;
 import it.unipi.dii.aide.lsmd.readrumble.admin.AdminCompetitionController;
 import it.unipi.dii.aide.lsmd.readrumble.library.ActiveBookController;
-import it.unipi.dii.aide.lsmd.readrumble.review.ReviewController;
+import it.unipi.dii.aide.lsmd.readrumble.post.PostController;
 import it.unipi.dii.aide.lsmd.readrumble.user.UserController;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +25,10 @@ public class MongoFullController {
     private final UserController userController;
     private final CompetitionController competitionController;
     private final AdminCompetitionController adminCompetitionController;
-    private final ReviewController reviewController;
+    private final PostController reviewController;
     private final ActiveBookController libraryController;
     @Autowired
-    public MongoFullController(UserController userController, CompetitionController competitionController, ReviewController reviewController, ActiveBookController libraryController, AdminCompetitionController adminCompetitionController) {
+    public MongoFullController(UserController userController, CompetitionController competitionController, PostController reviewController, ActiveBookController libraryController, AdminCompetitionController adminCompetitionController) {
         this.userController = userController;
         this.competitionController = competitionController;
         this.adminCompetitionController = adminCompetitionController;

@@ -15,7 +15,7 @@ import LoginForm from './pages/Login';
 import Logout from './components/Logout';
 import GuestLayout from './layout/GuestLayout';
 import RegistrationForm from './pages/Registration';
-import ReviewForm from './pages/ReviewForm';
+import ReviewForm from './pages/PostForm';
 import Dashboard from "./pages/UserDashboard";
 import CompetitionPage from "./pages/Competition";
 import CompetitionSpec from "./components/CompetitionSpecification";
@@ -26,7 +26,7 @@ import CompetitionAdmin from './pages/admin/CompetitionAdmin';
 import AddCompetition from './pages/admin/AddCompetition';
 import CompetitionSpecAdmin from './pages/admin/CompetitionSpecAdmin';
 import UserAdmin from './pages/admin/UserAdmin';
-import ReviewAdmin from './pages/admin/ReviewAdmin';
+import PostAdmin from './pages/admin/PostAdmin';
 import OtherUserProfile from './pages/OtherUserProfile';
 import BanUnbanProfile from './pages/admin/BanUnbanProfile';
 const App = () => {
@@ -56,7 +56,7 @@ const App = () => {
                         {isLoggedIn ? (isAdmin ?
                             (<AdminLayout>
                                 <Routes>
-                                    <Route
+<Route
                                         path="/admin/user/banunban/:name"
                                         element={<BanUnbanProfile />}
                                     />
@@ -98,7 +98,7 @@ const App = () => {
                                     <Route
                                         path="/admin_review"
                                         element={
-                                            <ReviewAdmin/>}
+                                            <PostAdmin/>}
                                     />
                                 </Routes>
                             </AdminLayout>) : (

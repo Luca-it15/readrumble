@@ -7,7 +7,7 @@ import '../App.css';
 import BookListShow from '../components/BookListShow';
 import SearchBar from '../components/SearchBar';
 import UserList from '../components/UserList';
-import ReviewsListAll from '../components/ReviewsListAll';
+import PostsListAll from '../components/PostsListAll';
 
 export default function Explore() {
  const [value, setValue] = useState(0); 
@@ -42,7 +42,7 @@ export default function Explore() {
      <>   
            <div className='choiche'>
       <h3>Reviews</h3>
-      < ReviewsListAll/>
+      < PostsListAll/>
       </div>
       </>
        ); 

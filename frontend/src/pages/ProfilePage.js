@@ -4,7 +4,7 @@ import FavoriteBookList from '../components/FavoriteBookList';
 import FollowingList from '../components/FollowingList';
 import {Container, Grid, Typography, Paper} from '@mui/material';
 import Button from '@mui/material-next/Button';
-import ReviewsList from '../components/ReviewsList';
+import ReviewsList from '../components/PostList';
 import CompetitionProfBlock from '../components/CompetitionBlock';
 import BookListShow from '../components/BookListShow';
 import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';

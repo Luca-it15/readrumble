@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios'; // Assicurati di aver installato axios con npm install axios
-import ReviewRow from './ReviewRow'; // Assicurati che il percorso sia corretto
+import PostRow from './PostRow'; // Assicurati che il percorso sia corretto
 
-const ReviewsList = () => {
-  const [reviews, setReviews] = useState([]);
+const PostsList = () => {
+  const [posts, setposts] = useState([]);
    
   var storedData = localStorage.getItem('logged_user');
 
@@ -20,10 +20,10 @@ const ReviewsList = () => {
   }
   let username = user["Username"]; 
   useEffect(() => {
-    // Sostituisci 'http://localhost:8080/reviews' con l'URL del tuo server
-    axios.get(`http://localhost:8080/api/review/all/${username}`)
+    // Sostituisci 'http://localhost:8080/posts' con l'URL del tuo server
+    axios.get(`http://localhost:8080/api/post/all/${username}`)
       .then(response => {
-        setReviews(response.data);
+        setposts(response.data);
       })
       .catch(error => {
         console.error('There was an error!', error);
@@ -32,16 +32,16 @@ const ReviewsList = () => {
 
   return (
     <div>
-      {reviews.map((review, index) => (
-        <ReviewRow 
+      {posts.map((post, index) => (
+        <PostRow 
           key={index}
-          title={review.title}
-          username={review.username}
-          pagesRead={review.numberOfPagesRead}
-          review={review.review}
-          rating={review.rating}
+          title={post.title}
+          username={post.username}
+          pagesRead={post.numberOfPagesRead}
+          post={post.post}
+          rating={post.rating}
           readOnly={true}
-          date={review.date}
+          date={post.date}
         />
       ))}
     
@@ -49,4 +49,4 @@ const ReviewsList = () => {
   );
 };
 
-export default ReviewsList;
+export default PostsList;
