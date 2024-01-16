@@ -72,12 +72,13 @@ function BookDetails() {
 
     return (
         <Paper sx={PaperStyle}>
-            <Typography variant="h4" fontWeight="bold" textAlign="center" marginBottom="20px">{book['title']}</Typography>
+            <Typography variant="h4" fontWeight="bold" textAlign="center"
+                        marginBottom="20px">{book['title']}</Typography>
             <Grid container direction="row" alignItems="center" justifyContent="center" spacing={3}>
                 <Grid item xs={3} md={2}>
-                        <img alt="Book cover" src={book['image_url']} width="100%"/>
+                    <img alt="Book cover" src={book['image_url']} width="100%"/>
                 </Grid>
-                <Grid item xs={2} >
+                <Grid item xs={2}>
                     <Typography variant="h5">By: {book['authors']}</Typography>
                     <Typography>Publisher: {book['publisher']}</Typography>
                     <Typography>Publication year: {book['publication_year']}</Typography>
@@ -85,18 +86,27 @@ function BookDetails() {
                     <Typography>Pages: {book['num_pages']}</Typography>
                 </Grid>
                 <Grid container direction="column" alignItems="center" justifyContent="center" xs={4}>
-                    <Button onClick={seeReviews(id)} sx={{backgroundColor: blue[200], margin: "5px", '&:hover': {backgroundColor: blue[100]}}}
+                    <Button onClick={seeReviews(id)}
+                            sx={{backgroundColor: blue[200], margin: "5px", '&:hover': {backgroundColor: blue[100]}}}
                             variant="filledTonal" startIcon={<StarTwoToneIcon sx={{color: yellow[400]}}/>}>
                         <Typography>See reviews</Typography>
                     </Button>
 
                     {isFavorite ? (
-                        <Button onClick={toggleFavorite(id)} sx={{backgroundColor: blue[200], margin: "5px", '&:hover': {backgroundColor: blue[100]}}}
+                        <Button onClick={toggleFavorite(id)} sx={{
+                            backgroundColor: blue[200],
+                            margin: "5px",
+                            '&:hover': {backgroundColor: blue[100]}
+                        }}
                                 variant="filledTonal" startIcon={<BookmarkRemoveIcon sx={{color: blue[700]}}/>}>
                             <Typography>Remove from favorites</Typography>
                         </Button>
                     ) : (
-                        <Button onClick={toggleFavorite(id)} sx={{backgroundColor: blue[200], margin: "5px", '&:hover': {backgroundColor: blue[100]}}}
+                        <Button onClick={toggleFavorite(id)} sx={{
+                            backgroundColor: blue[200],
+                            margin: "5px",
+                            '&:hover': {backgroundColor: blue[100]}
+                        }}
                                 variant="filledTonal" startIcon={<BookmarkAddIcon sx={{color: blue[700]}}/>}>
                             <Typography>Add to favorites</Typography>
                         </Button>

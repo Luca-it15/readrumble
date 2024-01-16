@@ -92,8 +92,12 @@ function FollowingList({user}) {
                 ) : (
                     following.slice(0, displayCount).map((username, index) => (
                         <React.Fragment key={index}>
-                            <ListItem key={index} onClick={ () => {seeProfile(username)}} sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
-                                <Link onClick={ () => {seeProfile(username)}} sx={{color: "#000000"}}>
+                            <ListItem key={index} onClick={() => {
+                                seeProfile(username)
+                            }} sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
+                                <Link onClick={() => {
+                                    seeProfile(username)
+                                }} sx={{color: "#000000"}}>
                                     <Typography>{username}</Typography>
                                 </Link>
 

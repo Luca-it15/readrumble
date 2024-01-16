@@ -90,8 +90,12 @@ function FavoriteBookList({user}) {
                 ) : (
                     Array.isArray(books) && books.slice(0, displayCount).map((book, index) => (
                         <React.Fragment key={index}>
-                            <ListItem onClick={ () => {seeDetails(book.id)}} sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
-                                <Link onClick={ () => {seeDetails(book.id)}} sx={{color: "#000000"}}>
+                            <ListItem onClick={() => {
+                                seeDetails(book.id)
+                            }} sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
+                                <Link onClick={() => {
+                                    seeDetails(book.id)
+                                }} sx={{color: "#000000"}}>
                                     <Typography>{book.title}</Typography>
                                 </Link>
                                 {/* Allow to remove favorite books only on personal profile */}

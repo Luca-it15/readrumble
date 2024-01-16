@@ -55,13 +55,15 @@ const ProfilePage = () => {
                     <Grid container xs={6} direction="row" alignItems="center">
                         <Grid item xs={6} md={3}>
                             <Button sx={{backgroundColor: blue[200], '&:hover': {backgroundColor: blue[100]}}}
-                                    variant="filledTonal" onClick={goSettings} startIcon={<SettingsTwoToneIcon sx={{color: blue[700]}}/>}>
+                                    variant="filledTonal" onClick={goSettings}
+                                    startIcon={<SettingsTwoToneIcon sx={{color: blue[700]}}/>}>
                                 <Typography>Settings</Typography>
                             </Button>
                         </Grid>
                         <Grid item xs={6} md={3}>
                             <Button sx={{backgroundColor: blue[200], '&:hover': {backgroundColor: blue[100]}}}
-                                    variant="filledTonal" onClick={goDashboard} startIcon={<LeaderboardTwoToneIcon sx={{color: blue[700]}}/>}>
+                                    variant="filledTonal" onClick={goDashboard}
+                                    startIcon={<LeaderboardTwoToneIcon sx={{color: blue[700]}}/>}>
                                 <Typography>Dashboard</Typography>
                             </Button>
                         </Grid>
@@ -70,7 +72,7 @@ const ProfilePage = () => {
             </Paper>
             <Grid container spacing={3} textAlign="center">
                 <Grid item xs={4} md={4}>
-                        <FollowingList user={currentUser['_id']}/>
+                    <FollowingList user={currentUser['_id']}/>
                     <Paper elevation={2} style={PaperStyle}>
                         <Typography variant="h4">Competitions</Typography>
                         <CompetitionProfBlock/>
@@ -80,7 +82,8 @@ const ProfilePage = () => {
                     <Paper elevation={2} style={PaperStyle}>
                         <Typography variant="h4">Posts</Typography>
                         <Button sx={{backgroundColor: blue[200], '&:hover': {backgroundColor: blue[100]}}}
-                                variant="filledTonal" onClick={goReview} startIcon={<EditNoteTwoToneIcon sx={{color: blue[700]}}/>}>
+                                variant="filledTonal" onClick={goReview}
+                                startIcon={<EditNoteTwoToneIcon sx={{color: blue[700]}}/>}>
                             <Typography>Make a post</Typography>
                         </Button>
                         {/* TODO (Luca o anche Francesco): aggiungere parametro user a ReviewList e gestirlo lì */}

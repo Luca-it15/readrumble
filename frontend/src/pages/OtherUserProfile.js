@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import Profile from '../components/Profile';
 import FavoriteBookList from '../components/FavoriteBookList';
 import FollowingList from '../components/FollowingList';
-import { Container, Grid, Typography, Paper } from '@mui/material';
+import {Container, Grid, Typography, Paper} from '@mui/material';
 import Button from '@mui/material-next/Button';
 import ReviewsList from '../components/ReviewsList';
 import CompetitionProfBlock from '../components/CompetitionBlock';
@@ -11,6 +11,7 @@ import axios from "axios";
 import PersonAddTwoToneIcon from '@mui/icons-material/PersonAddTwoTone';
 import PersonRemoveTwoToneIcon from '@mui/icons-material/PersonRemoveTwoTone';
 import {blue} from "@mui/material/colors";
+import {useParams} from "react-router-dom";
 
 // !!! UNTESTED !!!
 
@@ -24,7 +25,8 @@ const PaperStyle = {
     width: '100%'
 }
 
-function OtherUserProfile({user}) {
+function OtherUserProfile() {
+    const user = useParams();
 
     // If the user is in "following" list, then isFollowing is true
     const [isFollowing, setIsFollowing] = useState(currentUser['following'].includes(user));
@@ -60,11 +62,13 @@ function OtherUserProfile({user}) {
                     </Grid>
                     <Grid container xs={6} direction="column" alignItems="center" justifyContent="space-around">
                         {isFollowing ? (
-                            <Button sx={{color: blue[500]}} variant="filledTonal" onClick={toggleFollowing} startIcon={ <PersonAddTwoToneIcon /> }>
+                            <Button sx={{color: blue[500]}} variant="filledTonal" onClick={toggleFollowing}
+                                    startIcon={<PersonAddTwoToneIcon/>}>
                                 <Typography>Follow</Typography>
                             </Button>
                         ) : (
-                            <Button sx={{color: blue[500]}} variant="filledTonal" onClick={toggleFollowing} startIcon={ <PersonRemoveTwoToneIcon /> }>
+                            <Button sx={{color: blue[500]}} variant="filledTonal" onClick={toggleFollowing}
+                                    startIcon={<PersonRemoveTwoToneIcon/>}>
                                 <Typography>Unfollow</Typography>
                             </Button>
                         )}
@@ -79,7 +83,7 @@ function OtherUserProfile({user}) {
                     </Paper>
                     <Paper elevation={3} style={PaperStyle}>
                         <Typography variant="h4">Competizioni</Typography>
-                        <CompetitionProfBlock />
+                        <CompetitionProfBlock/>
                     </Paper>
                 </Grid>
                 <Grid item xs={4} md={4}>

@@ -19,7 +19,7 @@ main {
     justify-content: center;
 }
 
-.MuiGrid-root .MuiGrid-item .MuiGrid-grid-xs-4 .MuiGrid-grid-md-4 .css-gj1fbr-MuiGrid-root, .css-1jpv6k6-MuiGrid-root>.MuiGrid-item {
+.MuiGrid-root .MuiGrid-item .MuiGrid-grid-xs-4 .MuiGrid-grid-md-4 .css-gj1fbr-MuiGrid-root, .css-1jpv6k6-MuiGrid-root > .MuiGrid-item {
     padding-left: 12px !important;
     padding-right: 12px !important;
 }
@@ -189,17 +189,19 @@ input > .mb-3 {
     margin-top: 5%;
     text-align: center;
 }
-.defCont{
-    width:50%;
-    position:relative;
-    text-align:center;
-    background-color:cornflowerblue;
+
+.defCont {
+    width: 50%;
+    position: relative;
+    text-align: center;
+    background-color: cornflowerblue;
 }
-.defCont button{
-    width:30%;
-    color:cornflowerblue;
-    font-weight:bold;
-    position:relative;
-    left:35%;
-    background-color:blanchedalmond;
+
+.defCont button {
+    width: 30%;
+    color: cornflowerblue;
+    font-weight: bold;
+    position: relative;
+    left: 35%;
+    background-color: blanchedalmond;
 }
