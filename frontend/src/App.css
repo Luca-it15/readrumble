@@ -162,3 +162,17 @@ input > .mb-3 {
   margin-top: 5%; 
   text-align: center;
 }
+.defCont{
+    width:50%;
+    position:relative;
+    text-align:center;
+    background-color:cornflowerblue;
+}
+.defCont button{
+    width:30%;
+    color:cornflowerblue;
+    text-size:bold;
+    position:relative;
+    left:35%;
+    background-color:blanchedalmond;
+}

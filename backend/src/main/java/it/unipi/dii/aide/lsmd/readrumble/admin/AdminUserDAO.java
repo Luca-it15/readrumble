@@ -30,7 +30,12 @@ public class AdminUserDAO {
         {
             if(doc.hasNext())
             {
-                return doc.next();
+                Document user = doc.next();
+                if(!user.containsKey("isBanned"))
+                {
+                    user.append("isBanned",0);
+                }
+                return user;
             }
             else
             {

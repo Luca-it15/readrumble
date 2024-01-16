@@ -51,30 +51,39 @@ const navigate = useNavigate();
             console.log(response.data);
             if(response.data === '')
             {
-                setLoginStatus({message: "Username or Password are incorrect", variant: 'danger'});
+                setLoginStatus({message: "Username or Password are incorrect", variant: 'error'});
             }
             else
             {
                 setLoginStatus({message: "You Logged in Successfully, you will now be redirected to your home ", variant: 'success'});
                 const isLoggedIn = true;
-                setLoginStatus(true);
                 var isAdmin = false
                 if(response.data.isAdmin == 1)
                 {
                     isAdmin = true;
                 }
-                localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
-                localStorage.setItem('isAdmin', JSON.stringify(isAdmin));
-                localStorage.setItem('logged_user', JSON.stringify(response.data));
+                if(response.data.isBanned == 1)
+                {
+                    setLoginStatus({message: "You Are Banned from this service", variant: 'error'});
+                    setTimeout(()=>{setLoginStatus({message:'',variant:'success'})},3000)
+                }
+                else
+                {
+                    localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
+                    localStorage.setItem('isAdmin', JSON.stringify(isAdmin));
+                    localStorage.setItem('logged_user', JSON.stringify(response.data));
+                    setTimeout(function () {
+                        window.location.href="/dashboard"
+                        navigate("/dashboard");
+                    }, 1000)
+                }
+
             }
             // Imposta il flag di login nello stato e in localStorage
 
 
             // Attendere 1 secondo e poi reindirizzare
-            setTimeout(function () {
-                window.location.href="/dashboard"
-                navigate("/dashboard");
-            }, 1000)
+
         } catch (error) {
             // Gestisci gli errori qui
             setLoginStatus({message: error.response ? error.response.data : error.message, variant: 'danger'});
@@ -110,7 +119,7 @@ const navigate = useNavigate();
             )}
 
             {loginStatus.message && (
-                <Alert severity={loginStatus.variant}>
+                <Alert>
                     {loginStatus.message}
                 </Alert>
             )}
