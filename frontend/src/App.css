@@ -17,6 +17,7 @@ main {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    background-color: #e3f2fd;
 }
 
 .MuiGrid-root .MuiGrid-item .MuiGrid-grid-xs-4 .MuiGrid-grid-md-4 .css-gj1fbr-MuiGrid-root, .css-1jpv6k6-MuiGrid-root > .MuiGrid-item {

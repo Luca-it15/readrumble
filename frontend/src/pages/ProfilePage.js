@@ -10,7 +10,7 @@ import BookListShow from '../components/BookListShow';
 import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';
 import LeaderboardTwoToneIcon from '@mui/icons-material/LeaderboardTwoTone';
 import EditNoteTwoToneIcon from '@mui/icons-material/EditNoteTwoTone';
-import {blue} from "@mui/material/colors";
+import {blue, green} from "@mui/material/colors";
 
 let currentUser = localStorage.getItem('logged_user');
 
@@ -49,18 +49,18 @@ const ProfilePage = () => {
         <Container maxWidth="xl">
             <Paper elevation={2} style={PaperStyle}>
                 <Grid container direction="row" justifyContent="space-around">
-                    <Grid item xs={6} md={4}>
+                    <Grid item xs={8} md={5}>
                         <Profile {...currentUser} />
                     </Grid>
-                    <Grid container xs={6} direction="row" alignItems="center">
-                        <Grid item xs={6} md={3}>
+                    <Grid container xs={4} direction="row" alignItems="center">
+                        <Grid item xs={6} md={5}>
                             <Button sx={{backgroundColor: blue[200], '&:hover': {backgroundColor: blue[100]}}}
                                     variant="filledTonal" onClick={goSettings}
                                     startIcon={<SettingsTwoToneIcon sx={{color: blue[700]}}/>}>
                                 <Typography>Settings</Typography>
                             </Button>
                         </Grid>
-                        <Grid item xs={6} md={3}>
+                        <Grid item xs={6} md={5}>
                             <Button sx={{backgroundColor: blue[200], '&:hover': {backgroundColor: blue[100]}}}
                                     variant="filledTonal" onClick={goDashboard}
                                     startIcon={<LeaderboardTwoToneIcon sx={{color: blue[700]}}/>}>
@@ -71,26 +71,26 @@ const ProfilePage = () => {
                 </Grid>
             </Paper>
             <Grid container spacing={3} textAlign="center">
-                <Grid item xs={4} md={4}>
+                <Grid item xs={3} md={3}>
                     <FollowingList user={currentUser['_id']}/>
                     <Paper elevation={2} style={PaperStyle}>
                         <Typography variant="h4">Competitions</Typography>
                         <CompetitionProfBlock/>
                     </Paper>
                 </Grid>
-                <Grid item xs={4} md={4}>
+                <Grid item xs={6} md={6}>
                     <Paper elevation={2} style={PaperStyle}>
-                        <Typography variant="h4">Posts</Typography>
-                        <Button sx={{backgroundColor: blue[200], '&:hover': {backgroundColor: blue[100]}}}
+                        <Typography variant="h5">Posts</Typography>
+                        <Button sx={{backgroundColor: blue[200], height: "40px", '&:hover': {backgroundColor: '#23d984'}}}
                                 variant="filledTonal" onClick={goReview}
                                 startIcon={<EditNoteTwoToneIcon sx={{color: blue[700]}}/>}>
-                            <Typography>Make a post</Typography>
+                            <Typography>Make a post!</Typography>
                         </Button>
                         {/* TODO (Luca o anche Francesco): aggiungere parametro user a ReviewList e gestirlo lì */}
                         <ReviewsList/>
                     </Paper>
                 </Grid>
-                <Grid item xs={4} md={4}>
+                <Grid item xs={3} md={3}>
                     <FavoriteBookList user={currentUser['_id']}/>
                     <Paper elevation={2} style={PaperStyle}>
                         <Typography variant="h4">Books you have read</Typography>

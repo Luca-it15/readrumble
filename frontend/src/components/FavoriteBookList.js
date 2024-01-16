@@ -33,7 +33,7 @@ function FavoriteBookList({user}) {
 
     const fetchBooks = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/favoriteBooks?username=${user}`);
+            const response = await axios.get(`http://localhost:8080/api/favoriteBooks/${user}`);
 
             // Returns book.id and book.title
             setBooks(response.data.map(book => ({
@@ -59,12 +59,20 @@ function FavoriteBookList({user}) {
     };
 
     async function removeFavorite(book) {
+        console.log("Favorites before: " + currentUser["favoriteBooks"])
+        console.log("Removing " + book + " from favorites of " + currentUser["_id"] + "...");
+
         // Removea book from favorite list in database
-        await axios.delete(`/api/removeFavoriteBook/${currentUser["_id"]}/${book}`);
+        await axios.delete(`http://localhost:8080/api/removeFavoriteBook/${currentUser["_id"]}/${book}`);
         setBooks(books.filter(item => item !== book));
 
         // Remove book from favorite list in local storage
         currentUser['favoriteBooks'].splice(currentUser["favoriteBooks"].indexOf(book), 1);
+
+        localStorage.setItem('logged_user', JSON.stringify(currentUser));
+
+        console.log("Removed " + book + " from favorites of " + currentUser["_id"]);
+        console.log("Favorites after: " + currentUser["favoriteBooks"])
     }
 
     function seeDetails(id) {
@@ -90,9 +98,7 @@ function FavoriteBookList({user}) {
                 ) : (
                     Array.isArray(books) && books.slice(0, displayCount).map((book, index) => (
                         <React.Fragment key={index}>
-                            <ListItem onClick={() => {
-                                seeDetails(book.id)
-                            }} sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
+                            <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
                                 <Link onClick={() => {
                                     seeDetails(book.id)
                                 }} sx={{color: "#000000"}}>
@@ -102,7 +108,7 @@ function FavoriteBookList({user}) {
                                 {currentUser["_id"] === user && (
                                     <Tooltip title="Remove from favorites">
                                         <IconButton sx={{color: blue[500], '&:hover': {color: red[500]}}}
-                                                    onClick={() => removeFavorite(book)}>
+                                                    onClick={() => removeFavorite(book.id)}>
                                             <BookmarkRemoveIcon/>
                                         </IconButton>
                                     </Tooltip>
@@ -114,7 +120,9 @@ function FavoriteBookList({user}) {
                 )}
             </List>
             {books.length > displayCount && (
-                <Button variant="filledTonal" onClick={loadAllBooks}>
+                <Button sx={{backgroundColor: blue[100], marginTop: "10px", height: "30px",
+                            '&:hover': {backgroundColor: blue[100]}}}
+                        variant="filledTonal" onClick={loadAllBooks}>
                     <Typography>Show all</Typography>
                 </Button>
             )}

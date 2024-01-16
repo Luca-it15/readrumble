@@ -24,7 +24,7 @@ function FollowingList({user}) {
 
     const navigate = useNavigate();
 
-    const [displayCount, setDisplayCount] = useState(10);
+    const [displayCount, setDisplayCount] = useState(6);
 
     const ListStyle = {
         py: 0,
@@ -46,9 +46,9 @@ function FollowingList({user}) {
     // Works in both cases: if "user" is current user or another user, because we are on their profile, and have to show their following list
     async function fetchFollowing() {
         try {
-            const response = await axios.get(`http://localhost:8080/api/following?username=${user}`);
-            setFollowing(JSON.parse(response.data));
+            const response = await axios.get(`http://localhost:8080/api/following/${user}`);
             console.log("Received: " + response.data)
+            setFollowing(response.data);
         } catch (error) {
             console.log(error.response)
         }
@@ -57,7 +57,7 @@ function FollowingList({user}) {
     // Works only if "user" is current user, because only on the personal profile we can unfollow users in the following list
     async function unfollow() {
         try {
-            await axios.delete(`/api/unfollow/${currentUser['_id']}/${user}`);
+            await axios.delete(`http://localhost:8080/api/unfollow/${currentUser['_id']}/${user}`);
 
             // Remove user from following list
             let updatedFollowing = currentUser['following'].filter(followingUser => followingUser !== user);
@@ -71,7 +71,7 @@ function FollowingList({user}) {
 
     useEffect(() => {
         fetchFollowing();
-    }, [currentUser['_id']]);
+    }, [user]);
 
     const loadAllFollowings = () => {
         setDisplayCount(following.length);
@@ -83,7 +83,9 @@ function FollowingList({user}) {
 
     return (
         <Paper sx={PaperStyle}>
-            <Typography variant="h5">Users you follow</Typography>
+            <Typography variant="h5">
+                {user === currentUser['_id'] ? "Users you follow" : user + " is following"}
+            </Typography>
             <List sx={ListStyle}>
                 {following.length === 0 ? (
                     <ListItem>
@@ -92,9 +94,7 @@ function FollowingList({user}) {
                 ) : (
                     following.slice(0, displayCount).map((username, index) => (
                         <React.Fragment key={index}>
-                            <ListItem key={index} onClick={() => {
-                                seeProfile(username)
-                            }} sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
+                            <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
                                 <Link onClick={() => {
                                     seeProfile(username)
                                 }} sx={{color: "#000000"}}>
@@ -116,7 +116,11 @@ function FollowingList({user}) {
                     )))}
             </List>
             {following.length > displayCount && (
-                <Button variant="contained" onClick={loadAllFollowings}>Show all</Button>
+                <Button sx={{backgroundColor: blue[100], marginTop: "10px", height: "30px",
+                            '&:hover': {backgroundColor: blue[100]}}}
+                        variant="filledTonal" onClick={loadAllFollowings}>
+                    <Typography>Show all</Typography>
+                </Button>
             )}
         </Paper>
     );

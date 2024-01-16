@@ -9,12 +9,13 @@ import {red} from "@mui/material/colors";
 
 const NavApp = () => {
     return (
-        <AppBar position="sticky">
+        <AppBar position="sticky" sx={{backgroundColor: '#393939'}}>
             <Toolbar sx={{ justifyContent: 'center' }}>
-                <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-                    <img src={logo} alt="Logo" width="60" height="60" className="d-inline-block me-2"/>
-                    ReadRumble
-                </Typography>
+                <img src={logo} alt="Logo" width="60" height="60" className="d-inline-block me-2"/>
+                <Typography variant="h4" sx={{ color: '#0090FF' }}>R</Typography>
+                <Typography variant="h4">ead</Typography>
+                <Typography variant="h4" sx={{ color: '#FE262F' }}>R</Typography>
+                <Typography variant="h4" sx={{ flexGrow: 1 }}>umble</Typography>
                     <Button sx={{color: '#ffffff'}} component={NavLink} to="/dashboard" exact>
                         <Typography>Home</Typography>
                     </Button>
@@ -24,7 +25,7 @@ const NavApp = () => {
                     <Button sx={{color: '#ffffff'}} component={NavLink} to="/profile">
                         <Typography>Profile</Typography>
                     </Button>
-                    <Button sx={{color: "#ffffff", backgroundColor: red[300], width: "70px", height: "25px"}} variant="filled" component={NavLink} to="/logout">
+                    <Button sx={{color: "#ffffff", backgroundColor: red[500], width: "70px", height: "25px"}} variant="filled" component={NavLink} to="/logout">
                         <Typography>Logout</Typography>
                     </Button>
             </Toolbar>

@@ -17,34 +17,68 @@ import {useParams} from "react-router-dom";
 
 let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
-const PaperStyle = {
-    backgroundColor: '#f1f7fa',
-    padding: '10px',
-    margin: '10px',
-    borderRadius: 18,
-    width: '100%'
-}
-
 function OtherUserProfile() {
-    const user = useParams();
+    const {username} = useParams();
 
-    // If the user is in "following" list, then isFollowing is true
-    const [isFollowing, setIsFollowing] = useState(currentUser['following'].includes(user));
+    const [isFollowing, setIsFollowing] = useState(currentUser &&
+        currentUser['following'] && currentUser['following'].includes(username));
+
+    const [userInfo, setUserInfo] = useState([]);
+
+    console.log("Landed on " + username + "'s profile");
+    console.log("isFollowing: " + isFollowing);
+
+    const PaperStyle = {
+        backgroundColor: '#f1f7fa',
+        padding: '10px',
+        margin: '10px',
+        borderRadius: 18,
+        width: '100%'
+    }
+
+    async function fetchUserInformation() {
+        try {
+            /* TODO: funzione per ottenere le info dell'utente nel backend
+               Io (Francesco) suggerirei di usare una funzione del tipo
+
+               @GetMapping("/user/{username}")
+               public User getNameAndSurname(@PathVariable String username) {
+                   try {
+                        MongoCollection<Document> collection = MongoConfig.getCollection("Users");
+                        Document user = collection.find(eq("_id", username)).first();
+
+                        return user;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+               }
+             */
+            const response = await axios.get(`http://localhost:8080/api/user/${username}`);
+            setUserInfo(JSON.parse(response.data));
+            console.log("Received: " + response.data)
+        } catch (error) {
+            console.log(error.response)
+        }
+    }
+
+    useEffect(() => {
+        fetchUserInformation();
+    })
 
     // Toggle following status
     const toggleFollowing = async () => {
         try {
             if (isFollowing) {
-                await axios.delete(`/api/follow/${currentUser['_id']}/${user}`);
+                await axios.delete(`http://localhost:8080/api/follow/${currentUser['_id']}/${username}`);
 
-                // Remove user from following list
-                currentUser['following'].splice(currentUser['following'].indexOf(user), 1);
+                // Remove username from following list
+                currentUser['following'].splice(currentUser['following'].indexOf(username), 1);
                 localStorage.setItem('logged_user', JSON.stringify(currentUser));
             } else {
-                await axios.post(`/api/unfollow/${currentUser['_id']}/${user}`);
+                await axios.post(`http://localhost:8080/api/unfollow/${currentUser['_id']}/${username}`);
 
-                // Add user to following list
-                currentUser['following'].push(user);
+                // Add username to following list
+                currentUser['following'].push(username);
                 localStorage.setItem('logged_user', JSON.stringify(currentUser));
             }
             setIsFollowing(!isFollowing);
@@ -58,7 +92,7 @@ function OtherUserProfile() {
             <Paper elevation={3} style={PaperStyle}>
                 <Grid container direction="row" justifyContent="space-around">
                     <Grid item xs={6} md={4}>
-                        <Profile {...user} />
+                        <Profile {...userInfo} />
                     </Grid>
                     <Grid container xs={6} direction="column" alignItems="center" justifyContent="space-around">
                         {isFollowing ? (
@@ -77,10 +111,7 @@ function OtherUserProfile() {
             </Paper>
             <Grid container spacing={3} textAlign="center">
                 <Grid item xs={4} md={4}>
-                    <Paper elevation={3} style={PaperStyle}>
-                        <Typography variant="h4"></Typography>
-                        <FollowingList user={user}/>
-                    </Paper>
+                    <FollowingList user={username}/>
                     <Paper elevation={3} style={PaperStyle}>
                         <Typography variant="h4">Competizioni</Typography>
                         <CompetitionProfBlock/>
@@ -93,10 +124,7 @@ function OtherUserProfile() {
                     </Paper>
                 </Grid>
                 <Grid item xs={4} md={4}>
-                    <Paper elevation={3} style={PaperStyle}>
-                        <Typography variant="h4">{user}'s favorite books</Typography>
-                        <FavoriteBookList user={currentUser['_id']}/>
-                    </Paper>
+                    <FavoriteBookList user={username}/>
                     <Paper elevation={3} style={PaperStyle}>
                         <Typography variant="h4">Read books</Typography>
                         {/* TODO: add ReadBooks component */}

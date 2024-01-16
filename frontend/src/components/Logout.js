@@ -21,7 +21,7 @@ const Logout = ({onLogout}) => {
                 height: '20vh',
             }}
         >
-            <Button sx={{backgroundColor: red[300], color: "#ffffff"}} variant="contained" color="primary" onClick={handleLogout}>
+            <Button sx={{backgroundColor: red[500], color: "#ffffff"}} variant="contained" color="primary" onClick={handleLogout}>
                 <Typography>Logout</Typography>
             </Button>
         </Box>

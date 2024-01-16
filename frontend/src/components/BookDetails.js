@@ -54,13 +54,13 @@ function BookDetails() {
     const toggleFavorite = (id, isFavorite) => async () => {
         if (isFavorite) {
             // Removes a book from favorite list in database
-            await axios.delete(`/api/removeFavoriteBook/${currentUser["_id"]}/${id}`);
+            await axios.delete(`http://localhost:8080/api/removeFavoriteBook/${currentUser["_id"]}/${id}`);
 
             // Remove book from favorite list in local storage
             currentUser['favoriteBooks'].splice(currentUser["favoriteBooks"].indexOf(book), 1);
         } else {
             // Add a book to favorite list in database
-            await axios.post(`/api/addFavoriteBook/${currentUser["_id"]}/${id}`);
+            await axios.post(`http://localhost:8080/api/addFavoriteBook/${currentUser["_id"]}/${id}`);
 
             // Add book to favorite list in local storage
             currentUser['favoriteBooks'].push(book);
