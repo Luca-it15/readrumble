@@ -28,7 +28,7 @@ import CompetitionSpecAdmin from './pages/admin/CompetitionSpecAdmin';
 import UserAdmin from './pages/admin/UserAdmin';
 import ReviewAdmin from './pages/admin/ReviewAdmin';
 import OtherUserProfile from './pages/OtherUserProfile';
-
+import BanUnbanProfile from './pages/admin/BanUnbanProfile';
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(
         JSON.parse(localStorage.getItem('isLoggedIn')) || false
@@ -56,6 +56,10 @@ const App = () => {
                         {isLoggedIn ? (isAdmin ?
                             (<AdminLayout>
                                 <Routes>
+                                    <Route
+                                        path="/admin/user/banunban/:name"
+                                        element={<BanUnbanProfile />}
+                                    />
                                     <Route
                                         path="/logout"
                                         element={<Logout onLogout={handleLogout}/>}
