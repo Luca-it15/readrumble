@@ -16,22 +16,26 @@ import java.util.List;
 
 public class PostDTO {
 
-    private int _id;
+    private long _id;
+
+
+    private int book_id;
     private int rating;
     private Date date_added;
     private String book_title;
     private String username;
 
 
-    public PostDTO(int _id, int rating, Date date, String book_title, String username) {
+    public PostDTO(long _id, int book_id, int rating, Date date, String book_title, String username) {
         this._id = _id;
+        this.book_id = book_id;
         this.rating = rating;
         this.date_added = date;
         this.book_title = book_title;
         this.username = username;
     }
 
-    public int get_id() {
+    public long get_id() {
         return _id;
     }
 
@@ -39,7 +43,17 @@ public class PostDTO {
         this._id = _id;
     }
 
+    public int getBook_id() {
+        return book_id;
+    }
 
+    public int getRating() {
+        return rating;
+    }
+
+    public String getUsername() {
+        return username;
+    }
     public void setRating(int rating) {
         this.rating = rating;
     }

@@ -84,50 +84,67 @@ public class PostDAO {
             }
     }
 
-    public List<PostDTO> allPostsUser(String username) {
-        List<PostDTO> reviews = new ArrayList<>();
+    public List<PostDTO> allPostsUser(String parametro, boolean user) {
+        List<PostDTO> posts = new ArrayList<>();
 
         MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
 
         // Ottieni le prime 10 recensioni
-        Document query = new Document("_id", username);
-        for (Document doc : collection.find(query).sort(new Document("date", -1)).limit(10)) {
-            List<String> arrayTags = (List<String>) doc.get("tags");
-
-            PostDTO review = new PostDTO(
-                  doc.getInteger("_id"),
+        Document query = null;
+        if(user)
+         query = new Document("username", parametro);
+        else {
+            int book_id = Integer.parseInt(parametro);
+            query = new Document("book_id", book_id);
+        }
+        for (Document doc : collection.find(query).sort(new Document("date_added", -1)).limit(10)) {
+            long[] _id = new long[1];
+            try {
+                _id[0] = doc.getLong("_id");
+            } catch ( ClassCastException e ) {
+                System.out.println("the post id is a integer, we need to convert in long value");
+                _id[0] = doc.getInteger("_id").longValue();
+            }
+            PostDTO post = new PostDTO(
+                  _id[0],
+                  doc.getInteger("book_id"),
                   doc.getInteger("rating"),
                   doc.getDate("date_added"),
                   doc.getString("book_title"),
                   doc.getString("username")
             );
-            reviews.add(review);
+            posts.add(post);
         }
 
         // Chiudi il client MongoDB
-        return reviews;
+        return posts;
     }
 
     public List<PostDTO> allPost() {
-        List<PostDTO> reviews = new ArrayList<>();
+        List<PostDTO> posts = new ArrayList<>();
 
         MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
 
         // Ottieni le prime 10 recensioni
         for (Document doc : collection.find().sort(new Document("date", -1)).limit(10)) {
-            List<String> arrayTags = (List<String>) doc.get("tags");
-
-            PostDTO review = new PostDTO(
-                    doc.getInteger("_id"),
+            long[] _id = new long[1];
+            try {
+                _id[0] = doc.getLong("_id");
+            } catch ( ClassCastException e ) {
+                System.out.println("the post id is a integer, we need to convert in long value");
+                _id[0] = doc.getInteger("_id").longValue();
+            }
+            PostDTO post = new PostDTO(
+                    _id[0],
+                    doc.getInteger("book_id"),
                     doc.getInteger("rating"),
                     doc.getDate("date_added"),
                     doc.getString("book_title"),
                     doc.getString("username")
             );
-            reviews.add(review);
-        }
-
-        // Chiudi il client MongoDB
-        return reviews;
+            posts.add(post);
+          }
+          return posts;
     }
+
 }
