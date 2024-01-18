@@ -104,6 +104,9 @@ public class BookController {
                 book.put("title", doc.get("title"));
                 books.add(book);
             }
+
+            System.out.println(books);
+
             return books;
         }
     }
