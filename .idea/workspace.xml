@@ -6,13 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="explore post fixed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/competition/CompetitionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/competition/CompetitionController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/competition/CompetitionDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/competition/CompetitionDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/CompetitionSpecification.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/CompetitionSpecification.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/PopularCompetitionBlock.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/PopularCompetitionBlock.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Explore.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Explore.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/readrumble" beforeDir="false" afterPath="$PROJECT_DIR$/readrumble" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Login.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Login.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -43,32 +43,38 @@ function LoginForm() {
         // Fetch currently reading books
         const fetchedCurrentlyReadingBooks = await axios.get(`http://localhost:8080/api/book/currentlyReadingBooks/${id}`)
         const currentlyReadingBooks = JSON.parse(JSON.stringify(fetchedCurrentlyReadingBooks.data));
-        currentUser['currentlyReading'] = currentlyReadingBooks.map(book => ({
-            id: book.id,
-            title: book.title.replace(/"/g, '')
-        }));
-        console.log(currentlyReadingBooks);
-
+        if(currentlyReadingBooks)
+        {
+            currentUser['currentlyReading'] = currentlyReadingBooks.map(book => ({
+                id: book.id,
+                title: book.title.replace(/"/g, '')
+            }));
+            console.log(currentlyReadingBooks);
+        }
         console.log("Fetching read books " + id);
         // Fetch recently read books
         const fetchedRecentBooks = await axios.get(`http://localhost:8080/api/book/recentlyReadBooks/${id}`)
         const recentlyReadBooks = JSON.parse(JSON.stringify(fetchedRecentBooks.data));
-        currentUser['recentlyReadBooks'] = recentlyReadBooks.map(book => ({
-            id: book.id,
-            title: book.title.replace(/"/g, '')
-        }));
-        console.log(recentlyReadBooks);
-
+        if(recentlyReadBooks)
+        {
+            currentUser['recentlyReadBooks'] = recentlyReadBooks.map(book => ({
+                id: book.id,
+                title: book.title.replace(/"/g, '')
+            }));
+            console.log(recentlyReadBooks);
+        }
         console.log("Fetching favorite books " + id);
         // Fetch favorite books
         const fetchedFavoriteBooks = await axios.get(`http://localhost:8080/api/favoriteBooks/${id}`)
         const favoriteBooks = JSON.parse(JSON.stringify(fetchedFavoriteBooks.data));
-        currentUser['favoriteBooks'] = favoriteBooks.map(book => ({
-            id: book.id.replace(/"/g, ''),
-            title: book.title.replace(/"/g, '')
-        }));
-        console.log(favoriteBooks);
-
+        if(favoriteBooks)
+        {
+            currentUser['favoriteBooks'] = favoriteBooks.map(book => ({
+                id: book.id.replace(/"/g, ''),
+                title: book.title.replace(/"/g, '')
+            }));
+            console.log(favoriteBooks);
+        }
         console.log("Fetching following list " + id);
         // Fetch following list
         const fetchedFollowingList = await axios.get(`http://localhost:8080/api/following/${id}`)
