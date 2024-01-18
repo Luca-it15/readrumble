@@ -1,22 +1,23 @@
 import React, {useState} from 'react';
 import {Form, Alert} from 'react-bootstrap';
-import { useNavigate  } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
 import {Paper, Grid, Typography} from "@mui/material";
 import {blue, green} from "@mui/material/colors";
 import Button from "@mui/material-next/Button"
 
 function RegistrationForm() {
-const navigate = useNavigate();
-function timeout_text() {
+    const navigate = useNavigate();
+
+    function timeout_text() {
         setTimeout(function () {
             // Azione da compiere dopo 1 secondo
             setRegistrationStatus({message: '', variant: 'success'});
             setValidationError('');
         }, 1500)
     }
-    const GoLogin = () =>
-    {
+
+    const GoLogin = () => {
         navigate('/login');
     }
     const [formData, setFormData] = useState({
@@ -52,16 +53,20 @@ function timeout_text() {
         }
         console.log(formData);
         try {
-                // Invia la richiesta HTTP qui usando axios
-                const response = await axios.post('http://localhost:8080/api/registration', formData);
+            // Invia la richiesta HTTP qui usando axios
+            const response = await axios.post('http://localhost:8080/api/registration', formData);
 
-                // Gestisci la risposta qui
-                setRegistrationStatus({message: response.data, variant: 'success'});
-                timeout_text();
-                // Attendere 3 secondi e poi reindirizzare
-                setTimeout(() => {
-                    window.location.href = 'http://localhost:3000/login';
-                }, 1300);
+            // Gestisci la risposta qui
+            setRegistrationStatus({message: response.data, variant: 'success'});
+
+            // Add the user to the graph
+            await axios.post(`http://localhost:8080/api/newUser/${formData._id}`);
+
+            timeout_text();
+            // Attendere 3 secondi e poi reindirizzare
+            setTimeout(() => {
+                window.location.href = 'http://localhost:3000/login';
+            }, 1300);
             // 3000 millisecondi = 3 secondi
         } catch (error) {
             // Gestisci gli errori qui
@@ -83,30 +88,39 @@ function timeout_text() {
             <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="formBasicName">
                     <Form.Label style={{marginLeft: '10px'}}><Typography>Name</Typography></Form.Label>
-                    <Form.Control style={{borderRadius: '30px', marginBottom: '30px'}} type="text" name="name" placeholder="Name" onChange={handleChange}/>
+                    <Form.Control style={{borderRadius: '30px', marginBottom: '30px'}} type="text" name="name"
+                                  placeholder="Name" onChange={handleChange}/>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicSurname">
                     <Form.Label style={{marginLeft: '10px'}}><Typography>Surname</Typography></Form.Label>
-                    <Form.Control style={{borderRadius: '30px', marginBottom: '30px'}} type="text" name="surname" placeholder="Surname" onChange={handleChange}/>
+                    <Form.Control style={{borderRadius: '30px', marginBottom: '30px'}} type="text" name="surname"
+                                  placeholder="Surname" onChange={handleChange}/>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicUsername">
                     <Form.Label style={{marginLeft: '10px'}}><Typography>Username</Typography></Form.Label>
-                    <Form.Control style={{borderRadius: '30px', marginBottom: '30px'}} type="text" name="_id" placeholder="Username" onChange={handleChange}/>
+                    <Form.Control style={{borderRadius: '30px', marginBottom: '30px'}} type="text" name="_id"
+                                  placeholder="Username" onChange={handleChange}/>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicPassword">
                     <Form.Label style={{marginLeft: '10px'}}><Typography>Password</Typography></Form.Label>
-                    <Form.Control style={{borderRadius: '30px', marginBottom: '30px'}} type="password" name="password" placeholder="Password" onChange={handleChange}/>
+                    <Form.Control style={{borderRadius: '30px', marginBottom: '30px'}} type="password" name="password"
+                                  placeholder="Password" onChange={handleChange}/>
                 </Form.Group>
 
                 <Grid item sx={{textAlign: 'center', marginBottom: '70px'}}>
-                    <Button variant="filled" type="submit" sx={{backgroundColor: blue[400], '&:hover': {backgroundColor: green[400]}}}>
+                    <Button variant="filled" type="submit"
+                            sx={{backgroundColor: blue[400], '&:hover': {backgroundColor: green[400]}}}>
                         <Typography>Register</Typography>
                     </Button>
                 </Grid>
             </Form>
             <Grid item sx={{textAlign: 'right'}}>
                 <Typography>Already have an account?
-                    <Button onClick={GoLogin} variant="filled" type="submit" sx={{ marginLeft: '20px', backgroundColor: blue[700], '&:hover': {backgroundColor: blue[400]}}}>
+                    <Button onClick={GoLogin} variant="filled" type="submit" sx={{
+                        marginLeft: '20px',
+                        backgroundColor: blue[700],
+                        '&:hover': {backgroundColor: blue[400]}
+                    }}>
                         <Typography>Login</Typography>
                     </Button>
                 </Typography>
