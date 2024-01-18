@@ -8,19 +8,10 @@ import PersonRemoveTwoToneIcon from "@mui/icons-material/PersonRemoveTwoTone";
 import {blue, red} from "@mui/material/colors";
 import {useNavigate} from "react-router-dom";
 
-// !!! UNTESTED !!!
-
-let currentUser = JSON.parse(localStorage.getItem('logged_user'));
-
 function FollowingList({user}) {
-    // Check se following è vuoto
-    if (currentUser['following'] === undefined) {
-        currentUser['following'] = [];
-    }
+    let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
-    // if user is current user, then show currentUser['following'], otherwise will fetch the user's following list
-    const initialFollowing = (user === currentUser['_id']) ? currentUser['following'] : [];
-    const [following, setFollowing] = useState(initialFollowing);
+    const [following, setFollowing] = useState([]);
 
     const navigate = useNavigate();
 
@@ -45,6 +36,11 @@ function FollowingList({user}) {
 
     // Works in both cases: if "user" is current user or another user, because we are on their profile, and have to show their following list
     async function fetchFollowing() {
+        if (user === currentUser['_id'] && currentUser['following'].exists()) {
+            setFollowing(currentUser['following'])
+            return;
+        }
+
         try {
             const response = await axios.get(`http://localhost:8080/api/following/${user}`);
             console.log("Received: " + response.data)
@@ -70,7 +66,12 @@ function FollowingList({user}) {
     }
 
     useEffect(() => {
-        fetchFollowing();
+        if (user === currentUser['_id']) {
+            // If user is current user, then show currentUser['following']
+            setFollowing(currentUser['following']);
+        } else {
+            fetchFollowing();
+        }
     }, [user]);
 
     const loadAllFollowings = () => {
@@ -117,7 +118,7 @@ function FollowingList({user}) {
             </List>
             {following.length > displayCount && (
                 <Button sx={{backgroundColor: blue[100], marginTop: "10px", height: "30px",
-                            '&:hover': {backgroundColor: blue[100]}}}
+                    '&:hover': {backgroundColor: blue[100]}}}
                         variant="filledTonal" onClick={loadAllFollowings}>
                     <Typography>Show all</Typography>
                 </Button>

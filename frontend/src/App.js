@@ -29,7 +29,7 @@ import CompetitionSpecAdmin from './pages/admin/CompetitionSpecAdmin';
 import UserAdmin from './pages/admin/UserAdmin';
 import PostAdmin from './pages/admin/PostAdmin';
 import OtherUserProfile from './pages/OtherUserProfile';
-import BookDetails from "./components/BookDetails";
+import BookDetails from "./pages/BookDetails";
 import BanUnbanProfile from './pages/admin/BanUnbanProfile';
 import PostDetails from './components/PostDetails';
 const App = () => {

@@ -1,7 +1,10 @@
 import React, {useState} from 'react';
-import {Form, Button, Alert} from 'react-bootstrap';
+import {Form, Alert} from 'react-bootstrap';
 import { useNavigate  } from 'react-router-dom';
 import axios from 'axios';
+import {Paper, Grid, Typography} from "@mui/material";
+import {blue, green} from "@mui/material/colors";
+import Button from "@mui/material-next/Button"
 
 function RegistrationForm() {
 const navigate = useNavigate();
@@ -67,32 +70,47 @@ function timeout_text() {
         }
     };
 
+    const PaperStyle = {
+        backgroundColor: '#f1f7fa',
+        padding: '30px 50px 30px 50px',
+        margin: '10px',
+        borderRadius: 10,
+        width: '40%'
+    }
+
     return (
-        <div className="LoginDiv">
+        <Paper sx={PaperStyle}>
             <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="formBasicName">
-                    <Form.Label>Name</Form.Label>
-                    <Form.Control type="text" name="name" placeholder="Name" onChange={handleChange}/>
+                    <Form.Label style={{marginLeft: '10px'}}><Typography>Name</Typography></Form.Label>
+                    <Form.Control style={{borderRadius: '30px', marginBottom: '30px'}} type="text" name="name" placeholder="Name" onChange={handleChange}/>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicSurname">
-                    <Form.Label>Surname</Form.Label>
-                    <Form.Control type="text" name="surname" placeholder="Surname" onChange={handleChange}/>
+                    <Form.Label style={{marginLeft: '10px'}}><Typography>Surname</Typography></Form.Label>
+                    <Form.Control style={{borderRadius: '30px', marginBottom: '30px'}} type="text" name="surname" placeholder="Surname" onChange={handleChange}/>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicUsername">
-                    <Form.Label>Username</Form.Label>
-                    <Form.Control type="text" name="_id" placeholder="Username" onChange={handleChange}/>
+                    <Form.Label style={{marginLeft: '10px'}}><Typography>Username</Typography></Form.Label>
+                    <Form.Control style={{borderRadius: '30px', marginBottom: '30px'}} type="text" name="_id" placeholder="Username" onChange={handleChange}/>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" name="password" placeholder="Password" onChange={handleChange}/>
+                    <Form.Label style={{marginLeft: '10px'}}><Typography>Password</Typography></Form.Label>
+                    <Form.Control style={{borderRadius: '30px', marginBottom: '30px'}} type="password" name="password" placeholder="Password" onChange={handleChange}/>
                 </Form.Group>
 
-                <Button variant="primary" type="submit">Submit</Button>
-
-
-
+                <Grid item sx={{textAlign: 'center', marginBottom: '70px'}}>
+                    <Button variant="filled" type="submit" sx={{backgroundColor: blue[400], '&:hover': {backgroundColor: green[400]}}}>
+                        <Typography>Register</Typography>
+                    </Button>
+                </Grid>
             </Form>
-            <Button className="buttonlogreg" onClick={GoLogin}>Login</Button>
+            <Grid item sx={{textAlign: 'right'}}>
+                <Typography>Already have an account?
+                    <Button onClick={GoLogin} variant="filled" type="submit" sx={{ marginLeft: '20px', backgroundColor: blue[700], '&:hover': {backgroundColor: blue[400]}}}>
+                        <Typography>Login</Typography>
+                    </Button>
+                </Typography>
+            </Grid>
             {validationError && (
                 <Alert variant="danger">
                     {validationError}
@@ -104,7 +122,7 @@ function timeout_text() {
                     {registrationStatus.message}
                 </Alert>
             )}
-        </div>
+        </Paper>
     );
 }
 

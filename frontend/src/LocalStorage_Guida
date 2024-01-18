@@ -1,0 +1,11 @@
+In localStorage, all'indice 'logged_user' vengono registrati vari dati durante il login:
+- _id
+- name
+- surname
+- favoriteBooks:
+    - id
+    - title
+- recentlyReadBooks:
+    - id
+    - title
+- following (array di username)
