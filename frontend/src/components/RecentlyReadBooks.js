@@ -27,6 +27,7 @@ function RecentlyReadBooks({user}) {
         if (user === currentUser['_id']) {
             // If user is current user, then show currentUser['recentlyReadBooks']
             setRecentlyReadBooks(currentUser['recentlyReadBooks']);
+            return;
         }
 
         try {

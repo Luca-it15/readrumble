@@ -8,8 +8,6 @@ import PersonRemoveTwoToneIcon from "@mui/icons-material/PersonRemoveTwoTone";
 import {blue, red} from "@mui/material/colors";
 import {useNavigate} from "react-router-dom";
 
-// !!! UNTESTED !!!
-
 function FollowingList({user}) {
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
@@ -38,6 +36,11 @@ function FollowingList({user}) {
 
     // Works in both cases: if "user" is current user or another user, because we are on their profile, and have to show their following list
     async function fetchFollowing() {
+        if (user === currentUser['_id'] && currentUser['following'].exists()) {
+            setFollowing(currentUser['following'])
+            return;
+        }
+
         try {
             const response = await axios.get(`http://localhost:8080/api/following/${user}`);
             console.log("Received: " + response.data)

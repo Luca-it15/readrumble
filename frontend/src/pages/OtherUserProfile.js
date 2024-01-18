@@ -101,7 +101,7 @@ function OtherUserProfile() {
                         <CompetitionProfBlock/>
                     </Paper>
                 </Grid>
-                <Grid item xs={6} md={6}>
+                <Grid item xs={6}>
                     <Paper elevation={2} style={PaperStyle}>
                         <Typography variant="h5">Posts</Typography>
                         <PostsList/>
