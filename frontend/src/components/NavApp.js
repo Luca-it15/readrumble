@@ -16,18 +16,19 @@ const NavApp = () => {
                 <Typography variant="h4">ead</Typography>
                 <Typography variant="h4" sx={{ color: '#FE262F' }}>R</Typography>
                 <Typography variant="h4" sx={{ flexGrow: 1 }}>umble</Typography>
-                    <Button sx={{color: '#ffffff'}} component={NavLink} to="/dashboard" exact>
-                        <Typography>Home</Typography>
-                    </Button>
-                    <Button sx={{color: '#ffffff'}} component={NavLink} to="/explore">
-                        <Typography>Explore</Typography>
-                    </Button>
-                    <Button sx={{color: '#ffffff'}} component={NavLink} to="/profile">
-                        <Typography>Profile</Typography>
-                    </Button>
-                    <Button sx={{color: "#ffffff", backgroundColor: red[500], width: "70px", height: "25px"}} variant="filled" component={NavLink} to="/logout">
-                        <Typography>Logout</Typography>
-                    </Button>
+                <Button sx={{color: '#ffffff'}} component={NavLink} to="/dashboard" exact>
+                    <Typography>Home</Typography>
+                </Button>
+                <Button sx={{color: '#ffffff'}} component={NavLink} to="/explore">
+                    <Typography>Explore</Typography>
+                </Button>
+                <Button sx={{color: '#ffffff'}} component={NavLink} to="/profile">
+                    <Typography>Profile</Typography>
+                </Button>
+                <Button sx={{color: "#ffffff", width: "70px", height: "25px", backgroundColor: 'transparent',
+                    '&:hover': {backgroundColor: red[500]}}} variant="filled" component={NavLink} to="/logout">
+                    <Typography>Logout</Typography>
+                </Button>
             </Toolbar>
         </AppBar>
     );

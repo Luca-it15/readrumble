@@ -6,16 +6,10 @@ import {Divider, Link, List, ListItem, Paper, Tooltip} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemoveTwoTone';
 import {blue, red} from "@mui/material/colors";
-import {Navigate, useNavigate} from "react-router-dom";
-
-let currentUser = localStorage.getItem('logged_user');
-if (!currentUser) {
-    // Redirect to login
-    Navigate({to: "/login"});
-}
+import {useNavigate} from "react-router-dom";
 
 function FavoriteBookList({user}) {
-    currentUser = JSON.parse(localStorage.getItem('logged_user'));
+    const currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
     const [books, setBooks] = useState([]);
     const [displayCount, setDisplayCount] = useState(10);
@@ -121,7 +115,7 @@ function FavoriteBookList({user}) {
             </List>
             {books.length > displayCount && (
                 <Button sx={{backgroundColor: blue[100], marginTop: "10px", height: "30px",
-                            '&:hover': {backgroundColor: blue[100]}}}
+                    '&:hover': {backgroundColor: blue[100]}}}
                         variant="filledTonal" onClick={loadAllBooks}>
                     <Typography>Show all</Typography>
                 </Button>
