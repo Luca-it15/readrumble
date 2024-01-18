@@ -40,6 +40,10 @@ public class PostController {
     public List<PostDTO> getAllPostUsers(@PathVariable String parametro, @PathVariable boolean user) {
         return postDAO.allPostsUser(parametro, user);
     }
+    @GetMapping("/details/{id}")
+    public Post getPostDetails(@PathVariable long id) {
+        return postDAO.postDetails(id);
+    }
     @GetMapping("/all")
     public List<PostDTO> getAllReviews() {
         return postDAO.allPost();

@@ -38,6 +38,7 @@ const PostsList = (user, username, book_id) => {
       {posts.map((post, index) => (
         <PostRow 
           key={index}
+          id={post._id}
           title={post.book_title}
           username={post.username}
           post={post.post}
