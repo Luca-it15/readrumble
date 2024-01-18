@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Container, Row, Col } from 'react-bootstrap';
+import { Button, Row, Col } from 'react-bootstrap';
+import {Container, Grid, Typography, Paper} from '@mui/material';
 import axios from 'axios';
 import {useNavigate, Route, Routes, Router} from 'react-router-dom';
 import CompetitionSpec from './CompetitionSpecification';
 import LoginForm from '../pages/Login';
 import '../App.css';
 function PopularCompetitionBlock() {
+    const PaperStyle = {
+        backgroundColor: '#f1f7fa',
+        padding: '10px',
+        margin: '20px 10px 0px 10px',
+        borderRadius: 18,
+        width: '100%',
+        textAlign:'center'
+    }
+    const ButtonStyle = {
+        color: 'cadetblue'
+    }
   const [data, setData] = useState([]);
   const navigate = useNavigate();
 // questo blocco deve mostrarmi le competitizioni più gettonate, tipo 10
@@ -58,19 +70,19 @@ function PopularCompetitionBlock() {
 
       <Row>
         {data.map(item => (
-            <Row>
-              <Button className="compButton" onClick={()=>{goSpecificComp(item.Name)}}>
-              <table>
-                <tr>Name: {item.Name}, Tag: {item.Tag}, Number of Participants: {item.UsersCount}</tr>
-                <tr>{SortUsers(item.Users)}</tr>
-              </table>
-                {/* Aggiungi altri campi del documento se necessario */}
-              </Button>
-            </Row>
+            <Paper elevation={2} style={PaperStyle} onClick={()=>{goSpecificComp(item.Name)}}>
+                <Typography variant="h5" >{item.Name}</Typography>
+                <Typography variant="h5" >{item.Tag}</Typography>
+                <Typography variant="h5" >Participants: {item.UsersCount}</Typography>
+                <Typography variant="h5" >Rank:</Typography>
+                <Typography variant="h5" >{SortUsers(item.Users)}</Typography>
+            </Paper>
         ))}
       </Row>
       <Row>
-        <Button className="compMoreComp" onClick={goComp}>More Competitions</Button>
+        <Paper elevation={2} style={PaperStyle} onClick={goComp} >
+            <Typography variant="h5" style={ButtonStyle}>More Competitions</Typography>
+        </Paper>
       </Row>
     </Container>
   );
