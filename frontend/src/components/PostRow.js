@@ -8,7 +8,7 @@ import RatingStars from './RatingStars'; // Assicurati che il percorso sia corre
 import DateFormatter from './DataFormatter';
 import { Link } from '@mui/material';
 
-export default function PostRow({ id, title, username, rating, readOnly, date, user }) {
+export default function PostRow({ id, title, username, rating, readOnly, date, user, all }) {
 
 
   const navigate = useNavigate();
@@ -17,22 +17,33 @@ export default function PostRow({ id, title, username, rating, readOnly, date, u
     navigate(`/posts/${id}`); 
   }
 
- console.log(user); 
+ console.log(user);
+ console.log(all);  
   return (
   <Box sx={{ minWidth: 275 }}>
       <Card variant="outlined">
         <CardContent> 
-         {user.user ? (
          <Link onClick={() => {
           seeDetails(id)
-      }} sx={{color: "#000000"}}>
-         <Typography variant="h5" component="div">
-            {title}
-          </Typography> </Link> ) : 
-        (<Link> 
+      }} sx={{color: "#000000"}}> 
+      {all ? (
+           <>
+           <Typography variant="h5" component="div">
+             {title}
+          </Typography>
           <Typography variant="h6" component="div">
             {username}
-          </Typography> </Link> )}
+          </Typography>
+          </>
+          ) :
+         (user.user ? (
+         <Typography variant="h5" component="div">
+            {title}
+          </Typography>) : 
+        (
+          <Typography variant="h6" component="div">
+            {username}
+          </Typography>))} </Link>
           <Typography variant="h6" component="div"> 
             <RatingStars 
               onChange={rating}
