@@ -26,6 +26,11 @@ function FavoriteBookList({user}) {
     };
 
     const fetchBooks = async () => {
+        if (user === currentUser['_id'] && currentUser['favoriteBooks'].exists()) {
+            setBooks(currentUser['favoriteBooks']);
+            return;
+        }
+
         try {
             const response = await axios.get(`http://localhost:8080/api/favoriteBooks/${user}`);
 

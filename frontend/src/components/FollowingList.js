@@ -12,10 +12,9 @@ function FollowingList({user}) {
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
     const [following, setFollowing] = useState([]);
+    const [displayCount, setDisplayCount] = useState(6);
 
     const navigate = useNavigate();
-
-    const [displayCount, setDisplayCount] = useState(6);
 
     const ListStyle = {
         py: 0,

@@ -39,6 +39,16 @@ function LoginForm() {
     async function fetchAll(id) {
         const currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
+        console.log("Fetching currently reading books " + id);
+        // Fetch currently reading books
+        const fetchedCurrentlyReadingBooks = await axios.get(`http://localhost:8080/api/book/currentlyReadingBooks/${id}`)
+        const currentlyReadingBooks = JSON.parse(JSON.stringify(fetchedCurrentlyReadingBooks.data));
+        currentUser['currentlyReading'] = currentlyReadingBooks.map(book => ({
+            id: book.id,
+            title: book.title.replace(/"/g, '')
+        }));
+        console.log(currentlyReadingBooks);
+
         console.log("Fetching read books " + id);
         // Fetch recently read books
         const fetchedRecentBooks = await axios.get(`http://localhost:8080/api/book/recentlyReadBooks/${id}`)
@@ -68,6 +78,12 @@ function LoginForm() {
         localStorage.setItem('logged_user', JSON.stringify(currentUser));
 
         console.log(JSON.parse(localStorage.getItem('logged_user')));
+
+        // Attendere 1 secondo e poi reindirizzare
+        setTimeout(function () {
+            window.location.href="/dashboard"
+            navigate("/dashboard");
+        }, 1000)
     }
 
     const handleSubmit = async (e) => {
@@ -107,13 +123,6 @@ function LoginForm() {
                 fetchAll(response.data._id);
             }
             // Imposta il flag di login nello stato e in localStorage
-
-
-            // Attendere 1 secondo e poi reindirizzare
-            setTimeout(function () {
-                window.location.href="/dashboard"
-                navigate("/dashboard");
-            }, 1000)
         } catch (error) {
             // Gestisci gli errori qui
             setLoginStatus({message: error.response ? error.response.data : error.message, variant: 'danger'});

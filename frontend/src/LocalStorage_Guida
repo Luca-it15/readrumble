@@ -9,3 +9,6 @@ In localStorage, all'indice 'logged_user' vengono registrati vari dati durante i
     - id
     - title
 - following (array di username)
+- currentlyReading:
+    - id
+    - title

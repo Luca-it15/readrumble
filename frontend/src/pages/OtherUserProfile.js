@@ -8,7 +8,7 @@ import PostsList from '../components/PostList';
 import axios from "axios";
 import PersonAddTwoToneIcon from '@mui/icons-material/PersonAddTwoTone';
 import PersonRemoveTwoToneIcon from '@mui/icons-material/PersonRemoveTwoTone';
-import {blue} from "@mui/material/colors";
+import {blue, green, red} from "@mui/material/colors";
 import {useParams} from "react-router-dom";
 import CompetitionProfBlock from '../components/CompetitionBlock';
 import RecentlyReadBooks from "../components/RecentlyReadBooks";
@@ -41,11 +41,13 @@ function OtherUserProfile() {
         } catch (error) {
             console.log(error.response)
         }
+
+        setIsFollowing(currentUser['following'].includes(username))
     }
 
     useEffect(() => {
         fetchUserInformation();
-    })
+    }, [username]);
 
     // Toggle following status
     const toggleFollowing = async () => {
@@ -79,14 +81,14 @@ function OtherUserProfile() {
                     <Grid container xs={4} direction="column" alignItems="center" justifyContent="space-around">
                         <Grid item xs={6} md={5}>
                             {isFollowing ? (
-                                <Button sx={{color: blue[500]}} variant="filledTonal" onClick={toggleFollowing}
-                                        startIcon={<PersonAddTwoToneIcon/>}>
-                                    <Typography>Follow</Typography>
-                                </Button>
-                            ) : (
-                                <Button sx={{color: blue[500]}} variant="filledTonal" onClick={toggleFollowing}
+                                <Button sx={{backgroundColor: blue[200], '&:hover': {backgroundColor: red[300]}}} variant="filledTonal" onClick={toggleFollowing}
                                         startIcon={<PersonRemoveTwoToneIcon/>}>
                                     <Typography>Unfollow</Typography>
+                                </Button>
+                            ) : (
+                                <Button sx={{backgroundColor: blue[200], '&:hover': {backgroundColor: green[300]}}} variant="filledTonal" onClick={toggleFollowing}
+                                        startIcon={<PersonAddTwoToneIcon/>}>
+                                    <Typography>Follow</Typography>
                                 </Button>
                             )}
                         </Grid>
