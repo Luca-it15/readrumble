@@ -12,10 +12,9 @@ function FollowingList({user}) {
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
     const [following, setFollowing] = useState([]);
+    const [displayCount, setDisplayCount] = useState(6);
 
     const navigate = useNavigate();
-
-    const [displayCount, setDisplayCount] = useState(6);
 
     const ListStyle = {
         py: 0,
@@ -36,7 +35,7 @@ function FollowingList({user}) {
 
     // Works in both cases: if "user" is current user or another user, because we are on their profile, and have to show their following list
     async function fetchFollowing() {
-        if (user === currentUser['_id'] && currentUser['following'].exists()) {
+        if (user === currentUser['_id']) {
             setFollowing(currentUser['following'])
             return;
         }
