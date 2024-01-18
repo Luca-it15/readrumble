@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import axios from "axios";
 import {Grid, List, ListItem, ListItemIcon, ListItemText, Paper, Rating} from "@mui/material";
 import Button from "@mui/material-next/Button";
-import {useParams, useNavigate} from "react-router-dom";
+import {useParams, useNavigate, useHistory} from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import {red, blue} from "@mui/material/colors";
 import {Alert} from '@mui/material';
@@ -14,6 +14,7 @@ import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } f
 import { ArrowBack } from '@mui/icons-material';
 import TagIcon from '@mui/icons-material/Tag';
 import Tags from '../components/Tags';
+import GoBack from '../components/GoBack';
 
 
 function PostDetails() {
@@ -31,14 +32,14 @@ function PostDetails() {
     const [validationError, setValidationError] = useState('');
 
     const navigate = useNavigate();
-
+  
     const [open, setOpen] = useState(false);
     const handleClickOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-
-    function backProfile() {
-      navigate('/profile'); 
-    }
+    
+    function handleGoBack() {
+      navigate(-1); 
+    } 
 
 
     function timeout_text(text) {
@@ -46,7 +47,7 @@ function PostDetails() {
       setTimeout(function() {
           // Azione da compiere dopo 1 secondo
           setLoginStatus({message: '', variant: status});
-          backProfile()
+          handleGoBack(); 
       }, 6000)
   }
 
@@ -98,7 +99,7 @@ function PostDetails() {
     return (
         <Paper sx={PaperStyle}>
             <Grid xs={2}>
-             <Button onClick={backProfile} startIcon={<ArrowBack sx={{width: "35px", height: "35px"}}/>}></Button>
+              <GoBack/>
             <Typography variant="h3" fontWeight="bold" textAlign="center"
                         marginBottom="20px">{post.book_title}</Typography>
             </Grid>

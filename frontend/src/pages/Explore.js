@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Container from '@mui/material/Container';
+import {Paper, Grid} from '@mui/material';
 import Typography from '@mui/material/Typography';
 import ToggleButton from '@mui/material/ToggleButton'; 
 import ToggleButtonGroup from '@mui/material/ToggleButton'; 
@@ -58,12 +58,21 @@ export default function Explore() {
         ); 
      }
    }
+   
+   const PaperStyle = {
+    backgroundColor: '#f1f7fa',
+    padding: '10px',
+    margin: '10px',
+    borderRadius: 5
+}
+
 
         return (
-            <Container>
-                <Typography variant="h2">Esplora</Typography>
+          <Paper sx={PaperStyle}>
+            <Grid container direction="row" alignItems="center" justifyContent="center" item xs={11} md={11}>
+            <Typography variant="h2">Esplora</Typography>
+             <Grid item sx={1} md={12} alignItems="center" justifyContent="center" container direction="row">
                 <SearchBar />
-                <Container className='explore'>
                 <ToggleButtonGroup
                     exclusive
                     aria-label="explore"
@@ -81,9 +90,10 @@ export default function Explore() {
                        <h4>User</h4>
                     </ToggleButton>
                 </ToggleButtonGroup>
+                </Grid>
                   <Choiche  value={value} />
-                </Container>
-            </Container>
+                </Grid> 
+            </Paper>
         );
 
 }

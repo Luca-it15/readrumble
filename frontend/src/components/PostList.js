@@ -46,7 +46,7 @@ const PostsList = (user, username, book_id) => {
           readOnly={true}
           date={post.date_added}
           user={user}
-          all={false}
+          all={true}
         />
       ))}
     
