@@ -26,7 +26,7 @@ function FavoriteBookList({user}) {
     };
 
     const fetchBooks = async () => {
-        if (user === currentUser['_id'] && currentUser['favoriteBooks'].exists()) {
+        if (user === currentUser['_id']) {
             setBooks(currentUser['favoriteBooks']);
             return;
         }
