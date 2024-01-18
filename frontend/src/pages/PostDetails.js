@@ -2,11 +2,9 @@ import React, {useEffect, useState} from 'react';
 import axios from "axios";
 import {Grid, Paper} from "@mui/material";
 import Button from "@mui/material-next/Button";
-import {useParams} from "react-router-dom";
+import {useParams, useNavigate} from "react-router-dom";
 import Typography from "@mui/material/Typography";
-import {blue, red, yellow} from "@mui/material/colors";
-import StarTwoToneIcon from "@mui/icons-material/StarTwoTone";
-import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemoveTwoTone";
+import {red, blue} from "@mui/material/colors";
 import BookmarkAddIcon from "@mui/icons-material/BookmarkAddTwoTone";
 import {Rating} from '@mui/material';
 import DateFormatter from '../components/DataFormatter';
@@ -18,6 +16,22 @@ function PostDetails() {
     // Fetch post details from database
     const [post, setPost] = useState([]);
     let {id} = useParams();
+
+    const [loginStatus, setLoginStatus] = useState({
+      message: '',
+      variant: 'success', // o 'danger' in caso di errore
+    });
+
+    const navigate = useNavigate();
+  
+    function timeout_text(text) {
+      let status = text; 
+      setTimeout(function() {
+          // Azione da compiere dopo 1 secondo
+          setLoginStatus({message: '', variant: status});
+          navigate('/profile');
+      }, 12000)
+  }
 
     
     const fetchPost = async () => {
@@ -31,7 +45,18 @@ function PostDetails() {
     }
 
     async function removePost(id) {
-      return null;   
+      try {
+        // Invia i dati al server usando Axios
+        const response = await axios.delete('http://localhost:8080/api/post/remove/' + id);
+        setLoginStatus({message: response.data, variant: 'success'});
+        timeout_text("success"); 
+        // Esegui altre azioni dopo la submit se necessario
+        console.log('Recensione inviata con successo!');
+    } catch (error) {
+        console.error('Errore durante l\'invio della recensione:', error);
+        setLoginStatus({message: error.response ? JSON.stringify(error.response.data) : error.message, variant: 'danger'});
+        timeout_text("error"); 
+     }
     }
 
 
@@ -72,9 +97,9 @@ function PostDetails() {
             />
            <DateFormatter originalTimestamp={post.date_added}/>
            <Button onClick={removePost(id)} sx={{
-                            backgroundColor: blue[200],
+                            backgroundColor: red[300],
                             margin: "5px",
-                            '&:hover': {backgroundColor: blue[100]}
+                            '&:hover': {backgroundColor: red[400]}
                         }}
           variant="filledTonal" startIcon={<BookmarkAddIcon sx={{color: blue[700]}}/>}>
            <Typography>Remove Post</Typography>
