@@ -26,7 +26,7 @@ function FavoriteBookList({user}) {
     };
 
     const fetchBooks = async () => {
-        if (user === currentUser['_id']) {
+        if (user === currentUser['_id'] && currentUser['favoriteBooks'] && currentUser['favoriteBooks'].length > 0) {
             setBooks(currentUser['favoriteBooks']);
             return;
         }

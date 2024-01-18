@@ -24,7 +24,11 @@ function RecentlyReadBooks({user}) {
     };
 
     const fetchBooks = async () => {
-        if (user === currentUser['_id']) {
+        if (currentUser['recentlyReadBooks'].length === 0) {
+            setRecentlyReadBooks([]);
+        }
+
+        if (user === currentUser['_id'] && currentUser['recentlyReadBooks']) {
             setRecentlyReadBooks(currentUser['recentlyReadBooks']);
             return;
         }

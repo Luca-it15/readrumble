@@ -35,7 +35,7 @@ function FollowingList({user}) {
 
     // Works in both cases: if "user" is current user or another user, because we are on their profile, and have to show their following list
     async function fetchFollowing() {
-        if (user === currentUser['_id']) {
+        if (user === currentUser['_id'] && currentUser['following'] && currentUser['following'].length > 0) {
             setFollowing(currentUser['following'])
             return;
         }
@@ -89,7 +89,7 @@ function FollowingList({user}) {
             <List sx={ListStyle}>
                 {following.length === 0 ? (
                     <ListItem>
-                        <Typography>This list is empty</Typography>
+                        <Typography>No users following</Typography>
                     </ListItem>
                 ) : (
                     following.slice(0, displayCount).map((username, index) => (
