@@ -7,16 +7,12 @@ import StarIcon from '@mui/icons-material/Star';
 
 const RatingStars = ({ onChange, readOnly, isStatic, star}) => {
   const labels = {
-    0.5: 'Useless',
-    1: 'Useless+',
-    1.5: 'Poor',
-    2: 'Poor+',
-    2.5: 'Ok',
-    3: 'Ok+',
-    3.5: 'Good',
-    4: 'Good+',
-    4.5: 'Excellent',
-    5: 'Excellent+',
+    0: 'Nothing',
+    1: 'Useless',
+    2: 'Poor',
+    3: 'Ok',
+    4: 'Good',
+    5: 'Excellent',
   };
 
   const [value, setValue] = useState(2);
@@ -35,7 +31,7 @@ const RatingStars = ({ onChange, readOnly, isStatic, star}) => {
     <Rating
       name="hover-feedback"
     value={isStatic ? star : value }
-      precision={0.5}
+      precision={1}
       getLabelText={getLabelText}
       readOnly = {readOnly}
       onChange={(event, newValue) => handleChange(newValue)}

@@ -12,12 +12,17 @@ img {
     border-radius: 5%;
 }
 
+body {
+    width: 100vw;
+}
+
 main {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: #e3f2fd;
+    background-color: #e1eef3;
+    min-height: 72vh;
 }
 
 .MuiGrid-root .MuiGrid-item .MuiGrid-grid-xs-4 .MuiGrid-grid-md-4 .css-gj1fbr-MuiGrid-root, .css-1jpv6k6-MuiGrid-root > .MuiGrid-item {
@@ -62,46 +67,6 @@ main {
     to {
         transform: rotate(360deg);
     }
-}
-
-.login-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-/*Registration*/
-form {
-    text-align: center;
-    height: 10px;
-    min-width: 100px;
-}
-
-input > .mb-3 {
-    background-color: red;
-    height: 30px;
-    width: 100px;
-}
-
-/*LOGIN E REGISTRAZIONE*/
-.LoginDiv {
-    position: relative;
-    background-color: blanchedalmond;
-    width: 50%;
-    margin: 0 auto;
-    text-align: center;
-    border: 3pt solid cadetblue;
-    border-radius: 10px;
-    padding: 3%;
-    margin-bottom: 3%;
-}
-
-.buttonlogreg {
-    width: 30%;
-    left: 35%;
-    position: relative;
-    margin: 2pt;
-    text-align: center;
 }
 
 /*BUTTONs*/

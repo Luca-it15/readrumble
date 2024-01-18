@@ -17,7 +17,7 @@ export default function Explore() {
     setValue(0); 
   }
 
-  function getReview() {
+  function getPost() {
     setValue(1); 
   }
 
@@ -41,7 +41,7 @@ export default function Explore() {
     return (
      <>   
            <div className='choiche'>
-      <h3>Reviews</h3>
+      <h3>Post</h3>
       < PostsListAll/>
       </div>
       </>
@@ -74,8 +74,8 @@ export default function Explore() {
                     <ToggleButton onClick={getBook} className='toggle' value="book" aria-label="book">
                        <h4>Book</h4>
                     </ToggleButton>
-                    <ToggleButton onClick={getReview} className='toggle' value="review" aria-label="review">
-                       <h4>Review</h4>
+                    <ToggleButton onClick={getPost} className='toggle' value="review" aria-label="review">
+                       <h4>Post</h4>
                     </ToggleButton>
                     <ToggleButton onClick={getUser} className='toggle' value="user" aria-label="user">
                        <h4>User</h4>

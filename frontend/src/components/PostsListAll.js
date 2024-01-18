@@ -19,17 +19,19 @@ const PostsListAll = () => {
   return (
     <div>
       {posts.map((post, index) => (
-        <PostRow 
-          key={index}
-          title={post.title}
-          username={post.username}
-          pagesRead={post.numberOfPagesRead}
-          post={post.post}
-          rating={post.rating}
-          readOnly={true}
-          date={post.date}
-        />
-      ))}
+         <PostRow 
+         key={index}
+         id={post._id}
+         title={post.book_title}
+         username={post.username}
+         post={post.post}
+         rating={post.rating}
+         readOnly={true}
+         date={post.date_added}
+         user={true}
+         all={true}
+       />
+     ))}
     
     </div>
   );

@@ -1,17 +1,20 @@
 import React, {useState} from 'react';
-import {Form, Button, Alert} from 'react-bootstrap';
+import {Alert, Form} from 'react-bootstrap';
 import axios from 'axios';
 import '../App.css';
-import {useNavigate  } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
+import {Grid, Paper} from "@mui/material";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material-next/Button";
+import {blue, green} from "@mui/material/colors";
 
 
 function LoginForm() {
-const navigate = useNavigate();
+    const navigate = useNavigate();
     const GoRegister = () =>
     {
         navigate('/registration');
     }
-
 
     const [formData, setFormData] = useState({
         _id: '',
@@ -32,6 +35,56 @@ const navigate = useNavigate();
             [name]: type === 'checkbox' ? checked : value,
         }));
     };
+
+    async function fetchAll(id) {
+        const currentUser = JSON.parse(localStorage.getItem('logged_user'));
+
+        console.log("Fetching currently reading books " + id);
+        // Fetch currently reading books
+        const fetchedCurrentlyReadingBooks = await axios.get(`http://localhost:8080/api/book/currentlyReadingBooks/${id}`)
+        const currentlyReadingBooks = JSON.parse(JSON.stringify(fetchedCurrentlyReadingBooks.data));
+        currentUser['currentlyReading'] = currentlyReadingBooks.map(book => ({
+            id: book.id,
+            title: book.title.replace(/"/g, '')
+        }));
+        console.log(currentlyReadingBooks);
+
+        console.log("Fetching read books " + id);
+        // Fetch recently read books
+        const fetchedRecentBooks = await axios.get(`http://localhost:8080/api/book/recentlyReadBooks/${id}`)
+        const recentlyReadBooks = JSON.parse(JSON.stringify(fetchedRecentBooks.data));
+        currentUser['recentlyReadBooks'] = recentlyReadBooks.map(book => ({
+            id: book.id,
+            title: book.title.replace(/"/g, '')
+        }));
+        console.log(recentlyReadBooks);
+
+        console.log("Fetching favorite books " + id);
+        // Fetch favorite books
+        const fetchedFavoriteBooks = await axios.get(`http://localhost:8080/api/favoriteBooks/${id}`)
+        const favoriteBooks = JSON.parse(JSON.stringify(fetchedFavoriteBooks.data));
+        currentUser['favoriteBooks'] = favoriteBooks.map(book => ({
+            id: book.id.replace(/"/g, ''),
+            title: book.title.replace(/"/g, '')
+        }));
+        console.log(favoriteBooks);
+
+        console.log("Fetching following list " + id);
+        // Fetch following list
+        const fetchedFollowingList = await axios.get(`http://localhost:8080/api/following/${id}`)
+        currentUser['following'] = JSON.parse(JSON.stringify(fetchedFollowingList.data))
+        console.log(fetchedFollowingList.data);
+
+        localStorage.setItem('logged_user', JSON.stringify(currentUser));
+
+        console.log(JSON.parse(localStorage.getItem('logged_user')));
+
+        // Attendere 1 secondo e poi reindirizzare
+        setTimeout(function () {
+            window.location.href="/dashboard"
+            navigate("/dashboard");
+        }, 1000)
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -66,42 +119,47 @@ const navigate = useNavigate();
                 localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
                 localStorage.setItem('isAdmin', JSON.stringify(isAdmin));
                 localStorage.setItem('logged_user', JSON.stringify(response.data));
+
+                fetchAll(response.data._id);
             }
             // Imposta il flag di login nello stato e in localStorage
-
-
-            // Attendere 1 secondo e poi reindirizzare
-            setTimeout(function () {
-                window.location.href="/dashboard"
-                navigate("/dashboard");
-            }, 1000)
         } catch (error) {
             // Gestisci gli errori qui
             setLoginStatus({message: error.response ? error.response.data : error.message, variant: 'danger'});
         }
     };
 
+    const PaperStyle = {
+        backgroundColor: '#f1f7fa',
+        padding: '30px 50px 30px 50px',
+        margin: '10px',
+        borderRadius: 10,
+        width: '40%'
+    }
+
     return (
-        <div className="LoginDiv">
-                    <Form onSubmit={handleSubmit}>
-
-
-                        <Form.Group className="mb-3" controlId="formBasicUsername">
-                            <Form.Label>Username</Form.Label>
-                            <Form.Control type="text" name="_id" placeholder="Username" onChange={handleChange}/>
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="formBasicPassword">
-                            <Form.Label>Password</Form.Label>
-                            <Form.Control type="password" name="password" placeholder="Password" onChange={handleChange}/>
-                        </Form.Group>
-
-                        <Button variant="primary" type="submit">
-                            Submit
-                        </Button>
-                    </Form>
-            <Button className="buttonlogreg" onClick={GoRegister}>
-                Register
-            </Button>
+        <Paper sx={PaperStyle}>
+            <Form onSubmit={handleSubmit}>
+                <Form.Group controlId="formBasicUsername">
+                    <Form.Label style={{marginLeft: '10px'}}><Typography>Username</Typography></Form.Label>
+                    <Form.Control style={{borderRadius: '30px', marginBottom: '30px'}} type="text" name="_id" placeholder="Username" onChange={handleChange}/>
+                </Form.Group>
+                <Form.Group controlId="formBasicPassword">
+                    <Form.Label style={{marginLeft: '10px'}}><Typography>Password</Typography></Form.Label>
+                    <Form.Control style={{borderRadius: '30px', marginBottom: '30px'}} type="password" name="password" placeholder="Password" onChange={handleChange}/>
+                </Form.Group>
+                <Grid item sx={{textAlign: 'center', marginBottom: '70px'}}>
+                    <Button variant="filled" type="submit" sx={{backgroundColor: blue[400], '&:hover': {backgroundColor: green[400]}}}>
+                        <Typography>Login</Typography>
+                    </Button>
+                </Grid>
+            </Form>
+            <Grid item sx={{textAlign: 'right'}}>
+                <Typography>Don't have an account?
+                <Button variant="filled" onClick={GoRegister} sx={{marginLeft: '20px', backgroundColor: blue[700], '&:hover': {backgroundColor: blue[400]}}}>
+                    <Typography>Register</Typography>
+                </Button></Typography>
+            </Grid>
 
             {validationError && (
                 <Alert severity="error">
@@ -114,7 +172,7 @@ const navigate = useNavigate();
                     {loginStatus.message}
                 </Alert>
             )}
-        </div>
+        </Paper>
     );
 }
 

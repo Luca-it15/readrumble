@@ -30,11 +30,19 @@ public class PostController {
 
     /**
      * Function for retrieve the first 10 review and send them at the frontend
+     * @param parametro that contain the username of the user that call this method if the param user is true
+     *                  o the book_id if the value of user is false
+     * @param user that contain true if the method was call for retrieve the post of the user or false
+     *             if we need to retrieve the book post
      * @return List<Review> include the first 10 review
      */
-    @GetMapping("/all/{username}")
-    public List<PostDTO> getAllReviewsUsers(@PathVariable String username) {
-      return postDAO.allPostsUser(username);
+    @GetMapping("/all/{parametro}/{user}")
+    public List<PostDTO> getAllPostUsers(@PathVariable String parametro, @PathVariable boolean user) {
+        return postDAO.allPostsUser(parametro, user);
+    }
+    @GetMapping("/details/{id}")
+    public Post getPostDetails(@PathVariable long id) {
+        return postDAO.postDetails(id);
     }
     @GetMapping("/all")
     public List<PostDTO> getAllReviews() {

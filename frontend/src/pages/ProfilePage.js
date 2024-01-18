@@ -6,11 +6,11 @@ import {Container, Grid, Typography, Paper} from '@mui/material';
 import Button from '@mui/material-next/Button';
 import PostsList from '../components/PostList';
 import CompetitionProfBlock from '../components/CompetitionBlock';
-import BookListShow from '../components/BookListShow';
 import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';
 import LeaderboardTwoToneIcon from '@mui/icons-material/LeaderboardTwoTone';
 import EditNoteTwoToneIcon from '@mui/icons-material/EditNoteTwoTone';
-import {blue, green} from "@mui/material/colors";
+import {blue} from "@mui/material/colors";
+import RecentlyReadBooks from "../components/RecentlyReadBooks";
 
 let currentUser = localStorage.getItem('logged_user');
 // Verifica se il valore è presente
@@ -86,16 +86,12 @@ const ProfilePage = () => {
                             <Typography>Make a post!</Typography>
                         </Button>
                         {/* TODO (Luca o anche Francesco): aggiungere parametro user a ReviewList e gestirlo lì */}
-                        <PostsList/>
+                        <PostsList user={true} username={currentUser['_id']}/>
                     </Paper>
                 </Grid>
                 <Grid item xs={3} md={3}>
                     <FavoriteBookList user={currentUser['_id']}/>
-                    <Paper elevation={2} style={PaperStyle}>
-                        <Typography variant="h4">Books you have read</Typography>
-                        <Typography>10 random books:</Typography>
-                        <BookListShow/>
-                    </Paper>
+                    <RecentlyReadBooks user={currentUser['_id']}/>
                 </Grid>
             </Grid>
         </Container>
