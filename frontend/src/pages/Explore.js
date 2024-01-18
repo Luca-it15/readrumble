@@ -41,7 +41,7 @@ export default function Explore() {
     return (
      <>   
            <div className='choiche'>
-      <h3>Reviews</h3>
+      <h3>Post</h3>
       < PostsListAll/>
       </div>
       </>

@@ -31,7 +31,7 @@ import PostAdmin from './pages/admin/PostAdmin';
 import OtherUserProfile from './pages/OtherUserProfile';
 import BookDetails from "./pages/BookDetails";
 import BanUnbanProfile from './pages/admin/BanUnbanProfile';
-import PostDetails from './components/PostDetails';
+import PostDetails from './pages/PostDetails';
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(
         JSON.parse(localStorage.getItem('isLoggedIn')) || false

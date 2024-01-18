@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="post details">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/PostList.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/PostList.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/PostRow.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/PostRow.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/PostsListAll.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/PostsListAll.js" afterDir="false" />
+    <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="explore post fixed">
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Explore.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Explore.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/readrumble" beforeDir="false" afterPath="$PROJECT_DIR$/readrumble" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,7 +94,7 @@
       <updated>1704985743672</updated>
       <workItem from="1704985747487" duration="3660000" />
       <workItem from="1705518080705" duration="1916000" />
-      <workItem from="1705572104458" duration="1546000" />
+      <workItem from="1705572104458" duration="2239000" />
     </task>
     <task id="LOCAL-00001" summary="post apposto per davvero deh?">
       <option name="closed" value="true" />
@@ -130,7 +128,15 @@
       <option name="project" value="LOCAL" />
       <updated>1705574745873</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="explore post fixed">
+      <option name="closed" value="true" />
+      <created>1705578033483</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1705578033483</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -151,6 +157,7 @@
     <MESSAGE value="Added Things" />
     <MESSAGE value="post apposto per davvero deh?" />
     <MESSAGE value="post details" />
-    <option name="LAST_COMMIT_MESSAGE" value="post details" />
+    <MESSAGE value="explore post fixed" />
+    <option name="LAST_COMMIT_MESSAGE" value="explore post fixed" />
   </component>
 </project>
