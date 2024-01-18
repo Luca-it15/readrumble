@@ -6,21 +6,63 @@ import com.mongodb.client.model.Updates;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import org.bson.Document;
 import org.springframework.http.ResponseEntity;
+import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Sorts;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.mongodb.client.model.Filters.eq;
 
 public class CompetitionDAO {
-    public List<Document> retrieveAllCompetition()
+    public static Map<String, Object> sortDocumentByValues(Map<String, Object> document) {
+        // Trasforma il documento in una lista di coppie chiave-valore
+        List<Map.Entry<String, Object>> entryList = new ArrayList<>(document.entrySet());
+
+        // Ordina la lista in base ai valori in ordine decrescente
+        entryList.sort(Comparator.comparing(entry -> (Integer) entry.getValue(), Comparator.reverseOrder()));
+
+        // Crea un nuovo documento con le coppie chiave-valore ordinate
+        Map<String, Object> sortedDocument = entryList.stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        return sortedDocument;
+    }
+    public List<Document> getAllCompetition()
     {
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         List<Document> competitions = collection.find().into(new ArrayList<Document>());
         System.out.println(competitions);
         return competitions;
     }
-    public List<Document> retrievePersonalCompetition(String _id)
+    public List<Document> getPopularCompetitions()
+    {
+        MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
+        AggregateIterable<Document> aggregation = collection.aggregate(Arrays.asList(
+            Aggregates.project(
+                Projections.fields(
+                    Projections.include("Name", "Tag", "Users"),
+                    Projections.computed("UsersCount",
+                    new Document("$size", new Document("$objectToArray", "$Users")))
+                )
+            ),
+            Aggregates.sort(Sorts.descending("UsersCount"))
+        ));
+        List<Document> competitions = new ArrayList<Document>();
+        // Iterare sui risultati dell'aggregazione
+        for (Document document : aggregation) {
+            String name = document.getString("Name");
+            String tag = document.getString("Tag");
+            int usersCount = document.getInteger("UsersCount");
+            competitions.add(document);
+            // Fai qualcosa con i dati ottenuti
+            System.out.println("Name: " + name + ", Tag: " + tag + ", UsersCount: " + usersCount);
+        }
+        return competitions;
+    }
+    public List<Document> getPersonalCompetition(String _id)
     {
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         List<Document> competitions = collection.find().into(new ArrayList<Document>());
@@ -42,7 +84,7 @@ public class CompetitionDAO {
         System.out.println(results);
         return results;
     }
-    public Document getCompetitionInformation(Document docx)
+    public Document goCompetitionInformation(Document docx)
     {
         String Name = (String) docx.get("CompetitionTitle");
         String Username = (String) docx.get("Username");
@@ -53,6 +95,9 @@ public class CompetitionDAO {
             {
                 Document doc = competition.next();
                 Document users_doc = (Document) doc.get("Users");
+                System.out.println(users_doc);
+
+
                 if(users_doc.get(Username) == null)
                 {
                     doc.append("isIn","NO");

@@ -31,6 +31,7 @@ import PostAdmin from './pages/admin/PostAdmin';
 import OtherUserProfile from './pages/OtherUserProfile';
 import BookDetails from "./components/BookDetails";
 import BanUnbanProfile from './pages/admin/BanUnbanProfile';
+import PopularCompetitionBlock from './components/PopularCompetitionBlock';
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(
         JSON.parse(localStorage.getItem('isLoggedIn')) || false
@@ -106,6 +107,14 @@ const App = () => {
                             </AdminLayout>) : (
                                 <AuthenticationLayout>
                                     <Routes>
+                                        <Route
+                                            exact
+                                            path="/popular"
+                                            element={
+                                                isLoggedIn ? <PopularCompetitionBlock /> : <Navigate to="/"/>
+                                            }
+                                        />
+
                                         <Route
                                             exact
                                             path="/dashboard"

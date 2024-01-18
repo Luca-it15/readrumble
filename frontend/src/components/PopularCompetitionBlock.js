@@ -8,7 +8,7 @@ import '../App.css';
 function PopularCompetitionBlock() {
   const [data, setData] = useState([]);
   const navigate = useNavigate();
-
+// questo blocco deve mostrarmi le competitizioni più gettonate, tipo 10
   const goComp = () =>
       {
           navigate('/competitions');
@@ -20,10 +20,31 @@ function PopularCompetitionBlock() {
         navigate(dynamic_path);
 
     }
+    function SortUsers(us)
+    {
+        const sortedObject = {};
+        Object.keys(us).sort((a, b) => us[b] - us[a]).forEach(key => {
+          sortedObject[key] = us[key];
+        });
+
+        console.log(sortedObject);
+        const keysArray = Object.keys(sortedObject);
+        console.log(keysArray);
+        const valuesArray = Object.values(sortedObject);
+        console.log(valuesArray);
+        return (
+            <Container>
+                <Row><Col>{keysArray[0]}</Col><Col>{valuesArray[0]}</Col></Row>
+                <Row><Col>{keysArray[1]}</Col><Col>{valuesArray[1]}</Col></Row>
+                <Row><Col>{keysArray[2]}</Col><Col>{valuesArray[2]}</Col></Row>
+            </Container>
+        )
+     }
     useEffect(() => {
         // Effettua la richiesta GET al tuo backend
-        axios.post('http://localhost:8080/api/competition/retrieve/personal',Username)
+        axios.get('http://localhost:8080/api/competition/retrieve/popular')
           .then(response => {
+            console.log(response);
             // Converti i documenti MongoDB in JSON
             const jsonData = response.data.map(document => JSON.parse(JSON.stringify(document)));
             console.log(jsonData);
@@ -32,18 +53,6 @@ function PopularCompetitionBlock() {
           .catch(error => console.error('Errore nella richiesta GET:', error));
     }, []); // L'array vuoto come dipendenza indica che questo effetto viene eseguito solo una volta al montaggio del componente
 
-
-  useEffect(() => {
-    // Effettua la richiesta GET al tuo backend
-    axios.get('http://localhost:8080/api/competition/retrieve')
-      .then(response => {
-        // Converti i documenti MongoDB in JSON
-        const jsonData = response.data.map(document => JSON.parse(JSON.stringify(document)));
-        setData(jsonData);
-      })
-      .catch(error => console.error('Errore nella richiesta GET:', error));
-  }, []); // L'array vuoto come dipendenza indica che questo effetto viene eseguito solo una volta al montaggio del componente
-
   return (
     <Container>
 
@@ -51,7 +60,10 @@ function PopularCompetitionBlock() {
         {data.map(item => (
             <Row>
               <Button className="compButton" onClick={()=>{goSpecificComp(item.Name)}}>
-                <p>{item.Name}</p>
+              <table>
+                <tr>Name: {item.Name}, Tag: {item.Tag}, Number of Participants: {item.UsersCount}</tr>
+                <tr>{SortUsers(item.Users)}</tr>
+              </table>
                 {/* Aggiungi altri campi del documento se necessario */}
               </Button>
             </Row>

@@ -34,18 +34,22 @@ public class CompetitionController {
     @GetMapping("/retrieve/all")
     public List<Document> retrieveAllCompetitions()
     {
-        return competitionDAO.retrieveAllCompetition();
-
+        return competitionDAO.getAllCompetition();
     }
     @PostMapping("/retrieve/personal")
     public List<Document> retrievePersonalCompetitions(@RequestBody String _id)
     {
-        return competitionDAO.retrievePersonalCompetition(_id);
+        return competitionDAO.getPersonalCompetition(_id);
+    }
+    @GetMapping("/retrieve/popular")
+    public List<Document> retrievePopularCompetitions()
+    {
+        return competitionDAO.getPopularCompetitions();
     }
     @PostMapping("/getcompinfo")
     public Document getCompetitionInfo(@RequestBody Document docx)
     {
-        return competitionDAO.getCompetitionInformation(docx);
+        return competitionDAO.goCompetitionInformation(docx);
 
 
     }
