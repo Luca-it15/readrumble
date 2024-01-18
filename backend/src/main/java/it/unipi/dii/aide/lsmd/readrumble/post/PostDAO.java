@@ -130,6 +130,7 @@ public class PostDAO {
             System.out.println("the post id is a integer, we need to convert in long value");
             _id[0] = doc.getInteger("_id").longValue();
         }
+        List<String> tags = (List<String>)doc.get("tags");
         return new Post(
                       _id[0],
                      doc.getInteger("book_id"),
@@ -138,6 +139,7 @@ public class PostDAO {
                      doc.getDate("date_added"),
                      doc.getString("book_title"),
                      doc.getString("username"),
+                     tags,
                      doc.getInteger("bookmark")
                      );
 
@@ -165,5 +167,16 @@ public class PostDAO {
 
         // Chiudi il client MongoDB
         return reviews;
+    }
+
+    public String removePost(long id) {
+        MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
+        Document query = new Document("_id", id);
+        Document target = collection.find(query).first();
+        if(target != null) {
+            collection.deleteOne(target);
+            return "post successful remove";
+        } else
+            return "failed to remove the post";
     }
 }

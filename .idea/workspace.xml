@@ -96,7 +96,7 @@
       <updated>1704985743672</updated>
       <workItem from="1704985747487" duration="3660000" />
       <workItem from="1705518080705" duration="1916000" />
-      <workItem from="1705572104458" duration="2239000" />
+      <workItem from="1705572104458" duration="4136000" />
     </task>
     <task id="LOCAL-00001" summary="post apposto per davvero deh?">
       <option name="closed" value="true" />
@@ -138,7 +138,23 @@
       <option name="project" value="LOCAL" />
       <updated>1705578033483</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="stars around the world">
+      <option name="closed" value="true" />
+      <created>1705580409138</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1705580409138</updated>
+    </task>
+    <task id="LOCAL-00007" summary="stars around the world">
+      <option name="closed" value="true" />
+      <created>1705587692929</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1705587692929</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -160,6 +176,7 @@
     <MESSAGE value="post apposto per davvero deh?" />
     <MESSAGE value="post details" />
     <MESSAGE value="explore post fixed" />
-    <option name="LAST_COMMIT_MESSAGE" value="explore post fixed" />
+    <MESSAGE value="stars around the world" />
+    <option name="LAST_COMMIT_MESSAGE" value="stars around the world" />
   </component>
 </project>

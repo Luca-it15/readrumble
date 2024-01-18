@@ -50,6 +50,23 @@ public class Neo4jFullController {
     }
 
     /**
+     * This method adds a user to the graph
+     *
+     * @param username the username of the user
+     * @return a ResponseEntity with the result of the operation
+     */
+    @PostMapping("/newUser/{username}")
+    public ResponseEntity<String> addUser(@PathVariable String username) {
+        try (Session session = Neo4jConfig.getSession()) {
+            session.run("MERGE (u:User {name: $username})",
+                    Values.parameters("username", username));
+            return ResponseEntity.ok("Add user operation successful.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Add user operation failed: " + e.getMessage());
+        }
+    }
+
+    /**
      * This method returns the friends of a user
      *
      * @param username the username of the user

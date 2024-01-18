@@ -49,6 +49,11 @@ public class PostController {
         return postDAO.allPost();
     }
 
+    @DeleteMapping("/remove/{id}")
+    public String removePostUser(@PathVariable long id) {
+        return postDAO.removePost(id);
+    }
+
 
 
 }

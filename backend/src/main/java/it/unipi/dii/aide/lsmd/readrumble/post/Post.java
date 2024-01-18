@@ -37,7 +37,7 @@ public class Post {
     }
 
 
-    public Post(long _id, int book_id, int rating, String review_text, Date date, String book_title, String username,  int bookmark) {
+    public Post(long _id, int book_id, int rating, String review_text, Date date, String book_title, String username, List<String> tags, int bookmark) {
         this._id = _id;
         this.book_id = book_id;
         this.rating = rating;
@@ -45,6 +45,7 @@ public class Post {
         this.date_added = date;
         this.book_title = book_title;
         this.username = username;
+        this.tags = tags;
         this.bookmark = bookmark;
     }
 
