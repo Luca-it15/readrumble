@@ -31,6 +31,7 @@ import PostAdmin from './pages/admin/PostAdmin';
 import OtherUserProfile from './pages/OtherUserProfile';
 import BookDetails from "./components/BookDetails";
 import BanUnbanProfile from './pages/admin/BanUnbanProfile';
+import PostDetails from './components/PostDetails';
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(
         JSON.parse(localStorage.getItem('isLoggedIn')) || false
@@ -169,6 +170,10 @@ const App = () => {
                                         <Route
                                             path="/bookdetails/:id"
                                             element={<BookDetails/>}
+                                        />
+                                         <Route
+                                            path="/posts/:id"
+                                            element={<PostDetails/>}
                                         />
                                         <Route path="*" element={<Error/>}/>
                                     </Routes>

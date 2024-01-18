@@ -86,7 +86,7 @@ const ProfilePage = () => {
                             <Typography>Make a post!</Typography>
                         </Button>
                         {/* TODO (Luca o anche Francesco): aggiungere parametro user a ReviewList e gestirlo lì */}
-                        <PostsList/>
+                        <PostsList user={true} username={currentUser['_id']}/>
                     </Paper>
                 </Grid>
                 <Grid item xs={3} md={3}>

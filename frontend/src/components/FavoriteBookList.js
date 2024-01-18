@@ -9,10 +9,6 @@ import {blue, red} from "@mui/material/colors";
 import {Navigate, useNavigate} from "react-router-dom";
 
 let currentUser = localStorage.getItem('logged_user');
-if (!currentUser) {
-    // Redirect to login
-    Navigate({to: "/login"});
-}
 
 function FavoriteBookList({user}) {
     currentUser = JSON.parse(localStorage.getItem('logged_user'));
