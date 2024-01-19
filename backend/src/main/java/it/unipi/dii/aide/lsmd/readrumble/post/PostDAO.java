@@ -7,6 +7,10 @@ import it.unipi.dii.aide.lsmd.readrumble.library.LibraryBookDAO;
 import it.unipi.dii.aide.lsmd.readrumble.utils.Status;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import javax.print.Doc;
+
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
 
@@ -178,5 +182,41 @@ public class PostDAO {
             return "post successful remove";
         } else
             return "failed to remove the post";
+    }
+
+    public List<PostDTO> findForStringPost(String searchString) {
+        List<PostDTO> target = new ArrayList<>();
+        MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
+        Document query1 = new Document("book_title", new Document("$regex", searchString));
+        Document query2 = new Document("username", new Document("$regex", searchString));
+        List<Document> results1 = collection.find(query1).limit(10).into(new ArrayList<>());
+        List<Document> results2 = collection.find(query2).limit(10).into(new ArrayList<>());
+        //retrieve the first results of document that match the filter
+        for (Document doc : results1) {
+            PostDTO post = new PostDTO(
+                    doc.getInteger("_id"),
+                    doc.getInteger("book_id"),
+                    doc.getInteger("rating"),
+                    doc.getDate("date_added"),
+                    doc.getString("book_title"),
+                    doc.getString("username")
+            );
+            target.add(post);
+        }
+        //insert the second type of results into the postDTO array
+        for (Document doc : results2) {
+            PostDTO post = new PostDTO(
+                    doc.getInteger("_id"),
+                    doc.getInteger("book_id"),
+                    doc.getInteger("rating"),
+                    doc.getDate("date_added"),
+                    doc.getString("book_title"),
+                    doc.getString("username")
+            );
+            if (!results1.contains(doc)) {
+                target.add(post);
+            }
+        }
+        return target;
     }
 }

@@ -9,12 +9,17 @@ import SearchBar from '../components/SearchBar';
 import UserList from '../components/UserList';
 import PostsListAll from '../components/PostsListAll';
 import { Paper } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material-next/Button';
+import { SearchRounded } from '@mui/icons-material';
+import TextField from '@mui/material/TextField';
 
 export default function Explore() {
  const [value, setValue] = useState(0); 
  const [toggle1, setToggle1] = useState(true); 
  const [toggle2, setToggle2] = useState(false); 
  const [toggle3, setToggle3] = useState(false); 
+ const [searchText, setSearchText] = useState('');
   
   
   
@@ -40,6 +45,28 @@ export default function Explore() {
   borderRadius: '15px', 
 }
 
+const searchBar = {
+  backgroundColor: 'white',
+  border: '3pt solid #1976d2',
+  borderRadius: '15px',
+  margin: '10px',
+  fontSize: '18pt'
+}
+
+const searchBotton = {
+  backgroundColor: '#1976d2',
+  padding: '15px',
+  margin: '5px',
+  border: '3pt solid #1976d2',
+  borderRadius: '15px',
+  color: 'white'
+}
+
+const icon = {
+  color: 'white'
+}
+
+
 
   function getBook() {
     setValue(0); 
@@ -62,13 +89,24 @@ export default function Explore() {
     setToggle3(true);
   }
 
+  const handleSearchTextChange = (event) => {
+    setSearchText(event.target.value);
+  };
+
+  const handleSearchButtonClick = () => {
+    // Do something with the search text
+    console.log(`Search text: ${searchText}`);
+  };
+
   const Choiche = ({value}) => {
 
    if(value === 0) {
     return(
     <>   
       <div className='choiche'>
-     <h3>Books</h3>
+      <Typography variant="h3">
+        Books
+        </Typography>
       < BookListShow />
       </div>
      </>
@@ -77,8 +115,10 @@ export default function Explore() {
    else if(value === 1) {
     return (
      <>   
-           <div className='choiche'>
-      <h3>Post</h3>
+        <div className='choiche'>
+        <Typography variant="h3">
+          Posts
+        </Typography>
       < PostsListAll/>
       </div>
       </>
@@ -87,8 +127,10 @@ export default function Explore() {
     else {
         return (
             <>   
-             <div className='choiche'>
-             <h3>Users</h3>
+            <div className='choiche'>
+             <Typography variant="h3">
+              Users
+             </Typography>
              <UserList />
              </div>
              </>
@@ -100,7 +142,17 @@ export default function Explore() {
           <Paper sx={PaperStyle}>
             <Container>
                 <Typography variant="h2">Esplora</Typography>
-                <SearchBar/>
+                <Box component="form" sx={{ display: 'flex', alignItems: 'center' }}>
+                 <TextField type="text" placeholder="Cerca" variant="outlined" sx={searchBar} value={searchText} onChange={handleSearchTextChange} />
+                 <Button
+                  sx={searchBotton}
+                  variant="filledTonal"
+                  startIcon={<SearchRounded sx={icon} />}
+                  onClick={handleSearchButtonClick}
+                 >
+                 <Typography variant='h5'>Cerca</Typography>
+                 </Button>
+                </Box>
                 <Container className='explore'>
                 <ToggleButtonGroup
                     exclusive

@@ -228,8 +228,8 @@ public class Neo4jFullController {
      * @param username the username of the user
      * @return the list of suggested books
      */
-    @GetMapping("/suggestedBooks")
-    public List<String> getSuggestedBooks(@RequestParam String username) {
+    @GetMapping("/suggestedBooks/{username}")
+    public List<String> getSuggestedBooks(@PathVariable String username) {
         checkUserExist(username);
 
         try (Session session = Neo4jConfig.getSession()) {
