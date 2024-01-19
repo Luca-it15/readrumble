@@ -49,6 +49,19 @@ public class Neo4jFullController {
         }
     }
 
+    private List<Map<String, Object>> getMaps(Result result) {
+        List<Map<String, Object>> resultBooks = new ArrayList<>();
+        while (result.hasNext()) {
+            Record record = result.next();
+
+            Map<String, Object> book = new HashMap<>();
+            book.put("id", record.get("id").toString());
+            book.put("title", record.get("title").toString());
+            resultBooks.add(book);
+        }
+        return resultBooks;
+    }
+
     /**
      * This method adds a user to the graph
      *
@@ -149,16 +162,7 @@ public class Neo4jFullController {
                 // If the username exists, proceed with the query
                 Result result = session.run("MATCH (u:User {name: $username})-[:FAVORS]->(b:Book) RETURN b.id AS id, b.title AS title",
                         Values.parameters("username", username));
-                List<Map<String, Object>> favoriteBooks = new ArrayList<>();
-                while (result.hasNext()) {
-                    Record record = result.next();
-
-                    Map<String, Object> book = new HashMap<>();
-                    book.put("id", record.get("id").toString());
-                    book.put("title", record.get("title").toString());
-                    favoriteBooks.add(book);
-                }
-                return favoriteBooks;
+                return getMaps(result);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -229,7 +233,7 @@ public class Neo4jFullController {
      * @return the list of suggested books
      */
     @GetMapping("/suggestedBooks/{username}")
-    public List<String> getSuggestedBooks(@PathVariable String username) {
+    public List<Map<String, Object>> getSuggestedBooks(@PathVariable String username) {
         checkUserExist(username);
 
         try (Session session = Neo4jConfig.getSession()) {
@@ -238,14 +242,10 @@ public class Neo4jFullController {
                             "WITH b, count(*) AS friends_favoring_book " +
                             "WHERE friends_favoring_book > 0.51 * size((u)-[:FOLLOWS]->(:User)) " +
                             "AND NOT EXISTS((u)-[:FAVORS]->(b)) " +
-                            "RETURN b.title AS suggested_books",
+                            "RETURN b. id AS id, b.title AS title",
                     Values.parameters("username", username)
             );
-            List<String> suggestedBooks = new ArrayList<>();
-            while (result.hasNext()) {
-                suggestedBooks.add(result.next().get("suggested_books").asString());
-            }
-            return suggestedBooks;
+            return getMaps(result);
         }
     }
 }
