@@ -20,9 +20,13 @@ function BookDetails() {
 
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
     let favoriteBooksIds = [];
+    let wishlistBooksIds = [];
 
     if (currentUser['favoriteBooks'].length > 0) {
         favoriteBooksIds = currentUser['favoriteBooks'].map(book => book.id);
+    }
+    if (currentUser['wishlist'].length > 0) {
+        wishlistBooksIds = currentUser['wishlist'].map(book => book.id);
     }
 
     const [isFavorite, setFavorite] = useState(currentUser &&
