@@ -173,3 +173,8 @@ main {
     left: 35%;
     background-color: blanchedalmond;
 }
+
+.toggle {
+    border: 3pt solid cadetblue; 
+    background-color: white;
+}
