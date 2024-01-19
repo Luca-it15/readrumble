@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {Typography, Card, Paper, Grid} from '@mui/material';
+import {AppBar, Toolbar, Typography, Card, CardContent, Paper, Grid} from '@mui/material';
 import {Line} from 'react-chartjs-2';
 import {DataGrid} from '@mui/x-data-grid';
+import {CategoryScale} from 'chart.js';
 import axios from 'axios';
+import Chart from 'chart.js/auto';
 import {Navigate} from "react-router-dom";
 
 var currentUser = JSON.parse(localStorage.getItem('logged_user'));
