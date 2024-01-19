@@ -101,10 +101,6 @@ const Dashboard = () => {
 
                 {/* TODO: analytic competizioni */}
                 <Card>
-                    <Typography variant="h5">Competitions</Typography>
-                    <DataGrid rows={competitionData} columns={competitionColumns} pageSize={5}/>
-                </Card>
-                <Card>
                     <Typography variant="h5">Reading stats</Typography>
                     <DataGrid rows={readingStatsData} columns={readingStatsColumns} pageSize={5}/>
                 </Card>

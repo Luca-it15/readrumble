@@ -26,11 +26,14 @@ function SuggestBooks({user}) {
         try {
             const response = await axios.get(`http://localhost:8080/api/suggestedBooks/${user}`);
 
+            const suggestions = response.data
             // Returns book.id and book.title
-            setSuggestBooks(suggestBooks.map(book => ({
-                id: book.id,
+            setSuggestBooks(suggestions.map(book => ({
+                id: book.id.replace(/"/g, ''),
                 title: book.title.replace(/"/g, '')
             })));
+
+            console.log("Suggested books: " + JSON.stringify(response.data));
 
         } catch (error) {
             console.log(error.response)
