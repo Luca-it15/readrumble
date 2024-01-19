@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {BrowserRouter, Route, Routes, Navigate, redirect} from 'react-router-dom';
+import {BrowserRouter, Route, Routes, Navigate} from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -40,6 +40,7 @@ const App = () => {
     const [isAdmin, setIsAdmin] = useState(
         JSON.parse(localStorage.getItem('isAdmin')) || false
     );
+
 
     const handleLogin = () => {
         setIsLoggedIn(true);
@@ -112,46 +113,45 @@ const App = () => {
                                             exact
                                             path="/popular"
                                             element={
-                                                isLoggedIn ? <PopularCompetitionBlock /> : <Navigate to="/"/>
+                                               <PopularCompetitionBlock /> 
                                             }
                                         />
 
                                         <Route
-                                            exact
                                             path="/dashboard"
                                             element={
-                                                isLoggedIn ? <Home/> : <Navigate to="/"/>
+                                                <Home/> 
                                             }
                                         />
                                         <Route
                                             path="/explore"
                                             element={
-                                                isLoggedIn ? <Explore/> : <Navigate to="/"/>
+                                                <Explore/>
                                             }
                                         />
                                         <Route
                                             path="/settings"
                                             element={
-                                                isLoggedIn ? <UserSettings/> : <Navigate to="/"/>
+                                               <UserSettings/> 
                                             }
                                         />
                                         <Route
                                             path="/profile"
                                             element={
-                                                isLoggedIn ? (<ProfilePage/>) : <Navigate to="/"/>
+                                               <ProfilePage/>
                                             }
                                         />
                                         <Route
                                             /* !!! UNTESTED !!! */
                                             path="/user/:username"
                                             element={
-                                                isLoggedIn ? (<OtherUserProfile/>) : <Navigate to="/"/>
+                                               <OtherUserProfile/>
                                             }
                                         />
                                         <Route
                                             path="/post"
                                             element={
-                                                isLoggedIn ? (<PostForm/>) : <Navigate to="/"/>
+                                                <PostForm/> 
                                             }
                                         />
                                         <Route
@@ -161,19 +161,19 @@ const App = () => {
                                         <Route
                                             path="/userDashboard"
                                             element={
-                                                isLoggedIn ? <Dashboard/> : <Navigate to="/"/>
+                                               <Dashboard/> 
                                             }
                                         />
                                         <Route
                                             path="/competitions"
                                             element={
-                                                isLoggedIn ? <CompetitionPage/> : <Navigate to="/"/>
+                                                <CompetitionPage/>
                                             }
                                         />
                                         <Route
                                             path="/competition/:name"
                                             element={
-                                                isLoggedIn ? <CompetitionSpec/> : <Navigate to="/"/>
+                                                     <CompetitionSpec/>
                                             }
                                         />
                                         <Route
@@ -183,6 +183,14 @@ const App = () => {
                                          <Route
                                             path="/posts/:id"
                                             element={<PostDetails/>}
+                                        />
+                                         <Route
+                                            path="/posts/:id"
+                                            element={<PostDetails/>}
+                                        />
+                                         <Route
+                                            path="/"
+                                            element={ <Navigate to="/dashboard" replace />}
                                         />
                                         <Route path="*" element={<Error/>}/>
                                     </Routes>
