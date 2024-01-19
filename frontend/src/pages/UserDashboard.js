@@ -1,10 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {AppBar, Toolbar, Typography, Card, CardContent, Paper, Grid} from '@mui/material';
+import {Typography, Card, Paper, Grid} from '@mui/material';
 import {Line} from 'react-chartjs-2';
 import {DataGrid} from '@mui/x-data-grid';
-import {CategoryScale} from 'chart.js';
 import axios from 'axios';
-import Chart from 'chart.js/auto';
 import {Navigate} from "react-router-dom";
 
 var currentUser = JSON.parse(localStorage.getItem('logged_user'));
@@ -100,10 +98,6 @@ const Dashboard = () => {
                 backgroundColor: '#ffffff', width:'50%', padding: '20px'}}>
 
                 {/* TODO: analytic competizioni */}
-                <Card>
-                    <Typography variant="h5">Competitions</Typography>
-                    <DataGrid rows={competitionData} columns={competitionColumns} pageSize={5}/>
-                </Card>
                 <Card>
                     <Typography variant="h5">Reading stats</Typography>
                     <DataGrid rows={readingStatsData} columns={readingStatsColumns} pageSize={5}/>

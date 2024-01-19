@@ -12,3 +12,5 @@ In localStorage, all'indice 'logged_user' vengono registrati vari dati durante i
 - currentlyReading:
     - id
     - title
+
+currentUser['following']: amici

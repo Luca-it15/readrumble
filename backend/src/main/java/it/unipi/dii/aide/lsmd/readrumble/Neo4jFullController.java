@@ -268,6 +268,9 @@ public class Neo4jFullController {
                             "RETURN b. id AS id, b.title AS title",
                     Values.parameters("username", username)
             );
+
+            System.out.println("Suggested books for user " + username + ":");
+
             return getMaps(result);
         }
     }

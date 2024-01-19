@@ -4,25 +4,40 @@ import {Grid, Paper} from "@mui/material";
 import Button from "@mui/material-next/Button";
 import {useParams} from "react-router-dom";
 import Typography from "@mui/material/Typography";
-import {blue, yellow} from "@mui/material/colors";
+import {blue, red, yellow} from "@mui/material/colors";
 import StarTwoToneIcon from "@mui/icons-material/StarTwoTone";
 import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemoveTwoTone";
 import BookmarkAddIcon from "@mui/icons-material/BookmarkAddTwoTone";
+import {FavoriteTwoTone} from "@mui/icons-material";
+import GoBack from "../components/GoBack";
 
 function BookDetails() {
     // Fetch book details from database
     const [book, setBook] = useState([]);
     let {id} = useParams();
+    let [authors, setAuthors] = useState([]);
+    let [tags, setTags] = useState([]);
 
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
+    let favoriteBooksIds = [];
+
+    if (currentUser['favoriteBooks'].length > 0) {
+        favoriteBooksIds = currentUser['favoriteBooks'].map(book => book.id);
+    }
+
     const [isFavorite, setFavorite] = useState(currentUser &&
-        currentUser['favoriteBooks'] && currentUser['favoriteBooks'].includes(id));
+        favoriteBooksIds && favoriteBooksIds.includes(id));
+    const [isInWishlist, setInWishlist] = useState(currentUser &&
+        wishlistBooksIds && wishlistBooksIds.includes(id));
 
     const fetchBook = async () => {
         try {
             const response = await axios.get('http://localhost:8080/api/book/' + id);
 
-            setBook(JSON.parse(JSON.stringify(response.data)));
+            const data = JSON.parse(JSON.stringify(response.data))
+            setAuthors(data['authors'].map(author => author).join(', '))
+            setTags(data['tags'].map(tag => tag).join(', '))
+            setBook(data);
         } catch (error) {
             console.log(error.response)
         }
@@ -70,22 +85,45 @@ function BookDetails() {
         setFavorite(!isFavorite);
     }
 
+    const toggleInWishlist = (id, isInWishlist) => async () => {
+        if (isInWishlist) {
+            // Removes a book from favorite list in database
+            await axios.delete(`http://localhost:8080/api/book/removeFromWishlist/${currentUser["_id"]}/${id}`);
+
+            // Remove book from favorite list in local storage
+            currentUser['wishlist'].splice(currentUser["wishlist"].indexOf(book), 1);
+        } else {
+            // Add a book to favorite list in database
+            await axios.post(`http://localhost:8080/api/book/addToWishlist/${currentUser["_id"]}/${id}`);
+
+            // Add book to favorite list in local storage
+            currentUser['wishlist'].push(book);
+        }
+
+        localStorage.setItem('logged_user', JSON.stringify(currentUser));
+        setInWishlist(!isInWishlist);
+    }
+
+    // TODO sistemare
+    //const authors = (book['authors'] > 1) ? book['authors'].map(author => author).join(', ') : book['authors'];
+
     return (
         <Paper sx={PaperStyle}>
+            <GoBack/>
             <Typography variant="h4" fontWeight="bold" textAlign="center"
                         marginBottom="20px">{book['title']}</Typography>
             <Grid container direction="row" alignItems="center" justifyContent="center" spacing={3}>
                 <Grid item xs={3} md={2}>
                     <img alt="Book cover" src={book['image_url']} width="100%"/>
                 </Grid>
-                <Grid item xs={2}>
-                    <Typography variant="h5">By: {book['authors']}</Typography>
+                <Grid item xs={3}>
+                    <Typography variant="h5">By: {authors}</Typography>
                     <Typography>Publisher: {book['publisher']}</Typography>
                     <Typography>Publication year: {book['publication_year']}</Typography>
                     <Typography>ISBN: {book['isbn']}</Typography>
                     <Typography>Pages: {book['num_pages']}</Typography>
                 </Grid>
-                <Grid container direction="column" alignItems="center" justifyContent="center" xs={4}>
+                <Grid container direction="column" alignItems="center" justifyContent="center" xs={3}>
                     <Button onClick={seeReviews(id)}
                             sx={{backgroundColor: blue[200], margin: "5px", '&:hover': {backgroundColor: blue[100]}}}
                             variant="filledTonal" startIcon={<StarTwoToneIcon sx={{color: yellow[400]}}/>}>
@@ -98,7 +136,7 @@ function BookDetails() {
                             margin: "5px",
                             '&:hover': {backgroundColor: blue[100]}
                         }}
-                                variant="filledTonal" startIcon={<BookmarkRemoveIcon sx={{color: blue[700]}}/>}>
+                                variant="filledTonal" startIcon={<FavoriteTwoTone sx={{color: red[600]}}/>}>
                             <Typography>Remove from favorites</Typography>
                         </Button>
                     ) : (
@@ -107,13 +145,35 @@ function BookDetails() {
                             margin: "5px",
                             '&:hover': {backgroundColor: blue[100]}
                         }}
-                                variant="filledTonal" startIcon={<BookmarkAddIcon sx={{color: blue[700]}}/>}>
+                                variant="filledTonal" startIcon={<FavoriteTwoTone sx={{color: '#bbbbbb'}}/>}>
                             <Typography>Add to favorites</Typography>
+                        </Button>
+                    )}
+
+                    {isInWishlist ? (
+                        <Button onClick={toggleInWishlist(id)} sx={{
+                            backgroundColor: blue[200],
+                            margin: "5px",
+                            '&:hover': {backgroundColor: blue[100]}
+                        }}
+                                variant="filledTonal" startIcon={<BookmarkRemoveIcon sx={{color: blue[700]}}/>}>
+                            <Typography>Remove from wishlist</Typography>
+                        </Button>
+                    ) : (
+                        <Button onClick={toggleInWishlist(id)} sx={{
+                            backgroundColor: blue[200],
+                            margin: "5px",
+                            '&:hover': {backgroundColor: blue[100]}
+                        }}
+                                variant="filledTonal" startIcon={<BookmarkAddIcon sx={{color: blue[700]}}/>}>
+                            <Typography>Add to wishlist</Typography>
                         </Button>
                     )}
                 </Grid>
                 <Grid item xs={12} md={11}>
+                <Typography sx={{marginLeft: '30px', marginRight: '30px', textAlign: 'center', fontStyle: 'italic'}}>Tags: {tags}</Typography>
                     <Paper elevation={0} sx={DescriptionPaperStyle}>
+                        {/* TODO: condizione per mostrare le review oppure la descrizione */}
                         <Typography variant="h5">Description</Typography>
                         <Typography>{book['description']}</Typography>
                     </Paper>

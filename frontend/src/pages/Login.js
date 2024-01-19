@@ -79,7 +79,7 @@ function LoginForm() {
                 id: book.id.replace(/"/g, ''),
                 title: book.title.replace(/"/g, '')
             }));
-            console.log(favoriteBooks);
+            console.log(currentUser['favoriteBooks']);
         } else {
             currentUser['favoriteBooks'] = [];
         }
@@ -92,6 +92,22 @@ function LoginForm() {
             console.log(fetchedFollowingList.data);
         } else {
             currentUser['following'] = [];
+        }
+
+        console.log("Fetching wishlist " + id);
+        // Fetch wishlist
+        const fetchedWishlist = await axios.get(`http://localhost:8080/api/book/wishlist/${id}`)
+        const wishlist = JSON.parse(JSON.stringify(fetchedWishlist.data));
+
+        console.log(wishlist);
+
+        if (wishlist) {
+            currentUser['wishlist'] = wishlist.map(book => ({
+                id: book.id,
+                title: book.title.replace(/"/g, '')
+            }));
+        } else {
+            currentUser['wishlist'] = [];
         }
 
         localStorage.setItem('logged_user', JSON.stringify(currentUser));

@@ -28,6 +28,7 @@ function FavoriteBookList({user}) {
     const fetchBooks = async () => {
         if (user === currentUser['_id'] && currentUser['favoriteBooks'] && currentUser['favoriteBooks'].length > 0) {
             setBooks(currentUser['favoriteBooks']);
+            console.log(currentUser['favoriteBooks'])
             return;
         }
 
@@ -41,7 +42,7 @@ function FavoriteBookList({user}) {
             })));
 
             // Save all book ids in favoriteBooks
-            currentUser['favoriteBooks'] = response.data.map(book => book.id.replace(/"/g, ''));
+            currentUser['favoriteBooks'] = books;
 
             localStorage.setItem('logged_user', JSON.stringify(currentUser));
         } catch (error) {

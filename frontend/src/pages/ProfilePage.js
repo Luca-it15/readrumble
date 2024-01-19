@@ -11,6 +11,7 @@ import LeaderboardTwoToneIcon from '@mui/icons-material/LeaderboardTwoTone';
 import EditNoteTwoToneIcon from '@mui/icons-material/EditNoteTwoTone';
 import {blue} from "@mui/material/colors";
 import RecentlyReadBooks from "../components/RecentlyReadBooks";
+import CurrentlyReading from "../components/CurrentlyReading";
 
 let currentUser = localStorage.getItem('logged_user');
 // Verifica se il valore è presente
@@ -69,6 +70,9 @@ const ProfilePage = () => {
                     </Grid>
                 </Grid>
             </Paper>
+
+            <CurrentlyReading user={currentUser['_id']}/>
+
             <Grid container spacing={3} textAlign="center">
                 <Grid item xs={3} md={3}>
                     <FollowingList user={currentUser['_id']}/>
@@ -90,6 +94,7 @@ const ProfilePage = () => {
                     </Paper>
                 </Grid>
                 <Grid item xs={3} md={3}>
+                    {/* Wishlist ? */}
                     <FavoriteBookList user={currentUser['_id']}/>
                     <RecentlyReadBooks user={currentUser['_id']}/>
                 </Grid>

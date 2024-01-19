@@ -185,10 +185,6 @@ const App = () => {
                                             element={<PostDetails/>}
                                         />
                                          <Route
-                                            path="/posts/:id"
-                                            element={<PostDetails/>}
-                                        />
-                                         <Route
                                             path="/"
                                             element={ <Navigate to="/dashboard" replace />}
                                         />

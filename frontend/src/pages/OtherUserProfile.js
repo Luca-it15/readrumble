@@ -12,6 +12,7 @@ import {blue, green, red} from "@mui/material/colors";
 import {useParams} from "react-router-dom";
 import CompetitionProfBlock from '../components/CompetitionBlock';
 import RecentlyReadBooks from "../components/RecentlyReadBooks";
+import CurrentlyReading from "../components/CurrentlyReading";
 
 function OtherUserProfile() {
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
@@ -95,6 +96,7 @@ function OtherUserProfile() {
                     </Grid>
                 </Grid>
             </Paper>
+            <CurrentlyReading user={username}/>
             <Grid container spacing={3} textAlign="center">
                 <Grid item xs={3} md={3}>
                     <FollowingList user={username}/>
