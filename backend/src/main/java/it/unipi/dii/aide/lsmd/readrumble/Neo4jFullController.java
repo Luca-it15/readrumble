@@ -1,6 +1,7 @@
 package it.unipi.dii.aide.lsmd.readrumble;
 
 import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
+import it.unipi.dii.aide.lsmd.readrumble.utils.UserNotExistsException;
 import org.neo4j.driver.*;
 import org.neo4j.driver.Record;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,25 @@ public class Neo4jFullController {
                     Values.parameters("username", username));
             if (!userExists.hasNext()) {
                 throw new RuntimeException("Username " + username + " not found in graph.");
+            }
+        }
+    }
+
+    /**
+     * @francesco per lanciare le eccezioni bisogna far si che la funzione sia throws
+     * sennò non escono dalla funzione, dopo di che quando si chiama la funzione bisogna metterla
+     * in un blocco try - catch
+     * é buona norma definirsi un'eccezione personalizzata in questi tipi di casi
+     * @param username
+     * @throws UserNotExistsException
+     */
+    private void checkUserExistException(String username) throws UserNotExistsException {
+        try (Session session = Neo4jConfig.getSession()) {
+            // Control if the username exists
+            Result userExists = session.run("MATCH (u:User {name: $username}) RETURN u",
+                    Values.parameters("username", username));
+            if (!userExists.hasNext()) {
+                throw new UserNotExistsException(username);
             }
         }
     }
@@ -234,16 +254,40 @@ public class Neo4jFullController {
      */
     @GetMapping("/suggestedBooks/{username}")
     public List<Map<String, Object>> getSuggestedBooks(@PathVariable String username) {
-        checkUserExist(username);
-
+       try {
+           checkUserExistException(username);
+       } catch (UserNotExistsException e) {
+           System.err.println(e.getMessage());
+       }
         try (Session session = Neo4jConfig.getSession()) {
             Result result = session.run(
                     "MATCH (u:User {name: $username})-[:FOLLOWS]->(:User)-[:FAVORS]->(b:Book) " +
-                            "WITH b, count(*) AS friends_favoring_book " +
-                            "WHERE friends_favoring_book > 0.51 * size((u)-[:FOLLOWS]->(:User)) " +
+                            "WITH u,b, count(*) AS friends_favoring_book " +
+                            "WHERE friends_favoring_book > 0.51 * COUNT{(u)-[:FOLLOWS]->(:User)} " +
                             "AND NOT EXISTS((u)-[:FAVORS]->(b)) " +
                             "RETURN b. id AS id, b.title AS title",
                     Values.parameters("username", username)
+            );
+            return getMaps(result);
+        }
+    }
+
+    @GetMapping("/suggestedFriend/{username}")
+    public List<Map<String, Object>> getSuggestedFriend(@PathVariable String username) {
+        try {
+            checkUserExistException(username);
+        } catch (UserNotExistsException e) {
+            System.err.println(e.getMessage());
+        }
+        try (Session session = Neo4jConfig.getSession()) {
+            Result result = session.run(
+                    "MATCH (u1:User {name: 'nome_utente'})-[:FOLLOWS]->(u2:User)-[:FOLLOWS]->(f:User)" +
+            "WITH u1, u2, count(DISTINCT f) AS num_friends" +
+            "WHERE num_friends > 0.8 * size((u1)-[:FOLLOWS]->(:User))" +
+            "AND NOT EXISTS((u1)-[:FOLLOWS]->(u2))" +
+            "RETURN u2.name AS suggested_user",
+
+            Values.parameters("username", username)
             );
             return getMaps(result);
         }

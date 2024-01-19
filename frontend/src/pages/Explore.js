@@ -13,8 +13,12 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material-next/Button';
 import { SearchRounded } from '@mui/icons-material';
 import TextField from '@mui/material/TextField';
+import SuggestBooks from '../components/SuggestedBooks';
 
 export default function Explore() {
+ 
+ let currentUser = JSON.parse(localStorage.getItem('logged_user'));
+
  const [value, setValue] = useState(0); 
  const [toggle1, setToggle1] = useState(true); 
  const [toggle2, setToggle2] = useState(false); 
@@ -94,8 +98,7 @@ const icon = {
   };
 
   const handleSearchButtonClick = () => {
-    // Do something with the search text
-    console.log(`Search text: ${searchText}`);
+     
   };
 
   const Choiche = ({value}) => {
@@ -107,7 +110,7 @@ const icon = {
       <Typography variant="h3">
         Books
         </Typography>
-      < BookListShow />
+      <SuggestBooks user={currentUser['_id']}/>
       </div>
      </>
     ); 
