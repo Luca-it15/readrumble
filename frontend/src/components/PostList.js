@@ -7,17 +7,11 @@ const PostsList = (user, username, book_id) => {
   
   
   console.log(user); 
-  let parametro2 = JSON.stringify(user.user);  
+  let parametro2 = user.user;  
  
   let parametro1 = ''; 
-    if(parametro2) {
-      console.log("invio per user" + user.username); 
-       parametro1 = user.username; 
-    }
-    else {
-      parametro1 = JSON.stringify(user.book_id);
-      console.log(parametro1);  
-    }
+    
+    parametro2 ? (parametro1 = user.username) : (parametro1 = user.book_id); 
   console.log(parametro2); 
   console.log(parametro1); 
   useEffect(() => {
@@ -46,7 +40,7 @@ const PostsList = (user, username, book_id) => {
           readOnly={true}
           date={post.date_added}
           user={user}
-          all={true}
+          all={false}
         />
       ))}
     

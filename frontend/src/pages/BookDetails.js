@@ -10,6 +10,7 @@ import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemoveTwoTone";
 import BookmarkAddIcon from "@mui/icons-material/BookmarkAddTwoTone";
 import {FavoriteTwoTone} from "@mui/icons-material";
 import GoBack from "../components/GoBack";
+import PostList from "../components/PostList"; 
 
 function BookDetails() {
     // Fetch book details from database
@@ -17,6 +18,7 @@ function BookDetails() {
     let {id} = useParams();
     let [authors, setAuthors] = useState([]);
     let [tags, setTags] = useState([]);
+    let [hiddenReview, setHiddenReview] = useState(true); 
 
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
     let favoriteBooksIds = [];
@@ -65,10 +67,15 @@ function BookDetails() {
         fetchBook();
     }, [id]);
 
-    function seeReviews(id) {
-        // TODO: i Post sono territorio di Luca
-        return null
-    }
+   function handleSeeReview() {
+    setHiddenReview(false); 
+   }
+   
+   function handleHiddenReview() {
+    setHiddenReview(true); 
+   }
+
+
 
     const toggleFavorite = (id, isFavorite) => async () => {
         if (isFavorite) {
@@ -128,12 +135,6 @@ function BookDetails() {
                     <Typography>Pages: {book['num_pages']}</Typography>
                 </Grid>
                 <Grid container direction="column" alignItems="center" justifyContent="center" xs={3}>
-                    <Button onClick={seeReviews(id)}
-                            sx={{backgroundColor: blue[200], margin: "5px", '&:hover': {backgroundColor: blue[100]}}}
-                            variant="filledTonal" startIcon={<StarTwoToneIcon sx={{color: yellow[400]}}/>}>
-                        <Typography>See reviews</Typography>
-                    </Button>
-
                     {isFavorite ? (
                         <Button onClick={toggleFavorite(id)} sx={{
                             backgroundColor: blue[200],
@@ -181,6 +182,23 @@ function BookDetails() {
                         <Typography variant="h5">Description</Typography>
                         <Typography>{book['description']}</Typography>
                     </Paper>
+                </Grid>
+                <Grid item xs={12} md={6} className='choiche' >
+                    {hiddenReview ? (<Button onClick={handleSeeReview}
+                            sx={{backgroundColor: blue[200], margin: "5px", '&:hover': {backgroundColor: blue[100]}}}
+                            variant="filledTonal" startIcon={<StarTwoToneIcon sx={{color: yellow[400]}}/>}>
+                        <Typography>See reviews</Typography>
+                    </Button>) : (
+                        <>
+                   <Button onClick={handleHiddenReview}
+                            sx={{backgroundColor: blue[200], margin: "5px", '&:hover': {backgroundColor: blue[100]}}}
+                            variant="filledTonal" startIcon={<StarTwoToneIcon sx={{color: yellow[400]}}/>}>
+                        <Typography>Hide reviews</Typography>
+                    </Button>     
+                  <Typography variant="h4"  className="mt-5 mb-3">Book's reviews</Typography>
+                   <PostList user={false} book_id={id} username={currentUser['_id']}/> 
+                    </>                   
+                   )}
                 </Grid>
             </Grid>
         </Paper>
