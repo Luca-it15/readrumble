@@ -12,6 +12,7 @@ import TextField from '@mui/material/TextField';
 import SuggestedBooks from '../components/SuggestedBooks';
 import BookListQuery from "../components/BookListQuery";
 import {blue} from "@mui/material/colors";
+import SuggestFriends from '../components/SuggestedFriends';
 
 export default function Explore() {
 
@@ -108,13 +109,15 @@ export default function Explore() {
         } else if (value === 1) {
             return (
                 <Paper sx={PaperStyle}>
+                    <Typography variant='h3'>Recent Posts</Typography>
                     <PostsList all={true} size={12}/>
                 </Paper>
             );
         } else {
             return (
                 <Paper sx={PaperStyle}>
-                    <UserList/>
+                  <Typography variant='h3'>Suggested Friends</Typography>
+                   <SuggestFriends user={currentUser['_id']} />
                 </Paper>
             );
         }

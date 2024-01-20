@@ -263,7 +263,7 @@ public class Neo4jFullController {
             Result result = session.run(
                     "MATCH (u:User {name: $username})-[:FOLLOWS]->(:User)-[:FAVORS]->(b:Book) " +
                             "WITH u,b, count(*) AS friends_favoring_book " +
-                            "WHERE friends_favoring_book > 0.51 * COUNT{(u)-[:FOLLOWS]->(:User)} " +
+                            "WHERE friends_favoring_book > 0.1 * COUNT{(u)-[:FOLLOWS]->(:User)} " +
                             "AND NOT EXISTS((u)-[:FAVORS]->(b)) " +
                             "RETURN b. id AS id, b.title AS title",
                     Values.parameters("username", username)
@@ -275,8 +275,9 @@ public class Neo4jFullController {
         }
     }
 
-    @GetMapping("/suggestedFriend/{username}")
+    @GetMapping("/suggestedFriends/{username}")
     public List<Map<String, Object>> getSuggestedFriend(@PathVariable String username) {
+        System.out.println("username per amici suggeriti " + username);
         try {
             checkUserExistException(username);
         } catch (UserNotExistsException e) {
@@ -284,12 +285,11 @@ public class Neo4jFullController {
         }
         try (Session session = Neo4jConfig.getSession()) {
             Result result = session.run(
-                    "MATCH (u1:User {name: 'nome_utente'})-[:FOLLOWS]->(u2:User)-[:FOLLOWS]->(f:User)" +
-            "WITH u1, u2, count(DISTINCT f) AS num_friends" +
-            "WHERE num_friends > 0.8 * size((u1)-[:FOLLOWS]->(:User))" +
-            "AND NOT EXISTS((u1)-[:FOLLOWS]->(u2))" +
-            "RETURN u2.name AS suggested_user",
-
+                    "MATCH (u1:User {name: $username})-[:FOLLOWS]->(u2:User)-[:FOLLOWS]->(f:User) "+
+            "WITH u1, u2, count(DISTINCT f) AS num_friends "+
+            "WHERE num_friends > 0.1 * COUNT{(u1)-[:FOLLOWS]->(:User)} "+
+            "AND NOT EXISTS((u1)-[:FOLLOWS]->(u2)) "+
+            "RETURN u2.name AS suggested_user ",
             Values.parameters("username", username)
             );
             return getMaps(result);

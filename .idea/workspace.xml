@@ -4,8 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="post sotto libro">
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/PostsListAll.js" beforeDir="false" />
+    <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="amici suggeriti">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/Neo4jFullController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/Neo4jFullController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/SuggestedFriends.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/SuggestedFriends.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Explore.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Explore.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/readrumble" beforeDir="false" afterPath="$PROJECT_DIR$/readrumble" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,7 +99,7 @@
       <workItem from="1705518080705" duration="1916000" />
       <workItem from="1705572104458" duration="6805000" />
       <workItem from="1705653990053" duration="4724000" />
-      <workItem from="1705758993517" duration="645000" />
+      <workItem from="1705758993517" duration="2569000" />
     </task>
     <task id="LOCAL-00001" summary="post apposto per davvero deh?">
       <option name="closed" value="true" />
@@ -241,7 +245,31 @@
       <option name="project" value="LOCAL" />
       <updated>1705759016558</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="post sotto libro">
+      <option name="closed" value="true" />
+      <created>1705772274453</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1705772274453</updated>
+    </task>
+    <task id="LOCAL-00020" summary="post sotto libro">
+      <option name="closed" value="true" />
+      <created>1705775422584</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1705775422584</updated>
+    </task>
+    <task id="LOCAL-00021" summary="amici suggeriti">
+      <option name="closed" value="true" />
+      <created>1705775447577</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1705775447577</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -270,6 +298,7 @@
     <MESSAGE value="fix bug" />
     <MESSAGE value="varie modifiche" />
     <MESSAGE value="post sotto libro" />
-    <option name="LAST_COMMIT_MESSAGE" value="post sotto libro" />
+    <MESSAGE value="amici suggeriti" />
+    <option name="LAST_COMMIT_MESSAGE" value="amici suggeriti" />
   </component>
 </project>

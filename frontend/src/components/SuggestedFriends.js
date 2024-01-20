@@ -6,7 +6,7 @@ import {Divider, Link, List, ListItem, Paper} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {blue} from "@mui/material/colors";
 
-function suggestFriends({user}) {
+function SuggestFriends({user}) {
     const navigate = useNavigate();
     const [suggestFriends, setSuggestFriends] = useState([]);
     const [displayCount, setDisplayCount] = useState(10);
@@ -21,16 +21,15 @@ function suggestFriends({user}) {
         backgroundColor: 'background.paper',
     };
 
-    const fetchBooks = async () => {
+    const fetchFriends = async () => {
 
         try {
             const response = await axios.get(`http://localhost:8080/api/suggestedFriends/${user}`);
 
             const suggestions = response.data
             // Returns book.id and book.title
-            setSuggestFriends(suggestions.map(book => ({
-                id: book.id.replace(/"/g, ''),
-                title: book.title.replace(/"/g, '')
+            setSuggestFriends(suggestions.map(user => ({
+               username: user.name
             })));
 
             console.log("Suggested Friends: " + JSON.stringify(response.data));
@@ -41,10 +40,10 @@ function suggestFriends({user}) {
     };
 
     useEffect(() => {
-        fetchBooks();
+        fetchFriends();
     }, [user]);
 
-    const loadAllBooks = () => {
+    const loadAllUsers = () => {
         setDisplayCount(suggestFriends.length);
     };
 
@@ -73,9 +72,9 @@ function suggestFriends({user}) {
                         <React.Fragment key={index}>
                             <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
                                 <Link onClick={() => {
-                                    seeDetails(book.id)
+                                    seeDetails(user.name)
                                 }} sx={{color: "#000000"}}>
-                                    <Typography>{book.title}</Typography>
+                                    <Typography>{user.name}</Typography>
                                 </Link>
                             </ListItem>
                             <Divider variant="middle" component="li"/>
@@ -88,7 +87,7 @@ function suggestFriends({user}) {
                     backgroundColor: blue[100], marginTop: "10px", height: "30px",
                     '&:hover': {backgroundColor: blue[100]}
                 }}
-                        variant="filledTonal" onClick={loadAllBooks}>
+                        variant="filledTonal" onClick={loadAllUsers}>
                     <Typography>Show all</Typography>
                 </Button>
             )}
@@ -96,4 +95,4 @@ function suggestFriends({user}) {
     );
 }
 
-export default suggestFriends;
+export default SuggestFriends;
