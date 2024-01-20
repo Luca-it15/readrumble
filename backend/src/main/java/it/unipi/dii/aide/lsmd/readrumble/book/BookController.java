@@ -333,6 +333,11 @@ public class BookController {
     List<lightBook> getFriendsRecentlyReadBooks(@RequestParam String usernames) {
         System.out.println("Richiesta libri recentemente letti dagli amici");
 
+        if (usernames.isEmpty()) {
+            System.out.println("User has no friends");
+            return null;
+        }
+        
         List<String> usernameList = Arrays.asList(usernames.split(","));
 
         MongoCollection<Document> ActiveBooksCollection = MongoConfig.getCollection("ActiveBooks");
