@@ -322,4 +322,41 @@ public class BookController {
 
         return trendingBooks;
     }
+
+    /**
+     * This method returns the last 10 books finished by a user's friends
+     *
+     * @param usernames of the user's friends
+     * @return id and title of the book
+     */
+    @GetMapping("/friendsRecentlyReadBooks")
+    List<lightBook> getFriendsRecentlyReadBooks(@RequestParam String usernames) {
+        System.out.println("Richiesta libri recentemente letti dagli amici");
+
+        List<String> usernameList = Arrays.asList(usernames.split(","));
+
+        MongoCollection<Document> ActiveBooksCollection = MongoConfig.getCollection("ActiveBooks");
+
+        // Get the documents with "username" = username, then sort by year and month, then take the books.book_id and books.title of the documents in the arrays "books" with state = 1
+        List<Document> BookDocuments = ActiveBooksCollection.aggregate(List.of(
+                new Document("$match", new Document("username", new Document("$in", usernameList))),
+                new Document("$sort", new Document("year", -1).append("month", -1)),
+                new Document("$limit", usernames.length()),
+                new Document("$project", new Document("books", new Document("$filter", new Document("input", "$books").append("as", "book").append("cond", new Document("$eq", List.of("$$book.state", 1)))))),
+                new Document("$unwind", "$books"),
+                new Document("$project", new Document("id", "$books.book_id").append("title", "$books.book_title")),
+                new Document("$limit", 10)
+        )).into(new ArrayList<>());
+
+        if (BookDocuments.isEmpty()) {
+            System.out.println("User's friends never read a book");
+            return null;
+        } else {
+            List<lightBook> books = setResult(BookDocuments);
+
+            System.out.println(books);
+
+            return books;
+        }
+    }
 }
