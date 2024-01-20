@@ -174,31 +174,33 @@ function BookDetails() {
                             <Typography>Add to wishlist</Typography>
                         </Button>
                     )}
-                </Grid>
-                <Grid item xs={12} md={11}>
-                <Typography sx={{marginLeft: '30px', marginRight: '30px', textAlign: 'center', fontStyle: 'italic'}}>Tags: {tags}</Typography>
-                    <Paper elevation={0} sx={DescriptionPaperStyle}>
-                        {/* TODO: condizione per mostrare le review oppure la descrizione */}
-                        <Typography variant="h5">Description</Typography>
-                        <Typography>{book['description']}</Typography>
-                    </Paper>
-                </Grid>
-                <Grid item xs={12} md={6} className='choiche' >
-                    {hiddenReview ? (<Button onClick={handleSeeReview}
+                     {hiddenReview ? (<Button onClick={handleSeeReview}
                             sx={{backgroundColor: blue[200], margin: "5px", '&:hover': {backgroundColor: blue[100]}}}
                             variant="filledTonal" startIcon={<StarTwoToneIcon sx={{color: yellow[400]}}/>}>
                         <Typography>See reviews</Typography>
                     </Button>) : (
-                        <>
                    <Button onClick={handleHiddenReview}
                             sx={{backgroundColor: blue[200], margin: "5px", '&:hover': {backgroundColor: blue[100]}}}
                             variant="filledTonal" startIcon={<StarTwoToneIcon sx={{color: yellow[400]}}/>}>
                         <Typography>Hide reviews</Typography>
-                    </Button>     
-                  <Typography variant="h4"  className="mt-5 mb-3">Book's reviews</Typography>
-                   <PostList user={false} book_id={id} username={currentUser['_id']}/> 
-                    </>                   
-                   )}
+                    </Button>)}
+                </Grid>
+                <Grid item xs={12} md={11}>
+                <Typography sx={{marginLeft: '30px', marginRight: '30px', textAlign: 'center', fontStyle: 'italic'}}>Tags: {tags}</Typography>
+                {hiddenReview? (
+                   <>
+                   <Paper elevation={0} sx={DescriptionPaperStyle}>
+                        <Typography variant="h5">Description</Typography>
+                        <Typography>{book['description']}</Typography>
+                    </Paper>
+                    </>):(
+                        <>
+                        <Grid item xs={12} ClassName='choiche'>
+                      <Typography variant="h4"  className="mt-5 mb-3" sx={{textAlign: 'center'}}>Book's reviews</Typography>
+                      <PostList user={false} book_id={id} username={currentUser['_id']} size={5} all={false}/>    
+                      </Grid>    
+                      </>
+                      )}
                 </Grid>
             </Grid>
         </Paper>

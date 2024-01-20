@@ -21,7 +21,7 @@ export default function PostRow({ id, title, username, rating, readOnly, date, u
  console.log(all);  
   return (
   <Box sx={{ minWidth: 275 }}>
-      <Card variant="outlined">
+      <Card variant="outlined" sx={{padding: '4%', textAlign: 'center'}}>
         <CardContent> 
          <Link onClick={() => {
           seeDetails(id)

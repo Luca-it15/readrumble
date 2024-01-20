@@ -7,7 +7,7 @@ import '../App.css';
 import BookListShow from '../components/BookListShow';
 import SearchBar from '../components/SearchBar';
 import UserList from '../components/UserList';
-import PostsListAll from '../components/PostsListAll';
+import PostsList from '../components/PostList';
 import { Paper } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material-next/Button';
@@ -36,7 +36,7 @@ export default function Explore() {
  
  const toggle = {
    backgroundColor: '#1976d2', 
-   padding: '15px', 
+   padding: '10px', 
    margin: '5px',
    border: '3pt solid #1976d2', 
    borderRadius: '15px', 
@@ -59,7 +59,7 @@ const searchBar = {
 
 const searchBotton = {
   backgroundColor: '#1976d2',
-  padding: '15px',
+  padding: '10px',
   margin: '5px',
   border: '3pt solid #1976d2',
   borderRadius: '15px',
@@ -122,7 +122,7 @@ const icon = {
         <Typography variant="h3">
           Posts
         </Typography>
-      < PostsListAll/>
+      < PostsList all={true} size={12}/>
       </div>
       </>
        ); 
