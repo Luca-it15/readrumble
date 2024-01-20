@@ -58,20 +58,28 @@ function TrendingBooks() {
         <Paper sx={PaperStyle}>
             <Typography variant="h5" sx={{textAlign: 'center'}}>Trending books<TrendingUpIcon
                 sx={{color: blue[400], marginLeft: '10px'}}/></Typography>
-            <List sx={ListStyle}>
-                {books.map((book, index) => (
-                    <React.Fragment key={index}>
-                        <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
-                            <Link onClick={() => {
-                                seeDetails(book.id)
-                            }} sx={{color: "#000000"}}>
-                                <Typography><strong>#{index + 1}</strong> {book.title}</Typography>
-                            </Link>
-                        </ListItem>
-                        <Divider variant="middle" component="li"/>
-                    </React.Fragment>
-                ))}
-            </List>
+            {currentUser['following'].length === 0 ? (
+                <List sx={ListStyle}>
+                    <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
+                        <Typography sx={{textAlign: 'center'}}>You are not following anyone yet</Typography>
+                    </ListItem>
+                </List>
+            ) : (
+                <List sx={ListStyle}>
+                    {books.map((book, index) => (
+                        <React.Fragment key={index}>
+                            <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
+                                <Link onClick={() => {
+                                    seeDetails(book.id)
+                                }} sx={{color: "#000000"}}>
+                                    <Typography><strong>#{index + 1}</strong> {book.title}</Typography>
+                                </Link>
+                            </ListItem>
+                            <Divider variant="middle" component="li"/>
+                        </React.Fragment>
+                    ))}
+                </List>
+            )}
         </Paper>
     );
 }
