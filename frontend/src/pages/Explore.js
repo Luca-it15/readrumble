@@ -1,183 +1,151 @@
-import React, { useState } from 'react';
-import Container from '@mui/material/Container';
+import React, {useState} from 'react';
 import Typography from '@mui/material/Typography';
-import ToggleButton from '@mui/material/ToggleButton'; 
-import ToggleButtonGroup from '@mui/material/ToggleButton'; 
+import {ToggleButton, ToggleButtonGroup} from '@mui/material';
 import '../App.css';
-import BookListShow from '../components/BookListShow';
-import SearchBar from '../components/SearchBar';
 import UserList from '../components/UserList';
 import PostsList from '../components/PostList';
-import { Paper } from '@mui/material';
+import {Grid, Paper} from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material-next/Button';
-import { SearchRounded } from '@mui/icons-material';
+import {SearchRounded} from '@mui/icons-material';
 import TextField from '@mui/material/TextField';
-import SuggestBooks from '../components/SuggestedBooks';
+import SuggestedBooks from '../components/SuggestedBooks';
+import TrendingBooks from "../components/TrendingBooks";
+import {blue} from "@mui/material/colors";
 
 export default function Explore() {
- 
- let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
- const [value, setValue] = useState(0); 
- const [toggle1, setToggle1] = useState(true); 
- const [toggle2, setToggle2] = useState(false); 
- const [toggle3, setToggle3] = useState(false); 
- const [searchText, setSearchText] = useState('');
-  
-  
-  
- const PaperStyle = {
-  backgroundColor: '#f1f7fa',
-  padding: '10px',
-  margin: '10px',
-  borderRadius: 5
-}
- 
- const toggle = {
-   backgroundColor: '#1976d2', 
-   padding: '10px', 
-   margin: '5px',
-   border: '3pt solid #1976d2', 
-   borderRadius: '15px', 
-   color: 'white'
- }
+    let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
- const toggleGroup = {
-  backgroundColor: 'white', 
-  border: '3pt solid #1976d2', 
-  borderRadius: '15px', 
-}
+    const [value, setValue] = useState(0);
+    const [toggle1, setToggle1] = useState(true);
+    const [toggle2, setToggle2] = useState(false);
+    const [toggle3, setToggle3] = useState(false);
+    const [searchText, setSearchText] = useState('');
 
-const searchBar = {
-  backgroundColor: 'white',
-  border: '3pt solid #1976d2',
-  borderRadius: '15px',
-  margin: '10px',
-  fontSize: '18pt'
-}
+    const PaperStyle = {
+        backgroundColor: '#f1f7fa',
+        padding: '10px',
+        margin: '10px',
+        borderRadius: 5,
+        width: '90%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+    }
 
-const searchBotton = {
-  backgroundColor: '#1976d2',
-  padding: '10px',
-  margin: '5px',
-  border: '3pt solid #1976d2',
-  borderRadius: '15px',
-  color: 'white'
-}
+    const toggle = {
+        padding: '5px 15px',
+        border: '1px solid #aaaaaa',
+        borderRadius: 5,
+        '&:disabled': {
+            backgroundColor: blue[500],
+            color: '#ffffff',
+        }
+    }
 
-const icon = {
-  color: 'white'
-}
+    const searchBar = {
+        backgroundColor: 'white',
+        borderRadius: 10,
+        margin: '10px',
+        fontSize: '18pt',
+        padding: '5px 10px',
+        width: '25vw',
+    }
 
+    const searchButton = {
+        backgroundColor: blue[400],
+        margin: '5px',
+        borderRadius: 10,
+        textAlign: 'center',
+        '&:hover': {
+            backgroundColor: blue[300],
+        }
+    }
 
+    function getBook() {
+        setValue(0);
+        setToggle1(true);
+        setToggle2(false);
+        setToggle3(false);
+    }
 
-  function getBook() {
-    setValue(0); 
-    setToggle1(true);
-    setToggle2(false);
-    setToggle3(false);
-  }
+    function getPost() {
+        setValue(1);
+        setToggle1(false);
+        setToggle2(true);
+        setToggle3(false);
+    }
 
-  function getPost() {
-    setValue(1); 
-    setToggle1(false);
-    setToggle2(true);
-    setToggle3(false);
-  }
+    function getUser() {
+        setValue(2);
+        setToggle1(false);
+        setToggle2(false);
+        setToggle3(true);
+    }
 
-  function getUser() {
-    setValue(2); 
-    setToggle1(false);
-    setToggle2(false);
-    setToggle3(true);
-  }
+    const handleSearchTextChange = (event) => {
+        setSearchText(event.target.value);
+    };
 
-  const handleSearchTextChange = (event) => {
-    setSearchText(event.target.value);
-  };
+    const handleSearchButtonClick = () => {
 
-  const handleSearchButtonClick = () => {
-     
-  };
+    };
 
-  const Choiche = ({value}) => {
+    const Choice = ({value}) => {
+        if (value === 0) {
+            return (
+                <Grid container direction="row" sx={{gap: '10%'}} justifyContent="center">
+                    <Grid iterm xs={4}>
+                        <SuggestedBooks user={currentUser['_id']}/>
+                    </Grid>
+                    <Grid iterm xs={4}>
+                        <TrendingBooks/>
+                    </Grid>
+                </Grid>
+            );
+        } else if (value === 1) {
+            return (
+                <Paper sx={PaperStyle}>
+                    <PostsList all={true} size={12}/>
+                </Paper>
+            );
+        } else {
+            return (
+                <Paper sx={PaperStyle}>
+                    <UserList/>
+                </Paper>
+            );
+        }
+    }
 
-   if(value === 0) {
-    return(
-    <>   
-      <div className='choiche'>
-      <Typography variant="h3">
-        Books
-        </Typography>
-      <SuggestBooks user={currentUser['_id']}/>
-      </div>
-     </>
-    ); 
-  }
-   else if(value === 1) {
     return (
-     <>   
-        <div className='choiche'>
-        <Typography variant="h3">
-          Posts
-        </Typography>
-      < PostsList all={true} size={12}/>
-      </div>
-      </>
-       ); 
-     }
-    else {
-        return (
-            <>   
-            <div className='choiche'>
-             <Typography variant="h3">
-              Users
-             </Typography>
-             <UserList />
-             </div>
-             </>
-        ); 
-     }
-   }
-
-        return (
-          <Paper sx={PaperStyle}>
-            <Container>
-                <Typography variant="h2">Esplora</Typography>
-                <Box component="form" sx={{ display: 'flex', alignItems: 'center' }}>
-                 <TextField type="text" placeholder="Cerca" variant="outlined" sx={searchBar} value={searchText} onChange={handleSearchTextChange} />
-                 <Button
-                  sx={searchBotton}
-                  variant="filledTonal"
-                  startIcon={<SearchRounded sx={icon} />}
-                  onClick={handleSearchButtonClick}
-                 >
-                 <Typography variant='h5'>Cerca</Typography>
-                 </Button>
-                </Box>
-                <Container className='explore'>
-                <ToggleButtonGroup
-                    exclusive
-                    aria-label="explore"
-                    size="large"
-                    role="group"
-                    sx={toggleGroup}
-                >
-                    <ToggleButton onClick={getBook} sx={toggle} value="Book" aria-label="book" disabled={toggle1}>
-                       <h4>Book</h4>
+        <Paper sx={PaperStyle}>
+            <Typography variant="h4">Explore</Typography>
+            <Box component="form" sx={{display: 'flex', alignItems: 'center'}}>
+                <TextField type="text" placeholder="Search" variant="standard" sx={searchBar} value={searchText}
+                           onChange={handleSearchTextChange}/>
+                <Button sx={searchButton} variant="filledTonal" onClick={handleSearchButtonClick}>
+                    <SearchRounded sx={{color: '#ffffff'}}/>
+                </Button>
+            </Box>
+            <Grid container direction="column" alignItems="center" justifyContent="space-around">
+                <ToggleButtonGroup exclusive aria-label="explore" size="large" role="group"
+                                   value="toggleGroup" color="primary">
+                    <ToggleButton onClick={getBook} sx={toggle} value="Book" aria-label="Books" disabled={toggle1}>
+                        <Typography>Books</Typography>
                     </ToggleButton>
-                    <ToggleButton onClick={getPost} sx={toggle} value="Post" aria-label="post" disabled={toggle2}>
-                       <h4>Post</h4>
+                    <ToggleButton onClick={getPost} sx={toggle} value="Post" aria-label="Posts" disabled={toggle2}>
+                        <Typography>Posts</Typography>
                     </ToggleButton>
-                    <ToggleButton onClick={getUser} sx={toggle} value="User" aria-label="user" disabled={toggle3}>
-                       <h4>User</h4>
+                    <ToggleButton onClick={getUser} sx={toggle} value="User" aria-label="Users" disabled={toggle3}>
+                        <Typography>Users</Typography>
                     </ToggleButton>
                 </ToggleButtonGroup>
-                  <Choiche  value={value} />
-                </Container>
-            </Container>
-            </Paper>
-        );
+                <Choice value={value}/>
+            </Grid>
+        </Paper>
+    );
 
 }

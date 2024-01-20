@@ -8,7 +8,7 @@ import {blue} from "@mui/material/colors";
 
 function SuggestBooks({user}) {
     const navigate = useNavigate();
-    const [suggestBooks, setSuggestBooks] = useState([]); 
+    const [suggestBooks, setSuggestBooks] = useState([]);
     const [displayCount, setDisplayCount] = useState(10);
 
 
@@ -22,7 +22,7 @@ function SuggestBooks({user}) {
     };
 
     const fetchBooks = async () => {
-       
+
         try {
             const response = await axios.get(`http://localhost:8080/api/suggestedBooks/${user}`);
 
@@ -62,7 +62,7 @@ function SuggestBooks({user}) {
 
     return (
         <Paper sx={PaperStyle}>
-            <Typography variant="h5">Suggested Books</Typography>
+            <Typography variant="h5" sx={{textAlign: 'center'}}>Suggestions by users you follow</Typography>
             <List sx={ListStyle}>
                 {suggestBooks.length === 0 ? (
                     <ListItem>
@@ -84,8 +84,10 @@ function SuggestBooks({user}) {
                 )}
             </List>
             {suggestBooks.length > displayCount && (
-                <Button sx={{backgroundColor: blue[100], marginTop: "10px", height: "30px",
-                    '&:hover': {backgroundColor: blue[100]}}}
+                <Button sx={{
+                    backgroundColor: blue[100], marginTop: "10px", height: "30px",
+                    '&:hover': {backgroundColor: blue[100]}
+                }}
                         variant="filledTonal" onClick={loadAllBooks}>
                     <Typography>Show all</Typography>
                 </Button>

@@ -215,7 +215,7 @@ public class BookController {
      * This method adds a book to the wishlist of a user
      *
      * @param username of the user
-     * @param bookId of the book
+     * @param bookId   of the book
      * @return id and title of the book
      */
     @PostMapping("/addToWishlist/{username}/{bookId}")
@@ -247,7 +247,7 @@ public class BookController {
      * This method removes a book from the wishlist of a user
      *
      * @param username of the user
-     * @param bookId of the book
+     * @param bookId   of the book
      * @return id and title of the book
      */
     @DeleteMapping("/removeFromWishlist/{username}/{bookId}")
@@ -273,5 +273,53 @@ public class BookController {
         } else {
             return ResponseEntity.ok().body("Book removed from wishlist");
         }
+    }
+
+    /**
+     * This method returns the first 10 books in the global ranking
+     *
+     * @return id and title of the book
+     */
+    @GetMapping("/trending")
+    List<lightBook> getTrending() {
+        MongoCollection<Document> Posts = MongoConfig.getCollection("Posts");
+
+        Date thirtyDaysAgo = new Date(System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000);
+
+        List<Document> result = Posts.aggregate(List.of(
+                new Document("$match", new Document("rating", new Document("$gte", 1)).append("date_added", new Document("$gte", thirtyDaysAgo))),
+                new Document("$group", new Document("_id", "$book_id")
+                        .append("book_title", new Document("$first", "$book_title"))
+                        .append("count", new Document("$sum", 1))
+                        .append("average_rating", new Document("$avg", "$rating"))),
+                new Document("$sort", new Document("count", -1))
+        )).into(new ArrayList<>());
+
+        int maxCount = result.getFirst().getInteger("count");
+
+        for (Document doc : result) {
+            int count = doc.getInteger("count");
+            double score = 0;
+            if (count != 0) {
+                double avgRating = doc.getDouble("average_rating");
+                double normalizedCount = (count - 1.0) / (maxCount - 1.0) * (5 - 1.0) + 1;
+                double x = (1.3 * avgRating) + (0.7 * normalizedCount);
+                score = 1.0 / (1 + Math.exp(-(x - 3)));
+            }
+            doc.append("score", score);
+        }
+
+        result.sort((o1, o2) -> Double.compare(o2.getDouble("score"), o1.getDouble("score")));
+
+        result = result.subList(0, Math.min(10, result.size()));
+
+        System.out.println(result);
+
+        List<lightBook> trendingBooks = new ArrayList<>();
+        for (Document doc : result) {
+            trendingBooks.add(new lightBook(doc.getInteger("_id"), doc.getString("book_title")));
+        }
+
+        return trendingBooks;
     }
 }

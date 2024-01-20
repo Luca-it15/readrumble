@@ -37,7 +37,7 @@ const UserSettings = () => {
                     exclusive
                     onChange={(event, newSelectedForm) => setSelectedForm(newSelectedForm)}
                     aria-label="form selection"
-                    color={"primary"}
+                    color="primary"
                 >
                     <ToggleButton value="name" aria-label="change name">
                         Change Name
