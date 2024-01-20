@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
-import {Container, Grid, Button, Alert, Box, ToggleButton, ToggleButtonGroup} from '@mui/material';
+import {Grid, ToggleButton, ToggleButtonGroup, Paper} from '@mui/material';
 import '../App.css';
 import FormForAll from '../components/FormForAll';
-import {BrowserRouter, Route, Routes, Navigate, redirect} from 'react-router-dom';
+import {blue} from "@mui/material/colors";
+import GoBack from "../components/GoBack";
 
 function goProfile() {
     window.location.href = 'http://localhost:3000/profile';
@@ -29,36 +30,55 @@ const UserSettings = () => {
     var obj3 = {"name": "surname", "_id": user["_id"]};
     var obj4 = {"name": "password", "_id": user["_id"]};
 
+    const PaperStyle = {
+        backgroundColor: '#f1f7fa',
+        padding: '10px',
+        margin: '10px',
+        borderRadius: 5,
+        width: '80%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+    }
+
+    const toggle = {
+        padding: '5px 15px',
+        border: '1px solid #aaaaaa',
+        borderRadius: 5,
+        '&.Mui-selected': {
+            backgroundColor: blue[500],
+            color: '#ffffff',
+        },
+        '&.Mui-selected:hover': {
+            backgroundColor: blue[400],
+            color: '#ffffff',
+        }
+    }
+
     return (
-        <Container a>
+        <Paper sx={PaperStyle}>
             <Grid item xs={12} sm={8} md={6}>
-                <ToggleButtonGroup
-                    value={selectedForm}
-                    exclusive
-                    onChange={(event, newSelectedForm) => setSelectedForm(newSelectedForm)}
-                    aria-label="form selection"
-                    color="primary"
-                >
-                    <ToggleButton value="name" aria-label="change name">
+                <GoBack/>
+                <ToggleButtonGroup value={selectedForm} exclusive aria-label="form selection" color="primary"
+                    onChange={(event, newSelectedForm) => setSelectedForm(newSelectedForm)}>
+                    <ToggleButton sx={toggle} value="name" aria-label="change name">
                         Change Name
                     </ToggleButton>
-                    <ToggleButton value="surname" aria-label="change surname">
+                    <ToggleButton sx={toggle} value="surname" aria-label="change surname">
                         Change Surname
                     </ToggleButton>
-                    <ToggleButton value="password" aria-label="change password">
+                    <ToggleButton sx={toggle} value="password" aria-label="change password">
                         Change Password
                     </ToggleButton>
                 </ToggleButtonGroup>
             </Grid>
-            <Grid item xs={12} sm={8} md={6}>
+            <Grid item xs={12} >
                 {selectedForm === 'name' && <FormForAll prop={obj2}/>}
                 {selectedForm === 'surname' && <FormForAll prop={obj3}/>}
                 {selectedForm === 'password' && <FormForAll prop={obj4}/>}
             </Grid>
-            <Grid item xs={12}>
-                <Button variant="contained" color="secondary" onClick={goProfile}>Back to Profile</Button>
-            </Grid>
-        </Container>
+        </Paper>
     );
 };
 export default UserSettings;

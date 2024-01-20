@@ -337,7 +337,6 @@ public class BookController {
 
         MongoCollection<Document> ActiveBooksCollection = MongoConfig.getCollection("ActiveBooks");
 
-        // Get the documents with "username" = username, then sort by year and month, then take the books.book_id and books.title of the documents in the arrays "books" with state = 1
         List<Document> BookDocuments = ActiveBooksCollection.aggregate(List.of(
                 new Document("$match", new Document("username", new Document("$in", usernameList))),
                 new Document("$sort", new Document("year", -1).append("month", -1)),
@@ -357,6 +356,39 @@ public class BookController {
             System.out.println(books);
 
             return books;
+        }
+    }
+
+    /**
+     * This method returns the pages_read for each tag of the books read by the user
+     *
+     * @param username of the user
+     * @return id and title of the book
+     */
+    @GetMapping("/pagesReadByTag/{username}")
+    List<Document> getPagesReadByTag(@PathVariable String username) {
+        System.out.println("Richiesta pagine lette per ogni tag da: " + username);
+
+        MongoCollection<Document> ActiveBooksCollection = MongoConfig.getCollection("ActiveBooks");
+
+        List<Document> BookDocuments = ActiveBooksCollection.aggregate(List.of(
+                new Document("$match", new Document("username", username)),
+                new Document("$sort", new Document("year", -1).append("month", -1)),
+                new Document("$limit", 6),
+                new Document("$unwind", "$books"),
+                new Document("$project", new Document("id", "$books.book_id").append("title", "$books.book_title").append("tags", "$books.tags").append("pages_read", "$books.pages_read")),
+                new Document("$unwind", "$tags"),
+                new Document("$group", new Document("_id", "$tags").append("pages_read", new Document("$sum", "$pages_read"))),
+                new Document("$sort", new Document("_id", 1))
+        )).into(new ArrayList<>());
+
+        if (BookDocuments.isEmpty()) {
+            System.out.println("User never read a book");
+            return null;
+        } else {
+            System.out.println(BookDocuments);
+
+            return BookDocuments;
         }
     }
 }
