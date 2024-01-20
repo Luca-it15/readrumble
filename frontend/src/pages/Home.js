@@ -5,7 +5,7 @@ import ImageListItem from '@mui/material/ImageListItem';
 import image from '../img/emptyPage.jpg';
 import {Container, Grid, Typography, Paper} from '@mui/material';
 import PopularCompetitionBlock from '../components/PopularCompetitionBlock';
-import LastBooksOfFriends from "../components/LastBooksOfFriends";
+import BookListQuery from "../components/BookListQuery";
 const Home = () => {
 const PaperStyle = {
     backgroundColor: '#f1f7fa',
@@ -56,7 +56,7 @@ const PaperStyle = {
                             </Paper>
                         </Grid>
                         <Grid item xs={3} md={3}>
-                            <LastBooksOfFriends />
+                            <BookListQuery query={"friends"}/>
                         </Grid>
                     </Grid>
                 </Container>

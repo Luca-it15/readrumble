@@ -10,7 +10,7 @@ import Button from '@mui/material-next/Button';
 import {SearchRounded} from '@mui/icons-material';
 import TextField from '@mui/material/TextField';
 import SuggestedBooks from '../components/SuggestedBooks';
-import TrendingBooks from "../components/TrendingBooks";
+import BookListQuery from "../components/BookListQuery";
 import {blue} from "@mui/material/colors";
 
 export default function Explore() {
@@ -101,7 +101,7 @@ export default function Explore() {
                         <SuggestedBooks user={currentUser['_id']}/>
                     </Grid>
                     <Grid iterm xs={4}>
-                        <TrendingBooks/>
+                        <BookListQuery query={"trending"}/>
                     </Grid>
                 </Grid>
             );

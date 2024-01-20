@@ -9,12 +9,32 @@ import {blue, red} from "@mui/material/colors";
 import {useNavigate} from "react-router-dom";
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 
-function TrendingBooks() {
+function BookListQuery({query}) {
+    let currentUser = JSON.parse(localStorage.getItem('logged_user'));
+
+    const usernames = Array.isArray(currentUser['following']) ? currentUser['following'] : currentUser['following'].split(",");
+    console.log(usernames);
+
     const [books, setBooks] = useState([]);
 
     const navigate = useNavigate();
 
-    const fetchBooks = async () => {
+    const fetchLastBooksOfFriends = async () => {
+        try {
+            const usernamesString = usernames.join(",");
+            const response = await axios.get(`http://localhost:8080/api/book/friendsRecentlyReadBooks?usernames=${usernamesString}`);
+
+            // Returns book.id and book.title
+            setBooks(response.data.map(book => ({
+                id: book.id,
+                title: book.title.replace(/"/g, '')
+            })));
+        } catch (error) {
+            console.log(error.response)
+        }
+    };
+
+    const fetchTrendingBooks = async () => {
         try {
             const response = await axios.get(`http://localhost:8080/api/book/trending`);
 
@@ -28,9 +48,16 @@ function TrendingBooks() {
         }
     };
 
-    let currentUser = JSON.parse(localStorage.getItem('logged_user'));
     useEffect(() => {
-        fetchBooks();
+        switch (query) {
+            case 'trending':
+                fetchTrendingBooks();
+                break;
+            case 'friends':
+                fetchLastBooksOfFriends();
+                break;
+
+        }
     }, [currentUser['_id']]);
 
     function seeDetails(id) {
@@ -56,8 +83,13 @@ function TrendingBooks() {
 
     return (
         <Paper sx={PaperStyle}>
-            <Typography variant="h5" sx={{textAlign: 'center'}}>Trending books<TrendingUpIcon
-                sx={{color: blue[400], marginLeft: '10px'}}/></Typography>
+            {query === 'trending' ? (
+                <Typography variant="h5" sx={{textAlign: 'center'}}>Trending books<TrendingUpIcon
+                    sx={{color: blue[400], marginLeft: '10px'}}/></Typography>
+            ) : (
+                <Typography variant="h5" sx={{textAlign: 'center'}}>Recently read by friends</Typography>
+            )}
+
             {currentUser['following'].length === 0 ? (
                 <List sx={ListStyle}>
                     <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
@@ -72,7 +104,7 @@ function TrendingBooks() {
                                 <Link onClick={() => {
                                     seeDetails(book.id)
                                 }} sx={{color: "#000000"}}>
-                                    <Typography><strong>#{index + 1}</strong> {book.title}</Typography>
+                                    <Typography>{book.title}</Typography>
                                 </Link>
                             </ListItem>
                             <Divider variant="middle" component="li"/>
@@ -84,4 +116,4 @@ function TrendingBooks() {
     );
 }
 
-export default TrendingBooks;
+export default BookListQuery;
