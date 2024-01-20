@@ -1,28 +1,22 @@
 import React, {useEffect, useState} from 'react';
 import {AppBar, Toolbar, Typography, Card, CardContent, Paper, Grid} from '@mui/material';
-import {Line} from 'react-chartjs-2';
+import {Bar, Line} from 'react-chartjs-2';
 import {DataGrid} from '@mui/x-data-grid';
 import {CategoryScale} from 'chart.js';
 import axios from 'axios';
 import Chart from 'chart.js/auto';
 import {Navigate} from "react-router-dom";
 
-var currentUser = JSON.parse(localStorage.getItem('logged_user'));
-if (!currentUser) {
-    console.log('La chiave "logged_user" non è presente in localStorage.');
-    // Redirect to login
-    <Navigate to="/login"/>;
-}
-
 const Dashboard = () => {
+    let currentUser = JSON.parse(localStorage.getItem('logged_user'));
+
     const [readingProgressData, setReadingProgressData] = useState([]);
-    const [competitionData, setCompetitionData] = useState([]);
     const [readingStatsData, setReadingStatsData] = useState([]);
 
     async function fetchPagesTrend() {
         try {
             const response = await axios.get(`http://localhost:8080/api/analytics/pagesTrend/${currentUser['_id']}`);
-            console.log("Received: ", response.data);
+            console.log("Pages trend: ", response.data);
             const data = response.data.map(doc => ({month: doc.month, year: doc.year, pages: doc.pages}));
             setReadingProgressData(data);
         } catch (error) {
@@ -30,19 +24,20 @@ const Dashboard = () => {
         }
     }
 
+    async function fetchReadingStats() {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/book/pagesReadByTag/${currentUser['_id']}`);
+            console.log("Pages by tag: ", response.data);
+            const data = response.data.map(doc => ({tag: doc._id, pagesRead: doc.pages_read}));
+            setReadingStatsData(data);
+        } catch (error) {
+            console.log(error.response);
+        }
+    }
+
     useEffect(() => {
         fetchPagesTrend();
-
-        setCompetitionData([
-            {id: 1, name: 'Mario', rank: 1, pagesRead: 100},
-            {id: 2, name: 'Luigi', rank: 2, pagesRead: 80},
-            {id: 3, name: 'Peach', rank: 3, pagesRead: 70},
-        ]);
-        setReadingStatsData([
-            {id: 1, genre: 'Fantasy', pagesRead: 300},
-            {id: 2, genre: 'Horror', pagesRead: 200},
-            {id: 3, genre: 'Romance', pagesRead: 150},
-        ]);
+        fetchReadingStats();
     }, [currentUser['_id']]);
 
     // This graph shows the read pages in the last 8 months
@@ -62,15 +57,30 @@ const Dashboard = () => {
         />
     );
 
-    const competitionColumns = [
-        {field: 'name', headerName: 'Name', width: 130},
-        {field: 'rank', headerName: 'Rank', width: 130},
-        {field: 'pagesRead', headerName: 'Pages Read', width: 160},
-    ];
-
-    const readingStatsColumns = [
-        {field: 'genre', headerName: 'Genre', width: 130},
-        {field: 'pagesRead', headerName: 'Pages Read', width: 160},
+    const readingStatsChart = [
+        <Bar
+            data={{
+                labels: readingStatsData.map((data) => data.tag),
+                datasets: [
+                    {
+                        label: 'Pages read',
+                        data: readingStatsData.map((data) => data.pagesRead),
+                        backgroundColor: 'rgba(75,192,192,0.4)',
+                        borderColor: 'rgba(75,192,192,1)',
+                        borderWidth: 1,
+                        hoverBackgroundColor: 'rgba(75,192,192,0.6)',
+                        hoverBorderColor: 'rgba(75,192,192,1)',
+                    },
+                ],
+            }}
+            options={{
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }}
+        />
     ];
 
     const PaperStyle = {
@@ -91,21 +101,21 @@ const Dashboard = () => {
             <Typography variant="h5">
                 {currentUser['_id']}'s dashboard
             </Typography>
-
-            <Paper sx={{textAlign: 'center', borderRadius: 5, backgroundColor: '#ffffff', width:'70%', padding: '20px'}}>
-                <Grid item xs={12}><Typography variant="h5">Reading progress</Typography></Grid>
+        <Grid container direction="row" justifyContent="space-around" alignItems="center" spacing={1}>
+            <Grid item xs={6}>
+            <Paper sx={{textAlign: 'center', borderRadius: 5, backgroundColor: '#ffffff', width:'100%', padding: '20px'}}>
+                <Typography variant="h5">Reading progress</Typography>
                 {readingProgressChart}
             </Paper>
-            <Paper sx={{display: 'flex', flexDirection: 'row', textAlign: 'center', borderRadius: 5,
-                backgroundColor: '#ffffff', width:'50%', padding: '20px'}}>
-
-                {/* TODO: analytic competizioni */}
-                <Card>
-                    <Typography variant="h5">Reading stats</Typography>
-                    <DataGrid rows={readingStatsData} columns={readingStatsColumns} pageSize={5}/>
-                </Card>
+            </Grid>
+            <Grid item xs={6}>
+            <Paper sx={{display: 'flex', flexDirection: 'column', textAlign: 'center', borderRadius: 5,
+                backgroundColor: '#ffffff', width:'100%', padding: '20px'}}>
+                <Typography variant="h5">Pages read by tag in the last six months</Typography>
+                {readingStatsChart}
             </Paper>
-
+            </Grid>
+        </Grid>
         </Paper>
     );
 };

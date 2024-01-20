@@ -195,8 +195,8 @@ function BookDetails() {
                     </Paper>
                     </>):(
                         <>
-                        <Grid item xs={12} ClassName='choiche'>
-                      <Typography variant="h4"  className="mt-5 mb-3" sx={{textAlign: 'center'}}>Book's reviews</Typography>
+                        <Grid item xs={12} ClassName='choice'>
+                      <Typography variant="h5" sx={{textAlign: 'center', marginTop: '30px'}}>Reviews</Typography>
                       <PostList user={false} book_id={id} username={currentUser['_id']} size={5} all={false}/>    
                       </Grid>    
                       </>

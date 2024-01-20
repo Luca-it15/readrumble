@@ -215,7 +215,7 @@ public class BookController {
      * This method adds a book to the wishlist of a user
      *
      * @param username of the user
-     * @param bookId of the book
+     * @param bookId   of the book
      * @return id and title of the book
      */
     @PostMapping("/addToWishlist/{username}/{bookId}")
@@ -247,7 +247,7 @@ public class BookController {
      * This method removes a book from the wishlist of a user
      *
      * @param username of the user
-     * @param bookId of the book
+     * @param bookId   of the book
      * @return id and title of the book
      */
     @DeleteMapping("/removeFromWishlist/{username}/{bookId}")
@@ -272,6 +272,123 @@ public class BookController {
             return null;
         } else {
             return ResponseEntity.ok().body("Book removed from wishlist");
+        }
+    }
+
+    /**
+     * This method returns the first 10 books in the global ranking
+     *
+     * @return id and title of the book
+     */
+    @GetMapping("/trending")
+    List<lightBook> getTrending() {
+        MongoCollection<Document> Posts = MongoConfig.getCollection("Posts");
+
+        Date thirtyDaysAgo = new Date(System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000);
+
+        List<Document> result = Posts.aggregate(List.of(
+                new Document("$match", new Document("rating", new Document("$gte", 1)).append("date_added", new Document("$gte", thirtyDaysAgo))),
+                new Document("$group", new Document("_id", "$book_id")
+                        .append("book_title", new Document("$first", "$book_title"))
+                        .append("count", new Document("$sum", 1))
+                        .append("average_rating", new Document("$avg", "$rating"))),
+                new Document("$sort", new Document("count", -1))
+        )).into(new ArrayList<>());
+
+        int maxCount = result.getFirst().getInteger("count");
+
+        for (Document doc : result) {
+            int count = doc.getInteger("count");
+            double score = 0;
+            if (count != 0) {
+                double avgRating = doc.getDouble("average_rating");
+                double normalizedCount = (count - 1.0) / (maxCount - 1.0) * (5 - 1.0) + 1;
+                double x = (1.3 * avgRating) + (0.7 * normalizedCount);
+                score = 1.0 / (1 + Math.exp(-(x - 3)));
+            }
+            doc.append("score", score);
+        }
+
+        result.sort((o1, o2) -> Double.compare(o2.getDouble("score"), o1.getDouble("score")));
+
+        result = result.subList(0, Math.min(10, result.size()));
+
+        System.out.println(result);
+
+        List<lightBook> trendingBooks = new ArrayList<>();
+        for (Document doc : result) {
+            trendingBooks.add(new lightBook(doc.getInteger("_id"), doc.getString("book_title")));
+        }
+
+        return trendingBooks;
+    }
+
+    /**
+     * This method returns the last 10 books finished by a user's friends
+     *
+     * @param usernames of the user's friends
+     * @return id and title of the book
+     */
+    @GetMapping("/friendsRecentlyReadBooks")
+    List<lightBook> getFriendsRecentlyReadBooks(@RequestParam String usernames) {
+        System.out.println("Richiesta libri recentemente letti dagli amici");
+
+        List<String> usernameList = Arrays.asList(usernames.split(","));
+
+        MongoCollection<Document> ActiveBooksCollection = MongoConfig.getCollection("ActiveBooks");
+
+        List<Document> BookDocuments = ActiveBooksCollection.aggregate(List.of(
+                new Document("$match", new Document("username", new Document("$in", usernameList))),
+                new Document("$sort", new Document("year", -1).append("month", -1)),
+                new Document("$limit", usernames.length()),
+                new Document("$project", new Document("books", new Document("$filter", new Document("input", "$books").append("as", "book").append("cond", new Document("$eq", List.of("$$book.state", 1)))))),
+                new Document("$unwind", "$books"),
+                new Document("$project", new Document("id", "$books.book_id").append("title", "$books.book_title")),
+                new Document("$limit", 10)
+        )).into(new ArrayList<>());
+
+        if (BookDocuments.isEmpty()) {
+            System.out.println("User's friends never read a book");
+            return null;
+        } else {
+            List<lightBook> books = setResult(BookDocuments);
+
+            System.out.println(books);
+
+            return books;
+        }
+    }
+
+    /**
+     * This method returns the pages_read for each tag of the books read by the user
+     *
+     * @param username of the user
+     * @return id and title of the book
+     */
+    @GetMapping("/pagesReadByTag/{username}")
+    List<Document> getPagesReadByTag(@PathVariable String username) {
+        System.out.println("Richiesta pagine lette per ogni tag da: " + username);
+
+        MongoCollection<Document> ActiveBooksCollection = MongoConfig.getCollection("ActiveBooks");
+
+        List<Document> BookDocuments = ActiveBooksCollection.aggregate(List.of(
+                new Document("$match", new Document("username", username)),
+                new Document("$sort", new Document("year", -1).append("month", -1)),
+                new Document("$limit", 6),
+                new Document("$unwind", "$books"),
+                new Document("$project", new Document("id", "$books.book_id").append("title", "$books.book_title").append("tags", "$books.tags").append("pages_read", "$books.pages_read")),
+                new Document("$unwind", "$tags"),
+                new Document("$group", new Document("_id", "$tags").append("pages_read", new Document("$sum", "$pages_read"))),
+                new Document("$sort", new Document("_id", 1))
+        )).into(new ArrayList<>());
+
+        if (BookDocuments.isEmpty()) {
+            System.out.println("User never read a book");
+            return null;
+        } else {
+            System.out.println(BookDocuments);
+
+            return BookDocuments;
         }
     }
 }

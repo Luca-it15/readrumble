@@ -25,6 +25,7 @@ main {
     justify-content: flex-start;
     background-color: #e1eef3;
     min-height: 72vh;
+    padding-bottom: 50px;
 }
 
 .MuiGrid-root .MuiGrid-item .MuiGrid-grid-xs-4 .MuiGrid-grid-md-4 .css-gj1fbr-MuiGrid-root, .css-1jpv6k6-MuiGrid-root > .MuiGrid-item {
@@ -152,7 +153,7 @@ main {
     margin: 0 auto;
 }
 
-.choiche {
+.choice {
     margin-Bottom: 5%;
     margin-top: 5%;
     text-align: center;
