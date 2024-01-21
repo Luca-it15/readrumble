@@ -6,10 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="amici suggeriti">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/Neo4jFullController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/Neo4jFullController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/SuggestedFriends.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/SuggestedFriends.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Explore.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Explore.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/readrumble" beforeDir="false" afterPath="$PROJECT_DIR$/readrumble" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/Tags.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Tags.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -99,7 +98,8 @@
       <workItem from="1705518080705" duration="1916000" />
       <workItem from="1705572104458" duration="6805000" />
       <workItem from="1705653990053" duration="4724000" />
-      <workItem from="1705758993517" duration="2569000" />
+      <workItem from="1705758993517" duration="2649000" />
+      <workItem from="1705835375121" duration="798000" />
     </task>
     <task id="LOCAL-00001" summary="post apposto per davvero deh?">
       <option name="closed" value="true" />
@@ -269,7 +269,15 @@
       <option name="project" value="LOCAL" />
       <updated>1705775447577</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="amici suggeriti">
+      <option name="closed" value="true" />
+      <created>1705776671091</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1705776671091</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
