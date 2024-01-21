@@ -7,6 +7,7 @@ import it.unipi.dii.aide.lsmd.readrumble.competition.CompetitionController;
 import it.unipi.dii.aide.lsmd.readrumble.admin.AdminCompetitionController;
 import it.unipi.dii.aide.lsmd.readrumble.library.ActiveBookController;
 import it.unipi.dii.aide.lsmd.readrumble.post.PostController;
+import it.unipi.dii.aide.lsmd.readrumble.search.SearchController;
 import it.unipi.dii.aide.lsmd.readrumble.user.UserController;
 import it.unipi.dii.aide.lsmd.readrumble.book.BookController;
 import org.bson.Document;
@@ -32,6 +33,7 @@ public class MongoFullController {
     private final PostController postController;
     private final ActiveBookController libraryController;
     private final BookController bookController;
+    private final SearchController searchController;
 
     @Autowired
     public MongoFullController(UserController userController,
@@ -39,13 +41,15 @@ public class MongoFullController {
                                PostController postController,
                                ActiveBookController libraryController,
                                AdminCompetitionController adminCompetitionController,
-                               BookController bookController) {
+                               BookController bookController,
+                               SearchController searchController) {
         this.userController = userController;
         this.competitionController = competitionController;
         this.adminCompetitionController = adminCompetitionController;
         this.postController = postController;
         this.libraryController = libraryController;
         this.bookController = bookController;
+        this.searchController = searchController;
     }
 
     /**

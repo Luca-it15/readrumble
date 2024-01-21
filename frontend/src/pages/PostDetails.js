@@ -15,6 +15,7 @@ import { ArrowBack } from '@mui/icons-material';
 import TagIcon from '@mui/icons-material/Tag';
 import Tags from '../components/Tags';
 import GoBack from '../components/GoBack';
+import moment from 'moment';
 
 
 function PostDetails() {
@@ -60,6 +61,7 @@ function PostDetails() {
             setTags(response.data.tags); 
             setRating(response.data.rating); 
             setDate(response.data.date_added); 
+            console.log(response.data.date_added); 
         } catch (error) {
             console.log(error.response)
         }
@@ -95,7 +97,7 @@ function PostDetails() {
 
     useEffect(() => {
         fetchPost();
-    }, []);
+    }, [id]);
     return (
         <Paper sx={PaperStyle}>
             <Grid xs={2}>
@@ -110,7 +112,7 @@ function PostDetails() {
                     <Typography variant="h4"> {post.username}</Typography>
                     <Typography variant="h5">Bookmark: {post.bookmark}</Typography>
              <Tags tags={tags} /> 
-           <DateFormatter originalTimestamp={date}/>
+             <Typography variant="h5"><DateFormatter timestamp={date} /></Typography>
            <Typography variant="h6" component="div"> 
             <RatingStars 
               onChange={rating}

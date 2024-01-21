@@ -3,37 +3,38 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material-next/Button";
 import {SearchRounded } from "@mui/icons-material";
 import { Typography } from "@mui/material";
+import {blue} from "@mui/material/colors";
 
-const searchBar = {
-    backgroundColor: 'white', 
-    border: '3pt solid #1976d2', 
-    borderRadius: '15px', 
+
+  
+ 
+
+export default function SearchBar({handleSearchButtonClick, handleSearchTextChange, searchText}) {
+   const searchBar = {
+    backgroundColor: 'white',
+    borderRadius: 10,
     margin: '10px',
-    fontSize: '18pt'
-  }
+    fontSize: '18pt',
+    padding: '5px 10px',
+    width: '25vw',
+ }
 
-  const toggle = {
-    backgroundColor: '#1976d2', 
-    padding: '15px', 
+ const searchButton = {
+    backgroundColor: blue[400],
     margin: '5px',
-    border: '3pt solid #1976d2', 
-    borderRadius: '15px', 
-    color: 'white'
-  }
-
-  const icon = {
-    color: 'white'
-  }
-
-export default function SearchBar() {
+    borderRadius: 10,
+    textAlign: 'center',
+    '&:hover': {
+        backgroundColor: blue[300],
+    }
+ }
         return (
-            <Box component="form" sx={{ display: 'flex', alignItems: 'center' }}>
-                <TextField type="text" placeholder="Cerca" variant="outlined" sx={searchBar} />
-                <Button 
-                            sx={toggle}
-                            variant="filledTonal" 
-                            startIcon={<SearchRounded sx={icon}/>}>
-                 <Typography variant='h5'>Cerca</Typography></Button>
-            </Box>
+          <Box component="form" sx={{display: 'flex', alignItems: 'center'}}>
+          <TextField type="text" placeholder="Search" variant="standard" sx={searchBar} value={searchText}
+                     onChange={handleSearchTextChange}/>
+          <Button sx={searchButton} variant="filledTonal" onClick={handleSearchButtonClick}>
+              <SearchRounded sx={{color: '#ffffff'}}/>
+          </Button>
+      </Box>
         );
 }
