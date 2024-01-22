@@ -78,7 +78,7 @@ const ProfilePage = () => {
                     <FollowingList user={currentUser['_id']}/>
                     <Paper elevation={2} style={PaperStyle}>
                         <Typography variant="h4">Competitions</Typography>
-                        <CompetitionProfBlock/>
+                        <CompetitionProfBlock user={''}/>
                     </Paper>
                 </Grid>
                 <Grid item xs={6} md={6}>

@@ -104,7 +104,7 @@ function OtherUserProfile() {
                     <FollowingList user={username}/>
                     <Paper elevation={2} style={PaperStyle}>
                         <Typography variant="h5">Competitions</Typography>
-                        <CompetitionProfBlock/>
+                        <CompetitionProfBlock user={username}/>
                     </Paper>
                 </Grid>
                 <Grid item xs={6}>
