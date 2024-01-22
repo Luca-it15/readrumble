@@ -5,10 +5,27 @@ import {useNavigate, Route, Routes, Router} from 'react-router-dom';
 import CompetitionSpec from './CompetitionSpecification';
 import LoginForm from '../pages/Login';
 import '../App.css';
-function CompetitionProfBlock() {
+function CompetitionProfBlock({user}) {
   const [data, setData] = useState([]);
   const navigate = useNavigate();
   const logged_user = JSON.parse(localStorage.getItem("logged_user"));
+  var whichUser =  logged_user["Username"];
+  if(whichUser == user)
+  {
+    const Username = logged_user["Username"];
+  }
+  else
+  {
+    if(user == null | user == '')
+    {
+        const Username = logged_user["Username"];
+    }
+    else
+    {
+        const Username = user;
+    }
+
+  }
   const Username = logged_user["Username"];
   console.log(Username);
 
