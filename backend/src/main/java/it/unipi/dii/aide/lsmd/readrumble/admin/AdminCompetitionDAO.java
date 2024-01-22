@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -23,7 +24,7 @@ public class AdminCompetitionDAO {
                 return ResponseEntity.ok("Competition Already Exists !");
             } else {
                 Document new_add = new Document();
-                Document users = new Document();
+                ArrayList<Document> users = new ArrayList<Document>();
                 LocalDate today = LocalDate.now();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                 String date_to_add = today.format(formatter);

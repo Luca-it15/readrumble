@@ -2,45 +2,37 @@ package it.unipi.dii.aide.lsmd.readrumble.competition;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import com.mongodb.client.model.Updates;
+import com.mongodb.client.model.*;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.springframework.http.ResponseEntity;
 import com.mongodb.client.AggregateIterable;
-import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.Projections;
-import com.mongodb.client.model.Sorts;
-
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.mongodb.client.model.Filters.eq;
 
 public class CompetitionDAO {
-    public static Map<String, Object> sortDocumentByValues(Map<String, Object> document) {
-        // Trasforma il documento in una lista di coppie chiave-valore
-        List<Map.Entry<String, Object>> entryList = new ArrayList<>(document.entrySet());
-
-        // Ordina la lista in base ai valori in ordine decrescente
-        entryList.sort(Comparator.comparing(entry -> (Integer) entry.getValue(), Comparator.reverseOrder()));
-
-        // Crea un nuovo documento con le coppie chiave-valore ordinate
-        Map<String, Object> sortedDocument = entryList.stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        return sortedDocument;
-    }
     public List<Document> getAllCompetition()
     {
+        LocalDate date_of_today = LocalDate.now();
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
-        List<Document> competitions = collection.find().into(new ArrayList<Document>());
+        List<Document> competitions = collection.find(Filters.gte("end_date",date_of_today))
+                .sort(Sorts.descending("end_date"))
+                .into(new ArrayList<>());
         System.out.println(competitions);
         return competitions;
     }
     public List<Document> getPopularCompetitions()
     {
+        Bson dateFilter = Filters.gt("end_date", LocalDate.now());
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         AggregateIterable<Document> aggregation = collection.aggregate(Arrays.asList(
+            Aggregates.match(dateFilter),
             Aggregates.project(
                 Projections.fields(
                     Projections.include("Name", "Tag", "Users"),
@@ -48,7 +40,8 @@ public class CompetitionDAO {
                     new Document("$size", new Document("$objectToArray", "$Users")))
                 )
             ),
-            Aggregates.sort(Sorts.descending("UsersCount"))
+            Aggregates.sort(Sorts.descending("UsersCount")),
+            Aggregates.limit(10)
         ));
         List<Document> competitions = new ArrayList<Document>();
         // Iterare sui risultati dell'aggregazione
@@ -86,10 +79,38 @@ public class CompetitionDAO {
     }
     public Document goCompetitionInformation(Document docx)
     {
-        String Name = (String) docx.get("CompetitionTitle");
-        String Username = (String) docx.get("Username");
+        String competitionTitle = (String) docx.get("CompetitionTitle");
+        String username = (String) docx.get("Username");
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
-        try(MongoCursor<Document> competition = collection.find(eq("Name",Name)).cursor())
+        ArrayList<Document> result = collection.find(eq("name",competitionTitle)).into(new ArrayList<>());
+        Document doc = result.getFirst();
+        System.out.println(doc);
+        ArrayList<Document> list = (ArrayList<Document>) doc.get("Users");
+        if(list != null)
+        {
+            Iterator<Document> user = list.iterator();
+            while(user.hasNext())
+            {
+                Document UtilUser = user.next();
+                String userUtilString = (String) UtilUser.get("username");
+                if(userUtilString != null)
+                {
+                    if(userUtilString.equals(username))
+                    {
+                        doc.append("isIn",true);
+                        return doc;
+                    }
+                }
+            }
+            doc.append("isIn",false);
+            return doc;
+        }
+        else
+        {
+            doc.append("isIn",false);
+            return doc;
+        }
+        /*try(MongoCursor<Document> competition = collection.find(eq("name",Name)).cursor())
         {
             if(competition.hasNext())
             {
@@ -118,8 +139,7 @@ public class CompetitionDAO {
         {
             System.out.println("Exception Catched : " + e.getMessage());
             return null;
-        }
-
+        }*/
     }
     public ResponseEntity<String> makeUserJoinCompetition(Document userDoc)
     {
@@ -128,14 +148,41 @@ public class CompetitionDAO {
         String competitionTitle = (String) userDoc.get("parametro2");
         System.out.println(username);
         System.out.println(competitionTitle);
-        Document userDocument = new Document(username, 0);
-        String userField = "Users." + username;
+        Document userDocument = new Document();
+        userDocument.append("username",username);
+        userDocument.append("pages_read",0);
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
-        Document competition = collection.find(eq("Name",competitionTitle)).first();
-
+        System.out.println("superato");
+        Document competition = collection.find(eq("name",competitionTitle)).first();
+        System.out.println("superato2");
         if (competition != null) {
             //I get the embedded Document Users as a proper document
-            Document usersObject = (Document) competition.get("Users");
+            ArrayList<Document> usersObject = (ArrayList<Document>) competition.get("Users");
+            Iterator<Document> user = usersObject.iterator();
+            while(user.hasNext())
+            {
+                Document UtilUser = user.next();
+                String userUtilString = (String) UtilUser.get("username");
+                if(userUtilString != null)
+                {
+                    if(userUtilString.equals(username))
+                    {
+                        System.out.println("c'è " + username);
+                        Bson filter = Filters.eq("name", competitionTitle);
+                        Document pullOperation = new Document("$pull", new Document("Users", new Document("username", username)));
+                        UpdateResult updateResult = collection.updateOne(filter,pullOperation);
+                        System.out.println(updateResult);
+                        System.out.println("You Left The Competition !");
+                        return ResponseEntity.ok("You Left The Competition !");
+                    }
+                }
+
+            }
+            System.out.println("non c'è " + username);
+            collection.updateOne(eq("name",competitionTitle), Updates.push("Users", userDocument));
+            System.out.println(username +" You joined the " + competitionTitle + " Competititon !");
+            return ResponseEntity.ok(username +" You joined the " + competitionTitle + " Competititon !");
+            /*
             System.out.println(usersObject);
             if (usersObject != null && usersObject.containsKey(username)) {
                 //The user is already in the competition, this means that the user wants to leave the competition
@@ -151,7 +198,7 @@ public class CompetitionDAO {
                 collection.updateOne(eq("Name",competitionTitle), Updates.set("Users", usersObject));
                 System.out.println(username +" You joined the " + competitionTitle + " Competititon !");
                 return ResponseEntity.ok(username +" You joined the " + competitionTitle + " Competititon !");
-            }
+            }*/
         } else {
             System.out.println("Competition Not Found");
             return ResponseEntity.ok("Competition Not Found");

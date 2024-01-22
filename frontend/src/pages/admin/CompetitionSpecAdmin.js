@@ -20,17 +20,18 @@ function CompetitionSpecAdmin(){
     var usernameToAdd = username["Username"];
     function BuildRank()
     {
-        console.log("BUILDRANK");
         const rank_div = document.getElementById("rank");
         rank_div.innerHTML = null;
+        console.log("wwwww " +usernameToAdd);
         let i = 0;
-        const keys = Object.keys(data.Users);
-        while(keys[i] != null && i != 10)
+        const keys =data.Users;
+        console.log(keys);
+        /*while(keys[i] != null && i != 10)
         {
             console.log(keys[i]);
             rank_div.innerHTML += '<div class="row"><div class="col"><h3>'+keys[i]+'</h3></div><div class="col"><h3>'+data.Users[keys[i]]+'</h3></div></div>';
             i=i+1;
-        }
+        }*/
     }
 
 

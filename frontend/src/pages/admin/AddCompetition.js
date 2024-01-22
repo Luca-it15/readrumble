@@ -24,7 +24,9 @@ const AddCompetition = () =>{
     const SortedTags = tags.sort();
     const [formData, setFormData] = useState({
         CompName: '',
-        CompTag: ''
+        CompTag: '',
+        Start_Date:'',
+        End_Date:'',
     });
 
     const [addStatus, setAddStatus] = useState({
@@ -39,6 +41,7 @@ const AddCompetition = () =>{
             ...prevData,
             [name]: type === 'checkbox' ? checked : value,
         }));
+        console.log(formData);
     };
 
     const handleSubmit = async (e) => {
@@ -87,7 +90,23 @@ const AddCompetition = () =>{
                                 ))}
                             </Form.Select>
                         </Form.Group>
-
+                        <Form.Group className="mb-3" controlId="Start_DateId">
+                              <Form.Label>Select Date</Form.Label>
+                              <Form.Control
+                                type="date"
+                                name="Start_Date"
+                                onChange={handleChange}
+                              />
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="End_DateId">
+                              <Form.Label>Select Date</Form.Label>
+                              <Form.Control
+                                type="date"
+                                name="End_Date"
+                                //value={selectedDate}
+                                onChange={handleChange}
+                              />
+                        </Form.Group>
                         <Button variant="primary" type="submit">
                             Submit
                         </Button>

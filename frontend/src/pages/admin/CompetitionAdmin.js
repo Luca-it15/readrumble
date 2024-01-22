@@ -38,6 +38,8 @@ function CompetitionAdmin()
                 setData(jsonData);
                 setDataForBuild(jsonData);
                 SIL(true);
+                console.log(data[0]['name']);
+                console.log("Ciaooo");
               })
               .catch(error => console.error('Errore nella richiesta GET:', error));
 
@@ -60,8 +62,8 @@ function CompetitionAdmin()
         return(
         dataForBuild.map(item => (
             <Row>
-                <Button className={giveClass(item.Users)} onClick={()=>{goSpecificComp(item.Name)}}>
-                    <h1>{item.Name}</h1>
+                <Button className={giveClass(item.Users)} onClick={()=>{goSpecificComp(item.name)}}>
+                    <h1>{item.name}</h1>
                 </Button>
             </Row>
         ))

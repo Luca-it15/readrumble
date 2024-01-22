@@ -24,6 +24,7 @@ function CompetitionPage()
                 const jsonData = response.data.map(document => JSON.parse(JSON.stringify(document)));
                 console.log(jsonData);
                 setData(jsonData);
+                console.log("ciaooo" + data)
               })
               .catch(error => console.error('Errore nella richiesta GET:', error));
         }, []);
@@ -41,6 +42,8 @@ function CompetitionPage()
         }
 
     }
+    console.log("ciaooo" + data);
+    console.log("okkkkkkk");
     return(
 
         <Container className= "competitionPage">
@@ -50,8 +53,8 @@ function CompetitionPage()
             <Row>
                 {data.map(item => (
                     <Row>
-                        <Button className={giveClass(item.Users)} onClick={()=>{goSpecificComp(item.Name)}}>
-                            <h1>{item.Name}</h1>
+                        <Button className={giveClass(item.Users)} onClick={()=>{goSpecificComp(item.name)}}>
+                            <h1>{item.name}</h1>
                         </Button>
                     </Row>
                 ))}
