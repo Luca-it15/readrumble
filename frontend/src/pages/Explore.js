@@ -13,6 +13,8 @@ import SuggestedBooks from '../components/SuggestedBooks';
 import BookListQuery from "../components/BookListQuery";
 import {blue} from "@mui/material/colors";
 import SuggestFriends from '../components/SuggestedFriends';
+import SearchChoice from '../components/SearchChoice';
+
 
 export default function Explore() {
 
@@ -22,6 +24,8 @@ export default function Explore() {
     const [toggle1, setToggle1] = useState(true);
     const [toggle2, setToggle2] = useState(false);
     const [toggle3, setToggle3] = useState(false);
+    const [suggest, setSuggest] = useState(true); 
+    const [find, setFind] = useState(false); 
     const [searchText, setSearchText] = useState('');
 
     const PaperStyle = {
@@ -67,6 +71,7 @@ export default function Explore() {
 
     function getBook() {
         setValue(0);
+        setSuggest(true); 
         setToggle1(true);
         setToggle2(false);
         setToggle3(false);
@@ -74,6 +79,7 @@ export default function Explore() {
 
     function getPost() {
         setValue(1);
+        setSuggest(true); 
         setToggle1(false);
         setToggle2(true);
         setToggle3(false);
@@ -81,17 +87,25 @@ export default function Explore() {
 
     function getUser() {
         setValue(2);
+        setSuggest(true); 
         setToggle1(false);
         setToggle2(false);
         setToggle3(true);
     }
 
     const handleSearchTextChange = (event) => {
+        setSuggest(false); 
+        setFind(false); 
         setSearchText(event.target.value);
     };
 
     const handleSearchButtonClick = () => {
+        setSuggest(false); 
+        setFind(true);
+        
 
+
+         
     };
 
     const Choice = ({value}) => {
@@ -110,7 +124,7 @@ export default function Explore() {
             return (
                 <Paper sx={PaperStyle}>
                     <Typography variant='h3'>Recent Posts</Typography>
-                    <PostsList all={true} size={12}/>
+                    <PostsList all={true} size={12} path={0}/>
                 </Paper>
             );
         } else {
@@ -146,7 +160,7 @@ export default function Explore() {
                         <Typography>Users</Typography>
                     </ToggleButton>
                 </ToggleButtonGroup>
-                <Choice value={value}/>
+                {suggest? (<Choice value={value}/>) : (find && <SearchChoice value={value} searchText={searchText} />)}
             </Grid>
         </Paper>
     );

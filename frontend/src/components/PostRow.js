@@ -52,7 +52,7 @@ export default function PostRow({id, title, username, rating, readOnly, date, us
                         />
                     </Typography>
                 </CardContent>
-                <DateFormatter originalTimestamp={date}/>
+                <DateFormatter timestamp={date}/>
             </Card>
         </Box>
     );

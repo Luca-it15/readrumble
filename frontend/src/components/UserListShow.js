@@ -6,9 +6,9 @@ import {Divider, Link, List, ListItem, Paper} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {blue} from "@mui/material/colors";
 
-function BookListShow({title}) {
+function UserListShow({username}) {
     const navigate = useNavigate();
-    const [books, setBooks] = useState([]);
+    const [users, setUsers] = useState([]);
     const [displayCount, setDisplayCount] = useState(10);
 
 
@@ -22,16 +22,15 @@ function BookListShow({title}) {
     };
 
 
-    const fetchBooks = async () => {
+    const fetchUsers = async () => {
 
         try {
-            const response = await axios.get(`http://localhost:8080/api/search/books/${title}}`);
+            const response = await axios.get(`http://localhost:8080/api/search/users/${username}}`);
 
-            const books = response.data
-            // Returns book.id and book.title
-            setBooks(books.map(book => ({
-                id: book.id,
-                title: book.title
+            const users = response.data
+            // Returns user.id and user.title
+            setUsers(users.map(user => ({
+                id: user.id,
             })));
 
 
@@ -41,15 +40,15 @@ function BookListShow({title}) {
     };
 
     useEffect(() => {
-        fetchBooks();
-    }, [title]);
+        fetchUsers();
+    }, [username]);
 
-    const loadAllBooks = () => {
-        setDisplayCount(books.length);
+    const loadAllUsers = () => {
+        setDisplayCount(users.length);
     };
 
-    function seeDetails(id) {
-        navigate(`/bookdetails/${id}`);
+    function seeDetails(username) {
+        navigate(`/user/${username}`);
     }
 
     const PaperStyle = {
@@ -63,18 +62,18 @@ function BookListShow({title}) {
     return (
         <Paper sx={PaperStyle}>
             <List sx={ListStyle}>
-                {books.length === 0 ? (
+                {users.length === 0 ? (
                     <ListItem>
-                        <Typography>No books to show</Typography>
+                        <Typography>No users to show</Typography>
                     </ListItem>
                 ) : (
-                    Array.isArray(books) && books.slice(0, displayCount).map((book, index) => (
+                    Array.isArray(users) && users.slice(0, displayCount).map((user, index) => (
                         <React.Fragment key={index}>
                             <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
                                 <Link onClick={() => {
-                                    seeDetails(book.id)
+                                    seeDetails(user.id)
                                 }} sx={{color: "#000000"}}>
-                                    <Typography>{book.title}</Typography>
+                                    <Typography>{user.id}</Typography>
                                 </Link>
                             </ListItem>
                             <Divider variant="middle" component="li"/>
@@ -82,12 +81,12 @@ function BookListShow({title}) {
                     ))
                 )}
             </List>
-            {books.length > displayCount && (
+            {users.length > displayCount && (
                 <Button sx={{
                     backgroundColor: blue[100], marginTop: "10px", height: "30px",
                     '&:hover': {backgroundColor: blue[100]}
                 }}
-                        variant="filledTonal" onClick={loadAllBooks}>
+                        variant="filledTonal" onClick={loadAllUsers}>
                     <Typography>Show all</Typography>
                 </Button>
             )}
@@ -95,4 +94,4 @@ function BookListShow({title}) {
     );
 }
 
-export default BookListShow;
+export default UserListShow;

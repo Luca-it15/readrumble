@@ -56,7 +56,7 @@ public class PostController {
 
     @GetMapping("/findSearchPosts/{searchString}")
      public List<PostDTO> findSearchPosts(@PathVariable String searchString) {
-        return postDAO.findForStringPost(searchString);
+        return postDAO.findForStringPosts(searchString);
     }
 
 

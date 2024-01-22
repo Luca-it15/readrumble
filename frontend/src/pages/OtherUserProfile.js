@@ -13,6 +13,7 @@ import {useParams} from "react-router-dom";
 import CompetitionProfBlock from '../components/CompetitionBlock';
 import RecentlyReadBooks from "../components/RecentlyReadBooks";
 import CurrentlyReading from "../components/CurrentlyReading";
+import GoBack from '../components/GoBack';
 
 function OtherUserProfile() {
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
@@ -76,6 +77,7 @@ function OtherUserProfile() {
         <Container maxWidth="xl">
             <Paper elevation={2} style={PaperStyle}>
                 <Grid container direction="row" justifyContent="space-around">
+                    <GoBack></GoBack>
                     <Grid item xs={8} md={5}>
                         <Profile {...userInfo} />
                     </Grid>

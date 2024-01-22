@@ -170,7 +170,7 @@ public class PostDAO {
             return "failed to remove the post";
     }
 
-    public List<PostDTO> findForStringPost(String searchString) {
+    public List<PostDTO> findForStringPosts(String searchString) {
         List<PostDTO> target = new ArrayList<>();
         MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
         Document query1 = new Document("book_title", new Document("$regex", searchString));

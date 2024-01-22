@@ -5,16 +5,17 @@ export default function Tags({tags}) {
 
 return(
   <> 
+  <List orientation="horizontal">
  {tags.map((tag, index) => (   
- <List>
+ 
   <ListItem key={tag}>
    <ListItemIcon>
     <TagIcon />
    </ListItemIcon>
    <ListItemText primary={tag} />
    </ListItem>
-   </List>
  ))}
+ </List>
  </> 
  );
 } 

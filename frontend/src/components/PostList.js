@@ -6,7 +6,7 @@ import PostRow from './PostRow'; // Assicurati che il percorso sia corretto
 import '../App.css';
 import {blue} from "@mui/material/colors";
 
-const PostsList = (user, username, book_id, size, all) => {
+const PostsList = (user, username, book_id, size, all, path) => {
     const [posts, setPosts] = useState([]);
 
     console.log(user);
@@ -17,9 +17,10 @@ const PostsList = (user, username, book_id, size, all) => {
     parameter2 ? (parameter1 = user.username) : (parameter1 = user.book_id);
     console.log(parameter2);
     console.log(parameter1);
+    console.log("il path scelto e' " + user.path); 
     useEffect(() => {
 
-        if (user.all) {
+        if (user.path === 0) {
             axios.get(`http://localhost:8080/api/post/all`)
                 .then(response => {
                     setPosts(response.data);
@@ -27,7 +28,7 @@ const PostsList = (user, username, book_id, size, all) => {
                 .catch(error => {
                     console.error('There was an error!', error);
                 });
-        } else {
+        } else if(user.path === 1){
             axios.get(`http://localhost:8080/api/post/all/${parameter1}/${parameter2}`)
                 .then(response => {
                     setPosts(response.data);
@@ -35,8 +36,16 @@ const PostsList = (user, username, book_id, size, all) => {
                 .catch(error => {
                     console.error('There was an error!', error);
                 });
+        } else {
+            axios.get(`http://localhost:8080/api/search/posts/${parameter1}`)
+                .then(response => {
+                    setPosts(response.data);
+                })
+                .catch(error => {
+                    console.error('There was an error!', error);
+                });
         }
-    }, []);
+    }, [user.username]);
 
     return (
         <Grid container direction="row" justifyContent="center" alignItems="center"
