@@ -24,6 +24,21 @@ function PostDetails() {
     const [tags, setTags] = useState([]); 
     const [rating, setRating] = useState(''); 
     const [date, setDate] = useState(''); 
+    const [postUser, setPostUser] = useState(false); 
+    const [isAdmin, setIsAdmin] = useState(
+        JSON.parse(localStorage.getItem('isAdmin')) || false
+    );
+
+    let currentUser = localStorage.getItem('logged_user');
+// Verifica se il valore è presente
+    if (currentUser) {
+    // Il valore è presente, lo converte da stringa JSON a oggetto JavaScript
+    currentUser = JSON.parse(currentUser);
+   } else {
+    // La chiave 'isLoggedIn' non è presente in localStorage
+    console.log('La chiave "logged_user" non è presente in localStorage.'); 
+   }
+
     let {id} = useParams();
 
     const [loginStatus, setLoginStatus] = useState({
@@ -31,17 +46,16 @@ function PostDetails() {
       variant: 'success', // o 'danger' in caso di errore
     });
     const [validationError, setValidationError] = useState('');
+    const navigate = useNavigate(); 
 
-    const navigate = useNavigate();
-  
+   
     const [open, setOpen] = useState(false);
     const handleClickOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     
-    function handleGoBack() {
-      navigate(-1); 
-    } 
-
+     function handleGoBack() {
+        navigate(-1); 
+     }
 
     function timeout_text(text) {
       let status = text; 
@@ -51,6 +65,8 @@ function PostDetails() {
           handleGoBack(); 
       }, 6000)
   }
+
+
 
     
     const fetchPost = async () => {
@@ -62,6 +78,10 @@ function PostDetails() {
             setRating(response.data.rating); 
             setDate(response.data.date_added); 
             console.log(response.data.date_added); 
+            
+            if(currentUser['_id'] === response.data.username) 
+            setPostUser(true); 
+
         } catch (error) {
             console.log(error.response)
         }
@@ -130,6 +150,8 @@ function PostDetails() {
                         <Typography>{post.review_text}</Typography>
                     </Paper>
           </Grid>
+          {(postUser || isAdmin) && ( 
+            <>
           <Button onClick={handleClickOpen}
                             sx={{backgroundColor: red[300], margin: "5px", '&:hover': {backgroundColor: red[400]}}}
                             variant="filledTonal" >
@@ -156,6 +178,8 @@ function PostDetails() {
                     </Button>
                 </DialogActions>
             </Dialog>
+            </>
+           )}
           {validationError && (
                                 <Alert variant="danger">
                                     {validationError}

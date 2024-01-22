@@ -141,7 +141,7 @@ public class PostDAO {
         MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
 
         // Ottieni le prime 10 recensioni
-        for (Document doc : collection.find().sort(new Document("date", -1)).limit(10)) {
+        for (Document doc : collection.find().sort(new Document("date_added", -1)).limit(10)) {
             List<String> arrayTags = (List<String>) doc.get("tags");
 
             PostDTO review = new PostDTO(
@@ -170,39 +170,5 @@ public class PostDAO {
             return "failed to remove the post";
     }
 
-    public List<PostDTO> findForStringPosts(String searchString) {
-        List<PostDTO> target = new ArrayList<>();
-        MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
-        Document query1 = new Document("book_title", new Document("$regex", searchString));
-        Document query2 = new Document("username", new Document("$regex", searchString));
-        List<Document> results1 = collection.find(query1).limit(10).into(new ArrayList<>());
-        List<Document> results2 = collection.find(query2).limit(10).into(new ArrayList<>());
-        //retrieve the first results of document that match the filter
-        for (Document doc : results1) {
-            PostDTO post = new PostDTO(
-                    doc.getInteger("_id"),
-                    doc.getInteger("book_id"),
-                    doc.getInteger("rating"),
-                    doc.getDate("date_added"),
-                    doc.getString("book_title"),
-                    doc.getString("username")
-            );
-            target.add(post);
-        }
-        //insert the second type of results into the postDTO array
-        for (Document doc : results2) {
-            PostDTO post = new PostDTO(
-                    doc.getInteger("_id"),
-                    doc.getInteger("book_id"),
-                    doc.getInteger("rating"),
-                    doc.getDate("date_added"),
-                    doc.getString("book_title"),
-                    doc.getString("username")
-            );
-            if (!results1.contains(doc)) {
-                target.add(post);
-            }
-        }
-        return target;
-    }
+
 }

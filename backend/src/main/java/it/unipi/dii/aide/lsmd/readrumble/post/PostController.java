@@ -54,11 +54,5 @@ public class PostController {
         return postDAO.removePost(id);
     }
 
-    @GetMapping("/findSearchPosts/{searchString}")
-     public List<PostDTO> findSearchPosts(@PathVariable String searchString) {
-        return postDAO.findForStringPosts(searchString);
-    }
-
-
 
 }

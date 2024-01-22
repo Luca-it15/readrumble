@@ -24,7 +24,7 @@ const NavAppAdmin = () => {
                      Home
                     </Button>
                     <Button color="inherit" component={NavLink} to="/admin_post">
-                       Review
+                       Posts
                     </Button>
                     <Button color="inherit" component={NavLink} to="/admin_user">
                         Users
@@ -34,6 +34,9 @@ const NavAppAdmin = () => {
                     </Button>
                     <Button color="inherit" component={NavLink} to="/admin_book">
                      Book
+                    </Button>
+                    <Button color="inherit" component={NavLink} to="/logout">
+                     Logout
                     </Button>
             </Toolbar>
         </AppBar>

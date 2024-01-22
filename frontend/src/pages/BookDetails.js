@@ -4,11 +4,11 @@ import {Grid, Paper} from "@mui/material";
 import Button from "@mui/material-next/Button";
 import {useParams} from "react-router-dom";
 import Typography from "@mui/material/Typography";
-import {blue, red, yellow} from "@mui/material/colors";
+import {blue, red, yellow, green} from "@mui/material/colors";
 import StarTwoToneIcon from "@mui/icons-material/StarTwoTone";
 import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemoveTwoTone";
 import BookmarkAddIcon from "@mui/icons-material/BookmarkAddTwoTone";
-import {FavoriteTwoTone} from "@mui/icons-material";
+import {UpgradeRounded, FavoriteTwoTone} from "@mui/icons-material";
 import GoBack from "../components/GoBack";
 import PostList from "../components/PostList"; 
 
@@ -19,6 +19,9 @@ function BookDetails() {
     let [authors, setAuthors] = useState([]);
     let [tags, setTags] = useState([]);
     let [hiddenReview, setHiddenReview] = useState(true); 
+    const [isAdmin, setIsAdmin] = useState(
+        JSON.parse(localStorage.getItem('isAdmin')) || false
+    );
 
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
     let favoriteBooksIds = [];
@@ -135,7 +138,29 @@ function BookDetails() {
                     <Typography>Pages: {book['num_pages']}</Typography>
                 </Grid>
                 <Grid container direction="column" alignItems="center" justifyContent="center" xs={3}>
-                    {isFavorite ? (
+                    {isAdmin ? (
+                        <>
+                        <Typography variant='h4'>Admin Functionality</Typography>
+                        <Button onClick={toggleFavorite(id)} sx={{
+                            backgroundColor: green[200],
+                            margin: "5px",
+                            '&:hover': {backgroundColor: green[100]}
+                        }}
+                                variant="filledTonal" startIcon={<UpgradeRounded sx={{color: green[600]}}/>}>
+                            <Typography>Update Book</Typography>
+                        </Button>
+                          <Button onClick={toggleFavorite(id)} sx={{
+                            backgroundColor: red[200],
+                            margin: "5px",
+                            '&:hover': {backgroundColor: red[100]}
+                        }}
+                                variant="filledTonal" startIcon={<FavoriteTwoTone sx={{color: red[600]}}/>}>
+                            <Typography>Remove Book</Typography>
+                        </Button>
+                        
+                     </>
+                    ):(<>
+                      {isFavorite ? (
                         <Button onClick={toggleFavorite(id)} sx={{
                             backgroundColor: blue[200],
                             margin: "5px",
@@ -174,6 +199,7 @@ function BookDetails() {
                             <Typography>Add to wishlist</Typography>
                         </Button>
                     )}
+                    </>)}
                      {hiddenReview ? (<Button onClick={handleSeeReview}
                             sx={{backgroundColor: blue[200], margin: "5px", '&:hover': {backgroundColor: blue[100]}}}
                             variant="filledTonal" startIcon={<StarTwoToneIcon sx={{color: yellow[400]}}/>}>

@@ -105,6 +105,19 @@ const App = () => {
                                         element={
                                             <PostAdmin/>}
                                     />
+                                    <Route
+                                        path="/posts/:id"
+                                        element={<PostDetails/>}
+                                    />
+                                       <Route
+                                            path="/bookdetails/:id"
+                                            element={<BookDetails/>}
+                                        />
+
+                                     <Route
+                                            path="/logout"
+                                            element={<Logout onLogout={handleLogout}/>}
+                                        />
                                 </Routes>
                             </AdminLayout>) : (
                                 <AuthenticationLayout>

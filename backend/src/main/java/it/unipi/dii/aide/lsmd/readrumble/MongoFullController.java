@@ -3,6 +3,7 @@ package it.unipi.dii.aide.lsmd.readrumble;
 
 import com.mongodb.client.*;
 import com.mongodb.client.model.Sorts;
+import it.unipi.dii.aide.lsmd.readrumble.admin.AdminBookController;
 import it.unipi.dii.aide.lsmd.readrumble.competition.CompetitionController;
 import it.unipi.dii.aide.lsmd.readrumble.admin.AdminCompetitionController;
 import it.unipi.dii.aide.lsmd.readrumble.library.ActiveBookController;
@@ -34,6 +35,7 @@ public class MongoFullController {
     private final ActiveBookController libraryController;
     private final BookController bookController;
     private final SearchController searchController;
+    private final AdminBookController adminBookController;
 
     @Autowired
     public MongoFullController(UserController userController,
@@ -42,7 +44,8 @@ public class MongoFullController {
                                ActiveBookController libraryController,
                                AdminCompetitionController adminCompetitionController,
                                BookController bookController,
-                               SearchController searchController) {
+                               SearchController searchController,
+                               AdminBookController adminBookController) {
         this.userController = userController;
         this.competitionController = competitionController;
         this.adminCompetitionController = adminCompetitionController;
@@ -50,6 +53,7 @@ public class MongoFullController {
         this.libraryController = libraryController;
         this.bookController = bookController;
         this.searchController = searchController;
+        this.adminBookController = adminBookController;
     }
 
     /**

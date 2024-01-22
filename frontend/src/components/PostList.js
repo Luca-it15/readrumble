@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios'; // Assicurati di aver installato axios con npm install axios
-import {Grid} from '@mui/material';
+import {Grid, Typography} from '@mui/material';
 
 import PostRow from './PostRow'; // Assicurati che il percorso sia corretto
 import '../App.css';
@@ -50,7 +50,7 @@ const PostsList = (user, username, book_id, size, all, path) => {
     return (
         <Grid container direction="row" justifyContent="center" alignItems="center"
               sx={12}>
-            {posts.map((post, index) => (
+            {(posts.length > 0) ? (posts.map((post, index) => (
                 <React.Fragment key={index}>
                     <Grid direction="coloumn" xs={user.size}
                           sx={{borderRadius: 6, textAlign: 'center', border: '2pt solid ' + blue[400], margin: '0.5%'}}>
@@ -68,7 +68,7 @@ const PostsList = (user, username, book_id, size, all, path) => {
                         />
                     </Grid>
                 </React.Fragment>
-            ))}
+            ))):(<Typography variant='h4'>Nessun Post trovato</Typography>)}
         </Grid>
     );
 };
