@@ -45,7 +45,7 @@ const NavAppAdmin = () => {
                 <Button color="inherit" component={NavLink} to="/admin_book">
                     Book
                 </Button>
-                <Button color="inherit" component={NavLink} to="/logout">
+                <Button color="inherit" onClick={handleClickOpen}>
                     Logout
                 </Button>
                 <Dialog open={open} onClose={handleClose} aria-labelledby="alert-dialog-title"
