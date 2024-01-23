@@ -40,6 +40,10 @@ function CurrentlyReading({user}) {
         setDisplayCount(currentlyReading.length);
     };
 
+    const loadLessBooks = () => {
+        setDisplayCount(3);
+    }
+
     function seeDetails(id) {
         navigate(`/bookdetails/${id}`);
     }
@@ -88,17 +92,23 @@ function CurrentlyReading({user}) {
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={8}>
-                                    <LinearProgress variant="determinate" value={book.bookmark * 100 / book.num_pages}/>
+                                    <LinearProgress sx={{borderRadius: 10, height: '7px'}} variant="determinate" value={book.bookmark * 100 / book.num_pages}/>
                                 </Grid>
                             </Grid>
                         </React.Fragment>
                     )))}
                 </Grid>
-            {currentlyReading.length > displayCount && (
+            {currentlyReading.length > displayCount ? (
                 <Button sx={{backgroundColor: blue[100], marginTop: "10px", height: "30px",
                     '&:hover': {backgroundColor: blue[100]}}}
                         variant="filledTonal" onClick={loadAllBooks}>
                     <Typography>Show all</Typography>
+                </Button>
+            ) : (
+                <Button sx={{backgroundColor: blue[100], marginTop: "10px", height: "30px",
+                    '&:hover': {backgroundColor: blue[100]}}}
+                        variant="filledTonal" onClick={loadLessBooks}>
+                    <Typography>Show less</Typography>
                 </Button>
             )}
         </Paper>

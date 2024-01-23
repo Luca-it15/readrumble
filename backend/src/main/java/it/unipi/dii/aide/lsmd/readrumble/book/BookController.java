@@ -2,9 +2,11 @@ package it.unipi.dii.aide.lsmd.readrumble.book;
 
 import com.mongodb.client.MongoCollection;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
+import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
 import org.bson.Document;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import redis.clients.jedis.Jedis;
 
 import java.util.*;
 
@@ -13,29 +15,10 @@ import java.util.*;
 @CrossOrigin(origins = "http://localhost:3000")
 public class BookController {
 
-    // lightBook object that only has id and title
-    private class lightBook {
-        private int id;
-        private String title;
-
-        public lightBook(int id, String title) {
-            this.id = id;
-            this.title = title;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-    }
-
-    private List<lightBook> setResult(List<Document> bookDocuments) {
-        List<lightBook> books = new ArrayList<>();
+    private List<LightBookDTO> setResult(List<Document> bookDocuments) {
+        List<LightBookDTO> books = new ArrayList<>();
         for (Document doc : bookDocuments) {
-            books.add(new lightBook(doc.getInteger("id"), doc.getString("title")));
+            books.add(new LightBookDTO(doc.getInteger("id"), doc.getString("title")));
         }
         return books;
     }
@@ -114,7 +97,7 @@ public class BookController {
      * @return details of the book
      */
     @GetMapping("/recentlyReadBooks/{username}")
-    List<lightBook> getRecentlyReadBooks(@PathVariable String username) {
+    List<LightBookDTO> getRecentlyReadBooks(@PathVariable String username) {
         System.out.println("Richiesta libri recentemente letti da: " + username);
 
         MongoCollection<Document> ActiveBooksCollection = MongoConfig.getCollection("ActiveBooks");
@@ -133,7 +116,7 @@ public class BookController {
             System.out.println("User never read a book");
             return null;
         } else {
-            List<lightBook> books = setResult(BookDocuments);
+            List<LightBookDTO> books = setResult(BookDocuments);
 
             System.out.println(books);
 
@@ -188,27 +171,26 @@ public class BookController {
      * @return id and title of the book
      */
     @GetMapping("/wishlist/{username}")
-    List<lightBook> getWishlist(@PathVariable String username) {
-        System.out.println("Richiesta wishlist di: " + username);
+    public List<LightBookDTO> getWishlist(@PathVariable String username) {
+        Jedis jedis = RedisConfig.getSession();
 
-        MongoCollection<Document> WishlistCollection = MongoConfig.getCollection("Wishlists");
+        // Get all the keys of the wishlist of the user
+        Set<String> keys = jedis.keys("wishlist:" + username + ":*");
 
-        List<Document> BookDocuments = WishlistCollection.aggregate(List.of(
-                new Document("$match", new Document("_id", username)),
-                new Document("$unwind", "$books"),
-                new Document("$project", new Document("id", "$books.book_id").append("title", "$books.book_title"))
-        )).into(new ArrayList<>());
+        List<LightBookDTO> books = new ArrayList<>();
 
-        if (BookDocuments.isEmpty()) {
-            System.out.println("User has no wishlist");
-            return null;
-        } else {
-            List<lightBook> books = setResult(BookDocuments);
+        // For each key, get the id and title of the book
+        for (String key : keys) {
+            Map<String, String> book = jedis.hgetAll(key);
 
-            System.out.println(books);
+            Integer bookId = Integer.parseInt(key.split(":")[2]);
 
-            return books;
+            books.add(new LightBookDTO(bookId, book.get("book_title")));
         }
+
+        System.out.println(books);
+
+        return books;
     }
 
     /**
@@ -219,28 +201,22 @@ public class BookController {
      * @return id and title of the book
      */
     @PostMapping("/addToWishlist/{username}/{bookId}")
-    public ResponseEntity<String> addToWishlist(@PathVariable String username, @PathVariable int bookId) {
-        System.out.println("Richiesta aggiunta libro " + bookId + " alla wishlist di: " + username);
+    public ResponseEntity<String> addToWishlist(@PathVariable String username, @PathVariable Integer bookId, @RequestBody WishlistBookDTO book) {
+        Jedis jedis = RedisConfig.getSession();
 
-        MongoCollection<Document> WishlistCollection = MongoConfig.getCollection("Wishlists");
-
-        // Add the book to the wishlist
-        WishlistCollection.updateOne(new Document("_id", username),
-                new Document("$addToSet", new Document("books", new Document("book_id", bookId).append("book_title", getBookDetails(bookId).getTitle()))));
-
-        // Get the wishlist
-        List<Document> BookDocuments = WishlistCollection.aggregate(List.of(
-                new Document("$match", new Document("_id", username)),
-                new Document("$unwind", "$books"),
-                new Document("$project", new Document("id", "$books.book_id").append("title", "$books.book_title"))
-        )).into(new ArrayList<>());
-
-        if (BookDocuments.isEmpty()) {
-            System.out.print("User has no wishlist");
-            return null;
-        } else {
-            return ResponseEntity.ok().body("Book added to wishlist");
+        // See if the book is already in the wishlist
+        if (jedis.hexists("wishlist:" + username + ":" + bookId, "book_title")) {
+            return ResponseEntity.badRequest().body("Book already in wishlist");
         }
+
+        Map<String, String> bookMap = new HashMap<>();
+        bookMap.put("book_id", String.valueOf(book.getBook_id()));
+        bookMap.put("book_title", book.getBook_title());
+        bookMap.put("num_pages", String.valueOf(book.getNum_pages()));
+        bookMap.put("tags", String.join(",", book.getTags()));
+
+        jedis.hset("wishlist:" + username + ":" + bookId, bookMap);
+        return ResponseEntity.ok("Book added to wishlist");
     }
 
     /**
@@ -251,28 +227,16 @@ public class BookController {
      * @return id and title of the book
      */
     @DeleteMapping("/removeFromWishlist/{username}/{bookId}")
-    public ResponseEntity<String> removeFromWishlist(@PathVariable String username, @PathVariable int bookId) {
-        System.out.println("Richiesta rimozione libro " + bookId + " dalla wishlist di: " + username);
+    public ResponseEntity<String> removeFromWishlist(@PathVariable String username, @PathVariable Integer bookId) {
+        Jedis jedis = RedisConfig.getSession();
 
-        MongoCollection<Document> WishlistCollection = MongoConfig.getCollection("Wishlists");
-
-        // Remove the book from the wishlist
-        WishlistCollection.updateOne(new Document("_id", username),
-                new Document("$pull", new Document("books", new Document("book_id", bookId).append("book_title", getBookDetails(bookId).getTitle()))));
-
-        // Get the wishlist
-        List<Document> BookDocuments = WishlistCollection.aggregate(List.of(
-                new Document("$match", new Document("_id", username)),
-                new Document("$unwind", "$books"),
-                new Document("$project", new Document("id", "$books.book_id").append("title", "$books.book_title"))
-        )).into(new ArrayList<>());
-
-        if (BookDocuments.isEmpty()) {
-            System.out.println("User has no wishlist");
-            return null;
-        } else {
-            return ResponseEntity.ok().body("Book removed from wishlist");
+        // See if the book is already in the wishlist
+        if (!jedis.hexists("wishlist:" + username + ":" + bookId, "book_title")) {
+            return ResponseEntity.badRequest().body("Book not in wishlist");
         }
+
+        jedis.hdel("wishlist:" + username + ":" + bookId, "book_title", "num_pages", "tags");
+        return ResponseEntity.ok("Book removed from wishlist");
     }
 
     /**
@@ -281,7 +245,7 @@ public class BookController {
      * @return id and title of the book
      */
     @GetMapping("/trending")
-    List<lightBook> getTrending() {
+    List<LightBookDTO> getTrending() {
         MongoCollection<Document> Posts = MongoConfig.getCollection("Posts");
 
         Date thirtyDaysAgo = new Date(System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000);
@@ -315,9 +279,9 @@ public class BookController {
 
         System.out.println(result);
 
-        List<lightBook> trendingBooks = new ArrayList<>();
+        List<LightBookDTO> trendingBooks = new ArrayList<>();
         for (Document doc : result) {
-            trendingBooks.add(new lightBook(doc.getInteger("_id"), doc.getString("book_title")));
+            trendingBooks.add(new LightBookDTO(doc.getInteger("_id"), doc.getString("book_title")));
         }
 
         return trendingBooks;
@@ -330,7 +294,7 @@ public class BookController {
      * @return id and title of the book
      */
     @GetMapping("/friendsRecentlyReadBooks")
-    List<lightBook> getFriendsRecentlyReadBooks(@RequestParam String usernames) {
+    List<LightBookDTO> getFriendsRecentlyReadBooks(@RequestParam String usernames) {
         System.out.println("Richiesta libri recentemente letti dagli amici");
 
         if (usernames.isEmpty()) {
@@ -356,7 +320,7 @@ public class BookController {
             System.out.println("User's friends never read a book");
             return null;
         } else {
-            List<lightBook> books = setResult(BookDocuments);
+            List<LightBookDTO> books = setResult(BookDocuments);
 
             System.out.println(books);
 

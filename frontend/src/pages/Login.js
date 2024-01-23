@@ -115,11 +115,10 @@ function LoginForm() {
 
         console.log(JSON.parse(localStorage.getItem('logged_user')));
 
-        // Attendere 1 secondo e poi reindirizzare
         setTimeout(function () {
             window.location.href = "/dashboard"
             navigate("/dashboard");
-        }, 1000)
+        }, 500)
     }
 
     const handleSubmit = async (e) => {

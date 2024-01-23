@@ -11,7 +11,6 @@ function SuggestBooks({user}) {
     const [suggestBooks, setSuggestBooks] = useState([]);
     const [displayCount, setDisplayCount] = useState(10);
 
-
     const ListStyle = {
         py: 0,
         width: '100%',
@@ -22,7 +21,6 @@ function SuggestBooks({user}) {
     };
 
     const fetchBooks = async () => {
-
         try {
             const response = await axios.get(`http://localhost:8080/api/suggestedBooks/${user}`);
 
@@ -48,6 +46,10 @@ function SuggestBooks({user}) {
         setDisplayCount(suggestBooks.length);
     };
 
+    const loadLessBooks = () => {
+        setDisplayCount(10);
+    }
+
     function seeDetails(id) {
         navigate(`/bookdetails/${id}`);
     }
@@ -57,7 +59,10 @@ function SuggestBooks({user}) {
         padding: '10px',
         margin: '20px 10px 0px 10px',
         borderRadius: 5,
-        width: '100%'
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
     }
 
     return (
@@ -83,14 +88,22 @@ function SuggestBooks({user}) {
                     ))
                 )}
             </List>
-            {suggestBooks.length > displayCount && (
+            {suggestBooks.length > displayCount ? (
                 <Button sx={{
                     backgroundColor: blue[100], marginTop: "10px", height: "30px",
                     '&:hover': {backgroundColor: blue[100]}
-                }}
-                        variant="filledTonal" onClick={loadAllBooks}>
+                }} variant="filledTonal" onClick={loadAllBooks}>
                     <Typography>Show all</Typography>
                 </Button>
+            ) : (
+                suggestBooks.length > 10 && (
+                    <Button sx={{
+                        backgroundColor: blue[100], marginTop: "10px", height: "30px",
+                        '&:hover': {backgroundColor: blue[100]}
+                    }} variant="filledTonal" onClick={loadLessBooks}>
+                        <Typography>Show less</Typography>
+                    </Button>
+                )
             )}
         </Paper>
     );
