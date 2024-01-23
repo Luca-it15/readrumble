@@ -81,6 +81,10 @@ function FollowingList({user}) {
         navigate(`/user/${username}`)
     }
 
+    function loadLessFollowings() {
+        setDisplayCount(6);
+    }
+
     return (
         <Paper sx={PaperStyle}>
             <Typography variant="h5">
@@ -94,32 +98,36 @@ function FollowingList({user}) {
                 ) : (
                     following.slice(0, displayCount).map((username, index) => (
                         <React.Fragment key={index}>
-                            <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
-                                <Link onClick={() => {
-                                    seeProfile(username)
-                                }} sx={{color: "#000000"}}>
-                                    <Typography>{username}</Typography>
-                                </Link>
-
-                                {/* Show the button to unfollow users only on personal profile */}
-                                {user === currentUser['_id'] && (
+                            <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}
+                                secondaryAction={user === currentUser['_id'] && (
                                     <Tooltip title="Unfollow">
                                         <IconButton sx={{color: blue[500], '&:hover': {color: red[500]}}}
                                                     onClick={() => unfollow()}>
                                             <PersonRemoveTwoToneIcon/>
                                         </IconButton>
                                     </Tooltip>
-                                )}
+                                )}>
+                                <Link onClick={() => {
+                                    seeProfile(username)
+                                }} sx={{color: "#000000"}}>
+                                    <Typography>{username}</Typography>
+                                </Link>
                             </ListItem>
                             <Divider variant="middle" component="li"/>
                         </React.Fragment>
                     )))}
             </List>
-            {following.length > displayCount && (
+            {following.length > displayCount ? (
                 <Button sx={{backgroundColor: blue[100], marginTop: "10px", height: "30px",
                     '&:hover': {backgroundColor: blue[100]}}}
                         variant="filledTonal" onClick={loadAllFollowings}>
                     <Typography>Show all</Typography>
+                </Button>
+            ) : (
+                <Button sx={{backgroundColor: blue[100], marginTop: "10px", height: "30px",
+                    '&:hover': {backgroundColor: blue[100]}}}
+                        variant="filledTonal" onClick={loadLessFollowings}>
+                    <Typography>Show less</Typography>
                 </Button>
             )}
         </Paper>

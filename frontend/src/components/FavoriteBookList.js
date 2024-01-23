@@ -4,9 +4,9 @@ import Button from '@mui/material-next/Button';
 import Typography from '@mui/material/Typography';
 import {Divider, Link, List, ListItem, Paper, Tooltip} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
-import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemoveTwoTone';
-import {blue, red} from "@mui/material/colors";
+import {blue} from "@mui/material/colors";
 import {useNavigate} from "react-router-dom";
+import {FavoriteTwoTone} from "@mui/icons-material";
 
 function FavoriteBookList({user}) {
     const currentUser = JSON.parse(localStorage.getItem('logged_user'));
@@ -60,19 +60,19 @@ function FavoriteBookList({user}) {
 
     async function removeFavorite(book) {
         console.log("Favorites before: " + currentUser["favoriteBooks"])
-        console.log("Removing " + book + " from favorites of " + currentUser["_id"] + "...");
+        console.log("Removing " + book.title + " from favorites of " + currentUser["_id"] + "...");
 
         // Removea book from favorite list in database
-        await axios.delete(`http://localhost:8080/api/removeFavoriteBook/${currentUser["_id"]}/${book}`);
-        setBooks(books.filter(item => item !== book));
+        await axios.delete(`http://localhost:8080/api/removeFavoriteBook/${currentUser["_id"]}/${book.id}`);
 
         // Remove book from favorite list in local storage
-        currentUser['favoriteBooks'].splice(currentUser["favoriteBooks"].indexOf(book), 1);
+        setBooks(books.filter(item => item.id !== book.id && item.title !== book.title));
+        currentUser['favoriteBooks'] = books;
 
         localStorage.setItem('logged_user', JSON.stringify(currentUser));
 
-        console.log("Removed " + book + " from favorites of " + currentUser["_id"]);
-        console.log("Favorites after: " + currentUser["favoriteBooks"])
+        console.log("Removed " + book.title + " from favorites of " + currentUser["_id"]);
+        console.log("Favorites after: " + JSON.parse(currentUser["favoriteBooks"]))
     }
 
     function seeDetails(id) {
@@ -98,21 +98,20 @@ function FavoriteBookList({user}) {
                 ) : (
                     Array.isArray(books) && books.slice(0, displayCount).map((book, index) => (
                         <React.Fragment key={index}>
-                            <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
+                            <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}
+                                      secondaryAction={currentUser["_id"] === user && (
+                                          <Tooltip title="Remove from favorites">
+                                              <IconButton sx={{color: blue[500], '&:hover': {color: '#bbbbbb'}}}
+                                                          onClick={() => removeFavorite(book)}>
+                                                  <FavoriteTwoTone/>
+                                              </IconButton>
+                                          </Tooltip>
+                                      )}>
                                 <Link onClick={() => {
                                     seeDetails(book.id)
                                 }} sx={{color: "#000000"}}>
                                     <Typography>{book.title}</Typography>
                                 </Link>
-                                {/* Allow to remove favorite books only on personal profile */}
-                                {currentUser["_id"] === user && (
-                                    <Tooltip title="Remove from favorites">
-                                        <IconButton sx={{color: blue[500], '&:hover': {color: red[500]}}}
-                                                    onClick={() => removeFavorite(book.id)}>
-                                            <BookmarkRemoveIcon/>
-                                        </IconButton>
-                                    </Tooltip>
-                                )}
                             </ListItem>
                             <Divider variant="middle" component="li"/>
                         </React.Fragment>

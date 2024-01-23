@@ -13,7 +13,6 @@ import Error from './pages/Error';
 import './App.css';
 import AuthenticationLayout from './layout/AuthenticationLayout';
 import LoginForm from './pages/Login';
-import Logout from './components/Logout';
 import GuestLayout from './layout/GuestLayout';
 import RegistrationForm from './pages/Registration';
 import PostForm from './pages/PostForm';
@@ -33,6 +32,7 @@ import BookDetails from "./pages/BookDetails";
 import BanUnbanProfile from './pages/admin/BanUnbanProfile';
 import PopularCompetitionBlock from './components/PopularCompetitionBlock';
 import PostDetails from './pages/PostDetails';
+
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(
         JSON.parse(localStorage.getItem('isLoggedIn')) || false
@@ -41,16 +41,8 @@ const App = () => {
         JSON.parse(localStorage.getItem('isAdmin')) || false
     );
 
-
     const handleLogin = () => {
         setIsLoggedIn(true);
-    };
-
-    const handleLogout = () => {
-        setIsLoggedIn(false);
-        localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('logged_user');
-        localStorage.removeItem('isAdmin');
     };
 
     return (
@@ -63,17 +55,12 @@ const App = () => {
                                 <Routes>
                                     <Route
                                         path="/admin/user/banunban/:name"
-                                        element={<BanUnbanProfile />}
-                                    />
-                                    <Route
-                                        path="/logout"
-                                        element={<Logout onLogout={handleLogout}/>}
+                                        element={<BanUnbanProfile/>}
                                     />
                                     <Route
                                         exact
                                         path="/dashboard"
-                                        element={
-                                            <DashboardAdmin/>}
+                                        element={<DashboardAdmin/>}
                                     />
                                     <Route
                                         path="/admin_book"
@@ -109,15 +96,10 @@ const App = () => {
                                         path="/posts/:id"
                                         element={<PostDetails/>}
                                     />
-                                       <Route
-                                            path="/bookdetails/:id"
-                                            element={<BookDetails/>}
-                                        />
-
-                                     <Route
-                                            path="/logout"
-                                            element={<Logout onLogout={handleLogout}/>}
-                                        />
+                                    <Route
+                                        path="/bookdetails/:id"
+                                        element={<BookDetails/>}
+                                    />
                                 </Routes>
                             </AdminLayout>) : (
                                 <AuthenticationLayout>
@@ -126,14 +108,14 @@ const App = () => {
                                             exact
                                             path="/popular"
                                             element={
-                                               <PopularCompetitionBlock /> 
+                                                <PopularCompetitionBlock/>
                                             }
                                         />
 
                                         <Route
                                             path="/dashboard"
                                             element={
-                                                <Home/> 
+                                                <Home/>
                                             }
                                         />
                                         <Route
@@ -145,36 +127,31 @@ const App = () => {
                                         <Route
                                             path="/settings"
                                             element={
-                                               <UserSettings/> 
+                                                <UserSettings/>
                                             }
                                         />
                                         <Route
                                             path="/profile"
                                             element={
-                                               <ProfilePage/>
+                                                <ProfilePage/>
                                             }
                                         />
                                         <Route
-                                            /* !!! UNTESTED !!! */
                                             path="/user/:username"
                                             element={
-                                               <OtherUserProfile/>
+                                                <OtherUserProfile/>
                                             }
                                         />
                                         <Route
                                             path="/post"
                                             element={
-                                                <PostForm/> 
+                                                <PostForm/>
                                             }
-                                        />
-                                        <Route
-                                            path="/logout"
-                                            element={<Logout onLogout={handleLogout}/>}
                                         />
                                         <Route
                                             path="/userDashboard"
                                             element={
-                                               <Dashboard/> 
+                                                <Dashboard/>
                                             }
                                         />
                                         <Route
@@ -186,20 +163,20 @@ const App = () => {
                                         <Route
                                             path="/competition/:name"
                                             element={
-                                                     <CompetitionSpec/>
+                                                <CompetitionSpec/>
                                             }
                                         />
                                         <Route
                                             path="/bookdetails/:id"
                                             element={<BookDetails/>}
                                         />
-                                         <Route
+                                        <Route
                                             path="/posts/:id"
                                             element={<PostDetails/>}
                                         />
-                                         <Route
+                                        <Route
                                             path="/"
-                                            element={ <Navigate to="/dashboard" replace />}
+                                            element={<Navigate to="/dashboard" replace/>}
                                         />
                                         <Route path="*" element={<Error/>}/>
                                     </Routes>

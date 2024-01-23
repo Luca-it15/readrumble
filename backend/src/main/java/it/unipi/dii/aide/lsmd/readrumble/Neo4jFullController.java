@@ -287,7 +287,7 @@ public class Neo4jFullController {
             Result result = session.run(
                     "MATCH (u1:User {name: $username})-[:FOLLOWS]->(u2:User)-[:FOLLOWS]->(f:User) "+
             "WITH u1, u2, count(DISTINCT f) AS num_friends "+
-            "WHERE num_friends > 0.1 * COUNT{(u1)-[:FOLLOWS]->(:User)} "+
+            "WHERE num_friends > 0.51 * COUNT{(u1)-[:FOLLOWS]->(:User)} "+
             "AND NOT EXISTS((u1)-[:FOLLOWS]->(u2)) "+
             "RETURN u2.name AS suggested_user ",
             Values.parameters("username", username)

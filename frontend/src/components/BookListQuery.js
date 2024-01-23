@@ -1,11 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-import Button from '@mui/material-next/Button';
 import Typography from '@mui/material/Typography';
-import {Divider, Link, List, ListItem, Paper, Tooltip} from "@mui/material";
-import IconButton from "@mui/material/IconButton";
-import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemoveTwoTone';
-import {blue, red} from "@mui/material/colors";
+import {Divider, Link, List, ListItem, Paper} from "@mui/material";
+import {blue} from "@mui/material/colors";
 import {useNavigate} from "react-router-dom";
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 
@@ -56,7 +53,6 @@ function BookListQuery({query}) {
             case 'friends':
                 fetchLastBooksOfFriends();
                 break;
-
         }
     }, [currentUser['_id']]);
 
@@ -104,7 +100,10 @@ function BookListQuery({query}) {
                                 <Link onClick={() => {
                                     seeDetails(book.id)
                                 }} sx={{color: "#000000"}}>
-                                    <Typography>{book.title}</Typography>
+                                    <Typography>
+                                        {query === 'trending' && <strong>{(index + 1) + '. '}</strong>}
+                                        {book.title}
+                                    </Typography>
                                 </Link>
                             </ListItem>
                             <Divider variant="middle" component="li"/>
