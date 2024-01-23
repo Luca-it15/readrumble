@@ -1,20 +1,12 @@
 package it.unipi.dii.aide.lsmd.readrumble.competition;
 
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.model.Updates;
-import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
-import it.unipi.dii.aide.lsmd.readrumble.user.UserDAO;
+import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
 import org.bson.Document;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import redis.clients.jedis.Jedis;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.mongodb.client.model.Filters.eq;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/competition")
@@ -52,5 +44,36 @@ public class CompetitionController {
         return competitionDAO.goCompetitionInformation(docx);
 
 
+    }
+
+    /**
+     * This method is used to retrieve the list of competitions joined by a user and their points
+     *
+     * @param id the id of the user
+     * @return the list of competitions joined by the user
+     */
+    @GetMapping("/joinedBy/{id}")
+    public List<Map<String, String>> getJoinedCompetitions(@PathVariable String id) {
+        Jedis jedis = RedisConfig.getSession();
+
+        Set<String> keys = jedis.keys("competition:*:" + id);
+
+        if (keys.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Map<String, String>> competitions = new ArrayList<>();
+
+        for (String key : keys) {
+            String competition = key.split(":")[1]; // Competition name
+            Integer pages = Integer.parseInt(jedis.get(key));
+
+            Map<String, String> competitionMap = new HashMap<>();
+            competitionMap.put("name", competition);
+            competitionMap.put("pages", String.valueOf(pages));
+            competitions.add(competitionMap);
+        }
+
+        return competitions;
     }
 }

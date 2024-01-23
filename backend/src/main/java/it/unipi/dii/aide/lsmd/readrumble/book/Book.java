@@ -9,7 +9,7 @@ import java.util.List;
 @Document(collection = "Book")
 public class Book {
     @Id
-    private int id;
+    private Long id;
     private String isbn;
     private String description;
     private String link;
@@ -30,7 +30,7 @@ public class Book {
         // Costruttore vuoto necessario per MongoDB
     }
 
-    public Book(int id, String isbn, String description, String link, List<String> authors, String publisher, int num_pages, int publication_year, String url, String image_url, String title, List<String> tags) {
+    public Book(Long id, String isbn, String description, String link, List<String> authors, String publisher, int num_pages, int publication_year, String url, String image_url, String title, List<String> tags) {
         this.id = id;
         this.isbn = isbn;
         this.description = description;
@@ -89,7 +89,7 @@ public class Book {
         return tags;
     }
 
-    public void setId(int i) {
+    public void setId(Long i) {
         id = i;
     }
 

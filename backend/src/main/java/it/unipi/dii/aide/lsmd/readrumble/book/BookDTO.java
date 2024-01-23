@@ -3,7 +3,7 @@ package it.unipi.dii.aide.lsmd.readrumble.book;
 import java.util.List;
 
 public class BookDTO {
-    private int id;
+    private Long id;
     private String isbn;
     private String title;
     private List<String> authors;
@@ -15,7 +15,7 @@ public class BookDTO {
     private String cover_url;
     private String url;
 
-    public BookDTO(int id, String isbn, String title, List<String> authors, int publication_year, String publisher,
+    public BookDTO(Long id, String isbn, String title, List<String> authors, int publication_year, String publisher,
                    List<String> tags, int num_pages, String description, String cover_url, String url) {
         this.id = id;
         this.isbn = isbn;
@@ -36,7 +36,7 @@ public class BookDTO {
 
     // Getters and setters
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
@@ -84,7 +84,7 @@ public class BookDTO {
         this.num_pages = num_pages;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

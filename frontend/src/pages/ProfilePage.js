@@ -30,38 +30,39 @@ const ProfilePage = () => {
         console.log('La chiave "logged_user" non è presente in localStorage.');
     }
 
+    console.log(currentUser['competitions']);
+
     const [books, setBooks] = useState([]);
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
 
     console.log(currentUser['favoriteBooks']);
 
-    const fetchBooks = async () => {
+    const fetchWishlist = async () => {
         if (currentUser['wihslist'] && currentUser['wihslist'].length > 0) {
             setBooks(currentUser['wihslist']);
             console.log(currentUser['wihslist'])
-            return;
-        }
+        } else {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/book/wishlist/${currentUser['_id']}`);
 
-        try {
-            const response = await axios.get(`http://localhost:8080/api/book/wishlist/${currentUser['_id']}`);
+                // Returns book.id and book.title
+                setBooks(response.data.map(book => ({
+                    id: book.id,
+                    title: book.title.replace(/"/g, '')
+                })));
 
-            // Returns book.id and book.title
-            setBooks(response.data.map(book => ({
-                id: book.id,
-                title: book.title.replace(/"/g, '')
-            })));
+                // Save all book ids in wishlist
+                currentUser['wishlist'] = books;
 
-            // Save all book ids in wishlist
-            currentUser['wishlist'] = books;
-
-            localStorage.setItem('logged_user', JSON.stringify(currentUser));
-        } catch (error) {
-            console.log(error.response)
+                localStorage.setItem('logged_user', JSON.stringify(currentUser));
+            } catch (error) {
+                console.log(error.response)
+            }
         }
     };
 
-    const removeFromWishlist = (book) => async () => {
+    const removeFromWishlist = async (book) => {
         console.log("Removing book from wishlist: " + book.id);
 
         await axios.delete(`http://localhost:8080/api/book/removeFromWishlist/${currentUser["_id"]}/${book.id}`);
@@ -74,7 +75,7 @@ const ProfilePage = () => {
     }
 
     useEffect(() => {
-        fetchBooks();
+        fetchWishlist();
     }, [currentUser['_id']]);
 
     function seeDetails(id) {
@@ -156,7 +157,7 @@ const ProfilePage = () => {
                 <Grid item xs={6} md={6}>
                     <Paper elevation={2} style={PaperStyle}>
                         <Typography variant="h5">Posts</Typography>
-                        <Button sx={{backgroundColor: blue[200], height: "40px", '&:hover': {backgroundColor: '#23d984'}}}
+                        <Button sx={{backgroundColor: blue[200], height: "40px", '&:hover': {backgroundColor: blue[400]}}}
                                 variant="filledTonal" onClick={goReview}
                                 startIcon={<EditNoteTwoToneIcon sx={{color: blue[700]}}/>}>
                             <Typography>Make a post!</Typography>

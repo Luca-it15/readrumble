@@ -1,15 +1,15 @@
 package it.unipi.dii.aide.lsmd.readrumble.book;
 
 public class LightBookDTO {
-    private int id;
+    private Long id;
     private String title;
 
-    public LightBookDTO(int id, String title) {
+    public LightBookDTO(Long id, String title) {
         this.id = id;
         this.title = title;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

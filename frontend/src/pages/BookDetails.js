@@ -165,7 +165,7 @@ function BookDetails() {
                     <Typography>ISBN: {book['isbn']}</Typography>
                     <Typography>Pages: {book['num_pages']}</Typography>
                 </Grid>
-                <Grid container direction="column" alignItems="center" justifyContent="center" xs={3}>
+                <Grid container item direction="column" alignItems="center" justifyContent="center" xs={3}>
                     {isAdmin ? (
                         <>
                             <Typography variant='h4'>Admin Functionality</Typography>

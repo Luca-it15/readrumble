@@ -111,6 +111,24 @@ function LoginForm() {
             currentUser['wishlist'] = [];
         }
 
+        console.log("Fetching competitions");
+        // Fetch competitions
+        const fetchedCompetitions = await axios.get(`http://localhost:8080/api/competition/joinedBy/${id}`)
+        const competitions = JSON.parse(JSON.stringify(fetchedCompetitions.data));
+
+        if (competitions) {
+            console.log(competitions);
+
+            currentUser['competitions'] = competitions.map(competition => ({
+                name: competition.name.replace(/_/g, ' '),
+                pages: competition.pages
+            }));
+
+            console.log(currentUser['competitions']);
+        } else {
+            currentUser['competitions'] = [];
+        }
+
         localStorage.setItem('logged_user', JSON.stringify(currentUser));
 
         console.log(JSON.parse(localStorage.getItem('logged_user')));
@@ -118,7 +136,7 @@ function LoginForm() {
         setTimeout(function () {
             window.location.href = "/dashboard"
             navigate("/dashboard");
-        }, 500)
+        })
     }
 
     const handleSubmit = async (e) => {
