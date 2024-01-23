@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="explore finish" />
+    <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="post and book admin">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/readrumble" beforeDir="false" afterPath="$PROJECT_DIR$/readrumble" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -95,6 +98,8 @@
       <workItem from="1705653990053" duration="4724000" />
       <workItem from="1705758993517" duration="2649000" />
       <workItem from="1705835375121" duration="1595000" />
+      <workItem from="1705930463604" duration="686000" />
+      <workItem from="1706019751830" duration="630000" />
     </task>
     <task id="LOCAL-00001" summary="post apposto per davvero deh?">
       <option name="closed" value="true" />
@@ -288,7 +293,15 @@
       <option name="project" value="LOCAL" />
       <updated>1705866186600</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="post and book admin">
+      <option name="closed" value="true" />
+      <created>1705930508085</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1705930508085</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -319,6 +332,7 @@
     <MESSAGE value="post sotto libro" />
     <MESSAGE value="amici suggeriti" />
     <MESSAGE value="explore finish" />
-    <option name="LAST_COMMIT_MESSAGE" value="explore finish" />
+    <MESSAGE value="post and book admin" />
+    <option name="LAST_COMMIT_MESSAGE" value="post and book admin" />
   </component>
 </project>
