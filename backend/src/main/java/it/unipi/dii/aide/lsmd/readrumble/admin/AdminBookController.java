@@ -1,5 +1,6 @@
 package it.unipi.dii.aide.lsmd.readrumble.admin;
 
+import it.unipi.dii.aide.lsmd.readrumble.book.Book;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -12,8 +13,12 @@ public class AdminBookController {
             adminBookDAO = new AdminBookDAO();
         }
 
+        @PostMapping("/add")
+        public String addBook(@RequestBody Book book) {
+            return adminBookDAO.addBook(book);
+        }
         @DeleteMapping("/remove/{id}")
-        public String removeBook(@PathVariable int id) {
+        public String removeBook(@PathVariable long id) {
             return adminBookDAO.removeBook(id);
         }
 }

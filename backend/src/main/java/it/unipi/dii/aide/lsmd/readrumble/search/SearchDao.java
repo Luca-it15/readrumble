@@ -73,7 +73,7 @@ public class SearchDao {
         //retrieve the first results of document that match the filter
         for (Document doc : results) {
             LightBookDTO lightBookDTO = new LightBookDTO(
-                    doc.getInteger("_id"),
+                    doc.getLong("_id"),
                     doc.getString("title")
             );
             target.add(lightBookDTO);

@@ -25,19 +25,19 @@ public class BookController {
 
     // currentlyReadingBook object that has id, title, bookmark and num_pages
     private class currentlyReadingBook {
-        private int id;
+        private long id;
         private String title;
         private int bookmark;
         private int num_pages;
 
-        public currentlyReadingBook(int id, String title, int bookmark, int num_pages) {
+        public currentlyReadingBook(long id, String title, int bookmark, int num_pages) {
             this.id = id;
             this.title = title;
             this.bookmark = bookmark;
             this.num_pages = num_pages;
         }
 
-        public int getId() {
+        public long getId() {
             return id;
         }
 
@@ -61,7 +61,7 @@ public class BookController {
      * @return details of the book
      */
     @GetMapping("/{id}")
-    Book getBookDetails(@PathVariable int id) {
+    Book getBookDetails(@PathVariable long id) {
         System.out.println("Richiesta libro con id: " + id);
 
         MongoCollection<Document> BookCollection = MongoConfig.getCollection("Books");
@@ -71,7 +71,7 @@ public class BookController {
             System.out.println("Book not found");
             return null;
         } else {
-            Book book = new Book(BookDocument.getInteger("_id"),
+            Book book = new Book(BookDocument.getLong("_id"),
                     BookDocument.getString("isbn"),
                     BookDocument.getString("description"),
                     BookDocument.getString("link"),
