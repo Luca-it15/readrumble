@@ -84,7 +84,7 @@ public class BookDTO {
         this.num_pages = num_pages;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

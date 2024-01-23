@@ -18,7 +18,7 @@ public class BookController {
     private List<LightBookDTO> setResult(List<Document> bookDocuments) {
         List<LightBookDTO> books = new ArrayList<>();
         for (Document doc : bookDocuments) {
-            books.add(new LightBookDTO(doc.getInteger("id"), doc.getString("title")));
+            books.add(new LightBookDTO(doc.getLong("id"), doc.getString("title")));
         }
         return books;
     }
@@ -152,7 +152,7 @@ public class BookController {
             List<currentlyReadingBook> books = new ArrayList<>();
             for (Document doc : BookDocuments) {
                 books.add(new currentlyReadingBook(
-                        doc.getInteger("id"),
+                        doc.getLong("id"),
                         doc.getString("title"),
                         doc.getInteger("bookmark"),
                         doc.getInteger("num_pages")
@@ -177,13 +177,32 @@ public class BookController {
         // Get all the keys of the wishlist of the user
         Set<String> keys = jedis.keys("wishlist:" + username + ":*");
 
+        if (keys.isEmpty()) {
+            // Get the wishlist from MongoDB
+            MongoCollection<Document> mongoWishlists = MongoConfig.getCollection("Wishlists");
+            Document wishlist = mongoWishlists.find(new Document("_id", username)).first();
+
+            if (wishlist == null) {
+                return null;
+            }
+
+            List<Document> books = (List<Document>) wishlist.get("books");
+
+            List<LightBookDTO> lightBooks = new ArrayList<>();
+            for (Document book : books) {
+                lightBooks.add(new LightBookDTO(book.getLong("book_id"), book.getString("book_title")));
+            }
+
+            return lightBooks;
+        }
+
         List<LightBookDTO> books = new ArrayList<>();
 
         // For each key, get the id and title of the book
         for (String key : keys) {
             Map<String, String> book = jedis.hgetAll(key);
 
-            Integer bookId = Integer.parseInt(key.split(":")[2]);
+            Long bookId = Long.parseLong(key.split(":")[2]);
 
             books.add(new LightBookDTO(bookId, book.get("book_title")));
         }
@@ -230,12 +249,12 @@ public class BookController {
     public ResponseEntity<String> removeFromWishlist(@PathVariable String username, @PathVariable Integer bookId) {
         Jedis jedis = RedisConfig.getSession();
 
-        // See if the book is already in the wishlist
+        // See if the book is not in the wishlist
         if (!jedis.hexists("wishlist:" + username + ":" + bookId, "book_title")) {
             return ResponseEntity.badRequest().body("Book not in wishlist");
         }
 
-        jedis.hdel("wishlist:" + username + ":" + bookId, "book_title", "num_pages", "tags");
+        jedis.del("wishlist:" + username + ":" + bookId);
         return ResponseEntity.ok("Book removed from wishlist");
     }
 
@@ -281,7 +300,7 @@ public class BookController {
 
         List<LightBookDTO> trendingBooks = new ArrayList<>();
         for (Document doc : result) {
-            trendingBooks.add(new LightBookDTO(doc.getInteger("_id"), doc.getString("book_title")));
+            trendingBooks.add(new LightBookDTO(doc.getLong("_id"), doc.getString("book_title")));
         }
 
         return trendingBooks;

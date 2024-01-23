@@ -3,17 +3,17 @@ package it.unipi.dii.aide.lsmd.readrumble.book;
 import java.util.List;
 
 public class WishlistBookDTO {
-    private int book_id;
+    private Long book_id;
     private String book_title;
     private int num_pages;
     private List<String> tags;
 
     // getters and setters
-    public int getBook_id() {
+    public Long getBook_id() {
         return book_id;
     }
 
-    public void setBook_id(int book_id) {
+    public void setBook_id(Long book_id) {
         this.book_id = book_id;
     }
 
