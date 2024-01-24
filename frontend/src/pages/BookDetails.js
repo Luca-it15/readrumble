@@ -45,12 +45,10 @@ function BookDetails() {
     console.log("Favorite books: " + favoriteBooksIds);
     console.log("Wishlist books: " + wishlistBooksIds);
 
-    id = parseInt(id);
-
     const [isFavorite, setFavorite] = useState(currentUser &&
         favoriteBooksIds && favoriteBooksIds.includes(id));
     const [isInWishlist, setInWishlist] = useState(currentUser &&
-        wishlistBooksIds && wishlistBooksIds.includes(id));
+        wishlistBooksIds && wishlistBooksIds.includes(parseInt(id)));
 
     const navigate = useNavigate();
     const fetchBook = async () => {
