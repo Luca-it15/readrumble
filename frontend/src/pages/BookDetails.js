@@ -165,6 +165,11 @@ const bookInfo = {
         setTimeout(function () {setDeleteStatus({message:"",variant:'success'});},4000);
     }
 
+    const updateBook = (id) => async() => {
+        
+        navigate(`/updateBook/${id}`); 
+    }
+
 
 
     // TODO sistemare
@@ -190,7 +195,7 @@ const bookInfo = {
                     {isAdmin ? (
                         <>
                         <Typography variant='h4'>Admin Functionality</Typography>
-                        <Button onClick={toggleFavorite(id)} sx={{
+                        <Button onClick={updateBook(id)} sx={{
                             backgroundColor: green[200],
                             margin: "5px",
                             '&:hover': {backgroundColor: green[100]}
