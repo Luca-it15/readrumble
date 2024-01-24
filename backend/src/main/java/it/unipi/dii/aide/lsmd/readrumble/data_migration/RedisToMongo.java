@@ -39,7 +39,7 @@ public class RedisToMongo {
             List<String> tags = Arrays.asList(fields.get("tags").split(","));
 
             Document doc = new Document()
-                    .append("book_id", Integer.parseInt(fields.get("book_id")))
+                    .append("book_id", Long.parseLong(fields.get("book_id")))
                     .append("book_title", fields.get("book_title"))
                     .append("num_pages", Integer.parseInt(fields.get("num_pages")))
                     .append("tags", tags);

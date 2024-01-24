@@ -17,8 +17,8 @@ public class Post {
 
 
     @Id
-    private long _id;
-    private int book_id;
+    private String _id;
+    private long book_id;
     private int rating;
     private String review_text;
     private Date date_added;
@@ -28,16 +28,9 @@ public class Post {
     private int bookmark;
     private int pages_read;
 
-    @Transient
-    private String _class;
-    // Costruttori
-
-    public Post() {
-        // Costruttore vuoto necessario per MongoDB
-    }
 
 
-    public Post(long _id, int book_id, int rating, String review_text, Date date, String book_title, String username, List<String> tags, int bookmark) {
+    public Post(String _id, long book_id, int rating, String review_text, Date date, String book_title, String username, List<String> tags, int bookmark) {
         this._id = _id;
         this.book_id = book_id;
         this.rating = rating;
@@ -49,15 +42,15 @@ public class Post {
         this.bookmark = bookmark;
     }
 
-    public long get_id() {
+    public String get_id() {
         return _id;
     }
 
-    public void set_id(int _id) {
+    public void set_id(String _id) {
         this._id = _id;
     }
 
-    public int getBook_id() {
+    public long getBook_id() {
         return book_id;
     }
 

@@ -1,6 +1,8 @@
 package it.unipi.dii.aide.lsmd.readrumble.post;
 
 
+import it.unipi.dii.aide.lsmd.readrumble.user.UserDTO;
+import org.bson.Document;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -54,5 +56,9 @@ public class PostController {
         return postDAO.removePost(id);
     }
 
+    @PostMapping("/friends")
+    public List<PostDTO> recentFriendsPosts(@RequestBody List<String> friends) {
+        return postDAO.getRecentFriendsPosts(friends);
+    }
 
 }

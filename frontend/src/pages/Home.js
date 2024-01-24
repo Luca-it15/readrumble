@@ -6,6 +6,7 @@ import image from '../img/emptyPage.jpg';
 import {Container, Grid, Typography, Paper} from '@mui/material';
 import PopularCompetitionBlock from '../components/PopularCompetitionBlock';
 import BookListQuery from "../components/BookListQuery";
+import RecentFriendsPosts from '../components/RecentFriendsPosts';
 const Home = () => {
 const PaperStyle = {
     backgroundColor: '#f1f7fa',
@@ -51,8 +52,8 @@ const PaperStyle = {
                         </Grid>
                         <Grid item xs={6} md={6}>
                             <Paper elevation={2} style={PaperStyle}>
-                                <Typography variant="h5">Posts</Typography>
-
+                                <Typography variant="h5">Friends Posts</Typography>
+                               <RecentFriendsPosts />
                             </Paper>
                         </Grid>
                         <Grid item xs={3} md={3}>

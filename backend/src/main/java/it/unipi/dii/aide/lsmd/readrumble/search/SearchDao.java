@@ -27,7 +27,7 @@ public class SearchDao {
         //retrieve the first results of document that match the filter
         for (Document doc : results1) {
             PostDTO post = new PostDTO(
-                    doc.getLong("_id"),
+                    doc.getString("_id"),
                     doc.getInteger("book_id"),
                     doc.getInteger("rating"),
                     doc.getDate("date_added"),

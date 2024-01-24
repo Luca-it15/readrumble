@@ -2,11 +2,15 @@ package it.unipi.dii.aide.lsmd.readrumble.post;
 
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Sorts;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.library.LibraryBookDAO;
+import it.unipi.dii.aide.lsmd.readrumble.user.UserDTO;
 import it.unipi.dii.aide.lsmd.readrumble.utils.Status;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.print.Doc;
@@ -17,6 +21,7 @@ import static com.mongodb.client.model.Updates.set;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PostDAO {
@@ -103,7 +108,7 @@ public class PostDAO {
         }
         for (Document doc : collection.find(query).sort(new Document("date_added", -1)).limit(10)) {
             PostDTO post = new PostDTO(
-                  doc.getLong("_id"),
+                    (doc.get("_id")).toString(),
                     doc.getInteger("book_id"),
                   doc.getInteger("rating"),
                   doc.getDate("date_added"),
@@ -122,8 +127,8 @@ public class PostDAO {
         Document doc = collection.find(query).first();
         List<String> tags = (List<String>)doc.get("tags");
         return new Post(
-                     doc.getLong("_id"),
-                     doc.getInteger("book_id"),
+                ((ObjectId) doc.get("_id")).toString(),
+                     doc.getLong("book_id"),
                      doc.getInteger("rating"),
                      doc.getString("review_text"),
                      doc.getDate("date_added"),
@@ -145,8 +150,8 @@ public class PostDAO {
             List<String> arrayTags = (List<String>) doc.get("tags");
 
             PostDTO review = new PostDTO(
-                    doc.getLong("_id"),
-                    doc.getInteger("book_id"),
+                    ((ObjectId) doc.get("_id")).toString(),
+                    doc.getLong("book_id"),
                     doc.getInteger("rating"),
                     doc.getDate("date_added"),
                     doc.getString("book_title"),
@@ -168,6 +173,34 @@ public class PostDAO {
             return "post successful remove";
         } else
             return "failed to remove the post";
+    }
+
+    public List<PostDTO> getRecentFriendsPosts( List<String> friends) {
+        List<PostDTO> postsTarget = new ArrayList<>();
+
+        MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
+
+        for (String user : friends) {
+            List<Document> posts = collection.aggregate(Arrays.asList(
+                    Aggregates.match(new Document("username", user)),
+                    Aggregates.sort(Sorts.descending("date_added")),
+                    Aggregates.limit(1)
+            )).into(new ArrayList<>());
+
+            System.out.println("User: " + user);
+            for (Document doc : posts) {
+                PostDTO review = new PostDTO(
+                        ((ObjectId) doc.get("_id")).toString(),
+                        doc.getLong("book_id"),
+                        doc.getInteger("rating"),
+                        doc.getDate("date_added"),
+                        doc.getString("book_title"),
+                        doc.getString("username")
+                );
+                postsTarget.add(review);
+            }
+        }
+        return postsTarget;
     }
 
 
