@@ -38,23 +38,23 @@ public class CompetitionDAO {
             Aggregates.match(dateFilter),
             Aggregates.project(
                 Projections.fields(
-                    Projections.include("Name", "Tag", "Users"),
-                    Projections.computed("UsersCount",
-                    new Document("$size", new Document("$objectToArray", "$Users")))
+                    Projections.include("name", "tag", "rank"),
+                    Projections.computed("Total_Pages", new Document("$sum", "$rank.tot_pages"))
                 )
             ),
-            Aggregates.sort(Sorts.descending("UsersCount")),
+            Aggregates.sort(Sorts.descending("Total_Pages")),
             Aggregates.limit(10)
         ));
         List<Document> competitions = new ArrayList<Document>();
         // Iterare sui risultati dell'aggregazione
         for (Document document : aggregation) {
-            String name = document.getString("Name");
-            String tag = document.getString("Tag");
-            int usersCount = document.getInteger("UsersCount");
+            String name = document.getString("name");
+            String tag = document.getString("tag");
+
+            int Total_Pages = document.getInteger("Total_Pages");
             competitions.add(document);
             // Fai qualcosa con i dati ottenuti
-            System.out.println("Name: " + name + ", Tag: " + tag + ", UsersCount: " + usersCount);
+            System.out.println("name: " + name + ", tag: " + tag + ", Total_Pages: " + Total_Pages);
         }
         return competitions;
     }

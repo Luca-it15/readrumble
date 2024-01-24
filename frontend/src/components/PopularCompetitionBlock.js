@@ -52,12 +52,32 @@ function PopularCompetitionBlock() {
             </Container>
         )
      }
+    function createRank(value)
+    {
+        const creator = []
+        creator[0] = value[0]
+        creator[1] = value[1]
+        creator[2] = value[2]
+        console.log(creator)
+        return(
+            creator.map(item =>(
+                <Row>
+                    <Paper elevation={2} style={PaperStyle}>
+                        <Col>
+                            <Typography variant="h7" >{item.username}</Typography>
+                        </Col>
+                        <Col>
+                            <Typography variant="h7" >{item.tot_pages}</Typography>
+                        </Col>
+                    </Paper>
+                </Row>
+            ))
+        )
+    }
     useEffect(() => {
         // Effettua la richiesta GET al tuo backend
         axios.get('http://localhost:8080/api/competition/retrieve/popular')
           .then(response => {
-            console.log(response);
-            // Converti i documenti MongoDB in JSON
             const jsonData = response.data.map(document => JSON.parse(JSON.stringify(document)));
             console.log(jsonData);
             setData(jsonData);
@@ -71,11 +91,12 @@ function PopularCompetitionBlock() {
       <Row>
         {data.map(item => (
             <Paper elevation={2} style={PaperStyle} onClick={()=>{goSpecificComp(item.Name)}}>
-                <Typography variant="h5" >{item.Name}</Typography>
-                <Typography variant="h5" >{item.Tag}</Typography>
-                <Typography variant="h5" >Participants: {item.UsersCount}</Typography>
-                <Typography variant="h5" >Rank:</Typography>
-                <Typography variant="h5" >{SortUsers(item.Users)}</Typography>
+                {console.log(item)}
+                <Typography variant="h6" >{item.name}</Typography>
+                <Typography variant="h7" >Tag: {item.tag}</Typography>
+                <Typography variant="h6" >Total pages read in the Top 10:  {item.Total_Pages}</Typography>
+                <Typography variant="h6" >Rank:</Typography>
+                <Typography variant="h7" >{createRank(item.rank)}</Typography>
             </Paper>
         ))}
       </Row>
