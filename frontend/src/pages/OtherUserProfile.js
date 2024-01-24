@@ -36,12 +36,15 @@ function OtherUserProfile() {
     }
 
     async function fetchUserInformation() {
+        console.log("Fetching user information for " + username);
         try {
             const response = await axios.get(`http://localhost:8080/api/user/${username}`);
-            setUserInfo(JSON.parse(response.data));
-            console.log("Received: " + response.data)
+            setUserInfo(response.data);
+            console.log("Received: " + JSON.stringify(response.data))
+            console.log("User info: " + JSON.stringify(userInfo))
         } catch (error) {
             console.log(error.response)
+            console.log("User not found")
         }
 
         setIsFollowing(currentUser['following'].includes(username))
@@ -55,13 +58,13 @@ function OtherUserProfile() {
     const toggleFollowing = async () => {
         try {
             if (isFollowing) {
-                await axios.delete(`http://localhost:8080/api/follow/${currentUser['_id']}/${username}`);
+                await axios.delete(`http://localhost:8080/api/unfollow/${currentUser['_id']}/${username}`);
 
                 // Remove username from following list
                 currentUser['following'].splice(currentUser['following'].indexOf(username), 1);
                 localStorage.setItem('logged_user', JSON.stringify(currentUser));
             } else {
-                await axios.post(`http://localhost:8080/api/unfollow/${currentUser['_id']}/${username}`);
+                await axios.post(`http://localhost:8080/api/follow/${currentUser['_id']}/${username}`);
 
                 // Add username to following list
                 currentUser['following'].push(username);

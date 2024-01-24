@@ -12,16 +12,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class RedisInitializer {
+    private static final Logger logger = LoggerFactory.getLogger(RedisInitializer.class);
 
     @PostConstruct
     public void loadWishlistsFromMongoToRedis() {
+        logger.info("Loading wishlists from MongoDB to Redis...");
+
         Jedis jedis = RedisConfig.getSession();
         MongoCollection<Document> mongoWishlists = MongoConfig.getCollection("Wishlists");
 
-        if (jedis.keys("wishlist:*").size() == 0) {
+        if (jedis.keys("wishlist:*").isEmpty()) {
             List<Document> documents = new ArrayList<>();
             mongoWishlists.find().into(documents);
 
@@ -30,9 +35,9 @@ public class RedisInitializer {
                 List<Document> books = (List<Document>) doc.get("books");
 
                 for (Document book : books) {
-                    String book_id = book.get("book_id").toString();
+                    String book_id = book.getLong("book_id").toString();
                     String book_title = book.getString("book_title");
-                    String num_pages = book.get("num_pages").toString();
+                    String num_pages = book.getInteger("num_pages").toString();
                     List<String> tagList = (List<String>) book.get("tags");
                     String tags = String.join(",", tagList.toArray(new String[0]));
 
@@ -45,8 +50,8 @@ public class RedisInitializer {
                     jedis.hset("wishlist:" + username + ":" + book_id, fields);
                 }
             }
-
-            System.out.println("Wishlists loaded from MongoDB to Redis.");
         }
+
+        logger.info("Wishlists loaded from MongoDB to Redis.");
     }
 }

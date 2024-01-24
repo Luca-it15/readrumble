@@ -3,8 +3,10 @@ import {NavLink, useNavigate} from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from '@mui/material';
+import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from '@mui/material';
 import {blue, red} from "@mui/material/colors";
+import logo from '../img/logoRR.png';
+import Button from '@mui/material-next/Button';
 
 const NavAppAdmin = () => {
     const [open, setOpen] = useState(false);
@@ -21,32 +23,34 @@ const NavAppAdmin = () => {
     }
 
     return (
-        <AppBar position="sticky">
+        <AppBar position="sticky" sx={{backgroundColor: '#063156'}}>
             <Toolbar sx={{justifyContent: 'center'}}>
+                <img src={logo} alt="Logo" width="60" height="60" className="d-inline-block me-2"/>
                 <Typography variant="h4" sx={{color: '#0090FF'}}>R</Typography>
                 <Typography variant="h4">ead</Typography>
                 <Typography variant="h4" sx={{color: '#FE262F'}}>R</Typography>
                 <Typography variant="h4" sx={{flexGrow: 1}}>umble</Typography>
-                <Typography variant="h4" component="div" sx={{flexGrow: 1}}>
+                <Typography variant="h5" sx={{flexGrow: 1}}>
                     Administrator
                 </Typography>
-                <Button color="inherit" component={NavLink} to="/dashboard" exact>
-                    Home
+                <Button sx={{color: '#ffffff'}} component={NavLink} to="/dashboard" exact>
+                    <Typography>Home</Typography>
                 </Button>
-                <Button color="inherit" component={NavLink} to="/admin_post">
-                    Posts
+                <Button sx={{color: '#ffffff'}} component={NavLink} to="/admin_post">
+                    <Typography>Posts</Typography>
                 </Button>
-                <Button color="inherit" component={NavLink} to="/admin_user">
-                    Users
+                <Button sx={{color: '#ffffff'}} component={NavLink} to="/admin_user">
+                    <Typography>Users</Typography>
                 </Button>
-                <Button color="inherit" component={NavLink} to="/admin_competition">
-                    Competition
+                <Button sx={{color: '#ffffff'}} component={NavLink} to="/admin_competition">
+                    <Typography>Competitions</Typography>
                 </Button>
-                <Button color="inherit" component={NavLink} to="/admin_book">
-                    Book
+                <Button sx={{color: '#ffffff'}} component={NavLink} to="/admin_book">
+                    <Typography>Books</Typography>
                 </Button>
-                <Button color="inherit" onClick={handleClickOpen}>
-                    Logout
+                <Button sx={{color: '#ffffff', width: "70px", height: "25px", backgroundColor: 'transparent',
+                    '&:hover': {backgroundColor: red[500]}}} onClick={handleClickOpen}>
+                    <Typography>Logout</Typography>
                 </Button>
                 <Dialog open={open} onClose={handleClose} aria-labelledby="alert-dialog-title"
                         aria-describedby="alert-dialog-description">

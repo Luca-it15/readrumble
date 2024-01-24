@@ -10,10 +10,9 @@ import redis.clients.jedis.Jedis;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.lang.reflect.Array;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.Date;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -91,5 +90,66 @@ public class AdminCompetitionDAO {
         }
 
 
+    }
+
+    public Map<String, Integer> getPagesByTag() {
+        // Get the collection of competitions
+        MongoCollection<Document> CompetitionsCollection = MongoConfig.getCollection("Competitions");
+
+        // Get the competitions with start date in the last six months
+        LocalDate today = LocalDate.now();
+        LocalDate sixMonthsAgo = today.minusMonths(6);
+
+        // Get the competitions with start date in the last six months, get the average pages_read of the rank, then group by tag
+        List<Document> result = CompetitionsCollection.aggregate(List.of(
+                new Document("$match", new Document("start_date", new Document("$gte", Date.from(sixMonthsAgo.atStartOfDay(ZoneId.systemDefault()).toInstant())))),
+                new Document("$unwind", "$rank"),
+                new Document("$group", new Document("_id", "$tag").append("avg_pages_read", new Document("$avg", "$rank.tot_pages"))),
+                new Document("$project", new Document("tag", "$_id").append("avg_pages_read", new Document("$toInt", "$avg_pages_read"))),
+                new Document("$sort", new Document("avg_pages_read", 1))
+        )).into(new ArrayList<>());
+
+        Map<String, Integer> pagesByTag = new HashMap<>();
+
+        for (Document doc : result) {
+            String tag = doc.getString("tag");
+            int avgPagesRead = doc.getInteger("avg_pages_read");
+            pagesByTag.put(tag, avgPagesRead);
+        }
+
+        return pagesByTag;
+    }
+
+    public Map<String, Map<String, Integer>> getPagesByMonthAndTag() {
+        // Get the collection of competitions
+        MongoCollection<Document> CompetitionsCollection = MongoConfig.getCollection("Competitions");
+
+        // Get the competitions with start date in the last 12 months
+        LocalDate today = LocalDate.now();
+        LocalDate sixMonthsAgo = today.minusMonths(12);
+
+        // Get the competitions with start date in the last 12 months, get the average pages_read of the rank, then group by tag and by month of the start date
+        List<Document> result = CompetitionsCollection.aggregate(List.of(
+                new Document("$match", new Document("start_date", new Document("$gte", Date.from(sixMonthsAgo.atStartOfDay(ZoneId.systemDefault()).toInstant())))),
+                new Document("$unwind", "$rank"),
+                new Document("$group", new Document("_id", new Document("tag", "$tag").append("month", new Document("$month", "$start_date"))).append("avg_pages_read", new Document("$avg", "$rank.tot_pages"))),
+                new Document("$project", new Document("month", "$_id.month").append("tag", "$_id.tag").append("avg_pages_read", new Document("$toInt", "$avg_pages_read")))
+        )).into(new ArrayList<>());
+
+        Map<String, Map<String, Integer>> pagesByMonthAndTag = new HashMap<>();
+
+        for (Document doc : result) {
+            String tag = doc.getString("tag");
+            int month = doc.getInteger("month");
+            int avgPagesRead = doc.getInteger("avg_pages_read");
+
+            if (!pagesByMonthAndTag.containsKey(String.valueOf(month))) {
+                pagesByMonthAndTag.put(String.valueOf(month), new HashMap<>());
+            }
+
+            pagesByMonthAndTag.get(String.valueOf(month)).put(tag, avgPagesRead);
+        }
+
+        return pagesByMonthAndTag;
     }
 }

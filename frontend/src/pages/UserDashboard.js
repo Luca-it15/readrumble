@@ -40,7 +40,6 @@ const Dashboard = () => {
         fetchReadingStats();
     }, [currentUser['_id']]);
 
-    // This graph shows the read pages in the last 8 months
     const readingProgressChart = (
         <Line
             data={{
@@ -56,6 +55,10 @@ const Dashboard = () => {
             }}
         />
     );
+
+    const totalPages = readingStatsData.reduce((total, data) => total + data.pagesRead, 0);
+    const favoriteTag = readingStatsData.reduce((max, data) => max.pagesRead > data.pagesRead ? max : data, {pagesRead: 0, tag: ''}).tag;
+    const leastFavoriteTag = readingStatsData.reduce((min, data) => min.pagesRead < data.pagesRead ? min : data, {pagesRead: Infinity, tag: ''}).tag;
 
     const readingStatsChart = [
         <Bar
@@ -104,7 +107,7 @@ const Dashboard = () => {
         <Grid container direction="row" justifyContent="space-around" alignItems="center" spacing={1}>
             <Grid item xs={6}>
             <Paper sx={{textAlign: 'center', borderRadius: 5, backgroundColor: '#ffffff', width:'100%', padding: '20px'}}>
-                <Typography variant="h5">Reading progress</Typography>
+                <Typography variant="h5">Reading progress of the last months</Typography>
                 {readingProgressChart}
             </Paper>
             </Grid>
@@ -114,6 +117,15 @@ const Dashboard = () => {
                 <Typography variant="h5">Pages read by tag in the last six months</Typography>
                 {readingStatsChart}
             </Paper>
+            </Grid>
+            <Grid item xs={12} md={4}>
+                <Paper sx={{display: 'flex', flexDirection: 'column', textAlign: 'center', borderRadius: 5,
+                    backgroundColor: '#ffffff', width:'100%', padding: '20px'}}>
+                    <Typography variant="h5">Other reading stats</Typography>
+                    <Typography>Total pages read in the last six months: <strong>{totalPages}</strong></Typography>
+                    <Typography>Favorite tag: <strong>{favoriteTag}</strong></Typography>
+                    <Typography>Least favorite tag: <strong>{leastFavoriteTag}</strong></Typography>
+                </Paper>
             </Grid>
         </Grid>
         </Paper>

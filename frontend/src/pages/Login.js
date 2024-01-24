@@ -133,8 +133,7 @@ function LoginForm() {
 
         console.log(JSON.parse(localStorage.getItem('logged_user')));
         setTimeout(function () {
-            window.location.href = "/dashboard"
-            navigate("/dashboard");
+            window.location.href = "/home"
         })
     }
 

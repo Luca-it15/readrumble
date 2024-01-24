@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
 import {Grid, Paper} from "@mui/material";
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import Button from "@mui/material-next/Button";
 import {useParams} from "react-router-dom";
 import Typography from "@mui/material/Typography";
@@ -11,7 +11,7 @@ import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemoveTwoTone";
 import BookmarkAddIcon from "@mui/icons-material/BookmarkAddTwoTone";
 import {UpgradeRounded, FavoriteTwoTone} from "@mui/icons-material";
 import GoBack from "../components/GoBack";
-import PostList from "../components/PostList"; 
+import PostList from "../components/PostList";
 
 function BookDetails() {
     // Fetch book details from database
@@ -19,9 +19,9 @@ function BookDetails() {
     let {id} = useParams();
     let [authors, setAuthors] = useState([]);
     let [tags, setTags] = useState([]);
-let [favorites, setFavorites] = useState([]);
+    let [favorites, setFavorites] = useState([]);
     let [wishlist, setWishlist] = useState([]);
-    let [hiddenReview, setHiddenReview] = useState(true); 
+    let [hiddenReview, setHiddenReview] = useState(true);
     const [isAdmin, setIsAdmin] = useState(
         JSON.parse(localStorage.getItem('isAdmin')) || false
     );
@@ -41,12 +41,18 @@ let [favorites, setFavorites] = useState([]);
         wishlistBooksIds = currentUser['wishlist'].map(book => book.id);
     }
 
+    console.log("Book: " + id);
+    console.log("Favorite books: " + favoriteBooksIds);
+    console.log("Wishlist books: " + wishlistBooksIds);
+
+    id = parseInt(id);
+
     const [isFavorite, setFavorite] = useState(currentUser &&
         favoriteBooksIds && favoriteBooksIds.includes(id));
     const [isInWishlist, setInWishlist] = useState(currentUser &&
         wishlistBooksIds && wishlistBooksIds.includes(id));
-    
-    const navigate = useNavigate();      
+
+    const navigate = useNavigate();
     const fetchBook = async () => {
         try {
             const response = await axios.get('http://localhost:8080/api/book/' + id);
@@ -80,13 +86,13 @@ let [favorites, setFavorites] = useState([]);
         fetchBook();
     }, [id]);
 
-   function handleSeeReview() {
-    setHiddenReview(false); 
-   }
-   
-   function handleHiddenReview() {
-    setHiddenReview(true); 
-   }
+    function handleSeeReview() {
+        setHiddenReview(false);
+    }
+
+    function handleHiddenReview() {
+        setHiddenReview(true);
+    }
 
     console.log("Book: " + id);
 
@@ -121,7 +127,7 @@ let [favorites, setFavorites] = useState([]);
     }
 
     const toggleInWishlist = (isInWishlist, id, title, pages, tags) => async () => {
-const bookInfo = {
+        const bookInfo = {
             book_id: id,
             book_title: title,
             num_pages: pages,
@@ -155,25 +161,22 @@ const bookInfo = {
         setInWishlist(!isInWishlist);
     }
 
-     const removeBook = (id) => async() => {
+    const removeBook = (id) => async () => {
 
-        const response = axios.delete("http://localhost:8080/api/admin/book/remove/" + id) 
-        .then(response => {
-                    setDeleteStatus({message:response.data,variant:'success'});
-                    navigate(-1)
-        })
-        setTimeout(function () {setDeleteStatus({message:"",variant:'success'});},4000);
+        const response = axios.delete("http://localhost:8080/api/admin/book/remove/" + id)
+            .then(response => {
+                setDeleteStatus({message: response.data, variant: 'success'});
+                navigate(-1)
+            })
+        setTimeout(function () {
+            setDeleteStatus({message: "", variant: 'success'});
+        }, 4000);
     }
 
     const updateBook = (id) => async() => {
-        
-        navigate(`/updateBook/${id}`); 
+
+        navigate(`/updateBook/${id}`);
     }
-
-
-
-    // TODO sistemare
-    //const authors = (book['authors'] > 1) ? book['authors'].map(author => author).join(', ') : book['authors'];
 
     return (
         <Paper sx={PaperStyle}>
@@ -234,68 +237,71 @@ const bookInfo = {
                         </Button>
                     )}
 
-                    {isInWishlist ? (
-                        <Button onClick={toggleInWishlist(true, id, book['title'], book['num_pages'], book['tags'])} sx={{
-                            backgroundColor: blue[200],
-                            margin: "5px",
-                            '&:hover': {backgroundColor: blue[100]}
-                        }}
-                                variant="filledTonal" startIcon={<BookmarkRemoveIcon sx={{color: blue[700]}}/>}>
-                            <Typography>Remove from wishlist</Typography>
-                        </Button>
-                    ) : (
-                        <Button onClick={toggleInWishlist(false, id, book['title'], book['num_pages'], book['tags'])} sx={{
-                            backgroundColor: blue[200],
-                            margin: "5px",
-                            '&:hover': {backgroundColor: blue[100]}
-                        }}
-                                variant="filledTonal" startIcon={<BookmarkAddIcon sx={{color: blue[700]}}/>}>
-                            <Typography>Add to wishlist</Typography>
-                        </Button>
-                    )}
-                    </>)}
-                     {hiddenReview ? (<Button onClick={handleSeeReview}
-                            sx={{
-                                                 backgroundColor: blue[200],
-                                                 margin: "5px",
-                                                 '&:hover': {backgroundColor: blue[100]}
-                                             }}
-                            variant="filledTonal"
-                                             startIcon={<StarTwoToneIcon sx={{color: yellow[400]}}/>}>
-                        <Typography>See reviews</Typography>
-                    </Button>) : (
-                   <Button onClick={handleHiddenReview}
-                            sx={{
+                        {isInWishlist ? (
+                            <Button onClick={toggleInWishlist(true, id, book['title'], book['num_pages'], book['tags'])}
+                                    sx={{
+                                        backgroundColor: blue[200],
+                                        margin: "5px",
+                                        '&:hover': {backgroundColor: blue[100]}
+                                    }}
+                                    variant="filledTonal" startIcon={<BookmarkRemoveIcon sx={{color: blue[700]}}/>}>
+                                <Typography>Remove from wishlist</Typography>
+                            </Button>
+                        ) : (
+                            <Button
+                                onClick={toggleInWishlist(false, id, book['title'], book['num_pages'], book['tags'])}
+                                sx={{
                                     backgroundColor: blue[200],
                                     margin: "5px",
                                     '&:hover': {backgroundColor: blue[100]}
                                 }}
-                            variant="filledTonal" startIcon={<StarTwoToneIcon sx={{color: yellow[400]}}/>}>
-                        <Typography>Hide reviews</Typography>
-                    </Button>)}
+                                variant="filledTonal" startIcon={<BookmarkAddIcon sx={{color: blue[700]}}/>}>
+                                <Typography>Add to wishlist</Typography>
+                            </Button>
+                        )}
+                    </>)}
+                    {hiddenReview ? (<Button onClick={handleSeeReview}
+                                             sx={{
+                                                 backgroundColor: blue[200],
+                                                 margin: "5px",
+                                                 '&:hover': {backgroundColor: blue[100]}
+                                             }}
+                                             variant="filledTonal"
+                                             startIcon={<StarTwoToneIcon sx={{color: yellow[400]}}/>}>
+                        <Typography>See reviews</Typography>
+                    </Button>) : (
+                        <Button onClick={handleHiddenReview}
+                                sx={{
+                                    backgroundColor: blue[200],
+                                    margin: "5px",
+                                    '&:hover': {backgroundColor: blue[100]}
+                                }}
+                                variant="filledTonal" startIcon={<StarTwoToneIcon sx={{color: yellow[400]}}/>}>
+                            <Typography>Hide reviews</Typography>
+                        </Button>)}
                 </Grid>
                 <Grid item xs={12} md={11}>
-                <Typography sx={{
+                    <Typography sx={{
                         marginLeft: '30px',
                         marginRight: '30px',
                         textAlign: 'center',
                         fontStyle: 'italic'
                     }}>Tags: {tags}</Typography>
-                {hiddenReview ? (
-                   <>
-                   <Paper elevation={0} sx={DescriptionPaperStyle}>
-                        <Typography variant="h5">Description</Typography>
-                        <Typography>{book['description']}</Typography>
-                    </Paper>
-                    </>) : (
+                    {hiddenReview ? (
                         <>
-                        <Grid item xs={12} ClassName='choice'>
-                      <Typography variant="h5"
+                            <Paper elevation={0} sx={DescriptionPaperStyle}>
+                                <Typography variant="h5">Description</Typography>
+                                <Typography>{book['description']}</Typography>
+                            </Paper>
+                        </>) : (
+                        <>
+                            <Grid item xs={12} ClassName='choice'>
+                                <Typography variant="h5"
                                             sx={{textAlign: 'center', marginTop: '30px'}}>Reviews</Typography>
-                      <PostList user={false} book_id={id} username={currentUser['_id']} size={5} all={false}/>    
-                      </Grid>    
-                      </>
-                      )}
+                                <PostList user={false} book_id={id} username={currentUser['_id']} size={5} all={false}/>
+                            </Grid>
+                        </>
+                    )}
                 </Grid>
             </Grid>
         </Paper>

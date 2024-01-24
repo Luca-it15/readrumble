@@ -14,9 +14,9 @@ function CurrentlyReading({user}) {
 
     const fetchBooks = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/book/currentlyReadingBooks/${user}`);
+            console.log("Fetching currently reading books of " + user);
 
-            console.log("Recently read books: " + JSON.stringify(response.data));
+            const response = await axios.get(`http://localhost:8080/api/book/currentlyReadingBooks/${user}`);
 
             const booksReceived = JSON.parse(JSON.stringify(response.data));
 

@@ -7,9 +7,11 @@ import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import org.bson.Document;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
@@ -31,11 +33,10 @@ public class UserDAO {
             users.add(user);
         }
 
-        // Chiudi il client MongoDB
         return users;
     }
-    public Document LogUser(User user)
-    {
+
+    public Document LogUser(User user) {
         String _id = user.getId();
         String password = user.getPassword();
 
@@ -58,36 +59,26 @@ public class UserDAO {
             } else {
                 return null;
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println("Exception error catched: " + e.getMessage());
             return null;
         }
-        finally
-        {
-            MongoConfig.closeConnection();
-        }
     }
-    public ResponseEntity<String> RegUser(Document user)
-    {
+
+    public ResponseEntity<String> RegUser(Document user) {
         System.out.println(user);
         String usernameDaControllare = (String) user.get("_id");
         MongoCollection<Document> collection = MongoConfig.getCollection("Users");
         List<Document> utenti = collection.find(eq("_id", usernameDaControllare)).into(new ArrayList<>());
         if (utenti.isEmpty()) {
             collection.insertOne(user);
-            MongoConfig.closeConnection();
             return ResponseEntity.ok("Registration Succeded ! You will now be redirected to the Login page ! ");
-        }
-        else
-        {
-            MongoConfig.closeConnection();
+        } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already in use, please choose another one!");
         }
     }
-    public Document PersonalInfo(User user)
-    {
+
+    public Document PersonalInfo(User user) {
         String username = user.getId();
         String password = user.getPassword();
 
@@ -107,46 +98,53 @@ public class UserDAO {
             } else {
                 return null;
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println("Exception error catched: " + e.getMessage());
             return null;
         }
-        finally
-        {
-            MongoConfig.closeConnection();
-        }
     }
-    public ResponseEntity<String> ChangeData(Document changes)
-    {
+
+    public ResponseEntity<String> ChangeData(Document changes) {
         String old_field = (String) changes.get("old_field");
         String new_field = (String) changes.get("new_field");
         String type_of_change_request = (String) changes.get("type_of_change_request");
         String username_to_use = (String) changes.get("username_to_use");
         MongoCollection<Document> collection = MongoConfig.getCollection("Users");
-        try(MongoCursor cursor = collection.find(eq("_id", username_to_use)).cursor())
-        {
-            if(cursor.hasNext())
-            {
-                collection.updateOne(eq("_id",username_to_use),set(type_of_change_request,new_field));
+        try (MongoCursor cursor = collection.find(eq("_id", username_to_use)).cursor()) {
+            if (cursor.hasNext()) {
+                collection.updateOne(eq("_id", username_to_use), set(type_of_change_request, new_field));
                 String result = (String) type_of_change_request + " Changed from " + old_field + " To " + new_field;
                 return ResponseEntity.ok(result);
-            }
-            else
-            {
+            } else {
                 return ResponseEntity.ok("NOT FOUND");
             }
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             System.out.println("Exception error catched: " + e.getMessage());
             return ResponseEntity.ok("EXCEPTION IN SERVER");
         }
-        finally {
-            MongoConfig.closeConnection();
+    }
+
+    /**
+     * This method returns id, name and surname of the user with the given username.
+     *
+     * @param username the username of the user to search
+     * @return the id, name and surname of the user
+     */
+    public Map<String, String> getUser(@PathVariable String username) {
+        MongoCollection<Document> collection = MongoConfig.getCollection("Users");
+
+        Document user = collection.find(eq("_id", username)).first();
+
+        System.out.println(user);
+
+        if (user != null) {
+            return Map.of(
+                    "_id", user.getString("_id"),
+                    "name", user.getString("name"),
+                    "surname", user.getString("surname")
+            );
+        } else {
+            return null;
         }
-
-
     }
 }
