@@ -23,10 +23,10 @@ const AddCompetition = () =>{
           "Graphic"]
     const SortedTags = tags.sort();
     const [formData, setFormData] = useState({
-        CompName: '',
-        CompTag: '',
-        Start_Date:'',
-        End_Date:'',
+        name: '',
+        tag: '',
+        start_date:'',
+        end_date:'',
     });
 
     const [addStatus, setAddStatus] = useState({
@@ -52,7 +52,11 @@ const AddCompetition = () =>{
             setValidationError('All fields must be filled !');
             return;
         }
-
+        if(formData.start_date > formData.end_date)
+        {
+            setValidationError('Start date cannot be after End date');
+            return;
+        }
         try {
                 console.log(formData);
                 // Invia la richiesta HTTP qui usando axios
@@ -77,11 +81,11 @@ const AddCompetition = () =>{
                 <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3" controlId="CompName">
                         <Form.Label>Name of the Competition</Form.Label>
-                            <Form.Control type="text" name="CompName" placeholder="Name of the competition" onChange={handleChange}/>
+                            <Form.Control type="text" name="name" placeholder="Name of the competition" onChange={handleChange}/>
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="CompTag">
                             <Form.Label>Name of the Tag</Form.Label>
-                            <Form.Select name="CompTag" onChange={handleChange}>
+                            <Form.Select name="tag" onChange={handleChange}>
                                 <option value="">Select Tag</option>
                                 {SortedTags.map(tag => (
                                     <option key={tag} value={tag}>
@@ -94,7 +98,7 @@ const AddCompetition = () =>{
                               <Form.Label>Select Date</Form.Label>
                               <Form.Control
                                 type="date"
-                                name="Start_Date"
+                                name="start_date"
                                 onChange={handleChange}
                               />
                         </Form.Group>
@@ -102,7 +106,7 @@ const AddCompetition = () =>{
                               <Form.Label>Select Date</Form.Label>
                               <Form.Control
                                 type="date"
-                                name="End_Date"
+                                name="end_date"
                                 //value={selectedDate}
                                 onChange={handleChange}
                               />

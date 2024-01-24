@@ -4,8 +4,10 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.*;
 import com.mongodb.client.result.DeleteResult;
+import redis.clients.jedis.Jedis;
 import com.mongodb.client.result.UpdateResult;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
+import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import static com.mongodb.client.model.Filters.eq;
 public class CompetitionDAO {
     public List<Document> getAllCompetition()
     {
+
         LocalDate date_of_today = LocalDate.now();
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         List<Document> competitions = collection.find(Filters.gte("end_date",date_of_today))
@@ -57,25 +60,43 @@ public class CompetitionDAO {
     }
     public List<Document> getPersonalCompetition(String _id)
     {
-        MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
-        List<Document> competitions = collection.find().into(new ArrayList<Document>());
-        List<Document> results = new ArrayList<Document>();
-        Integer i = 0;
-        for(Document com : competitions)
-        {
-            if(i == 3)
-            {
-                break;
+        System.out.println("Siamo in getPersonalCompetition !!!!!! " + _id);
+        try {
+            Jedis jedis = RedisConfig.getSession();
+            System.out.println("dentro ese" + _id);
+            try{
+                Set<String> matchingKeys = jedis.keys("*:"+_id);
+                List<Document> result = new ArrayList<Document>();
+                for (String key : matchingKeys) {
+                    try {
+                        String value = jedis.get(key);
+                        System.out.println("Key: " + key + ", Value: " + value);
+                        Document doc = new Document();
+                        doc.append("CompName", key);
+                        doc.append("Pages_read", value);
+                        result.add(doc);
+                    } catch(Exception e)
+                    {
+                        System.out.println("Catched error in appending documents and keys: " + e.getMessage());
+                    }
+                }
+                jedis.close();
+                return result;
             }
-            Document emb_users = (Document) com.get("Users");
-            if(emb_users != null && emb_users.containsKey(_id))
+            catch(Exception e)
             {
-                results.add(com);
+                System.out.println("Catched error in matchingKeys: " + e.getMessage());
             }
-            i = i+1;
         }
-        System.out.println(results);
-        return results;
+        catch(Exception e)
+        {
+            System.out.println("Catched error in getSession: " + e.getMessage());
+        }
+        List<Document> result = new ArrayList<Document>();
+        Document t = new Document();
+        t.append("CIAO","CIAO");
+        result.add(t);
+        return result;
     }
     public Document goCompetitionInformation(Document docx)
     {
@@ -85,123 +106,32 @@ public class CompetitionDAO {
         ArrayList<Document> result = collection.find(eq("name",competitionTitle)).into(new ArrayList<>());
         Document doc = result.getFirst();
         System.out.println(doc);
-        ArrayList<Document> list = (ArrayList<Document>) doc.get("Users");
-        if(list != null)
-        {
-            Iterator<Document> user = list.iterator();
-            while(user.hasNext())
+        return doc;
+    }
+    public ResponseEntity<String> userJoinsCompetition(Document userDoc)
+    {
+        Jedis jedis = RedisConfig.getSession();
+        String username = (String) userDoc.get("parametro1");
+        String competitionTitle = (String) userDoc.get("parametro2");
+        try {
+            // Chiave composta
+            String key = competitionTitle + ":" + username;
+            System.out.println("the key is = " + key);
+            if(jedis.get(key)==null)
             {
-                Document UtilUser = user.next();
-                String userUtilString = (String) UtilUser.get("username");
-                if(userUtilString != null)
-                {
-                    if(userUtilString.equals(username))
-                    {
-                        doc.append("isIn",true);
-                        return doc;
-                    }
-                }
-            }
-            doc.append("isIn",false);
-            return doc;
-        }
-        else
-        {
-            doc.append("isIn",false);
-            return doc;
-        }
-        /*try(MongoCursor<Document> competition = collection.find(eq("name",Name)).cursor())
-        {
-            if(competition.hasNext())
-            {
-                Document doc = competition.next();
-                Document users_doc = (Document) doc.get("Users");
-                System.out.println(users_doc);
-
-
-                if(users_doc.get(Username) == null)
-                {
-                    doc.append("isIn","NO");
-                }
-                else
-                {
-                    doc.append("isIn","YES");
-                }
-                return doc;
+                //User is not in the competition so we make him join
+                jedis.set(key, "0");
+                System.out.println(jedis.get(key));
+                return ResponseEntity.ok(username +" You joined the " + competitionTitle + " Competititon !");
             }
             else
             {
-                System.out.println("No such Competition with name: " + Name);
-                return null;
-            }
-        }
-        catch(Exception e)
-        {
-            System.out.println("Exception Catched : " + e.getMessage());
-            return null;
-        }*/
-    }
-    public ResponseEntity<String> makeUserJoinCompetition(Document userDoc)
-    {
-        System.out.println(userDoc);
-        String username = (String) userDoc.get("parametro1");
-        String competitionTitle = (String) userDoc.get("parametro2");
-        System.out.println(username);
-        System.out.println(competitionTitle);
-        Document userDocument = new Document();
-        userDocument.append("username",username);
-        userDocument.append("pages_read",0);
-        MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
-        System.out.println("superato");
-        Document competition = collection.find(eq("name",competitionTitle)).first();
-        System.out.println("superato2");
-        if (competition != null) {
-            //I get the embedded Document Users as a proper document
-            ArrayList<Document> usersObject = (ArrayList<Document>) competition.get("Users");
-            Iterator<Document> user = usersObject.iterator();
-            while(user.hasNext())
-            {
-                Document UtilUser = user.next();
-                String userUtilString = (String) UtilUser.get("username");
-                if(userUtilString != null)
-                {
-                    if(userUtilString.equals(username))
-                    {
-                        System.out.println("c'è " + username);
-                        Bson filter = Filters.eq("name", competitionTitle);
-                        Document pullOperation = new Document("$pull", new Document("Users", new Document("username", username)));
-                        UpdateResult updateResult = collection.updateOne(filter,pullOperation);
-                        System.out.println(updateResult);
-                        System.out.println("You Left The Competition !");
-                        return ResponseEntity.ok("You Left The Competition !");
-                    }
-                }
-
-            }
-            System.out.println("non c'è " + username);
-            collection.updateOne(eq("name",competitionTitle), Updates.push("Users", userDocument));
-            System.out.println(username +" You joined the " + competitionTitle + " Competititon !");
-            return ResponseEntity.ok(username +" You joined the " + competitionTitle + " Competititon !");
-            /*
-            System.out.println(usersObject);
-            if (usersObject != null && usersObject.containsKey(username)) {
-                //The user is already in the competition, this means that the user wants to leave the competition
-                usersObject.remove(username);
-                //In this operation I update all the embedded document Users
-                collection.updateOne(eq("Name",competitionTitle), Updates.set("Users", usersObject));
-
-                System.out.println("You Left The Competition !");
+                jedis.del(key);
+                System.out.println(jedis.get(key));
                 return ResponseEntity.ok("You Left The Competition !");
-            } else {
-                //The user is not in the competition, so we will make the user join the competition
-                usersObject.put(username, 0);
-                collection.updateOne(eq("Name",competitionTitle), Updates.set("Users", usersObject));
-                System.out.println(username +" You joined the " + competitionTitle + " Competititon !");
-                return ResponseEntity.ok(username +" You joined the " + competitionTitle + " Competititon !");
-            }*/
-        } else {
-            System.out.println("Competition Not Found");
-            return ResponseEntity.ok("Competition Not Found");
+            }
+        } finally {
+            RedisConfig.closeConnection();
         }
     }
 }

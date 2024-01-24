@@ -53,7 +53,7 @@ function CompetitionPage()
             <Row>
                 {data.map(item => (
                     <Row>
-                        <Button className={giveClass(item.Users)} onClick={()=>{goSpecificComp(item.name)}}>
+                        <Button className ="competitionLinkFalse" onClick={()=>{goSpecificComp(item.name)}}>
                             <h1>{item.name}</h1>
                         </Button>
                     </Row>

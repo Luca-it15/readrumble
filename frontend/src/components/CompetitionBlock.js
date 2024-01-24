@@ -7,31 +7,14 @@ import LoginForm from '../pages/Login';
 import '../App.css';
 function CompetitionProfBlock({user}) {
   const [data, setData] = useState([]);
+  const [Username,setUsername] = useState('');
   const navigate = useNavigate();
   const logged_user = JSON.parse(localStorage.getItem("logged_user"));
-  var whichUser =  logged_user["Username"];
-  if(whichUser == user)
-  {
-    const Username = logged_user["Username"];
-  }
-  else
-  {
-    if(user == null | user == '')
-    {
-        const Username = logged_user["Username"];
-    }
-    else
-    {
-        const Username = user;
-    }
 
-  }
-  const Username = logged_user["Username"];
-  console.log(Username);
 
   const goComp = () =>
       {
-          navigate('/competitions');
+        navigate("/competitions");
       }
 
     const goSpecificComp =(Name) =>{
@@ -40,20 +23,48 @@ function CompetitionProfBlock({user}) {
         navigate(dynamic_path);
 
     }
+    function getPersonal()
+    {
+    //prendere le competizioni dal localStorage e metterle nel blocco
+        var whichUser = logged_user["_id"];
+            console.log("THIS IS WICHUSER " + whichUser)
+            if(whichUser == user)
+            {
+                setUsername(whichUser);
+            }
+            else
+            {
+                if(user == null | user == '')
+                {
+                    setUsername(whichUser);
+                }
+                else
+                {
+                    whichUser = user;
+                    setUsername(user);
+                }
+            }
+
+                axios.post('http://localhost:8080/api/competition/retrieve/personal',whichUser)
+                  .then(response => {
+                    // Converti i documenti MongoDB in JSON
+                    const jsonData = response.data.map(document => JSON.parse(JSON.stringify(document)));
+                    console.log(jsonData);
+                    setData(jsonData);
+                    console.log("CIAONEEEE");
+                    console.log(jsonData);
+                  })
+                  .catch(error => console.error('Errore nella richiesta GET:', error));
+    }
+
     useEffect(() => {
-        // Effettua la richiesta GET al tuo backend
-        axios.post('http://localhost:8080/api/competition/retrieve/personal',Username)
-          .then(response => {
-            // Converti i documenti MongoDB in JSON
-            const jsonData = response.data.map(document => JSON.parse(JSON.stringify(document)));
-            console.log(jsonData);
-            setData(jsonData);
-          })
-          .catch(error => console.error('Errore nella richiesta GET:', error));
+
+             getPersonal();
+
     }, []); // L'array vuoto come dipendenza indica che questo effetto viene eseguito solo una volta al montaggio del componente
 
 
-  useEffect(() => {
+  /*useEffect(() => {
     // Effettua la richiesta GET al tuo backend
     axios.get('http://localhost:8080/api/competition/retrieve')
       .then(response => {
@@ -63,7 +74,7 @@ function CompetitionProfBlock({user}) {
       })
       .catch(error => console.error('Errore nella richiesta GET:', error));
   }, []); // L'array vuoto come dipendenza indica che questo effetto viene eseguito solo una volta al montaggio del componente
-
+*/
   return (
     <Container>
 

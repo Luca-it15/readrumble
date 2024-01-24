@@ -4,7 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="explore finish" />
+    <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="explore finish">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/RedisFullController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/RedisFullController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/admin/AdminCompetitionDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/admin/AdminCompetitionDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/competition/CompetitionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/competition/CompetitionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/competition/CompetitionDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/competition/CompetitionDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/competition/RedisCompetitionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/competition/RedisCompetitionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/CompetitionBlock.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/CompetitionBlock.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Competition.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Competition.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/admin/AddCompetition.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/admin/AddCompetition.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -65,7 +75,7 @@
       <recent name="C:\Users\roman.LAPTOP-AP4SF555\Documents\PROGETTO_LARGE_SCALE\backend\src\main\java\it\unipi\dii\aide\lsmd\readrumble\admin" />
     </key>
   </component>
-  <component name="RunManager" selected="Spring Boot.ReadrumbleApplication">
+  <component name="RunManager">
     <configuration name="ReadrumbleApplication (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="backend_part (2)" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="it.unipi.dii.aide.lsmd.readrumble.ReadrumbleApplication" />
@@ -320,5 +330,15 @@
     <MESSAGE value="amici suggeriti" />
     <MESSAGE value="explore finish" />
     <option name="LAST_COMMIT_MESSAGE" value="explore finish" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.net.SocketException" package="java.net" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
