@@ -9,10 +9,20 @@ import {blue} from "@mui/material/colors";
 let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
 function RecentlyReadBooks({user}) {
-    const [recentlyReadBooks, setRecentlyReadBooks] = useState([currentUser['recentlyReadBooks']]);
+    let initialRecentlyReadBooks;
+
+    if (user === currentUser['_id']) {
+        initialRecentlyReadBooks = currentUser['recentlyReadBooks'];
+    } else {
+        initialRecentlyReadBooks = [];
+    }
+
+    const [recentlyReadBooks, setRecentlyReadBooks] = useState(initialRecentlyReadBooks);
     const [displayCount, setDisplayCount] = useState(10);
 
     const navigate = useNavigate();
+
+    console.log(user)
 
     const ListStyle = {
         py: 0,
@@ -22,6 +32,8 @@ function RecentlyReadBooks({user}) {
         borderColor: 'divider',
         backgroundColor: 'background.paper',
     };
+
+    console.log("Recently read books: " + recentlyReadBooks.length);
 
     const fetchBooks = async () => {
         if (currentUser['recentlyReadBooks'].length === 0) {
@@ -66,6 +78,9 @@ function RecentlyReadBooks({user}) {
     function seeDetails(id) {
         navigate(`/bookdetails/${id}`);
     }
+
+    console.log("Recently read books: " + JSON.stringify(recentlyReadBooks));
+    console.log(recentlyReadBooks.length)
 
     const PaperStyle = {
         backgroundColor: '#f1f7fa',

@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Updates.set;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -53,5 +51,10 @@ public class UserController {
     @GetMapping("/user/all")
     public List<UserDTO> getAllReviews() {
         return userDAO.allUser();
+    }
+
+    @GetMapping("/user/{username}")
+    public Map<String, String> getUser(@PathVariable String username) {
+        return userDAO.getUser(username);
     }
 }

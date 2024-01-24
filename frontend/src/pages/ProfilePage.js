@@ -30,32 +30,37 @@ const ProfilePage = () => {
         console.log('La chiave "logged_user" non è presente in localStorage.');
     }
 
-    console.log(currentUser['competitions']);
-
     const [books, setBooks] = useState([]);
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
 
-    console.log(currentUser['favoriteBooks']);
+    console.log("Wishlist: " + JSON.stringify(currentUser['wishlist']))
 
     const fetchWishlist = async () => {
+        console.log(currentUser['wihslist']);
+
         if (currentUser['wihslist'] && currentUser['wihslist'].length > 0) {
             setBooks(currentUser['wihslist']);
-            console.log(currentUser['wihslist'])
+            console.log(books);
         } else {
             try {
-                const response = await axios.get(`http://localhost:8080/api/book/wishlist/${currentUser['_id']}`);
+                axios.get(`http://localhost:8080/api/book/wishlist/${currentUser['_id']}`)
+                    .then(response => {
+                        // Returns book.id and book.title
+                        const booksData = response.data.map(book => ({
+                            id: book.id,
+                            title: book.title.replace(/"/g, '')
+                        }));
 
-                // Returns book.id and book.title
-                setBooks(response.data.map(book => ({
-                    id: book.id,
-                    title: book.title.replace(/"/g, '')
-                })));
+                        setBooks(booksData);
 
-                // Save all book ids in wishlist
-                currentUser['wishlist'] = books;
+                        // Save all book ids in wishlist
+                        currentUser['wishlist'] = booksData;
 
-                localStorage.setItem('logged_user', JSON.stringify(currentUser));
+                        console.log("Wishlist: " + JSON.stringify(currentUser['wishlist']));
+
+                        localStorage.setItem('logged_user', JSON.stringify(currentUser));
+                    })
             } catch (error) {
                 console.log(error.response)
             }
@@ -87,7 +92,7 @@ const ProfilePage = () => {
     }
 
     function goDashboard() {
-        return window.location.href = "http://localhost:3000/userDashboard";
+        return window.location.href = "http://localhost:3000/dashboard";
     }
 
     function goReview() {
@@ -160,7 +165,7 @@ const ProfilePage = () => {
                         <Button sx={{backgroundColor: blue[200], height: "40px", '&:hover': {backgroundColor: blue[400]}}}
                                 variant="filledTonal" onClick={goReview}
                                 startIcon={<EditNoteTwoToneIcon sx={{color: blue[700]}}/>}>
-                            <Typography>Make a post!</Typography>
+                            <Typography>Make a post</Typography>
                         </Button>
                         <PostsList user={true} username={currentUser['_id']} size={12} all={false} path={1}/>
                     </Paper>

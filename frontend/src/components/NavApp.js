@@ -30,7 +30,7 @@ const NavApp = () => {
                 <Typography variant="h4">ead</Typography>
                 <Typography variant="h4" sx={{color: '#FE262F'}}>R</Typography>
                 <Typography variant="h4" sx={{flexGrow: 1}}>umble</Typography>
-                <Button sx={{color: '#ffffff'}} component={NavLink} to="/dashboard" exact>
+                <Button sx={{color: '#ffffff'}} component={NavLink} to="/home" exact>
                     <Typography>Home</Typography>
                 </Button>
                 <Button sx={{color: '#ffffff'}} component={NavLink} to="/explore">
@@ -45,6 +45,7 @@ const NavApp = () => {
                 }} variant="filled" onClick={handleClickOpen}>
                     <Typography>Logout</Typography>
                 </Button>
+
                 <Dialog open={open} onClose={handleClose} aria-labelledby="alert-dialog-title"
                         aria-describedby="alert-dialog-description">
                     <DialogTitle id="alert-dialog-title"><Typography variant='h5'>Confirm

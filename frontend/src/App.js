@@ -123,7 +123,7 @@ const App = () => {
                                         />
 
                                         <Route
-                                            path="/dashboard"
+                                            path="/home"
                                             element={
                                                 <Home/>
                                             }
@@ -159,7 +159,7 @@ const App = () => {
                                             }
                                         />
                                         <Route
-                                            path="/userDashboard"
+                                            path="/dashboard"
                                             element={
                                                 <Dashboard/>
                                             }
@@ -186,7 +186,7 @@ const App = () => {
                                         />
                                         <Route
                                             path="/"
-                                            element={<Navigate to="/dashboard" replace/>}
+                                            element={<Navigate to="/home" replace/>}
                                         />
                                         <Route path="*" element={<Error/>}/>
                                     </Routes>
