@@ -19,15 +19,15 @@ public class SearchController {
     }
     @GetMapping("/posts/{searchString}")
     public List<PostDTO> searchPosts(@PathVariable String searchString) {
-        return searchDao.findForStringPosts(searchString);
+        return searchDao.findByStringPosts(searchString);
     }
     @GetMapping("/users/{searchString}")
     public List<UserDTO> searchUsers(@PathVariable String searchString) {
-        return searchDao.findForStringUsers(searchString);
+        return searchDao.findByStringUsers(searchString);
     }
     @GetMapping("/books/{searchString}")
     public List<LightBookDTO> searchBooks(@PathVariable String searchString) {
-        return searchDao.findForStringBooks(searchString);
+        return searchDao.findByStringBooks(searchString);
     }
 
 

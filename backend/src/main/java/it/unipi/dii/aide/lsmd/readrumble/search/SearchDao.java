@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 
 public class SearchDao {
 
-    public List<PostDTO> findForStringPosts(String searchString) {
+    public List<PostDTO> findByStringPosts(String searchString) {
         List<PostDTO> target = new ArrayList<>();
         MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
 
@@ -40,7 +40,7 @@ public class SearchDao {
         return target;
     }
 
-    public List<UserDTO> findForStringUsers(String searchString) {
+    public List<UserDTO> findByStringUsers(String searchString) {
         List<UserDTO> target = new ArrayList<>();
         MongoCollection<Document> collection = MongoConfig.getCollection("Users");
         String decodedString = URLDecoder.decode(searchString, StandardCharsets.UTF_8);
@@ -61,7 +61,7 @@ public class SearchDao {
         return target;
     }
 
-    public List<LightBookDTO> findForStringBooks(String searchString) {
+    public List<LightBookDTO> findByStringBooks(String searchString) {
         List<LightBookDTO> target = new ArrayList<>();
         MongoCollection<Document> collection = MongoConfig.getCollection("Books");
 
@@ -73,7 +73,7 @@ public class SearchDao {
         //retrieve the first results of document that match the filter
         for (Document doc : results) {
             LightBookDTO lightBookDTO = new LightBookDTO(
-                    doc.getInteger("_id"),
+                    doc.getLong("_id"),
                     doc.getString("title")
             );
             target.add(lightBookDTO);

@@ -110,6 +110,8 @@ public class CompetitionDAO {
     }
     public ResponseEntity<String> userJoinsCompetition(Document userDoc)
     {
+        //nel qual caso io decida di lasciare la competizione il rank viene aggiornato comunque
+        //devo però fare in modo di lanciare la query di aggiornamento del documento competition alla scadenza della competizione
         Jedis jedis = RedisConfig.getSession();
         String username = (String) userDoc.get("parametro1");
         String competitionTitle = (String) userDoc.get("parametro2");

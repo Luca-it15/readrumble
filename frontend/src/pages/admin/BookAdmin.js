@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import Typography from '@mui/material/Typography';
+import { useNavigate } from 'react-router-dom';
 import PostsList from '../../components/PostList';
 import {Grid, Paper} from '@mui/material';
 import Box from '@mui/material/Box';
@@ -16,6 +17,7 @@ export default function BookAdmin() {
     const [value, setValue] = useState(0);
     const [searchText, setSearchText] = useState('');
     const [last, setLast] = useState(true); 
+    const navigate = useNavigate(); 
 
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
@@ -42,10 +44,15 @@ export default function BookAdmin() {
         backgroundColor: blue[400],
         margin: '5px',
         borderRadius: 10,
+        color: 'white', 
         textAlign: 'center',
         '&:hover': {
             backgroundColor: blue[300],
         }
+    }
+
+    function addBook() {
+        navigate("/addBook"); 
     }
 
     const handleSearchTextChange = (event) => {
@@ -66,6 +73,9 @@ export default function BookAdmin() {
                            onChange={handleSearchTextChange}/>
                 <Button sx={searchButton} variant="filledTonal" onClick={handleSearchButtonClick}>
                     <SearchRounded sx={{color: '#ffffff'}}/>
+                </Button>
+                <Button variant="filledTonal" onClick={addBook} sx={searchButton}>
+                   <Typography variant='h6'>Add Books</Typography>
                 </Button>
             </Box>
             <Paper sx={PaperStyle}>
