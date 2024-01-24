@@ -117,7 +117,7 @@ public class CompetitionDAO {
         String competitionTitle = (String) userDoc.get("parametro2");
         try {
             // Chiave composta
-            String key = competitionTitle + ":" + username;
+            String key = "competition:"+competitionTitle + ":" + username;
             System.out.println("the key is = " + key);
             if(jedis.get(key)==null)
             {

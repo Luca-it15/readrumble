@@ -65,16 +65,20 @@ public class AdminCompetitionDAO {
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         try {
             // Chiave composta
-            String key = CompName+":*";
+            String key = "competition:"+CompName+":*";
             System.out.println("the key is = " + key);
             jedis.del(key);
-        } finally {
+        }catch(Exception e)
+        {
+            System.out.println("Catched Exception: "+e.getMessage());
+        }
+        finally {
             RedisConfig.closeConnection();
         }
-        try(MongoCursor<Document> competitions = collection.find(eq("Name", CompName)).cursor())
+        try(MongoCursor<Document> competitions = collection.find(eq("name", CompName)).cursor())
         {
             if (competitions.hasNext()) {
-                collection.deleteOne(eq("Name", CompName));
+                collection.deleteOne(eq("name", CompName));
                 return ResponseEntity.ok("Competition Deleted !");
             } else {
                 return ResponseEntity.ok("Competition Does not exist !");

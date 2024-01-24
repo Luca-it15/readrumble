@@ -1,10 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, Button, Container, Row, Col } from 'react-bootstrap';
+import { Alert, Button, Row, Col } from 'react-bootstrap';
+import {Container, Grid, Typography, Paper} from '@mui/material';
 import axios from 'axios';
 import {useNavigate, useParams} from 'react-router-dom';
 import '../App.css'
 
 function CompetitionSpec(){
+    const PaperStyle = {
+            backgroundColor: '#f1f7fa',
+            padding: '10px',
+            margin: '20px 10px 0px 10px',
+            borderRadius: 18,
+            width: '100%',
+            textAlign:'center'
+        }
+        const ButtonStyle = {
+            color: 'cadetblue'
+        }
+    //this is the block that contains the rank, your points, the name of the comp and the tag
+    //adesso devo fare in modo di far vedere il punteggio dell'utente se sta partecipando a tale competizione
+    //facendo un controllo sul nome competizione
     const [load,setLoad] = useState(false);
     var isJoined = false;
     const { name } = useParams();
@@ -14,47 +29,12 @@ function CompetitionSpec(){
             variant: 'success', // o 'danger' in caso di errore
     });
     const [data, setData] = useState([]);
-    const [isJoin, setJoin] = useState();
+    const [rank, setRank] = useState([])
+    const [isJoin, setJoin] = useState(false);
+    const [points, setPoints] = useState(null);
     const username = JSON.parse(localStorage.getItem('logged_user'));
     var usernameToAdd = username["_id"];
-    function BuildRank()
-    {
-        const rank_div = document.getElementById("rank");
-        rank_div.innerHTML = null;
-        const sortedObject = {};
-        const originalObject = data.Users;
-        console.log(originalObject);
-        console.log(data)
-        const vect = data.Users
-        var i = 0
-        var c = 0
-        while(vect[i]!=null)
-        {
-            while(vect[c]!=null)
-            {
-                if(vect[c+1]!=null)
-                {
-                    if(vect[c]["pages_read"] < vect[c+1]["pages_read"])
-                    {
-                        let a = vect[c]["pages_read"]
-                        let b = vect[c]["username"]
-                        vect[c]["pages_read"] = vect[c+1]["pages_read"]
-                        vect[c]["username"] = vect[c+1]["username"]
-                        vect[c+1]["username"] = b
-                        vect[c+1]["pages_read"] = a
-                    }
-                }
-                c=c+1
-            }
-            i = i+1
-        }
-        i=0;
-        while(vect[i] != null && i != 10)
-        {
-            rank_div.innerHTML += '<div class="row"><div class="col"><h3>'+vect[i]["username"]+'</h3></div><div class="col"><h3>'+vect[i]["pages_read"]+'</h3></div></div>';
-            i=i+1;
-        }
-    }
+
      function givename()
      {
         if(isJoin===true)
@@ -67,34 +47,48 @@ function CompetitionSpec(){
         }
 
      }
-     function searchForUser(username)
-     {
-        console.log(username)
-        console.log(data.Users)
-        const v = data.Users
-        let i = 0
-        while(v[i]!=null)
+
+    function searchForUser(value)
+    {
+        setRank(value.rank);
+        const comp = username["competitions"];
+        let i = 0;
+        while(comp[i] != null)
         {
-            if(v[i]["username"]==username)
+            if(comp[i].name == value.name)
             {
+                setJoin(true);
+                setPoints(comp[i].pages);
+                const rankTwo = value.rank
+                let c = 0
+                while(c < 10)
+                {
+                    if(rankTwo[c].tot_pages <= comp[i].pages)
+                    {
+                        rankTwo[c].tot_pages = comp[i].pages;
+                        rankTwo[c].username = usernameToAdd;
+                        setRank(rankTwo);
+                        return
+                    }
+                    c=c+1;
+                }
+
                 return;
             }
-            i = i+1
+            i=i+1;
         }
+        setJoin(false);
         return;
-     }
+    }
     function call()
     {
         
         axios.post('http://localhost:8080/api/competition/getcompinfo',{
-                CompetitionTitle: name,
-                Username: usernameToAdd
+                CompetitionTitle: name
                 })
                 .then(response => {
                     setData(response.data);
-                    console.log("dati settati");
-                    setJoin(response.data.isIn == true ? true:false);
-                    setLoad(true);
+                    searchForUser(response.data);
                  })
                  .catch(error => console.error('Errore nella richiesta POST:', error));
     }
@@ -111,69 +105,87 @@ function CompetitionSpec(){
         })
         setTimeout(function () {setJoinStatus({message:"",variant:'success'});},4000);
         setJoin(!isJoin);
-        /*if(isJoin == false)
+        if(points == null)
         {
-            data.Users[usernameToAdd]=0;
+            setPoints(0);
+            let k = 0;
+            while(username.competitions[k]!=null)
+            {
+                k=k+1;
+            }
+            var new_comp = {
+                name:Name,
+                pages:0
+            }
+            username["competitions"].push(new_comp)
+            localStorage.setItem('logged_user', JSON.stringify(username));
         }
         else
         {
-            delete(data.Users[usernameToAdd])
-        }*/
-        rankPosition();
-        BuildRank();
-    }
-    function rankPosition()
-    {
-        searchForUser(usernameToAdd)
-        const keys = data.Users
-        var i = 0;
-        while(keys[i] != null)
-        {
-            if(keys[i]["username"] === usernameToAdd)
+            var new_local = username
+            let i = 0
+            while(new_local.competitions[i]!=null)
             {
-                i = i+1;
-                var result = "You are in " + i + " position !";
-                console.log("ciaeo")
-                return result
+                if(new_local.competitions[i].name == Name)
+                {
+                    new_local.competitions.splice(i, 1);
+                    localStorage.setItem('logged_user', JSON.stringify(new_local));
+                }
+                i=i+1;
             }
-            else
-            {
-                i = i+1;
-            }
-
+            setPoints(null);
         }
-        console.log("ciao")
     }
-    // [] means "Execute this action just at the start of the page"
     return(
-    <Container className="CompCon">
-        <Row>
-            <h1> {data.Name} </h1>
-        </Row>
-        <Row>
-            <h2> The tag is : {data.Tag} </h2>
-        </Row>
-        <Row>
-            <h3>Rank</h3>
-            {load ? BuildRank() : "not loaded"}
-            <div id="rank"></div>
-        </Row>
-        <Row>
-            {load ?(isJoin ? <h4>{rankPosition()}</h4> : <h4>You do not partecipate in the competition</h4>):"still not loaded"}
-        </Row>
-        <Row>
-            <Button onClick={()=>{joinCompetition(data.name)}}> {givename()} </Button>
-        </Row>
-        <Row>
-            {joinStatus.message && (
-                <Alert variant={joinStatus.variant}>
-                    {joinStatus.message}
-                </Alert>
-            )}
-        </Row>
-        <Row>
-            <Button onClick={()=>{navigate("/competitions")}}> Back To Competitions </Button>
-        </Row>
+    <Container>
+            <Row>
+                <Paper elevation={2} style={PaperStyle}>
+                    <Typography variant="h2" >{data.name}</Typography>
+                </Paper>
+            </Row>
+            <Row>
+                <Paper elevation={2} style={PaperStyle}>
+                    <Typography variant="h3" >{data.tag}</Typography>
+                </Paper>
+            </Row>
+            <Row>
+                <Paper elevation={2} style={PaperStyle}>
+                    <Typography variant="h4" >TOP TEN</Typography>
+                </Paper>
+            </Row>
+              <Row>
+                {rank.map(item => (
+                    <Row>
+                        <Col>
+                            <Paper elevation={2} style={PaperStyle}>
+                                <Typography variant="h5" >{item.username}</Typography>
+                            </Paper>
+                        </Col>
+                        <Col>
+                            <Paper elevation={2} style={PaperStyle}>
+                                <Typography variant="h5" > {item.tot_pages}</Typography>
+                            </Paper>
+                        </Col>
+                    </Row>
+                ))}
+              </Row>
+              <Row>
+                <Paper elevation={2} style={PaperStyle} onClick={()=>{joinCompetition(data.name)}}>
+                    <Typography variant="h5">{points != null ? "Your Total Pages Read : " + points : "You Do Not Partecipate in this Competition"}</Typography>
+                </Paper>
+              </Row>
+                <Row>
+                    {joinStatus.message && (
+                        <Alert variant={joinStatus.variant}>
+                            {joinStatus.message}
+                        </Alert>
+                    )}
+                </Row>
+              <Row>
+                    <Paper elevation={2} style={PaperStyle} onClick={()=>{navigate("/competitions")}}>
+                            <Typography variant="h5">Back to Competitions</Typography>
+                    </Paper>
+              </Row>
     </Container>
 
     )

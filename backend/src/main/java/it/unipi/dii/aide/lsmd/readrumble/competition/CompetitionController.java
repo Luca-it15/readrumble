@@ -42,8 +42,6 @@ public class CompetitionController {
     public Document getCompetitionInfo(@RequestBody Document docx)
     {
         return competitionDAO.goCompetitionInformation(docx);
-
-
     }
 
     /**

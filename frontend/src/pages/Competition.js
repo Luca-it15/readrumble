@@ -1,17 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Container, Row} from 'react-bootstrap';
+import { Button, Row, Col } from 'react-bootstrap';
+import {Container, Grid, Typography, Paper} from '@mui/material';
 import axios from 'axios';
 import '../App.css';
 import {useNavigate} from 'react-router-dom';
 
 function CompetitionPage()
 {
+    const PaperStyle = {
+                backgroundColor: '#f1f7fa',
+                padding: '10px',
+                margin: '20px 10px 0px 10px',
+                borderRadius: 18,
+                width: '100%',
+                textAlign:'center'
+            }
+    const PaperStyleJoined = {
+            backgroundColor: 'greenyellow',
+            padding: '10px',
+            margin: '20px 10px 0px 10px',
+            borderRadius: 18,
+            width: '100%',
+            textAlign:'center'
+        }
+    const PaperStyleNotJoined = {
+                backgroundColor: 'tomato',
+                padding: '10px',
+                margin: '20px 10px 0px 10px',
+                borderRadius: 18,
+                width: '100%',
+                textAlign:'center'
+            }
+        const ButtonStyle = {
+            color: 'cadetblue'
+        }
     const [data, setData] = useState([]);
     const navigate = useNavigate();
-    const logged_user = localStorage.getItem("logged_user");
-    const Username = JSON.parse(logged_user)["Username"]
+    const logged_user = JSON.parse(localStorage.getItem('logged_user'));
     const goSpecificComp =(Name) =>{
-            console.log("ecco il nome: " + Name);
             var dynamic_path = "/competition/"+Name;
             navigate(dynamic_path);
 
@@ -22,40 +48,39 @@ function CompetitionPage()
               .then(response => {
                 // Converti i documenti MongoDB in JSON
                 const jsonData = response.data.map(document => JSON.parse(JSON.stringify(document)));
-                console.log(jsonData);
                 setData(jsonData);
-                console.log("ciaooo" + data)
+
               })
               .catch(error => console.error('Errore nella richiesta GET:', error));
         }, []);
-            console.log(data)
-           /* console.log(data[0].Users)*/
     function giveClass(value)
     {
-        if(value[Username]>=0)
+        let i = 0;
+        const iter = logged_user.competitions;
+        while(iter[i]!=null)
         {
-            return "competitionLinkTrue"
+            if(iter[i].name == value)
+            {
+                return PaperStyleJoined;
+            }
+            i=i+1;
         }
-        else
-        {
-            return "competitionLinkFalse"
-        }
-
+        return PaperStyleNotJoined;
     }
-    console.log("ciaooo" + data);
-    console.log("okkkkkkk");
     return(
 
         <Container className= "competitionPage">
             <Row>
-                <h1>Competitions</h1>
+                <Paper elevation={2} style={PaperStyle}>
+                    <Typography variant="h3" >Competitions</Typography>
+                </Paper>
             </Row>
             <Row>
                 {data.map(item => (
                     <Row>
-                        <Button className ="competitionLinkFalse" onClick={()=>{goSpecificComp(item.name)}}>
-                            <h1>{item.name}</h1>
-                        </Button>
+                        <Paper elevation={2} style={giveClass(item.name)} onClick={()=>{goSpecificComp(item.name)}}>
+                            <Typography variant="h5" >{item.name}</Typography>
+                        </Paper>
                     </Row>
                 ))}
             </Row>
