@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -65,11 +66,13 @@ public class AdminBookDAO {
             new_field_int = changes.getInteger("new_field");
             index = 0;
         } else if(type_of_change_request.equals("tags") || type_of_change_request.equals("authors")) {
-          new_field_list =  (List<String>) changes.get("type_of_change_request");
+          new_field_list =  (List<String>) changes.get("new_field");
           index = 1;
 
-        } else
-            new_field_String = changes.getString("type_of_change_request");
+        } else {
+            new_field_String = changes.getString("new_field");
+            index = 2;
+        }
         long id_to_use = Long.parseLong(changes.getString("id_to_use"));
         MongoCollection<Document> collection = MongoConfig.getCollection("Books");
         Document book = collection.find(eq("_id", id_to_use)).first();
