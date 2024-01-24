@@ -33,6 +33,7 @@ import BanUnbanProfile from './pages/admin/BanUnbanProfile';
 import PopularCompetitionBlock from './components/PopularCompetitionBlock';
 import PostDetails from './pages/PostDetails';
 import AddBook from './pages/admin/AddBook'; 
+import UpdateBook from './pages/admin/UpdateBook';
 
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -104,6 +105,10 @@ const App = () => {
                                       <Route
                                         path="/addBook"
                                         element={<AddBook/>}
+                                    />
+                                       <Route
+                                        path="/updateBook/:id"
+                                        element={<UpdateBook/>}
                                     />
                                 </Routes>
                             </AdminLayout>) : (

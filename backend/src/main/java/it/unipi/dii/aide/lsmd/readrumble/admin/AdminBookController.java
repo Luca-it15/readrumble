@@ -1,6 +1,8 @@
 package it.unipi.dii.aide.lsmd.readrumble.admin;
 
 import it.unipi.dii.aide.lsmd.readrumble.book.Book;
+import org.bson.Document;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,11 +16,17 @@ public class AdminBookController {
         }
 
         @PostMapping("/add")
-        public String addBook(@RequestBody Book book) {
+        public ResponseEntity<String> addBook(@RequestBody Book book) {
             return adminBookDAO.addBook(book);
         }
         @DeleteMapping("/remove/{id}")
-        public String removeBook(@PathVariable long id) {
+        public ResponseEntity<String> removeBook(@PathVariable long id) {
             return adminBookDAO.removeBook(id);
         }
+
+        @PostMapping("/update")
+            public ResponseEntity<String> updateBook(@RequestBody Document changes) {
+                return adminBookDAO.updateBook(changes);
+            }
+
 }
