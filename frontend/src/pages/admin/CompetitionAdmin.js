@@ -1,11 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Container, Row, Col} from 'react-bootstrap';
+import { Button, Row,Form,Col } from 'react-bootstrap';
+import {Container, Grid, Typography, Paper} from '@mui/material';
 import axios from 'axios';
 import '../../App.css';
 import {useNavigate} from 'react-router-dom';
 
 function CompetitionAdmin()
 {
+    const PaperStyle = {
+                    backgroundColor: '#f1f7fa',
+                    padding: '10px',
+                    margin: '20px 10px 0px 10px',
+                    borderRadius: 18,
+                    width: '100%',
+                    textAlign:'center'
+                }
+        const PaperStyleAdmin = {
+                backgroundColor: 'royalblue',
+                padding: '10px',
+                margin: '20px 10px 0px 10px',
+                borderRadius: 18,
+                width: '100%',
+                textAlign:'center'
+            }
+            const ButtonStyle = {
+                color: 'cadetblue'
+            }
     const [data, setData] = useState([]);
     const [dataForBuild, setDataForBuild] = useState([]);
     const [isLoad, SIL] = useState(false);
@@ -18,7 +38,7 @@ function CompetitionAdmin()
 
       const handleChange = (event) => {
         const { name, value } = event.target;
-        let dataModified = data.filter(obj => obj.Name.includes(value));
+        let dataModified = data.filter(obj => obj.name.includes(value));
         setDataForBuild(dataModified);
         ListCreator();
       };
@@ -34,39 +54,24 @@ function CompetitionAdmin()
               .then(response => {
                 // Converti i documenti MongoDB in JSON
                 const jsonData = response.data.map(document => JSON.parse(JSON.stringify(document)));
-
                 setData(jsonData);
                 setDataForBuild(jsonData);
                 SIL(true);
-                console.log(data[0]['name']);
-                console.log("Ciaooo");
-              })
+              }) //ERRORE !
               .catch(error => console.error('Errore nella richiesta GET:', error));
 
         }, []);
 
-    function giveClass(value)
-    {
-        if(value[Username]>=0)
-        {
-            return "competitionLinkTrue"
-        }
-        else
-        {
-            return "competitionLinkFalse"
-        }
-
-    }
     function ListCreator()
     {
         return(
-        dataForBuild.map(item => (
+            dataForBuild.map(item => (
             <Row>
-                <Button className={giveClass(item.Users)} onClick={()=>{goSpecificComp(item.name)}}>
-                    <h1>{item.name}</h1>
-                </Button>
+                <Paper elevation={2} style={PaperStyleAdmin} onClick={()=>{goSpecificComp(item.name)}}>
+                    <Typography variant="h5" >{item.name}</Typography>
+                </Paper>
             </Row>
-        ))
+            ))
         )
     }
     return(

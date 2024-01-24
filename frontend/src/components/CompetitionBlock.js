@@ -1,38 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Container, Row, Col } from 'react-bootstrap';
+import { Button, Row, Col } from 'react-bootstrap';
+import {Container, Grid, Typography, Paper} from '@mui/material';
 import axios from 'axios';
 import {useNavigate, Route, Routes, Router} from 'react-router-dom';
 import CompetitionSpec from './CompetitionSpecification';
 import LoginForm from '../pages/Login';
 import '../App.css';
 function CompetitionProfBlock({user}) {
-  const [data, setData] = useState([]);
+    //this is the block that contains the first three competition in which you partecipate
+
+        const PaperStyle = {
+            backgroundColor: '#f1f7fa',
+            padding: '10px',
+            margin: '20px 10px 0px 10px',
+            borderRadius: 18,
+            width: '100%',
+            textAlign:'center'
+        }
+        const ButtonStyle = {
+            color: 'cadetblue'
+        }
+  const [competitions, setCompetitions] = useState([]);
+  const [Username,setUsername] = useState('');
   const navigate = useNavigate();
+  console.log("ciao user: ");
   const logged_user = JSON.parse(localStorage.getItem("logged_user"));
-  var whichUser =  logged_user["Username"];
-  if(whichUser == user)
-  {
-    const Username = logged_user["Username"];
-  }
-  else
-  {
-    if(user == null | user == '')
-    {
-        const Username = logged_user["Username"];
-    }
-    else
-    {
-        const Username = user;
-    }
 
-  }
-  const Username = logged_user["Username"];
-  console.log(Username);
 
-  const goComp = () =>
-      {
-          navigate('/competitions');
-      }
+    const goComp = () =>
+    {
+        navigate("/competitions");
+    }
 
     const goSpecificComp =(Name) =>{
         console.log("ecco il nome: " + Name);
@@ -40,20 +38,28 @@ function CompetitionProfBlock({user}) {
         navigate(dynamic_path);
 
     }
+    function drawComp()
+    {
+        const competitions_partecipated = logged_user["competitions"];
+        const competitions_to_store = [];
+        let i = 0;
+        while(competitions_partecipated[i]!=null & i<3)
+        {
+            competitions_to_store[i]=competitions_partecipated[i];
+            i = i+1;
+        }
+        setCompetitions(competitions_to_store)
+    }
+
+
     useEffect(() => {
-        // Effettua la richiesta GET al tuo backend
-        axios.post('http://localhost:8080/api/competition/retrieve/personal',Username)
-          .then(response => {
-            // Converti i documenti MongoDB in JSON
-            const jsonData = response.data.map(document => JSON.parse(JSON.stringify(document)));
-            console.log(jsonData);
-            setData(jsonData);
-          })
-          .catch(error => console.error('Errore nella richiesta GET:', error));
+
+             drawComp();
+
     }, []); // L'array vuoto come dipendenza indica che questo effetto viene eseguito solo una volta al montaggio del componente
 
 
-  useEffect(() => {
+  /*useEffect(() => {
     // Effettua la richiesta GET al tuo backend
     axios.get('http://localhost:8080/api/competition/retrieve')
       .then(response => {
@@ -63,23 +69,23 @@ function CompetitionProfBlock({user}) {
       })
       .catch(error => console.error('Errore nella richiesta GET:', error));
   }, []); // L'array vuoto come dipendenza indica che questo effetto viene eseguito solo una volta al montaggio del componente
-
+*/
   return (
+
     <Container>
 
-      <Row>
-        {data.map(item => (
-            <Row>
-              <Button className="compButton" onClick={()=>{goSpecificComp(item.Name)}}>
-                <p>{item.Name}</p>
-                {/* Aggiungi altri campi del documento se necessario */}
-              </Button>
-            </Row>
-        ))}
-      </Row>
-      <Row>
-        <Button className="compMoreComp" onClick={goComp}>More Competitions</Button>
-      </Row>
+          <Row>
+            {competitions.map(item => (
+                <Paper elevation={2} style={PaperStyle} onClick={()=>{goSpecificComp(item.name)}}>
+                    <Typography variant="h5" >{item.name}</Typography>
+                </Paper>
+            ))}
+          </Row>
+          <Row>
+            <Paper elevation={2} style={PaperStyle} onClick={goComp} >
+                <Typography variant="h5" style={ButtonStyle}>More Competitions</Typography>
+            </Paper>
+          </Row>
     </Container>
   );
 };

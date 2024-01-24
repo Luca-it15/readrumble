@@ -19,7 +19,7 @@ public class CompetitionController {
     }
     @PostMapping("/join")
     public ResponseEntity<String> joinCompetition(@RequestBody Document userDoc) {
-        return competitionDAO.makeUserJoinCompetition(userDoc);
+        return competitionDAO.userJoinsCompetition(userDoc);
 
     }
 
@@ -42,8 +42,6 @@ public class CompetitionController {
     public Document getCompetitionInfo(@RequestBody Document docx)
     {
         return competitionDAO.goCompetitionInformation(docx);
-
-
     }
 
     /**

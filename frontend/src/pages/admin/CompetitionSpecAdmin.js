@@ -1,15 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, Button, Container, Row, Col } from 'react-bootstrap';
+import { Alert, Button, Row, Col } from 'react-bootstrap';
+import {Container, Grid, Typography, Paper} from '@mui/material';
 import axios from 'axios';
 import {useNavigate, useParams} from 'react-router-dom';
 import '../../App.css'
 
 function CompetitionSpecAdmin(){
-
+        const PaperStyle = {
+                    backgroundColor: '#f1f7fa',
+                    padding: '10px',
+                    margin: '20px 10px 0px 10px',
+                    borderRadius: 18,
+                    width: '100%',
+                    textAlign:'center'
+                }
     const [load,setLoad] = useState(false);
     var isJoined = false;
     const { name } = useParams();
     const navigate = useNavigate();
+    const [rank,setRank] = useState('');
     const [deleteStatus, setDeleteStatus] = useState({
             message: '',
             variant: 'success', // o 'danger' in caso di errore
@@ -18,23 +27,14 @@ function CompetitionSpecAdmin(){
     const [isJoin, setJoin] = useState();
     const username = JSON.parse(localStorage.getItem('logged_user'));
     var usernameToAdd = username["Username"];
-    function BuildRank()
+
+
+    function setThings(value)
     {
-        const rank_div = document.getElementById("rank");
-        rank_div.innerHTML = null;
-        console.log("wwwww " +usernameToAdd);
-        let i = 0;
-        const keys =data.Users;
-        console.log(keys);
-        /*while(keys[i] != null && i != 10)
-        {
-            console.log(keys[i]);
-            rank_div.innerHTML += '<div class="row"><div class="col"><h3>'+keys[i]+'</h3></div><div class="col"><h3>'+data.Users[keys[i]]+'</h3></div></div>';
-            i=i+1;
-        }*/
+        setRank(value.rank)
+        setJoin(value.isIn === "YES" ? true:false);
+        setLoad(true);
     }
-
-
     function call()
     {
         axios.post('http://localhost:8080/api/competition/getcompinfo',{
@@ -43,9 +43,7 @@ function CompetitionSpecAdmin(){
                 })
                 .then(response => {
                     setData(response.data);
-                    console.log("dati settati");
-                    setJoin(response.data.isIn === "YES" ? true:false);
-                    setLoad(true);
+                    setThings(response.data);
                  })
                  .catch(error => console.error('Errore nella richiesta POST:', error));
     }
@@ -61,37 +59,58 @@ function CompetitionSpecAdmin(){
                     setDeleteStatus({message:response.data,variant:'success'});
         })
         setTimeout(function () {setDeleteStatus({message:"",variant:'success'});},4000);
-        BuildRank();
     }
     return(
-    <Container className="CompCon">
-        <Row>
-            <h1> {data.Name} </h1>
-        </Row>
-        <Row>
-            <h2> The tag is : {data.Tag} </h2>
-        </Row>
-        <Row>
-            <h3>Rank</h3>
-            {load ? BuildRank(0) : "not loaded"}
-            <div id="rank"></div>
-        </Row>
-        <Row>
-            <Button onClick={()=>{deleteCompetition(data.Name)}}> <h3>Delete Competition</h3> </Button>
-        </Row>
-        <Row>
-            {deleteStatus.message && (
-                <Alert variant={deleteStatus.variant}>
-                    {deleteStatus.message}
-                </Alert>
-            )}
-        </Row>
-        <Row>
-            <Button onClick={()=>{navigate("/admin_competition")}}> Back To Competitions </Button>
-        </Row>
-
-    </Container>
-
+    <Container>
+                <Row>
+                    <Paper elevation={2} style={PaperStyle}>
+                        <Typography variant="h2" >{data.name}</Typography>
+                    </Paper>
+                </Row>
+                <Row>
+                    <Paper elevation={2} style={PaperStyle}>
+                        <Typography variant="h3" >{data.tag}</Typography>
+                    </Paper>
+                </Row>
+                <Row>
+                    <Paper elevation={2} style={PaperStyle}>
+                        <Typography variant="h4" >TOP TEN</Typography>
+                    </Paper>
+                </Row>
+                  <Row>
+                    {load ? (rank.map(item => (
+                        <Row>
+                            <Col>
+                                <Paper elevation={2} style={PaperStyle}>
+                                    <Typography variant="h5" >{item.username}</Typography>
+                                </Paper>
+                            </Col>
+                            <Col>
+                                <Paper elevation={2} style={PaperStyle}>
+                                    <Typography variant="h5" > {item.tot_pages}</Typography>
+                                </Paper>
+                            </Col>
+                        </Row>
+                    ))):"Not Loaded"}
+                  </Row>
+                  <Row>
+                    <Paper elevation={2} style={PaperStyle} onClick={()=>{deleteCompetition(data.name)}}>
+                        <Typography variant="h5">Delete Competition</Typography>
+                    </Paper>
+                  </Row>
+                    <Row>
+                        {deleteStatus.message && (
+                            <Alert variant={deleteStatus.variant}>
+                                {deleteStatus.message}
+                            </Alert>
+                        )}
+                    </Row>
+                  <Row>
+                        <Paper elevation={2} style={PaperStyle} onClick={()=>{navigate("/admin_competition")}}>
+                                <Typography variant="h5">Back to Competitions</Typography>
+                        </Paper>
+                  </Row>
+        </Container>
     )
 }
 
