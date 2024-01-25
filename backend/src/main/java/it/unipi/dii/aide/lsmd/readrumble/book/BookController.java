@@ -132,7 +132,7 @@ public class BookController {
      * @return details of the book
      */
     @GetMapping("/currentlyReadingBooks/{username}")
-    public List<currentlyReadingBook> getCurrentlyReadingBooks(@PathVariable String username) {
+    public List<ActiveBookDTO> getCurrentlyReadingBooks(@PathVariable String username) {
         System.out.println("Richiesta libri attualmente letti da: " + username);
 
         MongoCollection<Document> ActiveBooksCollection = MongoConfig.getCollection("ActiveBooks");
@@ -140,24 +140,24 @@ public class BookController {
         List<Document> BookDocuments = ActiveBooksCollection.aggregate(List.of(
                 new Document("$match", new Document("username", username)),
                 new Document("$sort", new Document("year", -1).append("month", -1)),
+                new Document("$limit", 1),
                 new Document("$project", new Document("books", new Document("$filter", new Document("input", "$books").append("as", "book").append("cond", new Document("$eq", List.of("$$book.state", 0)))))),
                 new Document("$unwind", "$books"),
-                new Document("$project", new Document("id", "$books.book_id").append("title", "$books.book_title").append("bookmark", "$books.bookmark").append("num_pages", "$books.num_pages")),
-                new Document("$limit", 10)
+                new Document("$project", new Document("id", "$books.book_id").append("title", "$books.book_title").append("tags", "$books.tags").append("bookmark", "$books.bookmark").append("num_pages", "$books.num_pages"))
         )).into(new ArrayList<>());
 
         if (BookDocuments.isEmpty()) {
             System.out.println("User never read a book");
             return null;
         } else {
-            List<currentlyReadingBook> books = new ArrayList<>();
+            List<ActiveBookDTO> books = new ArrayList<>();
             for (Document doc : BookDocuments) {
-                books.add(new currentlyReadingBook(
+                books.add(new ActiveBookDTO(
                         doc.getLong("id"),
                         doc.getString("title"),
+                        doc.getList("tags", String.class),
                         doc.getInteger("bookmark"),
-                        doc.getInteger("num_pages")
-                ));
+                        doc.getInteger("num_pages")));
             }
             System.out.println(books);
 
@@ -180,7 +180,7 @@ public class BookController {
      * This method adds a book to the wishlist of a user
      *
      * @param username of the user
-     * @param bookId of the book
+     * @param bookId   of the book
      * @return response
      */
     @PostMapping("/addToWishlist/{username}/{bookId}")
@@ -231,4 +231,50 @@ public class BookController {
         return bookDAO.getPagesReadByTag(username);
     }
 
+    /**
+     * This method returns the suggested books for a user, based on the books that his friends like.
+     * If the majority of the friends like a book, and the user does not like it, then the book is suggested.
+     *
+     * @param username the username of the user
+     * @return the list of suggested books
+     */
+    @GetMapping("/suggestedBooks/{username}")
+    List<LightBookDTO> getSuggestedBooks(@PathVariable String username) {
+        return bookDAO.getSuggestedBooks(username);
+    }
+
+    /**
+     * This method removes a book from the favorite books of a user
+     *
+     * @param username the username of the user
+     * @param book     the id of the book
+     * @return a ResponseEntity with the result of the operation
+     */
+    @DeleteMapping("/removeFavoriteBook/{username}/{book}")
+    public ResponseEntity<String> removeFavoriteBook(@PathVariable String username, @PathVariable String book) {
+        return bookDAO.removeFavoriteBook(username, book);
+    }
+
+    /**
+     * This method adds a book to the favorite books of a user
+     *
+     * @param username the username of the user
+     * @param book     the id of the book
+     * @return a ResponseEntity with the result of the operation
+     */
+    @PostMapping("/addFavoriteBook/{username}/{book}")
+    public ResponseEntity<String> addFavoriteBook(@PathVariable String username, @PathVariable String book) {
+        return bookDAO.addFavoriteBook(username, book);
+    }
+
+    /**
+     * This method returns the favorite books of a user
+     *
+     * @param username the username of the user
+     * @return the list of favorite books
+     */
+    @GetMapping("/favoriteBooks/{username}")
+    public List<LightBookDTO> getFavoriteBooks(@PathVariable String username) {
+        return bookDAO.getFavoriteBooks(username);
+    }
 }

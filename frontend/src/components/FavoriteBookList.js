@@ -33,11 +33,11 @@ function FavoriteBookList({user}) {
         }
 
         try {
-            const response = await axios.get(`http://localhost:8080/api/favoriteBooks/${user}`);
+            const response = await axios.get(`http://localhost:8080/api/book/favoriteBooks/${user}`);
 
             // Returns book.id and book.title
             setBooks(response.data.map(book => ({
-                id: book.id.replace(/"/g, ''),
+                id: book.id,
                 title: book.title.replace(/"/g, '')
             })));
 
@@ -59,20 +59,15 @@ function FavoriteBookList({user}) {
     };
 
     async function removeFavorite(book) {
-        console.log("Favorites before: " + currentUser["favoriteBooks"])
-        console.log("Removing " + book.title + " from favorites of " + currentUser["_id"] + "...");
-
-        // Removea book from favorite list in database
-        await axios.delete(`http://localhost:8080/api/removeFavoriteBook/${currentUser["_id"]}/${book.id}`);
+        await axios.delete(`http://localhost:8080/api/book/removeFavoriteBook/${currentUser["_id"]}/${book.id}`);
 
         // Remove book from favorite list in local storage
-        setBooks(books.filter(item => item.id !== book.id && item.title !== book.title));
-        currentUser['favoriteBooks'] = books;
+        const updatedFavorites = books.filter(item => item.id !== book.id);
+
+        setBooks(updatedFavorites);
+        currentUser['favoriteBooks'] = updatedFavorites;
 
         localStorage.setItem('logged_user', JSON.stringify(currentUser));
-
-        console.log("Removed " + book.title + " from favorites of " + currentUser["_id"]);
-        console.log("Favorites after: " + JSON.parse(currentUser["favoriteBooks"]))
     }
 
     function seeDetails(id) {

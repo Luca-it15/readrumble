@@ -6,6 +6,7 @@ public class LightBookDTO {
 
     public LightBookDTO(long id, String title) {
         this.id = id;
+
         this.title = title;
     }
 
@@ -15,5 +16,13 @@ public class LightBookDTO {
 
     public String getTitle() {
         return title;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
