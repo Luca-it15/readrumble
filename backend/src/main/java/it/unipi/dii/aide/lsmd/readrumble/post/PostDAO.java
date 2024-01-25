@@ -5,12 +5,14 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Sorts;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
+import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
 import it.unipi.dii.aide.lsmd.readrumble.library.LibraryBookDAO;
 import it.unipi.dii.aide.lsmd.readrumble.user.UserDTO;
 import it.unipi.dii.aide.lsmd.readrumble.utils.Status;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.print.Doc;
@@ -23,10 +25,35 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import redis.clients.jedis.Jedis;
 
 public class PostDAO {
 
-    private static int num_post = 0;
+
+
+      public ResponseEntity<String> addPostsRedis(Post post) {
+
+                 Jedis jedis = RedisConfig.getSession();
+
+                  // Creazione della chiave personalizzata
+                  String dateAdded = (post.getDate_added()).toString();
+                  String username = post.getUsername();
+                  String bookId = "" + (post.getBook_id());
+                  String ranking = "" + post.getRating();
+                  String bookmark = "" + post.getBookmark();
+                  String pagesRead = "" + post.getPages_read();
+                  String key = "post:" + dateAdded + ":" + username + ":" + bookId + ":" + ranking + ":" + bookmark + ":" + pagesRead;
+                  System.out.println("ho aggiunto il post con chiave: " + key);
+                  // Salvataggio dell'oggetto nel database Redis
+                  jedis.hset(key, "descrizione", "quasi finito");
+                  jedis.hset(key, "tags", "thriller, mistero");
+
+                  // Chiusura della connessione
+                  jedis.close();
+
+          return ResponseEntity.ok("Post added: " + key);
+
+      }
 
     public String addPost(Post post) {
         String response = null;
@@ -58,8 +85,7 @@ public class PostDAO {
                 Instant instant = Instant.now();
                 long timestamp = instant.toEpochMilli();
 
-                Document new_doc = new Document("_id", timestamp)
-                        .append("book_id", post.getBook_id())
+                Document new_doc = new Document("book_id", post.getBook_id())
                         .append("rating", post.getRating())
                         .append("review_text", post.getReview_text())
                         .append("date_added", post.getDate_added())
@@ -124,7 +150,7 @@ public class PostDAO {
         // Chiudi il client MongoDB
         return posts;
     }
-    public Post postDetails(long id) {
+    public Post postDetails(ObjectId id) {
         MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
         Document query = new Document("_id", id);
         Document doc = collection.find(query).first();
@@ -138,7 +164,8 @@ public class PostDAO {
                      doc.getString("book_title"),
                      doc.getString("username"),
                      tags,
-                     doc.getInteger("bookmark")
+                     doc.getInteger("bookmark"),
+                     doc.getInteger("pages_read")
                      );
 
     }
@@ -167,7 +194,7 @@ public class PostDAO {
         return reviews;
     }
 
-    public String removePost(long id) {
+    public String removePost( ObjectId id) {
         MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
         Document query = new Document("_id", id);
         Document target = collection.find(query).first();

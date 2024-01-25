@@ -6,6 +6,8 @@ const BookSelector = ({ handleChangeBookTitle }) => {
     const [options, setOptions] = useState([]);
     const [selectedOption, setSelectedOption] = useState(null);
     const [book_id, setBook_id] = useState([]);
+    const [tags, setTags] = useState([]); 
+    const [bookmark, setBookmark] = useState(0); 
 
     let storedData = localStorage.getItem('logged_user');
 
@@ -39,8 +41,20 @@ const BookSelector = ({ handleChangeBookTitle }) => {
                     value: book.book_id,
                     label: book.book_title,
                 }));
-                setOptions(bookTitles);
-                setBook_id(book_ids); 
+
+                 const bookTags = response.data.map((book) => ({
+                value: book.book_tags,
+                label: book.book_title,
+            }));
+            const bookmark = response.data.map((book) => ({
+                value: book.bookmark,
+                label: book.book_title,
+            }));
+
+            setOptions(bookTitles);
+            setBook_id(book_ids); 
+            setTags(bookTags); 
+            setBookmark(bookmark); 
             })
             .catch((error) =>
                 console.error('Errore durante il recupero dei titoli dei libri:', error)
@@ -54,14 +68,26 @@ const BookSelector = ({ handleChangeBookTitle }) => {
                 value: book.book_id,
                 label: book.book_title,
             }));
+
+            const bookTags = bookData.map((book) => ({
+                value: book.book_tags,
+                label: book.book_title,
+            }));
+            const bookmark = bookData.map((book) => ({
+                value: book.bookmark,
+                label: book.book_title,
+            }));
+
             setOptions(bookTitles);
             setBook_id(book_ids); 
+            setTags(bookTags); 
+            setBookmark(bookmark); 
         }
     }, []);
 
     const handleInputChange = (inputValue) => {
         setSelectedOption(inputValue);
-        handleChangeBookTitle(inputValue.value, book_id.find(book => book.label === inputValue.value).value);
+        handleChangeBookTitle(inputValue.value, book_id.find(book => book.label === inputValue.value).value, tags.find(book => book.label === inputValue.value).value,  bookmark.find(book => book.label === inputValue.value).value);
     };
 
     return (

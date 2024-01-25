@@ -6,7 +6,7 @@ import {Divider, Link, List, ListItem, Paper} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {blue} from "@mui/material/colors";
 
-function SuggestFriends({user}) {
+function SuggestedFriends({user}) {
     const navigate = useNavigate();
     const [suggestFriends, setSuggestFriends] = useState([]);
     const [displayCount, setDisplayCount] = useState(10);
@@ -95,4 +95,4 @@ function SuggestFriends({user}) {
     );
 }
 
-export default SuggestFriends;
+export default SuggestedFriends;

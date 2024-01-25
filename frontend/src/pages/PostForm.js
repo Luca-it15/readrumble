@@ -46,6 +46,8 @@ export default function PostForm() {
     const [validationError, setValidationError] = useState('');
     const [selectedTitle, setSelectedTitle] = useState('');
     const [book_id, setBook_id] = useState([]);
+    const [tags, setTags] = useState([]); 
+    const [old_bookmark, setOldBookmark] = useState(0); 
 
     const [formData, setFormData] = useState({
         _id: 0,
@@ -55,24 +57,38 @@ export default function PostForm() {
         date_added: ' ',
         book_title: '', 
         username: currentUser['_id'], 
-        bookmark: 0
+        bookmark: 0, 
+        pages_read: 0
     });
     
     const handleChange = (e) => {
         const {name, value} = e.target;
+        let num_pages = 0; 
+        if(name === 'bookmark') {
+         num_pages = value - parseInt(old_bookmark); 
         setFormData({
             ...formData,
-            [name]: value,
+            ['pages_read']: num_pages,
+            ['bookmark']: parseInt(value)
         });
+      } else {
+        setFormData({
+            ...formData,
+            [name]: value
+        });
+      }
     };
 
-    const handleChangeBookTitle = (selectedTitle, selectedBook_id) => {
+    const handleChangeBookTitle = (selectedTitle, selectedBook_id, selectedTags, selectedBookmark) => {
         setSelectedTitle(selectedTitle);
-        setBook_id(selectedBook_id)
+        setBook_id(selectedBook_id); 
+        setOldBookmark(parseInt(selectedBookmark)); 
+        setTags(selectedTags); 
         setFormData({
             ...formData,
             book_title: selectedTitle,
-            book_id: selectedBook_id
+            book_id: selectedBook_id,
+            tags: selectedTags
         }); 
     }
 
@@ -100,6 +116,24 @@ export default function PostForm() {
         }
 
         try {
+
+            let arrayPostJson = localStorage.getItem('last_posts');
+            if(arrayPostJson != null) {
+                let arrayPost = JSON.parse(arrayPostJson);
+
+
+             arrayPost.push(formData);
+
+
+             let arrayPostUpdate = JSON.stringify(arrayPost);
+             localStorage.setItem('last_post', arrayPostUpdate);
+            } else {
+                let arrayPost = [formData];
+
+               let arrayPostJson = JSON.stringify(arrayPost);
+
+               localStorage.setItem('last_posts', arrayPostJson);
+            }
             // Invia i dati al server usando Axios
             const response = await axios.post('http://localhost:8080/api/post/submit', formData);
             setLoginStatus({message: response.data, variant: 'success'});

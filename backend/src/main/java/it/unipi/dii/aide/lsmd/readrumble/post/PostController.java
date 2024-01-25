@@ -3,6 +3,8 @@ package it.unipi.dii.aide.lsmd.readrumble.post;
 
 import it.unipi.dii.aide.lsmd.readrumble.user.UserDTO;
 import org.bson.Document;
+import org.bson.types.ObjectId;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,8 +28,8 @@ public class PostController {
      * return the response
      */
     @PostMapping("/submit")
-    public String submitPost(@RequestBody Post post) {
-      return postDAO.addPost(post);
+    public ResponseEntity<String> submitPost(@RequestBody Post post) {
+      return postDAO.addPostsRedis(post);
     }
 
     /**
@@ -43,7 +45,7 @@ public class PostController {
         return postDAO.allPostsUser(parametro, user);
     }
     @GetMapping("/details/{id}")
-    public Post getPostDetails(@PathVariable long id) {
+    public Post getPostDetails(@PathVariable ObjectId id) {
         return postDAO.postDetails(id);
     }
     @GetMapping("/all")
@@ -52,7 +54,7 @@ public class PostController {
     }
 
     @DeleteMapping("/remove/{id}")
-    public String removePostUser(@PathVariable long id) {
+    public String removePostUser(@PathVariable ObjectId id) {
         return postDAO.removePost(id);
     }
 

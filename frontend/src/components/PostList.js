@@ -21,6 +21,7 @@ const PostsList = (user, username, book_id, size, all, path) => {
     useEffect(() => {
 
         if (user.path === 0) {
+            //all post
             axios.get(`http://localhost:8080/api/post/all`)
                 .then(response => {
                     setPosts(response.data);
@@ -29,14 +30,31 @@ const PostsList = (user, username, book_id, size, all, path) => {
                     console.error('There was an error!', error);
                 });
         } else if(user.path === 1){
+
+            //user post
             axios.get(`http://localhost:8080/api/post/all/${parameter1}/${parameter2}`)
                 .then(response => {
-                    setPosts(response.data);
+
+                
+                let postLocalStorageJson = localStorage.getItem('last_posts');
+                if(postLocalStorageJson != null) {
+                 let postLocalStorage = JSON.parse(postLocalStorageJson);
+
+                
+                 let postMongoDB = response.data;
+
+              
+                 let totalPost = [...postLocalStorage, ...postMongoDB];
+                    setPosts(totalPost);
+                 }
+                 else 
+                  setPosts(response.data); 
                 })
                 .catch(error => {
                     console.error('There was an error!', error);
                 });
         } else {
+            //search post
             axios.get(`http://localhost:8080/api/search/posts/${parameter1}`)
                 .then(response => {
                     setPosts(response.data);
