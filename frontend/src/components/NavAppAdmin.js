@@ -4,7 +4,7 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from '@mui/material';
-import {blue, red} from "@mui/material/colors";
+import {blue, orange, red} from "@mui/material/colors";
 import logo from '../img/logoRR.png';
 import Button from '@mui/material-next/Button';
 
@@ -26,9 +26,19 @@ const NavAppAdmin = () => {
         <AppBar position="sticky" sx={{backgroundColor: '#063156'}}>
             <Toolbar sx={{justifyContent: 'center'}}>
                 <img src={logo} alt="Logo" width="60" height="60" className="d-inline-block me-2"/>
-                <Typography variant="h4" sx={{color: '#0090FF'}}>R</Typography>
+                <Typography variant="h4" sx={{
+                    fontWeight: 'bold',
+                    background: "linear-gradient(to bottom," + blue[200] + ", #0080DD 70%)",
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent'
+                }}>R</Typography>
                 <Typography variant="h4">ead</Typography>
-                <Typography variant="h4" sx={{color: '#FE262F'}}>R</Typography>
+                <Typography variant="h4" sx={{
+                    fontWeight: 'bold',
+                    background: "linear-gradient(to bottom," + orange[300] + ", #FE262F 70%)",
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent'
+                }}>R</Typography>
                 <Typography variant="h4" sx={{flexGrow: 1}}>umble</Typography>
                 <Typography variant="h5" sx={{flexGrow: 1}}>
                     Administrator
