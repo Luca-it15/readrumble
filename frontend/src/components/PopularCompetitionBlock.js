@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import {Container, Grid, Typography, Paper, Link, Divider} from '@mui/material';
+import {Grid, Typography, Paper, Link, Divider} from '@mui/material';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 import '../App.css';
 import Button from '@mui/material-next/Button';
-import {blue, green} from "@mui/material/colors";
+import {blue, red} from "@mui/material/colors";
 
 function PopularCompetitionBlock() {
     const PaperStyle = {
@@ -18,6 +18,7 @@ function PopularCompetitionBlock() {
 
     const [data, setData] = useState([]);
     const navigate = useNavigate();
+    const [displayCount, setDisplayCount] = useState(3);
 // questo blocco deve mostrarmi le competitizioni più gettonate, tipo 10
     const goComp = () => {
         navigate('/competitions');
@@ -29,6 +30,9 @@ function PopularCompetitionBlock() {
         navigate(dynamic_path);
 
     }
+
+    /*
+    //TODO: Massi, mi dice che questa non la usi
 
     function SortUsers(us) {
         const sortedObject = {};
@@ -48,7 +52,7 @@ function PopularCompetitionBlock() {
                 {keysArray[2]}{valuesArray[2]}
             </>
         )
-    }
+    }*/
 
     function createRank(value) {
         const creator = []
@@ -78,12 +82,20 @@ function PopularCompetitionBlock() {
             .catch(error => console.error('Errore nella richiesta GET:', error));
     }, []); // L'array vuoto come dipendenza indica che questo effetto viene eseguito solo una volta al montaggio del componente
 
+    function loadMoreCompetitions() {
+        setDisplayCount(displayCount + 3);
+    }
+
+    function loadLessCompetitions() {
+        setDisplayCount(3);
+    }
+
     return (
         <Paper sx={{backgroundColor: '#f1f7fa', paddingRight: '16px', margin: '20px 10px 0px 10px', borderRadius: 8,
                 width: '100%', textAlign: 'center'}}>
             <Grid container direction="column" alignItems="center" justifyContent="center">
                 <Typography variant="h5" textAlign='center' sx={{marginTop: '10px', marginBottom: '-10px'}}>Popular competitions</Typography>
-                {data.map(item => (
+                {data.slice(0, displayCount).map((item) => (
                     <Grid item>
                         <Paper elevation={2} style={PaperStyle}>
                             <Link variant="h6" onClick={() => {
@@ -98,11 +110,29 @@ function PopularCompetitionBlock() {
                     </Grid>
                 ))}
 
-                <Button variant="filled" sx={{backgroundColor: blue[400]}}
-                        onClick={goComp}><Typography>More competitions</Typography></Button>
+                {(data.length > 3 && displayCount === 3) ? (
+                    <Button variant="filled" sx={{backgroundColor: blue[200], width: '140px', height: '30px',
+                        margin: '10px', '&:hover': {backgroundColor: blue[100]}}}
+                            onClick={loadMoreCompetitions}><Typography>Show more</Typography>
+                    </Button>
+                ) : (
+                    <>
+                        <Button variant="filled" sx={{backgroundColor: red[200], width: '140px', height: '30px',
+                            margin: '10px', '&:hover': {backgroundColor: red[100]}}} onClick={loadLessCompetitions}>
+                            <Typography>Show less</Typography>
+                        </Button>
+                        <Button variant="filled" sx={{backgroundColor: blue[200], width: '140px', height: '30px',
+                            margin: '10px', '&:hover': {backgroundColor: blue[100]}}} onClick={loadMoreCompetitions}>
+                            <Typography>Show more</Typography>
+                        </Button>
+                    </>
+                )}
+
+                <Button variant="filled" sx={{backgroundColor: blue[600], marginBottom: '10px'}}
+                        onClick={goComp}><Typography>Find other competiitons</Typography></Button>
             </Grid>
         </Paper>
     );
-};
+}
 
 export default PopularCompetitionBlock;

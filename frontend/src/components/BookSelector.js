@@ -96,7 +96,13 @@ const BookSelector = ({ handleChangeBookTitle }) => {
             onChange={handleInputChange}
             options={options}
             isSearchable
-            placeholder="Seleziona un libro..."
+            placeholder="Select a book..."
+            theme={(theme) => ({
+                ...theme,
+                borderRadius: 18
+            })}
+            styles={{ menu: base => ({ ...base, width: '500px'}),
+                control: (base) => ({...base, width: '500px'}),}}
         />
     );
 };
