@@ -64,11 +64,14 @@ public class CompetitionController {
 
         for (String key : keys) {
             String competition = key.split(":")[1]; // Competition name
+            String tag = key.split(":")[3]; // Competition tag
+
             Integer pages = Integer.parseInt(jedis.get(key));
 
             Map<String, String> competitionMap = new HashMap<>();
             competitionMap.put("name", competition);
             competitionMap.put("pages", String.valueOf(pages));
+            competitionMap.put("tag", tag);
             competitions.add(competitionMap);
         }
 

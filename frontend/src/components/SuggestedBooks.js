@@ -6,9 +6,9 @@ import {Divider, Link, List, ListItem, Paper} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {blue} from "@mui/material/colors";
 
-function SuggestBooks({user}) {
+function SuggestedBooks({user}) {
     const navigate = useNavigate();
-    const [suggestBooks, setSuggestBooks] = useState([]);
+    const [suggestedBooks, setSuggestedBooks] = useState([]);
     const [displayCount, setDisplayCount] = useState(10);
 
     const ListStyle = {
@@ -22,19 +22,18 @@ function SuggestBooks({user}) {
 
     const fetchBooks = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/suggestedBooks/${user}`);
+            const response = await axios.get(`http://localhost:8080/api/book/suggestedBooks/${user}`);
 
-            const suggestions = response.data
+            const suggestions = response.data;
             // Returns book.id and book.title
-            setSuggestBooks(suggestions.map(book => ({
-                id: book.id.replace(/"/g, ''),
+            const books = suggestions.map(book => ({
+                id: book.id,
                 title: book.title.replace(/"/g, '')
-            })));
+            }));
 
-            console.log("Suggested books: " + JSON.stringify(response.data));
-
+            setSuggestedBooks(books);
         } catch (error) {
-            console.log(error.response)
+            console.log(error.response);
         }
     };
 
@@ -43,7 +42,7 @@ function SuggestBooks({user}) {
     }, [user]);
 
     const loadAllBooks = () => {
-        setDisplayCount(suggestBooks.length);
+        setDisplayCount(suggestedBooks.length);
     };
 
     const loadLessBooks = () => {
@@ -69,12 +68,12 @@ function SuggestBooks({user}) {
         <Paper sx={PaperStyle}>
             <Typography variant="h5" sx={{textAlign: 'center'}}>Suggestions by users you follow</Typography>
             <List sx={ListStyle}>
-                {suggestBooks.length === 0 ? (
+                {suggestedBooks.length === 0 ? (
                     <ListItem>
                         <Typography>No books to show</Typography>
                     </ListItem>
                 ) : (
-                    Array.isArray(suggestBooks) && suggestBooks.slice(0, displayCount).map((book, index) => (
+                    Array.isArray(suggestedBooks) && suggestedBooks.slice(0, displayCount).map((book, index) => (
                         <React.Fragment key={index}>
                             <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
                                 <Link onClick={() => {
@@ -88,7 +87,7 @@ function SuggestBooks({user}) {
                     ))
                 )}
             </List>
-            {suggestBooks.length > displayCount ? (
+            {suggestedBooks.length > displayCount ? (
                 <Button sx={{
                     backgroundColor: blue[100], marginTop: "10px", height: "30px",
                     '&:hover': {backgroundColor: blue[100]}
@@ -96,7 +95,7 @@ function SuggestBooks({user}) {
                     <Typography>Show all</Typography>
                 </Button>
             ) : (
-                suggestBooks.length > 10 && (
+                suggestedBooks.length > 10 && (
                     <Button sx={{
                         backgroundColor: blue[100], marginTop: "10px", height: "30px",
                         '&:hover': {backgroundColor: blue[100]}
@@ -109,4 +108,4 @@ function SuggestBooks({user}) {
     );
 }
 
-export default SuggestBooks;
+export default SuggestedBooks;

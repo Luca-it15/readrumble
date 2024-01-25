@@ -4,7 +4,7 @@ import Button from '@mui/material-next/Button';
 import Typography from '@mui/material/Typography';
 import {Grid, LinearProgress, Link, Paper} from "@mui/material";
 import {useNavigate} from "react-router-dom";
-import {blue} from "@mui/material/colors";
+import {blue, red} from "@mui/material/colors";
 
 function CurrentlyReading({user}) {
     const [currentlyReading, setCurrentlyReading] = useState([]);
@@ -13,6 +13,15 @@ function CurrentlyReading({user}) {
     const navigate = useNavigate();
 
     const fetchBooks = async () => {
+        if (user === JSON.parse(localStorage.getItem('logged_user'))['_id']) {
+            const currentUser = JSON.parse(localStorage.getItem('logged_user'));
+
+            if (currentUser['currentlyReading'] && currentUser['currentlyReading'].length > 0) {
+                setCurrentlyReading(currentUser['currentlyReading']);
+                return;
+            }
+        }
+
         try {
             console.log("Fetching currently reading books of " + user);
 
@@ -37,7 +46,7 @@ function CurrentlyReading({user}) {
     }, [user]);
 
     const loadAllBooks = () => {
-        setDisplayCount(currentlyReading.length);
+        setDisplayCount(displayCount + 6);
     };
 
     const loadLessBooks = () => {
@@ -66,51 +75,56 @@ function CurrentlyReading({user}) {
     return (
         <Paper sx={PaperStyle}>
             <Typography variant="h5" textAlign='center'>Now reading</Typography>
-                <Grid container direction="row" justifyContent="space-around" sx={{gap: '15px'}}>
-                    {currentlyReading.length === 0 ? (
-                    <Grid item xs={12} sx={{textAlign: 'center', borderRadius: '20px', backgroundColor: '#ffffff'}}>
-                        <Typography>No books to show
-                            {user === JSON.parse(localStorage.getItem('logged_user'))['_id'] ? (
-                                <Typography> - <Link sx={{color: blue[700]}} onClick={goExplore}>Add some!</Link></Typography>
-                            ) : ("")}
-                        </Typography>
+                <Grid container direction="column" justifyContent="space-around" sx={{gap: '15px'}}>
+                    <Grid container item direction="row" justifyContent="space-around" sx={{gap: '15px'}}>
+                        {currentlyReading.length === 0 ? (
+                        <Grid item xs={12} sx={{textAlign: 'center', borderRadius: '20px', backgroundColor: '#ffffff'}}>
+                            <Typography>No books to show
+                                {user === JSON.parse(localStorage.getItem('logged_user'))['_id'] ? (
+                                    <Typography> - <Link sx={{color: blue[700]}} onClick={goExplore}>Add some!</Link></Typography>
+                                ) : ("")}
+                            </Typography>
+                        </Grid>
+                        ) : (
+                        Array.isArray(currentlyReading) && currentlyReading.slice(0, displayCount).map((book, index) => (
+                            <React.Fragment key={index}>
+                                <Grid container direction="row" justifyContent="center" alignItems="center"
+                                      sx={{borderRadius: '15px', backgroundColor: '#ffffff', padding: '10px',
+                                          width: '32%', textAlign: 'center'}}>
+                                    <Grid item xs={12}>
+                                        <Link onClick={() => {seeDetails(book.id)}} sx={{color: "#000000"}}>
+                                            <Typography>{book.title}</Typography>
+                                        </Link>
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <Typography sx={{color: '#777777'}}>
+                                            {book.bookmark} / {book.num_pages}
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={8}>
+                                        <LinearProgress sx={{borderRadius: 10, height: '7px'}} variant="determinate" value={book.bookmark * 100 / book.num_pages}/>
+                                    </Grid>
+                                </Grid>
+                            </React.Fragment>
+                        )))}
                     </Grid>
-                    ) : (
-                    Array.isArray(currentlyReading) && currentlyReading.slice(0, displayCount).map((book, index) => (
-                        <React.Fragment key={index}>
-                            <Grid container direction="row" justifyContent="center" alignItems="center"
-                                  sx={{borderRadius: '15px', backgroundColor: '#ffffff', padding: '10px',
-                                      width: '32%', textAlign: 'center'}}>
-                                <Grid item xs={12}>
-                                    <Link onClick={() => {seeDetails(book.id)}} sx={{color: "#000000"}}>
-                                        <Typography>{book.title}</Typography>
-                                    </Link>
-                                </Grid>
-                                <Grid item xs={3}>
-                                    <Typography sx={{color: '#777777'}}>
-                                        {book.bookmark} / {book.num_pages}
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={8}>
-                                    <LinearProgress sx={{borderRadius: 10, height: '7px'}} variant="determinate" value={book.bookmark * 100 / book.num_pages}/>
-                                </Grid>
-                            </Grid>
-                        </React.Fragment>
-                    )))}
+                    <Grid container item xs={12} direction="row" justifyContent="center" alignItems="center" sx={{gap:'10px'}}>
+                        {displayCount > 6 && currentlyReading.length > 6 ? (
+                            <Button sx={{backgroundColor: red[100], marginTop: "10px", height: "30px",
+                                '&:hover': {backgroundColor: red[100]}}}
+                                    variant="filledTonal" onClick={loadLessBooks}>
+                                <Typography>Show less</Typography>
+                            </Button>
+                        ) : null}
+                        {currentlyReading.length > displayCount ? (
+                            <Button sx={{backgroundColor: blue[100], marginTop: "10px", height: "30px",
+                                '&:hover': {backgroundColor: blue[100]}}}
+                                    variant="filledTonal" onClick={loadAllBooks}>
+                                <Typography>Show more</Typography>
+                            </Button>
+                        ) : null}
+                    </Grid>
                 </Grid>
-            {currentlyReading.length > displayCount ? (
-                <Button sx={{backgroundColor: blue[100], marginTop: "10px", height: "30px",
-                    '&:hover': {backgroundColor: blue[100]}}}
-                        variant="filledTonal" onClick={loadAllBooks}>
-                    <Typography>Show all</Typography>
-                </Button>
-            ) : (
-                <Button sx={{backgroundColor: blue[100], marginTop: "10px", height: "30px",
-                    '&:hover': {backgroundColor: blue[100]}}}
-                        variant="filledTonal" onClick={loadLessBooks}>
-                    <Typography>Show less</Typography>
-                </Button>
-            )}
         </Paper>
     );
 }
