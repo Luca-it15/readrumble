@@ -19,6 +19,7 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class AdminCompetitionDAO {
     public ResponseEntity<String> adminAddCompetition(Document params) {
+        //it only creates it in MongoDB
         String CompName = (String) params.get("name");
         String CompTag = (String) params.get("tag");
         String DATE_START = (String) params.get("start_date");
