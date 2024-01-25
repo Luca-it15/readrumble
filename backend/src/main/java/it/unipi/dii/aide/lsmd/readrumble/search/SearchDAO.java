@@ -12,7 +12,7 @@ import java.util.List;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
-public class SearchDao {
+public class SearchDAO {
 
     public List<PostDTO> findByStringPosts(String searchString) {
         List<PostDTO> target = new ArrayList<>();

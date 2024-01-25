@@ -25,7 +25,7 @@ public class LibraryBookDAO {
             List<Document> books = (List<Document>) userDocument.get("books");
             for (Document book : books) {
                 LibraryBookDTO lb = new LibraryBookDTO(
-                        book.getInteger("book_id"),
+                        book.getLong("book_id"),
                         book.getString("book_title")
                 );
                 libraryBooks.add(lb);
@@ -35,24 +35,4 @@ public class LibraryBookDAO {
         return libraryBooks;
     }
 
-    Document getBook(String username, int book_id) {
-        MongoCollection<Document> collection = MongoConfig.getCollection("ActiveBooks");
-        Document query = new Document("username", username);
-        Document userDocument = collection.find(query).first();
-        Document lb = null;
-        if (userDocument != null) {
-            List<Document> books = (List<Document>) userDocument.get("books");
-            for (Document book : books) {
-                if(book_id == book.getInteger("book_id")) {
-                    lb = book;
-                    break;
-                } else {
-                    System.out.println("the book in the user library doesn't exist");
-                }
-            }
-
-        }
-        MongoConfig.closeConnection();
-        return lb;
-    }
 }

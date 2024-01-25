@@ -5,15 +5,15 @@ import java.util.List;
 
 class LibraryBookDTO {
 
-    private int book_id;
+    private long book_id;
     private String book_title;
 
-    public LibraryBookDTO(int book_id, String book_title) {
+    public LibraryBookDTO(long book_id, String book_title) {
         this.book_id = book_id;
         this.book_title = book_title;
     }
     // getters
-    public int getBook_id() {
+    public long getBook_id() {
         return book_id;
     }
 

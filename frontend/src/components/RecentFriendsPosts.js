@@ -21,13 +21,9 @@ const RecentFriendsPosts = () => {
     let user = currentUser['_id']; 
     let friends = currentUser['following']; 
 
-    console.log(friends); 
-     
-    console.log(friends.length); 
-   
 
     const recentFriendsPosts = async() => {
-        if(friends.length != 0) {
+        if(friends != null && friends.length != 0) {
             try {
                 // Invia i dati al server usando Axios
                 const response = await axios.post('http://localhost:8080/api/post/friends', friends);
@@ -48,7 +44,7 @@ const RecentFriendsPosts = () => {
     return (
         <Grid container direction="row" justifyContent="center" alignItems="center"
               sx={12}>
-            {(posts.length > 0) ? (posts.map((post, index) => (
+            {(posts != null&& posts.length > 0) ? (posts.map((post, index) => (
                 <React.Fragment key={index}>
                     <Grid direction="coloumn" xs={12}
                           sx={{borderRadius: 6, textAlign: 'center', border: '2pt solid ' + blue[400], margin: '0.5%'}}>

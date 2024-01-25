@@ -7,7 +7,7 @@ const BookSelector = ({ handleChangeBookTitle }) => {
     const [selectedOption, setSelectedOption] = useState(null);
     const [book_id, setBook_id] = useState([]);
 
-    var storedData = localStorage.getItem('logged_user');
+    let storedData = localStorage.getItem('logged_user');
 
     if (storedData) {
         // Il valore è presente, lo converte da stringa JSON a oggetto JavaScript
@@ -20,8 +20,14 @@ const BookSelector = ({ handleChangeBookTitle }) => {
         console.log('La chiave "logged_user" non è presente in localStorage.');
     }
 
+     
+
     useEffect(() => {
         // Ottieni i titoli dei libri dal server
+        let bookData = localStorage.getItem('currentlyReading'); 
+        console.log(bookData); 
+
+        if(bookData === null || bookData.lenght === 0) {
         axios
             .get(`http://localhost:8080/api/library/title/${user['_id']}`)
             .then((response) => {
@@ -39,6 +45,18 @@ const BookSelector = ({ handleChangeBookTitle }) => {
             .catch((error) =>
                 console.error('Errore durante il recupero dei titoli dei libri:', error)
             );
+        } else {
+            const bookTitles = bookData.map((book) => ({
+                value: book.book_title,
+                label: book.book_title,
+            }));
+            const book_ids = bookData.map((book) => ({
+                value: book.book_id,
+                label: book.book_title,
+            }));
+            setOptions(bookTitles);
+            setBook_id(book_ids); 
+        }
     }, []);
 
     const handleInputChange = (inputValue) => {

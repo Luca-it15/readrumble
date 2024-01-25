@@ -12,10 +12,10 @@ import java.util.List;
 @RequestMapping("/api/search")
 @CrossOrigin(origins = "http://localhost:3000")
 public class SearchController {
-    private SearchDao searchDao;
+    private SearchDAO searchDao;
 
     public SearchController() {
-        searchDao = new SearchDao();
+        searchDao = new SearchDAO();
     }
     @GetMapping("/posts/{searchString}")
     public List<PostDTO> searchPosts(@PathVariable String searchString) {

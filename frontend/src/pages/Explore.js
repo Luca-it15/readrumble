@@ -12,7 +12,7 @@ import TextField from '@mui/material/TextField';
 import SuggestedBooks from '../components/SuggestedBooks';
 import BookListQuery from "../components/BookListQuery";
 import {blue} from "@mui/material/colors";
-import SuggestFriends from '../components/SuggestedFriends';
+import SuggestedFriends from '../components/SuggestedFriends';
 import SearchChoice from '../components/SearchChoice';
 
 
@@ -131,7 +131,7 @@ export default function Explore() {
             return (
                 <Paper sx={PaperStyle}>
                   <Typography variant='h3'>Suggested Friends</Typography>
-                   <SuggestFriends user={currentUser['_id']} />
+                   <SuggestedFriends user={currentUser['_id']} />
                 </Paper>
             );
         }

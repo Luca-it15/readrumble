@@ -25,6 +25,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PostDAO {
+
+    private static int num_post = 0;
+
     public String addPost(Post post) {
         String response = null;
         try {
@@ -109,7 +112,7 @@ public class PostDAO {
         for (Document doc : collection.find(query).sort(new Document("date_added", -1)).limit(10)) {
             PostDTO post = new PostDTO(
                     (doc.get("_id")).toString(),
-                    doc.getInteger("book_id"),
+                    doc.getLong("book_id"),
                   doc.getInteger("rating"),
                   doc.getDate("date_added"),
                   doc.getString("book_title"),
