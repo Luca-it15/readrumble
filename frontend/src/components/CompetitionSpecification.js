@@ -94,11 +94,12 @@ function CompetitionSpec(){
     }
     useEffect(() => { call()
         }, []);
-    function joinCompetition(Name){
+    function joinCompetition(Name,Tag){
 
         const response = axios.post("http://localhost:8080/api/competition/join",{
         parametro1: usernameToAdd,
-        parametro2: Name
+        parametro2: Name,
+        parametro3: Tag
         })
         .then(response => {
                     setJoinStatus({message:response.data,variant:'success'});
@@ -115,6 +116,7 @@ function CompetitionSpec(){
             }
             var new_comp = {
                 name:Name,
+                tag:Tag,
                 pages:0
             }
             username["competitions"].push(new_comp)
@@ -170,7 +172,7 @@ function CompetitionSpec(){
                 ))}
               </Row>
               <Row>
-                <Paper elevation={2} style={PaperStyle} onClick={()=>{joinCompetition(data.name)}}>
+                <Paper elevation={2} style={PaperStyle} onClick={()=>{joinCompetition(data.name,data.tag)}}>
                     <Typography variant="h5">{points != null ? "Your Total Pages Read : " + points : "You Do Not Partecipate in this Competition"}</Typography>
                 </Paper>
               </Row>

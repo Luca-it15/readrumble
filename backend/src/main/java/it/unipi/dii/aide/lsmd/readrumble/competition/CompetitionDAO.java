@@ -115,9 +115,10 @@ public class CompetitionDAO {
         Jedis jedis = RedisConfig.getSession();
         String username = (String) userDoc.get("parametro1");
         String competitionTitle = (String) userDoc.get("parametro2");
+        String competitionTag = (String) userDoc.get("parametro3");
         try {
             // Chiave composta
-            String key = "competition:"+competitionTitle + ":" + username;
+            String key = "competition:"+competitionTitle + ":" + competitionTag + ":" + username;
             System.out.println("the key is = " + key);
             if(jedis.get(key)==null)
             {
