@@ -62,7 +62,7 @@ const RecentFriendsPosts = () => {
                         />
                     </Grid>
                 </React.Fragment>
-            ))):(<Typography variant='h4'>Nessun amico aggiunto</Typography>)}
+            ))):(<Typography variant='h4'>No friends added</Typography>)}
         </Grid>
     );
 };
