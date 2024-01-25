@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 @Component
 public class RedisToMongo {
     private static final Logger logger = LoggerFactory.getLogger(RedisToMongo.class);
-
     private Jedis jedis;
     private MongoCollection<Document> mongoCollection;
 
@@ -28,55 +27,57 @@ public class RedisToMongo {
     public void updateMongoWishlists() {
         logger.info("Updating MongoDB wishlists...");
 
-        jedis = RedisConfig.getSession();
-        mongoCollection = MongoConfig.getCollection("Wishlists");
+        new Thread(() -> {
+            jedis = RedisConfig.getSession();
+            mongoCollection = MongoConfig.getCollection("Wishlists");
 
-        // Clear the entire wishlists collection
-        mongoCollection.deleteMany(new Document());
+            // Clear the entire wishlists collection
+            mongoCollection.deleteMany(new Document());
 
-        Pipeline pipeline = jedis.pipelined();
-        Response<Set<String>> keysResponse = pipeline.keys("wishlist:*");
+            Pipeline pipeline = jedis.pipelined();
+            Response<Set<String>> keysResponse = pipeline.keys("wishlist:*");
 
-        pipeline.sync();
+            pipeline.sync();
 
-        Set<String> keys = keysResponse.get();
+            Set<String> keys = keysResponse.get();
 
-        // Create a map to store the wishlists of each user
-        Map<String, List<Document>> userWishlists = new HashMap<>();
+            // Create a map to store the wishlists of each user
+            Map<String, List<Document>> userWishlists = new HashMap<>();
 
-        for (String key : keys) {
-            String username = key.split(":")[1];
+            for (String key : keys) {
+                String username = key.split(":")[1];
 
-            // Get all the fields and their values for the current key
-            Map<String, String> fields = jedis.hgetAll(key);
+                // Get all the fields and their values for the current key
+                Map<String, String> fields = jedis.hgetAll(key);
 
-            // Convert the tags string into an array of strings (the tags are separated by commas)
-            String tagsField = fields.get("tags");
-            List<String> tags = tagsField != null ? Arrays.asList(tagsField.split(",")) : new ArrayList<>();
+                // Convert the tags string into an array of strings (the tags are separated by commas)
+                String tagsField = fields.get("tags");
+                List<String> tags = tagsField != null ? Arrays.asList(tagsField.split(",")) : new ArrayList<>();
 
-            Document doc = new Document()
-                    .append("book_id", Long.parseLong(fields.get("book_id")))
-                    .append("book_title", fields.get("book_title"))
-                    .append("num_pages", Integer.parseInt(fields.get("num_pages")))
-                    .append("tags", tags);
+                Document doc = new Document()
+                        .append("book_id", Long.parseLong(fields.get("book_id")))
+                        .append("book_title", fields.get("book_title"))
+                        .append("num_pages", Integer.parseInt(fields.get("num_pages")))
+                        .append("tags", tags);
 
-            // Add the Document to the user's wishlist in the map
-            userWishlists.computeIfAbsent(username, k -> new ArrayList<>()).add(doc);
-        }
+                // Add the Document to the user's wishlist in the map
+                userWishlists.computeIfAbsent(username, k -> new ArrayList<>()).add(doc);
+            }
 
-        // Insert the MongoDB wishlists for each user
-        for (Map.Entry<String, List<Document>> entry : userWishlists.entrySet()) {
-            String username = entry.getKey();
-            List<Document> wishlist = entry.getValue();
+            // Insert the MongoDB wishlists for each user
+            for (Map.Entry<String, List<Document>> entry : userWishlists.entrySet()) {
+                String username = entry.getKey();
+                List<Document> wishlist = entry.getValue();
 
-            Document userDoc = new Document("_id", username)
-                    .append("books", wishlist);
+                Document userDoc = new Document("_id", username)
+                        .append("books", wishlist);
 
-            // Insert the user document into the MongoDB wishlists collection
-            mongoCollection.insertOne(userDoc);
-        }
+                // Insert the user document into the MongoDB wishlists collection
+                mongoCollection.insertOne(userDoc);
+            }
 
-        logger.info("MongoDB wishlists updated!");
+            logger.info("MongoDB wishlists updated!");
+        }).start();
     }
 
     /**
