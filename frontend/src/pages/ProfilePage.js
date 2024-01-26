@@ -151,10 +151,7 @@ const ProfilePage = () => {
             <Grid container spacing={3} textAlign="center">
                 <Grid item xs={3} md={3}>
                     <FollowingList user={currentUser['_id']}/>
-                    <Paper elevation={2} style={PaperStyle}>
-                        <Typography variant="h4">Competitions</Typography>
-                        <CompetitionProfBlock user={''}/>
-                    </Paper>
+                    <CompetitionProfBlock user={currentUser['_id']}/>
                 </Grid>
                 <Grid item xs={6} md={6}>
                     <Paper elevation={2} style={PaperStyle}>
