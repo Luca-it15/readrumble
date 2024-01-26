@@ -28,7 +28,6 @@ function LoginForm() {
         variant: 'success', // o 'danger' in caso di errore
     });
 
-
     const handleChange = (e) => {
         const {name, value, type, checked} = e.target;
         setFormData((prevData) => ({
@@ -48,7 +47,10 @@ function LoginForm() {
         if (currentlyReadingBooks) {
             currentUser['currentlyReading'] = currentlyReadingBooks.map(book => ({
                 id: book.id,
-                title: book.title.replace(/"/g, '')
+                title: book.title.replace(/"/g, ''),
+                bookmark: book.bookmark,
+                num_pages: book.num_pages,
+                tags: book.tags
             }));
             console.log(currentlyReadingBooks);
         } else {
@@ -72,12 +74,12 @@ function LoginForm() {
 
         console.log("Fetching favorite books " + id);
         // Fetch favorite books
-        const fetchedFavoriteBooks = await axios.get(`http://localhost:8080/api/favoriteBooks/${id}`)
+        const fetchedFavoriteBooks = await axios.get(`http://localhost:8080/api/book/favoriteBooks/${id}`)
         const favoriteBooks = JSON.parse(JSON.stringify(fetchedFavoriteBooks.data));
 
         if (favoriteBooks) {
             currentUser['favoriteBooks'] = favoriteBooks.map(book => ({
-                id: book.id.replace(/"/g, ''),
+                id: book.id,
                 title: book.title.replace(/"/g, '')
             }));
             console.log(currentUser['favoriteBooks']);
@@ -121,7 +123,8 @@ function LoginForm() {
 
             currentUser['competitions'] = competitions.map(competition => ({
                 name: competition.name.replace(/_/g, ' '),
-                pages: competition.pages
+                pages: competition.pages,
+                tag: competition.tag
             }));
 
             console.log(currentUser['competitions']);
@@ -132,6 +135,7 @@ function LoginForm() {
         localStorage.setItem('logged_user', JSON.stringify(currentUser));
 
         console.log(JSON.parse(localStorage.getItem('logged_user')));
+
         setTimeout(function () {
             window.location.href = "/home"
         })

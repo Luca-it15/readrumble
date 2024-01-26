@@ -32,7 +32,7 @@ import BookDetails from "./pages/BookDetails";
 import BanUnbanProfile from './pages/admin/BanUnbanProfile';
 import PopularCompetitionBlock from './components/PopularCompetitionBlock';
 import PostDetails from './pages/PostDetails';
-import AddBook from './pages/admin/AddBook'; 
+import AddBook from './pages/admin/AddBook';
 import UpdateBook from './pages/admin/UpdateBook';
 
 const App = () => {
@@ -53,128 +53,103 @@ const App = () => {
                 <Row>
                     <Col>
                         {isLoggedIn ? (isAdmin ?
-                            (<AdminLayout>
-                                <Routes>
-                                    <Route
-                                        path="/admin/user/banunban/:name"
-                                        element={<BanUnbanProfile/>}
-                                    />
-                                    <Route
-                                        exact
-                                        path="/dashboard"
-                                        element={<DashboardAdmin/>}
-                                    />
-                                    <Route
-                                        path="/admin_book"
-                                        element={
-                                            <BookAdmin/>}
-                                    />
-                                    <Route
-                                        path="/admin_competition"
-                                        element={
-                                            <CompetitionAdmin/>}
-                                    />
-                                    <Route
-                                        path="/admin_competition/:name"
-                                        element={
-                                            <CompetitionSpecAdmin/>}
-                                    />
-                                    <Route
-                                        path="/admin_competition/add_comp"
-                                        element={
-                                            <AddCompetition/>}
-                                    />
-                                    <Route
-                                        path="/admin_user"
-                                        element={
-                                            <UserAdmin/>}
-                                    />
-                                    <Route
-                                        path="/admin_post"
-                                        element={
-                                            <PostAdmin/>}
-                                    />
-                                    <Route
-                                        path="/posts/:id"
-                                        element={<PostDetails/>}
-                                    />
-                                    <Route
-                                        path="/bookdetails/:id"
-                                        element={<BookDetails/>}
-                                    />
-                                      <Route
-                                        path="/addBook"
-                                        element={<AddBook/>}
-                                    />
-                                       <Route
-                                        path="/updateBook/:id"
-                                        element={<UpdateBook/>}
-                                    />
-                                </Routes>
-                            </AdminLayout>) : (
+                            (
+                                <AdminLayout>
+                                    <Routes>
+                                        <Route
+                                            path="/admin/user/banunban/:name"
+                                            element={<BanUnbanProfile/>}
+                                        />
+                                        <Route
+                                            exact
+                                            path="/dashboard"
+                                            element={<DashboardAdmin/>}
+                                        />
+                                        <Route
+                                            path="/admin_book"
+                                            element={<BookAdmin/>}
+                                        />
+                                        <Route
+                                            path="/admin_competition"
+                                            element={<CompetitionAdmin/>}
+                                        />
+                                        <Route
+                                            path="/admin_competition/:name"
+                                            element={<CompetitionSpecAdmin/>}
+                                        />
+                                        <Route
+                                            path="/admin_competition/add_comp"
+                                            element={<AddCompetition/>}
+                                        />
+                                        <Route
+                                            path="/admin_user"
+                                            element={<UserAdmin/>}
+                                        />
+                                        <Route
+                                            path="/admin_post"
+                                            element={<PostAdmin/>}
+                                        />
+                                        <Route
+                                            path="/posts/:id"
+                                            element={<PostDetails/>}
+                                        />
+                                        <Route
+                                            path="/bookdetails/:id"
+                                            element={<BookDetails/>}
+                                        />
+                                        <Route
+                                            path="/addBook"
+                                            element={<AddBook/>}
+                                        />
+                                        <Route
+                                            path="/updateBook/:id"
+                                            element={<UpdateBook/>}
+                                        />
+                                    </Routes>
+                                </AdminLayout>
+                            ) : (
                                 <AuthenticationLayout>
                                     <Routes>
                                         <Route
                                             exact
                                             path="/popular"
-                                            element={
-                                                <PopularCompetitionBlock/>
-                                            }
+                                            element={<PopularCompetitionBlock/>}
                                         />
-
                                         <Route
                                             path="/home"
-                                            element={
-                                                <Home/>
-                                            }
+                                            element={<Home/>}
                                         />
                                         <Route
                                             path="/explore"
-                                            element={
-                                                <Explore/>
-                                            }
+                                            element={<Explore/>}
                                         />
                                         <Route
                                             path="/settings"
-                                            element={
-                                                <UserSettings/>
-                                            }
+                                            element={<UserSettings/>}
                                         />
                                         <Route
                                             path="/profile"
-                                            element={
-                                                <ProfilePage/>
-                                            }
+                                            element={<ProfilePage/>}
                                         />
                                         <Route
                                             path="/user/:username"
-                                            element={
-                                                <OtherUserProfile/>
-                                            }
+                                            element={<OtherUserProfile/>}
                                         />
                                         <Route
                                             path="/post"
-                                            element={
-                                                <PostForm/>
-                                            }
+                                            element={<PostForm/>}
                                         />
                                         <Route
                                             path="/dashboard"
-                                            element={
-                                                <Dashboard/>
-                                            }
+                                            element={<Dashboard/>}
                                         />
                                         <Route
                                             path="/competitions"
-                                            element={
-                                                <CompetitionPage/>
-                                            }
+                                            element={<CompetitionPage/>}
                                         />
                                         <Route
                                             path="/competition/:name"
-                                            element={
-                                                <CompetitionSpec/>
-                                            }
+                                            element={<CompetitionSpec/>}
                                         />
                                         <Route
                                             path="/bookdetails/:id"

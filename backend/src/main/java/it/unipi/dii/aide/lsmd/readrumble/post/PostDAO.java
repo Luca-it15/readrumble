@@ -205,31 +205,35 @@ public class PostDAO {
             return "failed to remove the post";
     }
 
-    public List<PostDTO> getRecentFriendsPosts( List<String> friends) {
+    public List<PostDTO> getRecentFriendsPosts(List<String> friends) {
         List<PostDTO> postsTarget = new ArrayList<>();
 
         MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
 
-        for (String user : friends) {
-            List<Document> posts = collection.aggregate(Arrays.asList(
-                    Aggregates.match(new Document("username", user)),
-                    Aggregates.sort(Sorts.descending("date_added")),
-                    Aggregates.limit(1)
-            )).into(new ArrayList<>());
+        List<Document> posts = collection.aggregate(List.of(
+                new Document("$match", new Document("username", new Document("$in", friends))),
+                new Document("$sort", new Document("date_added", -1)),
+                new Document("$group", new Document("_id", "$username").append("mostRecentPost", new Document("$first", "$$ROOT"))),
+                new Document("$project", new Document("id", "$mostRecentPost._id")
+                        .append("book_id", "$mostRecentPost.book_id")
+                        .append("rating", "$mostRecentPost.rating")
+                        .append("date_added", "$mostRecentPost.date_added")
+                        .append("book_title", "$mostRecentPost.book_title")
+                        .append("username", "$mostRecentPost.username"))
+        )).into(new ArrayList<>());
 
-            System.out.println("User: " + user);
-            for (Document doc : posts) {
-                PostDTO review = new PostDTO(
-                        ((ObjectId) doc.get("_id")).toString(),
-                        doc.getLong("book_id"),
-                        doc.getInteger("rating"),
-                        doc.getDate("date_added"),
-                        doc.getString("book_title"),
-                        doc.getString("username")
-                );
-                postsTarget.add(review);
-            }
+        for (Document doc : posts) {
+            PostDTO post = new PostDTO(
+                    ((ObjectId) doc.get("id")).toString(),
+                    doc.getLong("book_id"),
+                    doc.getInteger("rating"),
+                    doc.getDate("date_added"),
+                    doc.getString("book_title"),
+                    doc.getString("username")
+            );
+            postsTarget.add(post);
         }
+
         return postsTarget;
     }
 

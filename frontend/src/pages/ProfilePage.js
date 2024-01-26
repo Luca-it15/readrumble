@@ -53,10 +53,7 @@ const ProfilePage = () => {
                         }));
 
                         setBooks(booksData);
-
-                        // Save all book ids in wishlist
                         currentUser['wishlist'] = booksData;
-
                         console.log("Wishlist: " + JSON.stringify(currentUser['wishlist']));
 
                         localStorage.setItem('logged_user', JSON.stringify(currentUser));

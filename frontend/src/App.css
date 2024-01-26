@@ -179,3 +179,7 @@ main {
     border: 3pt solid cadetblue; 
     background-color: white;
 }
+
+.css-jmsowk-MuiGrid-root>.MuiGrid-item {
+    padding-left: 0px !important;
+}
