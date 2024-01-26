@@ -23,6 +23,8 @@ import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.getMaps;
 
 public class UserDAO {
     private List<Document> inMemoryUsers = new ArrayList<>();
+    private List<Document> inMemoryFollowRelations = new ArrayList<>();
+    private List<Document> inMemoryFollowRelationsToBeDeleted = new ArrayList<>();
 
     public void saveInMemoryUsers() {
         for (Document user : inMemoryUsers) {
@@ -39,6 +41,41 @@ public class UserDAO {
             }
         }
         inMemoryUsers.clear();
+    }
+
+    public void saveInMemoryFollowRelations() {
+        for (Document followRelation : inMemoryFollowRelations) {
+            String follower = (String) followRelation.get("follower");
+            String followee = (String) followRelation.get("followee");
+
+            // Add a relation to the graph
+            try (Session session = Neo4jConfig.getSession()) {
+                session.run("MERGE (a:User {name: $follower}) " +
+                                "MERGE (b:User {name: $followee}) " +
+                                "MERGE (a)-[r:FOLLOWS]->(b)",
+                        Values.parameters("follower", follower, "followee", followee));
+            } catch (Exception e) {
+                System.out.println("Add follow relation operation failed: " + e.getMessage());
+            }
+        }
+        inMemoryFollowRelations.clear();
+    }
+
+    public void saveInMemoryFollowRelationsToBeDeleted() {
+        for (Document followRelation : inMemoryFollowRelationsToBeDeleted) {
+            String follower = (String) followRelation.get("follower");
+            String followee = (String) followRelation.get("followee");
+
+            // Delete the follow relation from the graph
+            try (Session session = Neo4jConfig.getSession()) {
+                session.run("MATCH (a:User {name: $follower})-[r:FOLLOWS]->(b:User {name: $followee}) " +
+                                "DELETE r",
+                        Values.parameters("follower", follower, "followee", followee));
+            } catch (Exception e) {
+                System.out.println("Delete follow relation operation failed: " + e.getMessage());
+            }
+        }
+        inMemoryFollowRelationsToBeDeleted.clear();
     }
 
     public List<UserDTO> allUser() {
@@ -187,15 +224,8 @@ public class UserDAO {
 
     public ResponseEntity<String> follow(@PathVariable String follower, @PathVariable String followee) {
         if (checkUserExist(follower) && checkUserExist(followee)) {
-            try (Session session = Neo4jConfig.getSession()) {
-                session.run("MERGE (a:User {name: $follower}) " +
-                                "MERGE (b:User {name: $followee}) " +
-                                "MERGE (a)-[r:FOLLOWS]->(b)",
-                        Values.parameters("follower", follower, "followee", followee));
-                return ResponseEntity.ok("Follow operation successful.");
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Follow operation failed: " + e.getMessage());
-            }
+            inMemoryFollowRelations.add(new Document("follower", follower).append("followee", followee));
+            return ResponseEntity.ok("Follow operation successful.");
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Follower or followee does not exist.");
         }
@@ -203,14 +233,8 @@ public class UserDAO {
 
     public ResponseEntity<String> unfollow(@PathVariable String follower, @PathVariable String followee) {
         if (checkUserExist(follower) && checkUserExist(followee)) {
-            try (Session session = Neo4jConfig.getSession()) {
-                session.run("MATCH (a:User {name: $follower})-[r:FOLLOWS]->(b:User {name: $followee}) " +
-                                "DELETE r",
-                        Values.parameters("follower", follower, "followee", followee));
-                return ResponseEntity.ok("Unfollow operation successful.");
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unfollow operation failed: " + e.getMessage());
-            }
+            inMemoryFollowRelationsToBeDeleted.add(new Document("follower", follower).append("followee", followee));
+            return ResponseEntity.ok("Unfollow operation successful.");
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Follower or followee does not exist.");
         }
