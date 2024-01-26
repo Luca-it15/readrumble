@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="explore finish">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/data_migration/RedisToMongo2.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/data_migration/RedisToMongo2.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/CompetitionBlock.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/CompetitionBlock.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

@@ -29,6 +29,10 @@ function CompetitionProfBlock({user}) {
             const competitions_partecipated = currentUser["competitions"];
             const competitions_to_store = [];
             let i = 0;
+            if (competitions_partecipated == null)
+            {
+                competitions_partecipated=[]
+            }
             while (competitions_partecipated[i] != null && i < 3) {
                 competitions_to_store[i] = competitions_partecipated[i];
                 i = i + 1;
@@ -40,6 +44,10 @@ function CompetitionProfBlock({user}) {
                 const jsonData = response.data.map(document => JSON.parse(JSON.stringify(document)));
                 const competitions_to_store = [];
                 let i = 0;
+                if (jsonData == null)
+                {
+                    jsonData=[]
+                }
                 while (jsonData[i] != null && i < 3) {
                     competitions_to_store[i] = jsonData[i];
                     i = i + 1;
