@@ -66,11 +66,11 @@ const PostsList = (user, username, book_id, size, all, path) => {
     }, [user.username]);
 
     return (
-        <Grid container direction="row" justifyContent="center" alignItems="center"
+        <Grid item container direction="row" justifyContent="center" alignItems="center"
               sx={12}>
             {(posts.length > 0) ? (posts.map((post, index) => (
                 <React.Fragment key={index}>
-                    <Grid direction="coloumn" xs={user.size}
+                    <Grid direction="coloumn" xs={user.size} item
                           sx={{borderRadius: 6, textAlign: 'center', border: '2pt solid ' + blue[400], margin: '0.5%'}}>
                         <PostRow
                             key={index}

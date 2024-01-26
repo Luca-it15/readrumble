@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import axios from "axios";
 import {Grid, List, ListItem, ListItemIcon, ListItemText, Paper, Rating} from "@mui/material";
 import Button from "@mui/material-next/Button";
-import {useParams, useNavigate, useHistory} from "react-router-dom";
+import {useParams, useNavigate, useHistory, useLocation} from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import {red, blue} from "@mui/material/colors";
 import {Alert} from '@mui/material';
@@ -39,8 +39,10 @@ function PostDetails() {
     console.log('La chiave "logged_user" non è presente in localStorage.'); 
    }
 
-    let {id} = useParams();
-
+    let {id} = useParams(); 
+    let id_num = parseInt(id); 
+    
+    console.log(id + "di tipo" + typeof id); 
     const [loginStatus, setLoginStatus] = useState({
       message: '',
       variant: 'success', // o 'danger' in caso di errore
@@ -71,17 +73,29 @@ function PostDetails() {
     
     const fetchPost = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/post/details/' + id);
-
-            setPost(response.data);
-            setTags(response.data.tags); 
-            setRating(response.data.rating); 
-            setDate(response.data.date_added); 
-            console.log(response.data.date_added); 
-            
-            if(currentUser['_id'] === response.data.username) 
-            setPostUser(true); 
-
+            if(id_num != 0) {
+             const response = await axios.get('http://localhost:8080/api/post/details/' + id);
+         
+              setPost(response.data);
+              setTags(response.data.tags); 
+              setRating(response.data.rating); 
+              setDate(response.data.date_added); 
+              console.log(response.data.date_added); 
+              if(currentUser['_id'] === response.data.username) 
+              setPostUser(true); 
+            } else {
+                                             
+            const actualPost = JSON.parse(localStorage.getItem('post_details')); 
+            console.log(actualPost[0]); 
+            setPost(actualPost[0]); 
+            setTags(actualPost[0].tags); 
+            console.log(actualPost[0].tags); 
+            setDate(actualPost[0].date_added); 
+            console.log(actualPost[0].date_added); 
+             setRating(actualPost[0].rating); 
+                if(currentUser['_id'] === post.username) 
+                setPostUser(true); 
+            }            
         } catch (error) {
             console.log(error.response)
         }
@@ -145,10 +159,12 @@ function PostDetails() {
           </Card>
           </Grid>
            <Grid item xs={12} md={11}>
-                    <Paper elevation={0} sx={DescriptionPaperStyle}>
-                        <Typography variant="h5">Description</Typography>
+                   {(post.rating != 0) && <><Paper elevation={0} sx={DescriptionPaperStyle}>
+                    <Typography variant="h5">Description</Typography>
                         <Typography>{post.review_text}</Typography>
-                    </Paper>
+                        </Paper>
+                        </>
+                        }
           </Grid>
           {(postUser || isAdmin) && ( 
             <>

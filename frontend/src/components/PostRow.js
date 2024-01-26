@@ -13,8 +13,24 @@ export default function PostRow({id, title, username, rating, readOnly, date, us
     const navigate = useNavigate();
 
     function seeDetails(id) {
-        navigate(`/posts/${id}`);
+        if(id === 0)  {
+       
+          let arrayPostJson = localStorage.getItem('last_posts');
+          let arrayPost = JSON.parse(arrayPostJson);
+
+         let dateToFind = date
+         let postFilter = arrayPost.filter(post => post.date_added === dateToFind);
+         
+         let postFilterJson = JSON.stringify(postFilter);
+
+// Salva la stringa JSON nel Local Storage
+        localStorage.setItem('post_details', postFilterJson);
+        navigate(`/posts/${id}/`); 
+        }
+        else 
+            navigate(`/posts/${id}/`); 
     }
+    
 
     console.log(user);
     console.log(all);

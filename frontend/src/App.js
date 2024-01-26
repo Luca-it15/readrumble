@@ -61,7 +61,7 @@ const App = () => {
                                     />
                                     <Route
                                         exact
-                                        path="/dashboard"
+                                        path="/home"
                                         element={<DashboardAdmin/>}
                                     />
                                     <Route

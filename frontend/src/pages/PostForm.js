@@ -57,6 +57,7 @@ export default function PostForm() {
         date_added: ' ',
         book_title: '', 
         username: currentUser['_id'], 
+        tags: [], 
         bookmark: 0, 
         pages_read: 0
     });
@@ -118,19 +119,47 @@ export default function PostForm() {
         try {
 
             let arrayPostJson = localStorage.getItem('last_posts');
+            console.log("i post degli utenti sono: + "); 
+            for(var post in arrayPostJson) {
+                console.log(post); 
+            }
+        
             if(arrayPostJson != null) {
+
+             
+                    console.log("i post degli utenti sono: + "); 
+                    for(var post in arrayPostJson) {
+                        console.log(post); 
+                    }
+                
+                
+                
+                console.log(arrayPostJson); 
                 let arrayPost = JSON.parse(arrayPostJson);
+                
 
-
+             console.log(formData); 
              arrayPost.push(formData);
-
-
+             console.log("ho inserito un nuovo post: " + formData);
+             console.log("i post sono: " + arrayPost); 
+             
+             arrayPost.sort((a, b) => {
+                if (a.date_added < b.date_added) {
+                    return 1;
+                }
+                if (a.date_added > b.date_added) {
+                    return -1;
+                }
+                return 0;
+             });
+  
              let arrayPostUpdate = JSON.stringify(arrayPost);
-             localStorage.setItem('last_post', arrayPostUpdate);
+             localStorage.setItem('last_posts', arrayPostUpdate);
             } else {
                 let arrayPost = [formData];
 
                let arrayPostJson = JSON.stringify(arrayPost);
+               console.log(arrayPostJson); 
 
                localStorage.setItem('last_posts', arrayPostJson);
             }

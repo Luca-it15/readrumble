@@ -7,7 +7,7 @@ import StarIcon from '@mui/icons-material/Star';
 
 const RatingStars = ({ onChange, readOnly, isStatic, star}) => {
   const labels = {
-    0: 'Nothing',
+    0: 'I read new pages',
     1: 'Useless',
     2: 'Poor',
     3: 'Ok',
