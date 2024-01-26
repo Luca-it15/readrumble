@@ -23,8 +23,11 @@ public class CompetitionDAO {
     {
 
         LocalDate date_of_today = LocalDate.now();
+        Bson end_dateFilter = Filters.gte("end_date", LocalDate.now());
+        Bson start_dateFilter = Filters.lte("start_date", LocalDate.now());
+        Bson dateFilter = Filters.and(start_dateFilter,end_dateFilter);
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
-        List<Document> competitions = collection.find(Filters.gte("end_date",date_of_today))
+        List<Document> competitions = collection.find(dateFilter)
                 .sort(Sorts.descending("end_date"))
                 .into(new ArrayList<>());
         System.out.println(competitions);
@@ -32,7 +35,9 @@ public class CompetitionDAO {
     }
     public List<Document> getPopularCompetitions()
     {
-        Bson dateFilter = Filters.gt("end_date", LocalDate.now());
+        Bson end_dateFilter = Filters.gt("end_date", LocalDate.now());
+        Bson start_dateFilter = Filters.lte("start_date", LocalDate.now());
+        Bson dateFilter = Filters.and(start_dateFilter,end_dateFilter);
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         AggregateIterable<Document> aggregation = collection.aggregate(Arrays.asList(
             Aggregates.match(dateFilter),
