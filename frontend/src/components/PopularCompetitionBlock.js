@@ -30,30 +30,6 @@ function PopularCompetitionBlock() {
         navigate(dynamic_path);
 
     }
-
-    /*
-    //TODO: Massi, mi dice che questa non la usi
-
-    function SortUsers(us) {
-        const sortedObject = {};
-        Object.keys(us).sort((a, b) => us[b] - us[a]).forEach(key => {
-            sortedObject[key] = us[key];
-        });
-
-        console.log(sortedObject);
-        const keysArray = Object.keys(sortedObject);
-        console.log(keysArray);
-        const valuesArray = Object.values(sortedObject);
-        console.log(valuesArray);
-        return (
-            <>
-                {keysArray[0]}{valuesArray[0]}
-                {keysArray[1]}{valuesArray[1]}
-                {keysArray[2]}{valuesArray[2]}
-            </>
-        )
-    }*/
-
     function createRank(value) {
         const creator = []
         creator[0] = value[0]
@@ -99,7 +75,7 @@ function PopularCompetitionBlock() {
                     <Grid item>
                         <Paper elevation={2} style={PaperStyle}>
                             <Link variant="h6" onClick={() => {
-                                goSpecificComp(item.Name)
+                                goSpecificComp(item.name)
                             }}>{item.name}</Link>
                             <Typography>Tag: {item.tag}</Typography>
                             <Divider variant="middle" sx={{margin: '10px'}}/>
