@@ -43,16 +43,32 @@ public class UserController {
         return userDAO.PersonalInfo(user);
     }
 
+    /**
+     * This method adds a user to the document DB and to the graph DB
+     *
+     * @param user the user to add
+     * @return the response entity
+     */
     @PostMapping("/registration")
-    public ResponseEntity<String> inserisciDati(@RequestBody Document user) {
+    public ResponseEntity<String> registerUser(@RequestBody Document user) {
         return userDAO.RegUser(user);
     }
 
+    /**
+     *
+     *
+     */
     @GetMapping("/user/all")
     public List<UserDTO> getAllReviews() {
         return userDAO.allUser();
     }
 
+    /**
+     * This method returns name and surname of the user with the given username
+     *
+     * @param username the username of the user
+     * @return the user with the given username
+     */
     @GetMapping("/user/{username}")
     public Map<String, String> getUser(@PathVariable String username) {
         return userDAO.getUser(username);

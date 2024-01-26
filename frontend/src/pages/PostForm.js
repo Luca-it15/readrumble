@@ -24,7 +24,7 @@ export default function PostForm() {
     function timeout_text() {
         setTimeout(function () {
             // Azione da compiere dopo 1 secondo
-            setLoginStatus({message: '', variant: 'success'});
+            setSubmitStatus({message: '', variant: 'success'});
             return window.location.href = "http://localhost:3000/profile";
         }, 12000)
     }
@@ -32,12 +32,12 @@ export default function PostForm() {
     function timeout_text_error() {
         setTimeout(function () {
             // Azione da compiere dopo 1 secondo
-            setLoginStatus({message: '', variant: 'error'});
+            setSubmitStatus({message: '', variant: 'error'});
             return window.location.href = "http://localhost:3000/profile";
         }, 24000)
     }
 
-    const [loginStatus, setLoginStatus] = useState({
+    const [submitStatus, setSubmitStatus] = useState({
         message: '',
         variant: 'success', // o 'danger' in caso di errore
     });
@@ -104,10 +104,8 @@ export default function PostForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validazione: Verifica se almeno un campo è vuoto
         if (Object.values(formData).some((value) => value === '')) {
-            setValidationError('All fields must be filled !');
-            //timeout_text()
+            setValidationError('All fields must be filled!');
             return;
         }
 
@@ -127,15 +125,14 @@ export default function PostForm() {
 
                 localStorage.setItem('last_posts', arrayPostJson);
             }
-            // Invia i dati al server usando Axios
             const response = await axios.post('http://localhost:8080/api/post/submit', formData);
-            setLoginStatus({message: response.data, variant: 'success'});
+            setSubmitStatus({message: response.data, variant: 'success'});
             timeout_text()
-            // Esegui altre azioni dopo la submit se necessario
-            console.log('Recensione inviata con successo!');
+
+            console.log('Post successfully uploaded!');
         } catch (error) {
-            console.error('Errore durante l\'invio della recensione:', error);
-            setLoginStatus({
+            console.error('Error:', error);
+            setSubmitStatus({
                 message: error.response ? JSON.stringify(error.response.data) : error.message,
                 variant: 'danger'
             });
@@ -225,9 +222,9 @@ export default function PostForm() {
                             </Alert>
                         )}
 
-                        {loginStatus.message && (
-                            <Alert variant={loginStatus.variant}>
-                                {loginStatus.message}
+                        {submitStatus.message && (
+                            <Alert variant={submitStatus.variant}>
+                                {submitStatus.message}
                             </Alert>
                         )}
                     </Grid>
