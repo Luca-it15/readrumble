@@ -6,12 +6,11 @@ import '../App.css';
 import {blue} from "@mui/material/colors";
 
 function CompetitionProfBlock({user}) {
-    //this is the block that contains the first three competition in which you partecipate
+    const currentUser = JSON.parse(localStorage.getItem('logged_user'));
     const [competitions, setCompetitions] = useState([]);
     const [Username, setUsername] = useState('');
     const navigate = useNavigate();
     console.log("ciao user: ");
-    const logged_user = JSON.parse(localStorage.getItem("logged_user"));
 
     const goComp = () => {
         navigate("/competitions");
@@ -25,14 +24,18 @@ function CompetitionProfBlock({user}) {
     }
 
     function drawComp() {
-        const competitions_partecipated = logged_user["competitions"];
-        const competitions_to_store = [];
-        let i = 0;
-        while (competitions_partecipated[i] != null && i < 3) {
-            competitions_to_store[i] = competitions_partecipated[i];
-            i = i + 1;
+        if (currentUser['_id'] === user) {
+            const competitions_partecipated = currentUser["competitions"];
+            const competitions_to_store = [];
+            let i = 0;
+            while (competitions_partecipated[i] != null && i < 3) {
+                competitions_to_store[i] = competitions_partecipated[i];
+                i = i + 1;
+            }
+            setCompetitions(competitions_to_store)
+        } else {
+            // TODO: Gestire competizioni altrui
         }
-        setCompetitions(competitions_to_store)
     }
 
     useEffect(() => {
@@ -74,12 +77,13 @@ function CompetitionProfBlock({user}) {
         <Container>
             <Paper sx={PaperStyle}>
                 <Grid container direction="column" justifyContent="space-around">
-                    <Grid item><Typography variant="h5">Your competitions</Typography></Grid>
+                    <Grid item><Typography variant="h5">Competitions</Typography></Grid>
                     <List sx={ListStyle}>
                         {competitions.length === 0 && (
                             <Grid item>
                                 <ListItem>
-                                    <Typography>You are not participating in any competition</Typography>
+                                    <Typography>{currentUser['_id'] === user ? "You are " : user + " is "}
+                                        not participating in any competition</Typography>
                                 </ListItem>
                             </Grid>
                         )}
