@@ -11,7 +11,6 @@ function SuggestedFriends({user}) {
     const [suggestFriends, setSuggestFriends] = useState([]);
     const [displayCount, setDisplayCount] = useState(10);
 
-
     const ListStyle = {
         py: 0,
         width: '100%',
@@ -22,14 +21,13 @@ function SuggestedFriends({user}) {
     };
 
     const fetchFriends = async () => {
-
         try {
             const response = await axios.get(`http://localhost:8080/api/suggestedFriends/${user}`);
 
             const suggestions = response.data
             // Returns book.id and book.title
             setSuggestFriends(suggestions.map(user => ({
-               username: user.name
+                username: user.name
             })));
 
             console.log("Suggested Friends: " + JSON.stringify(response.data));

@@ -1,9 +1,10 @@
 package it.unipi.dii.aide.lsmd.readrumble.book;
 
-import com.mongodb.client.MongoCollection;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
+
+import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
@@ -20,6 +21,8 @@ import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Date;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.neo4j.driver.Record;
 
@@ -27,6 +30,56 @@ import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.checkBookExi
 import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.checkUserExist;
 
 public class BookDAO {
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private HashMap<String, List<LightBookDTO>> inMemoryFavoriteBooks = new HashMap<>();
+    private HashMap<String, List<LightBookDTO>> inMemoryFavoriteBooksToBeDeleted = new HashMap<>();
+
+    /**
+     * This method saves the favorite books in memory to the graph DB every hour
+     */
+    public void saveInMemoryFavoriteBooks() {
+        lock.writeLock().lock();
+        try {
+            Session session = Neo4jConfig.getSession();
+
+            for (String username : inMemoryFavoriteBooks.keySet()) {
+                List<LightBookDTO> books = inMemoryFavoriteBooks.get(username);
+
+                for (LightBookDTO book : books) {
+                    session.run("MATCH (u:User {name: $username}), (b:Book {id: $book}) MERGE (u)-[r:FAVORS]->(b)",
+                            Values.parameters("username", username, "book", book.getId()));
+                }
+            }
+
+            inMemoryFavoriteBooks.clear();
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * This method saves the favorite books to be deleted in memory to the document DB every hour
+     */
+    public void saveInMemoryFavoriteBooksToBeDeleted() {
+        lock.writeLock().lock();
+        try {
+            Session session = Neo4jConfig.getSession();
+
+            for (String username : inMemoryFavoriteBooksToBeDeleted.keySet()) {
+                List<LightBookDTO> books = inMemoryFavoriteBooksToBeDeleted.get(username);
+
+                for (LightBookDTO book : books) {
+                    session.run("MATCH (u:User {name: $username})-[r:FAVORS]->(b:Book {id: $book}) DELETE r",
+                            Values.parameters("username", username, "book", book.getId()));
+                }
+            }
+
+            inMemoryFavoriteBooksToBeDeleted.clear();
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
     private List<LightBookDTO> setResult(List<Document> bookDocuments) {
         List<LightBookDTO> books = new ArrayList<>();
         for (Document doc : bookDocuments) {
@@ -36,26 +89,30 @@ public class BookDAO {
     }
 
     public List<LightBookDTO> getWishlist(String username) {
-        Jedis jedis = RedisConfig.getSession();
+        lock.readLock().lock();
+        try {
+            Jedis jedis = RedisConfig.getSession();
 
-        // Get all the keys of the wishlist of the user
-        Set<String> keys = jedis.keys("wishlist:" + username + ":*");
+            // Get all the keys of the wishlist of the user
+            Set<String> keys = jedis.keys("wishlist:" + username + ":*");
 
-        List<LightBookDTO> books = new ArrayList<>();
+            List<LightBookDTO> books = new ArrayList<>();
 
-        // For each key, get the id and title of the book
-        for (String key : keys) {
-            Map<String, String> book = jedis.hgetAll(key);
+            // For each key, get the id and title of the book
+            for (String key : keys) {
+                Map<String, String> book = jedis.hgetAll(key);
 
-            Long bookId = Long.parseLong(key.split(":")[2]);
+                Long bookId = Long.parseLong(key.split(":")[2]);
 
-            books.add(new LightBookDTO(bookId, book.get("book_title")));
+                books.add(new LightBookDTO(bookId, book.get("book_title")));
+            }
+
+            return books;
+        } finally {
+            lock.readLock().unlock();
         }
-
-        System.out.println(books);
-
-        return books;
     }
+
 
     public ResponseEntity<String> addToWishlist(String username, Long bookId, WishlistBookDTO book) {
         Jedis jedis = RedisConfig.getSession();
@@ -120,8 +177,6 @@ public class BookDAO {
 
         result = result.subList(0, Math.min(10, result.size()));
 
-        System.out.println(result);
-
         List<LightBookDTO> trendingBooks = new ArrayList<>();
         for (Document doc : result) {
             trendingBooks.add(new LightBookDTO(doc.getLong("_id"), doc.getString("book_title")));
@@ -131,8 +186,6 @@ public class BookDAO {
     }
 
     public List<LightBookDTO> getFriendsRecentlyReadBooks(String usernames) {
-        System.out.println("Richiesta libri recentemente letti dagli amici");
-
         if (usernames.isEmpty()) {
             System.out.println("User has no friends");
             return null;
@@ -153,12 +206,9 @@ public class BookDAO {
         )).into(new ArrayList<>());
 
         if (BookDocuments.isEmpty()) {
-            System.out.println("User's friends never read a book");
             return null;
         } else {
             List<LightBookDTO> books = setResult(BookDocuments);
-
-            System.out.println(books);
 
             return books;
         }
@@ -220,53 +270,26 @@ public class BookDAO {
     }
 
     public ResponseEntity<String> addFavoriteBook(@PathVariable String username, @PathVariable String book) {
-        System.out.println("Richiesta aggiunta libro: " + book + " ai preferiti di: " + username);
-
         if (checkUserExist(username) && checkBookExist(book)) {
-            try {
-                // Proceed with the adding of the book
-                Session session = Neo4jConfig.getSession();
-                session.run("MATCH (u:User {name: $username}), (b:Book {id: $book}) MERGE (u)-[r:FAVORS]->(b)",
-                        Values.parameters("username", username, "book", book));
-
-                System.out.println("User " + username + " added book: " + book + " to favorites");
-
-                return ResponseEntity.ok("Add favorite book operation successful.");
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Add favorite book operation failed: " + e.getMessage());
-            }
+            inMemoryFavoriteBooks.computeIfAbsent(username, k -> new ArrayList<>());
+            inMemoryFavoriteBooks.get(username).add(new LightBookDTO(Long.parseLong(book), ""));
+            return ResponseEntity.ok("Book added to favorites");
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User or book does not exist.");
         }
     }
 
     public ResponseEntity<String> removeFavoriteBook(@PathVariable String username, @PathVariable String book) {
-        System.out.println("Richiesta rimozione libro: " + book + " dai preferiti di: " + username);
-
         if (checkUserExist(username) && checkBookExist(book)) {
-            try {
-                System.out.println("User " + username + " removing book: " + book + " from favorites");
-
-                // Proceed with the removing of the book
-                Session session = Neo4jConfig.getSession();
-                session.run("MATCH (u:User {name: $username})-[r:FAVORS]->(b:Book {id: $book}) DELETE r",
-                        Values.parameters("username", username, "book", book));
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Neo4j: Remove favorite book operation failed: " + e.getMessage());
-            }
-
-            System.out.println("User " + username + " removed book: " + book + " from favorites");
-
-            return ResponseEntity.ok("Remove favorite book operation successful.");
+            inMemoryFavoriteBooksToBeDeleted.computeIfAbsent(username, k -> new ArrayList<>());
+            inMemoryFavoriteBooksToBeDeleted.get(username).add(new LightBookDTO(Long.parseLong(book), ""));
+            return ResponseEntity.ok("Book removed from favorites");
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User or book does not exist.");
         }
     }
 
     public List<LightBookDTO> getSuggestedBooks(@PathVariable String username) {
-        System.out.println("Richiesta libri suggeriti per: " + username);
-
         if (!checkUserExist(username)) {
             System.out.println("User " + username + " does not exist");
             return null;
@@ -282,11 +305,8 @@ public class BookDAO {
                     Values.parameters("username", username)
             );
 
-            System.out.println("Suggested books for user " + username + ":");
-
             List<LightBookDTO> books = new ArrayList<>();
             while (result.hasNext()) {
-                System.out.println(result.next());
                 Record record = result.next();
                 Long id = Long.parseLong(record.get("id").asString());
                 String title = record.get("title").asString();

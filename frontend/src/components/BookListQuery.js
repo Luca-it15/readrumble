@@ -9,6 +9,10 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 function BookListQuery({query}) {
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
+    if(!currentUser['following']) {
+        currentUser['following'] = [];
+    }
+
     const usernames = Array.isArray(currentUser['following']) ? currentUser['following'] : currentUser['following'].split(",");
     console.log(usernames);
 
@@ -17,6 +21,10 @@ function BookListQuery({query}) {
     const navigate = useNavigate();
 
     const fetchLastBooksOfFriends = async () => {
+        if (usernames.length === 0) {
+            return;
+        }
+
         try {
             const usernamesString = usernames.join(",");
             const response = await axios.get(`http://localhost:8080/api/book/friendsRecentlyReadBooks?usernames=${usernamesString}`);

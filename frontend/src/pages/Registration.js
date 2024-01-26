@@ -58,9 +58,27 @@ function RegistrationForm() {
             setRegistrationStatus({message: response.data, variant: 'success'});
 
             timeout_text();
-            setTimeout(() => {
-                window.location.href = 'http://localhost:3000/login';
-            }, 1300);
+
+            let currentUser = localStorage.getItem('logged_user');
+
+            if (!currentUser) {
+                currentUser = {};
+            } else {
+                currentUser = JSON.parse(currentUser);
+            }
+
+            currentUser['_id'] = formData['_id'];
+            currentUser['name'] = formData['name'];
+            currentUser['surname'] = formData['surname'];
+
+            localStorage.setItem('logged_user', JSON.stringify(currentUser));
+
+            console.log("Logged user: " + JSON.stringify(currentUser));
+            console.log(registrationStatus)
+
+            localStorage.setItem('isLoggedIn', 'true');
+
+            window.location.href = '/home';
         } catch (error) {
             setRegistrationStatus({message: error.response ? error.response.data : error.message, variant: 'danger'});
             timeout_text();
