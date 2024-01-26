@@ -17,7 +17,7 @@ const NavApp = () => {
     const handleClose = () => setOpen(false);
 
     const handleLogout = () => {
-        navigate("/login");
+        navigate("/");
         window.location.reload();
         localStorage.clear();
     }
