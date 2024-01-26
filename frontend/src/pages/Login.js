@@ -28,7 +28,6 @@ function LoginForm() {
         variant: 'success', // o 'danger' in caso di errore
     });
 
-
     const handleChange = (e) => {
         const {name, value, type, checked} = e.target;
         setFormData((prevData) => ({

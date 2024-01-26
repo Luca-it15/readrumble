@@ -117,64 +117,43 @@ const App = () => {
                                         <Route
                                             exact
                                             path="/popular"
-                                            element={
-                                                <PopularCompetitionBlock/>
-                                            }
+                                            element={<PopularCompetitionBlock/>}
                                         />
-
                                         <Route
                                             path="/home"
-                                            element={
-                                                <Home/>
-                                            }
+                                            element={<Home/>}
                                         />
                                         <Route
                                             path="/explore"
-                                            element={
-                                                <Explore/>
-                                            }
+                                            element={<Explore/>}
                                         />
                                         <Route
                                             path="/settings"
-                                            element={
-                                                <UserSettings/>
-                                            }
+                                            element={<UserSettings/>}
                                         />
                                         <Route
                                             path="/profile"
-                                            element={
-                                                <ProfilePage/>
-                                            }
+                                            element={<ProfilePage/>}
                                         />
                                         <Route
                                             path="/user/:username"
-                                            element={
-                                                <OtherUserProfile/>
-                                            }
+                                            element={<OtherUserProfile/>}
                                         />
                                         <Route
                                             path="/post"
-                                            element={
-                                                <PostForm/>
-                                            }
+                                            element={<PostForm/>}
                                         />
                                         <Route
                                             path="/dashboard"
-                                            element={
-                                                <Dashboard/>
-                                            }
+                                            element={<Dashboard/>}
                                         />
                                         <Route
                                             path="/competitions"
-                                            element={
-                                                <CompetitionPage/>
-                                            }
+                                            element={<CompetitionPage/>}
                                         />
                                         <Route
                                             path="/competition/:name"
-                                            element={
-                                                <CompetitionSpec/>
-                                            }
+                                            element={<CompetitionSpec/>}
                                         />
                                         <Route
                                             path="/bookdetails/:id"

@@ -121,9 +121,10 @@ const DashboardAdmin = () => {
                     {
                         label: 'Average pages read',
                         data: avgPagesByTagData.map((data) => data.pages),
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        backgroundColor: 'rgba(75,192,192,0.41)',
                         borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1,
+                        borderWidth: 0,
+                        borderRadius: 10,
                     },
                 ],
             }}

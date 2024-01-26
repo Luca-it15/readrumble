@@ -45,31 +45,23 @@ function RegistrationForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(formData);
-        // Validazione: Verifica se almeno un campo è vuoto
+
         if (Object.values(formData).some((value) => value === '')) {
-            setValidationError('All fields must be filled !');
+            setValidationError('All fields must be filled!');
             timeout_text();
             return;
         }
         console.log(formData);
         try {
-            // Invia la richiesta HTTP qui usando axios
             const response = await axios.post('http://localhost:8080/api/registration', formData);
 
-            // Gestisci la risposta qui
             setRegistrationStatus({message: response.data, variant: 'success'});
 
-            // Add the user to the graph
-            await axios.post(`http://localhost:8080/api/newUser/${formData._id}`);
-
             timeout_text();
-            // Attendere 3 secondi e poi reindirizzare
             setTimeout(() => {
                 window.location.href = 'http://localhost:3000/login';
             }, 1300);
-            // 3000 millisecondi = 3 secondi
         } catch (error) {
-            // Gestisci gli errori qui
             setRegistrationStatus({message: error.response ? error.response.data : error.message, variant: 'danger'});
             timeout_text();
         }
@@ -91,16 +83,19 @@ function RegistrationForm() {
                     <Form.Control style={{borderRadius: '30px', marginBottom: '30px'}} type="text" name="name"
                                   placeholder="Name" onChange={handleChange}/>
                 </Form.Group>
+
                 <Form.Group className="mb-3" controlId="formBasicSurname">
                     <Form.Label style={{marginLeft: '10px'}}><Typography>Surname</Typography></Form.Label>
                     <Form.Control style={{borderRadius: '30px', marginBottom: '30px'}} type="text" name="surname"
                                   placeholder="Surname" onChange={handleChange}/>
                 </Form.Group>
+
                 <Form.Group className="mb-3" controlId="formBasicUsername">
                     <Form.Label style={{marginLeft: '10px'}}><Typography>Username</Typography></Form.Label>
                     <Form.Control style={{borderRadius: '30px', marginBottom: '30px'}} type="text" name="_id"
                                   placeholder="Username" onChange={handleChange}/>
                 </Form.Group>
+
                 <Form.Group className="mb-3" controlId="formBasicPassword">
                     <Form.Label style={{marginLeft: '10px'}}><Typography>Password</Typography></Form.Label>
                     <Form.Control style={{borderRadius: '30px', marginBottom: '30px'}} type="password" name="password"
@@ -114,6 +109,7 @@ function RegistrationForm() {
                     </Button>
                 </Grid>
             </Form>
+
             <Grid item sx={{textAlign: 'right'}}>
                 <Typography>Already have an account?
                     <Button onClick={GoLogin} variant="filled" type="submit" sx={{
@@ -125,6 +121,7 @@ function RegistrationForm() {
                     </Button>
                 </Typography>
             </Grid>
+
             {validationError && (
                 <Alert variant="danger">
                     {validationError}

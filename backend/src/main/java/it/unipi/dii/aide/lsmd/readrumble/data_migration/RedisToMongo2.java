@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component
-public class RedisToMongo {
+public class RedisToMongo2 {
     private static final Logger logger = LoggerFactory.getLogger(RedisToMongo.class);
 
     private Jedis jedis;
@@ -79,59 +79,55 @@ public class RedisToMongo {
         logger.info("MongoDB wishlists updated!");
     }
 
-    // TODO: favoriteBooks
-
-    // TODO: following
-
     /**
      * This method is scheduled to run every 2 hours.
      * It updates the MongoDB competition collection with the data from Redis.
      *
-    @Scheduled(fixedRate = 36000000) // 1 hour in milliseconds
-    public void updateMongoCompetitions() {
-        logger.info("Updating MongoDB competitions...");
+     @Scheduled(fixedRate = 36000000) // 1 hour in milliseconds
+     public void updateMongoCompetitions() {
+     logger.info("Updating MongoDB competitions...");
 
-        jedis = RedisConfig.getSession();
-        mongoCollection = MongoConfig.getCollection("Competitions");
+     jedis = RedisConfig.getSession();
+     mongoCollection = MongoConfig.getCollection("Competitions");
 
-        Set<String> keys = jedis.keys("competition:*");
+     Set<String> keys = jedis.keys("competition:*");
 
-        // Create a map to store the keys and their associated values
-        Map<String, Integer> keyValueMap = new HashMap<>();
+     // Create a map to store the keys and their associated values
+     Map<String, Integer> keyValueMap = new HashMap<>();
 
-        // Create a set to keep track of the competitions whose ranks have been cleared
-        Set<String> clearedCompetitions = new HashSet<>();
+     // Create a set to keep track of the competitions whose ranks have been cleared
+     Set<String> clearedCompetitions = new HashSet<>();
 
-        for (String key : keys) {
-            // Get the value associated with the key
-            int value = Integer.parseInt(jedis.get(key));
-            keyValueMap.put(key, value);
-        }
+     for (String key : keys) {
+     // Get the value associated with the key
+     int value = Integer.parseInt(jedis.get(key));
+     keyValueMap.put(key, value);
+     }
 
-        // Sort the map by values in descending order and get the top 10 entries
-        List<Map.Entry<String, Integer>> topEntries = keyValueMap.entrySet().stream()
-                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-                .limit(10)
-                .toList();
+     // Sort the map by values in descending order and get the top 10 entries
+     List<Map.Entry<String, Integer>> topEntries = keyValueMap.entrySet().stream()
+     .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+     .limit(10)
+     .toList();
 
-        for (Map.Entry<String, Integer> entry : topEntries) {
-            String competitionName = entry.getKey().split(":")[1];
-            int score = entry.getValue();
+     for (Map.Entry<String, Integer> entry : topEntries) {
+     String competitionName = entry.getKey().split(":")[1];
+     int score = entry.getValue();
 
-            // Clear the MongoDB competition rank for the competition only if it hasn't been cleared yet
-            if (!clearedCompetitions.contains(competitionName)) {
-                mongoCollection.updateOne(new Document("_id", competitionName), new Document("$set", new Document("rank", new ArrayList<>())));
-                clearedCompetitions.add(competitionName);
-            }
+     // Clear the MongoDB competition rank for the competition only if it hasn't been cleared yet
+     if (!clearedCompetitions.contains(competitionName)) {
+     mongoCollection.updateOne(new Document("_id", competitionName), new Document("$set", new Document("rank", new ArrayList<>())));
+     clearedCompetitions.add(competitionName);
+     }
 
-            Document doc = new Document()
-                    .append("username", competitionName)
-                    .append("pages_read", score);
+     Document doc = new Document()
+     .append("username", competitionName)
+     .append("pages_read", score);
 
-            // Add the Document to the array rank in the MongoDB document with _id equal to the competitionName
-            mongoCollection.updateOne(new Document("_id", competitionName), new Document("$addToSet", new Document("rank", doc)));
-        }
+     // Add the Document to the array rank in the MongoDB document with _id equal to the competitionName
+     mongoCollection.updateOne(new Document("_id", competitionName), new Document("$addToSet", new Document("rank", doc)));
+     }
 
-        logger.info("MongoDB competitions updated!");
-    }*/
+     logger.info("MongoDB competitions updated!");
+     }*/
 }

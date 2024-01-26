@@ -4,7 +4,10 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 
+import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
 import org.bson.Document;
+import org.neo4j.driver.Session;
+import org.neo4j.driver.Values;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -67,12 +70,21 @@ public class UserDAO {
 
     public ResponseEntity<String> RegUser(Document user) {
         System.out.println(user);
-        String usernameDaControllare = (String) user.get("_id");
+        String username = (String) user.get("_id");
         MongoCollection<Document> collection = MongoConfig.getCollection("Users");
-        List<Document> utenti = collection.find(eq("_id", usernameDaControllare)).into(new ArrayList<>());
-        if (utenti.isEmpty()) {
+        List<Document> usersCollection = collection.find(eq("_id", username)).into(new ArrayList<>());
+        if (usersCollection.isEmpty()) {
             collection.insertOne(user);
-            return ResponseEntity.ok("Registration Succeded ! You will now be redirected to the Login page ! ");
+
+            // Add a node to the graph
+            try (Session session = Neo4jConfig.getSession()) {
+                session.run("MERGE (u:User {name: $username})",
+                        Values.parameters("username", username));
+
+                return ResponseEntity.ok("Registration succeeded! You will now be redirected to the login page!");
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Add user operation failed: " + e.getMessage());
+            }
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already in use, please choose another one!");
         }
@@ -85,13 +97,13 @@ public class UserDAO {
         try (MongoCursor<Document> cursor = MongoConfig.getCollection("Users").find(eq("_id", username)).iterator()) {
 
             if (cursor.hasNext()) {
-                Document utente_registrato = cursor.next();
+                Document userDoc = cursor.next();
 
-                System.out.println(utente_registrato);
-                System.out.println(utente_registrato.get("Username"));
+                System.out.println(userDoc);
+                System.out.println(userDoc.get("Username"));
 
-                if (password.equals(utente_registrato.get("Password"))) {
-                    return utente_registrato;
+                if (password.equals(userDoc.get("Password"))) {
+                    return userDoc;
                 } else {
                     return null;
                 }
@@ -110,7 +122,7 @@ public class UserDAO {
         String type_of_change_request = (String) changes.get("type_of_change_request");
         String username_to_use = (String) changes.get("username_to_use");
         MongoCollection<Document> collection = MongoConfig.getCollection("Users");
-        try (MongoCursor cursor = collection.find(eq("_id", username_to_use)).cursor()) {
+        try (MongoCursor<Document> cursor = collection.find(eq("_id", username_to_use)).cursor()) {
             if (cursor.hasNext()) {
                 collection.updateOne(eq("_id", username_to_use), set(type_of_change_request, new_field));
                 String result = (String) type_of_change_request + " Changed from " + old_field + " To " + new_field;

@@ -4,7 +4,7 @@ import Button from '@mui/material-next/Button';
 import Typography from '@mui/material/Typography';
 import {Divider, Link, List, ListItem, Paper} from "@mui/material";
 import {useNavigate} from "react-router-dom";
-import {blue} from "@mui/material/colors";
+import {blue, red} from "@mui/material/colors";
 
 let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
@@ -88,6 +88,10 @@ function RecentlyReadBooks({user}) {
         margin: '20px 10px 0px 10px',
         borderRadius: 5,
         width: '100%'
+    }
+
+    function loadLessBooks() {
+        setDisplayCount(10);
     }
 
     return (
