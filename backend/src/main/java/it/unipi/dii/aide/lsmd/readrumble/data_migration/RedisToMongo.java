@@ -12,13 +12,15 @@ import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Component
 public class RedisToMongo {
     private static final Logger logger = LoggerFactory.getLogger(RedisToMongo.class);
-
     private Jedis jedis;
     private MongoCollection<Document> mongoCollection;
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     /**
      * This method is scheduled to run every 2 hours.
@@ -28,40 +30,48 @@ public class RedisToMongo {
     public void updateMongoWishlists() {
         logger.info("Updating MongoDB wishlists...");
 
-        jedis = RedisConfig.getSession();
-        mongoCollection = MongoConfig.getCollection("Wishlists");
+        lock.writeLock().lock();
 
-        // Clear the entire wishlists collection
-        mongoCollection.deleteMany(new Document());
+        Map<String, List<Document>> userWishlists;
 
-        Pipeline pipeline = jedis.pipelined();
-        Response<Set<String>> keysResponse = pipeline.keys("wishlist:*");
+        try {
+            jedis = RedisConfig.getSession();
+            mongoCollection = MongoConfig.getCollection("Wishlists");
 
-        pipeline.sync();
+            // Clear the entire wishlists collection
+            mongoCollection.deleteMany(new Document());
 
-        Set<String> keys = keysResponse.get();
+            Pipeline pipeline = jedis.pipelined();
+            Response<Set<String>> keysResponse = pipeline.keys("wishlist:*");
 
-        // Create a map to store the wishlists of each user
-        Map<String, List<Document>> userWishlists = new HashMap<>();
+            pipeline.sync();
 
-        for (String key : keys) {
-            String username = key.split(":")[1];
+            Set<String> keys = keysResponse.get();
 
-            // Get all the fields and their values for the current key
-            Map<String, String> fields = jedis.hgetAll(key);
+            // Create a map to store the wishlists of each user
+            userWishlists = new HashMap<>();
 
-            // Convert the tags string into an array of strings (the tags are separated by commas)
-            String tagsField = fields.get("tags");
-            List<String> tags = tagsField != null ? Arrays.asList(tagsField.split(",")) : new ArrayList<>();
+            for (String key : keys) {
+                String username = key.split(":")[1];
 
-            Document doc = new Document()
-                    .append("book_id", Long.parseLong(fields.get("book_id")))
-                    .append("book_title", fields.get("book_title"))
-                    .append("num_pages", Integer.parseInt(fields.get("num_pages")))
-                    .append("tags", tags);
+                // Get all the fields and their values for the current key
+                Map<String, String> fields = jedis.hgetAll(key);
 
-            // Add the Document to the user's wishlist in the map
-            userWishlists.computeIfAbsent(username, k -> new ArrayList<>()).add(doc);
+                // Convert the tags string into an array of strings (the tags are separated by commas)
+                String tagsField = fields.get("tags");
+                List<String> tags = tagsField != null ? Arrays.asList(tagsField.split(",")) : new ArrayList<>();
+
+                Document doc = new Document()
+                        .append("book_id", Long.parseLong(fields.get("book_id")))
+                        .append("book_title", fields.get("book_title"))
+                        .append("num_pages", Integer.parseInt(fields.get("num_pages")))
+                        .append("tags", tags);
+
+                // Add the Document to the user's wishlist in the map
+                userWishlists.computeIfAbsent(username, k -> new ArrayList<>()).add(doc);
+            }
+        } finally {
+            lock.writeLock().unlock();
         }
 
         // Insert the MongoDB wishlists for each user

@@ -3,9 +3,9 @@ package it.unipi.dii.aide.lsmd.readrumble.user;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
-
 import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
 import org.bson.Document;
+import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.Values;
 import org.springframework.http.HttpStatus;
@@ -18,8 +18,29 @@ import java.util.Map;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
+import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.checkUserExist;
+import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.getMaps;
 
 public class UserDAO {
+    private List<Document> inMemoryUsers = new ArrayList<>();
+
+    public void saveInMemoryUsers() {
+        for (Document user : inMemoryUsers) {
+            String username = (String) user.get("_id");
+            MongoCollection<Document> collection = MongoConfig.getCollection("Users");
+            collection.insertOne(user);
+
+            // Add a node to the graph
+            try (Session session = Neo4jConfig.getSession()) {
+                session.run("MERGE (u:User {name: $username})",
+                        Values.parameters("username", username));
+            } catch (Exception e) {
+                System.out.println("Add user operation failed: " + e.getMessage());
+            }
+        }
+        inMemoryUsers.clear();
+    }
+
     public List<UserDTO> allUser() {
         List<UserDTO> users = new ArrayList<>();
 
@@ -74,21 +95,13 @@ public class UserDAO {
         MongoCollection<Document> collection = MongoConfig.getCollection("Users");
         List<Document> usersCollection = collection.find(eq("_id", username)).into(new ArrayList<>());
         if (usersCollection.isEmpty()) {
-            collection.insertOne(user);
-
-            // Add a node to the graph
-            try (Session session = Neo4jConfig.getSession()) {
-                session.run("MERGE (u:User {name: $username})",
-                        Values.parameters("username", username));
-
-                return ResponseEntity.ok("Registration succeeded! You will now be redirected to the login page!");
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Add user operation failed: " + e.getMessage());
-            }
+            inMemoryUsers.add(user);
+            return ResponseEntity.ok("Registration succeeded! You will now be redirected to the home page!");
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already in use, please choose another one!");
         }
     }
+
 
     public Document PersonalInfo(User user) {
         String username = user.getId();
@@ -155,6 +168,69 @@ public class UserDAO {
                     "name", user.getString("name"),
                     "surname", user.getString("surname")
             );
+        } else {
+            return null;
+        }
+    }
+
+    public List<String> getFollowing(@PathVariable String username) {
+        try (Session session = Neo4jConfig.getSession()) {
+            Result result = session.run("MATCH (u:User {name: $username})-[:FOLLOWS]->(f:User) RETURN f.name AS following",
+                    Values.parameters("username", username));
+            List<String> following = new ArrayList<>();
+            while (result.hasNext()) {
+                following.add(result.next().get("following").asString());
+            }
+            return following;
+        }
+    }
+
+    public ResponseEntity<String> follow(@PathVariable String follower, @PathVariable String followee) {
+        if (checkUserExist(follower) && checkUserExist(followee)) {
+            try (Session session = Neo4jConfig.getSession()) {
+                session.run("MERGE (a:User {name: $follower}) " +
+                                "MERGE (b:User {name: $followee}) " +
+                                "MERGE (a)-[r:FOLLOWS]->(b)",
+                        Values.parameters("follower", follower, "followee", followee));
+                return ResponseEntity.ok("Follow operation successful.");
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Follow operation failed: " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Follower or followee does not exist.");
+        }
+    }
+
+    public ResponseEntity<String> unfollow(@PathVariable String follower, @PathVariable String followee) {
+        if (checkUserExist(follower) && checkUserExist(followee)) {
+            try (Session session = Neo4jConfig.getSession()) {
+                session.run("MATCH (a:User {name: $follower})-[r:FOLLOWS]->(b:User {name: $followee}) " +
+                                "DELETE r",
+                        Values.parameters("follower", follower, "followee", followee));
+                return ResponseEntity.ok("Unfollow operation successful.");
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unfollow operation failed: " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Follower or followee does not exist.");
+        }
+    }
+
+    public List<Map<String, Object>> getSuggestedFriends(@PathVariable String username) {
+        if (checkUserExist(username)) {
+            System.out.println("Retrieving suggestend friends for " + username);
+
+            try (Session session = Neo4jConfig.getSession()) {
+                Result result = session.run(
+                        "MATCH (u1:User {name: $username})-[:FOLLOWS]->(u2:User)-[:FOLLOWS]->(f:User) " +
+                                "WITH u1, u2, count(DISTINCT f) AS num_friends " +
+                                "WHERE num_friends > 0.51 * COUNT{(u1)-[:FOLLOWS]->(:User)} " +
+                                "AND NOT EXISTS((u1)-[:FOLLOWS]->(u2)) " +
+                                "RETURN u2.name AS suggested_user ",
+                        Values.parameters("username", username)
+                );
+                return getMaps(result);
+            }
         } else {
             return null;
         }

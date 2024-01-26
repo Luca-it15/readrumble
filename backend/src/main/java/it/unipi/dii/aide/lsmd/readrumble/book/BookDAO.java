@@ -1,9 +1,10 @@
 package it.unipi.dii.aide.lsmd.readrumble.book;
 
-import com.mongodb.client.MongoCollection;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
+
+import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
@@ -20,6 +21,8 @@ import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Date;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.neo4j.driver.Record;
 
@@ -27,6 +30,8 @@ import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.checkBookExi
 import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.checkUserExist;
 
 public class BookDAO {
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+
     private List<LightBookDTO> setResult(List<Document> bookDocuments) {
         List<LightBookDTO> books = new ArrayList<>();
         for (Document doc : bookDocuments) {
@@ -36,26 +41,32 @@ public class BookDAO {
     }
 
     public List<LightBookDTO> getWishlist(String username) {
-        Jedis jedis = RedisConfig.getSession();
+        lock.readLock().lock();
+        try {
+            Jedis jedis = RedisConfig.getSession();
 
-        // Get all the keys of the wishlist of the user
-        Set<String> keys = jedis.keys("wishlist:" + username + ":*");
+            // Get all the keys of the wishlist of the user
+            Set<String> keys = jedis.keys("wishlist:" + username + ":*");
 
-        List<LightBookDTO> books = new ArrayList<>();
+            List<LightBookDTO> books = new ArrayList<>();
 
-        // For each key, get the id and title of the book
-        for (String key : keys) {
-            Map<String, String> book = jedis.hgetAll(key);
+            // For each key, get the id and title of the book
+            for (String key : keys) {
+                Map<String, String> book = jedis.hgetAll(key);
 
-            Long bookId = Long.parseLong(key.split(":")[2]);
+                Long bookId = Long.parseLong(key.split(":")[2]);
 
-            books.add(new LightBookDTO(bookId, book.get("book_title")));
+                books.add(new LightBookDTO(bookId, book.get("book_title")));
+            }
+
+            System.out.println(books);
+
+            return books;
+        } finally {
+            lock.readLock().unlock();
         }
-
-        System.out.println(books);
-
-        return books;
     }
+
 
     public ResponseEntity<String> addToWishlist(String username, Long bookId, WishlistBookDTO book) {
         Jedis jedis = RedisConfig.getSession();

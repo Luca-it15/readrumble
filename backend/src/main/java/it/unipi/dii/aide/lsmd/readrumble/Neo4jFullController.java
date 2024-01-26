@@ -42,7 +42,13 @@ public class Neo4jFullController {
         }
     }
 
-    private List<Map<String, Object>> getMaps(Result result) {
+    /**
+     * This method formats the result of a query into a list of maps
+     *
+     * @param result the result of the query
+     * @return the list of maps
+     */
+    public static List<Map<String, Object>> getMaps(Result result) {
         List<Map<String, Object>> resultBooks = new ArrayList<>();
         while (result.hasNext()) {
             Record record = result.next();
@@ -53,109 +59,5 @@ public class Neo4jFullController {
             resultBooks.add(book);
         }
         return resultBooks;
-    }
-
-    /**
-     * This method adds a user to the graph
-     *
-     * @param username the username of the user
-     * @return a ResponseEntity with the result of the operation
-     */
-    @PostMapping("/newUser/{username}")
-    public ResponseEntity<String> addUser(@PathVariable String username) {
-        try (Session session = Neo4jConfig.getSession()) {
-            session.run("MERGE (u:User {name: $username})",
-                    Values.parameters("username", username));
-            return ResponseEntity.ok("Add user operation successful.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Add user operation failed: " + e.getMessage());
-        }
-    }
-
-    /**
-     * This method returns the friends of a user
-     *
-     * @param username the username of the user
-     * @return the list of friends
-     */
-    @GetMapping("/following/{username}")
-    public List<String> getFollowing(@PathVariable String username) {
-        try (Session session = Neo4jConfig.getSession()) {
-            Result result = session.run("MATCH (u:User {name: $username})-[:FOLLOWS]->(f:User) RETURN f.name AS following",
-                    Values.parameters("username", username));
-            List<String> following = new ArrayList<>();
-            while (result.hasNext()) {
-                following.add(result.next().get("following").asString());
-            }
-            return following;
-        }
-    }
-
-    /**
-     * This method creates the relation :FOLLOWS from follower to followee
-     *
-     * @param follower the username of the follower
-     * @param followee the username of the "soon to be" followed
-     * @return a ResponseEntity with the result of the operation
-     */
-    @PostMapping("/follow/{follower}/{followee}")
-    public ResponseEntity<String> follow(@PathVariable String follower, @PathVariable String followee) {
-        if (checkUserExist(follower) && checkUserExist(followee)) {
-            try (Session session = Neo4jConfig.getSession()) {
-                session.run("MERGE (a:User {name: $follower}) " +
-                                "MERGE (b:User {name: $followee}) " +
-                                "MERGE (a)-[r:FOLLOWS]->(b)",
-                        Values.parameters("follower", follower, "followee", followee));
-                return ResponseEntity.ok("Follow operation successful.");
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Follow operation failed: " + e.getMessage());
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Follower or followee does not exist.");
-        }
-    }
-
-    /**
-     * This method deletes the relation :FOLLOWS from follower to followee
-     *
-     * @param follower the username of the follower
-     * @param followee the username of the "soon to be" unfollowed
-     * @return a ResponseEntity with the result of the operation
-     */
-    @DeleteMapping("/unfollow/{follower}/{followee}")
-    public ResponseEntity<String> unfollow(@PathVariable String follower, @PathVariable String followee) {
-        if (checkUserExist(follower) && checkUserExist(followee)) {
-            try (Session session = Neo4jConfig.getSession()) {
-                session.run("MATCH (a:User {name: $follower})-[r:FOLLOWS]->(b:User {name: $followee}) " +
-                                "DELETE r",
-                        Values.parameters("follower", follower, "followee", followee));
-                return ResponseEntity.ok("Unfollow operation successful.");
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unfollow operation failed: " + e.getMessage());
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Follower or followee does not exist.");
-        }
-    }
-
-    @GetMapping("/suggestedFriends/{username}")
-    public List<Map<String, Object>> getSuggestedFriend(@PathVariable String username) {
-        if (checkUserExist(username)) {
-            System.out.println("Retrieving suggestend friends for " + username);
-
-            try (Session session = Neo4jConfig.getSession()) {
-                Result result = session.run(
-                        "MATCH (u1:User {name: $username})-[:FOLLOWS]->(u2:User)-[:FOLLOWS]->(f:User) "+
-                "WITH u1, u2, count(DISTINCT f) AS num_friends "+
-                "WHERE num_friends > 0.51 * COUNT{(u1)-[:FOLLOWS]->(:User)} "+
-                "AND NOT EXISTS((u1)-[:FOLLOWS]->(u2)) "+
-                "RETURN u2.name AS suggested_user ",
-                Values.parameters("username", username)
-                );
-                return getMaps(result);
-            }
-        } else {
-            return null;
-        }
     }
 }

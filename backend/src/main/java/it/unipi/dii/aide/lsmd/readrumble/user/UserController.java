@@ -1,15 +1,10 @@
 package it.unipi.dii.aide.lsmd.readrumble.user;
 
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import org.bson.Document;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,12 +12,10 @@ import java.util.Map;
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
-
     private UserDAO userDAO;
     public UserController() {
         userDAO = new UserDAO();
     }
-
 
     @PostMapping("/login")
     public Document goLogin(@RequestBody Document utente) {
@@ -72,5 +65,51 @@ public class UserController {
     @GetMapping("/user/{username}")
     public Map<String, String> getUser(@PathVariable String username) {
         return userDAO.getUser(username);
+    }
+
+    /**
+     * This method returns the friends of a user
+     *
+     * @param username the username of the user
+     * @return the list of friends
+     */
+    @GetMapping("/following/{username}")
+    public List<String> getFollowing(@PathVariable String username) {
+        return userDAO.getFollowing(username);
+    }
+
+    /**
+     * This method creates the relation :FOLLOWS from follower to followee
+     *
+     * @param follower the username of the follower
+     * @param followee the username of the "soon to be" followed
+     * @return a ResponseEntity with the result of the operation
+     */
+    @PostMapping("/follow/{follower}/{followee}")
+    public ResponseEntity<String> follow(@PathVariable String follower, @PathVariable String followee) {
+        return userDAO.follow(follower, followee);
+    }
+
+    /**
+     * This method deletes the relation :FOLLOWS from follower to followee
+     *
+     * @param follower the username of the follower
+     * @param followee the username of the "soon to be" unfollowed
+     * @return a ResponseEntity with the result of the operation
+     */
+    @DeleteMapping("/unfollow/{follower}/{followee}")
+    public ResponseEntity<String> unfollow(@PathVariable String follower, @PathVariable String followee) {
+        return userDAO.unfollow(follower, followee);
+    }
+
+    /**
+     * This method returns a list of suggested friends for the user with the given username
+     *
+     * @param username the username of the user
+     * @return the list of suggested friends
+     */
+    @GetMapping("/suggestedFriends/{username}")
+    public List<Map<String, Object>> getSuggestedFriends(@PathVariable String username) {
+        return userDAO.getSuggestedFriends(username);
     }
 }
