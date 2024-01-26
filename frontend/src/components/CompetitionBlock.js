@@ -9,6 +9,7 @@ function CompetitionProfBlock({user}) {
     const currentUser = JSON.parse(localStorage.getItem('logged_user'));
     const [competitions, setCompetitions] = useState([]);
     const [Username, setUsername] = useState('');
+    const [data, setData] = useState([])
     const navigate = useNavigate();
     console.log("ciao user: ");
 
@@ -34,7 +35,18 @@ function CompetitionProfBlock({user}) {
             }
             setCompetitions(competitions_to_store)
         } else {
-            // TODO: Gestire competizioni altrui
+            axios.post('http://localhost:8080/api/competition/retrieve/personal',user)
+            .then(response => {
+                const jsonData = response.data.map(document => JSON.parse(JSON.stringify(document)));
+                const competitions_to_store = [];
+                let i = 0;
+                while (jsonData[i] != null && i < 3) {
+                    competitions_to_store[i] = jsonData[i];
+                    i = i + 1;
+                }
+                setCompetitions(competitions_to_store)
+            })
+            .catch(error => console.error('Errore nella richiesta GET:', error));
         }
     }
 
@@ -44,13 +56,7 @@ function CompetitionProfBlock({user}) {
 
     /*useEffect(() => {
       // Effettua la richiesta GET al tuo backend
-      axios.get('http://localhost:8080/api/competition/retrieve')
-        .then(response => {
-          // Converti i documenti MongoDB in JSON
-          const jsonData = response.data.map(document => JSON.parse(JSON.stringify(document)));
-          setData(jsonData);
-        })
-        .catch(error => console.error('Errore nella richiesta GET:', error));
+
     }, []); // L'array vuoto come dipendenza indica che questo effetto viene eseguito solo una volta al montaggio del componente
   */
 
