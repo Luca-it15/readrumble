@@ -192,6 +192,15 @@ function CompetitionSpec() {
                         </Grid>
                     </Grid>
                 </Grid>
+                {points != null ? (
+                    <Grid>
+                        <Typography variant="h5">Your pages read: {points}</Typography>
+                    </Grid>
+                ) : (
+                    <Grid>
+                        <Typography variant="h5">You are not participating in this competition</Typography>
+                    </Grid>
+                )}
                 <Grid>
                     {points != null ? (
                         <Button variant="filledTonal" sx={{
