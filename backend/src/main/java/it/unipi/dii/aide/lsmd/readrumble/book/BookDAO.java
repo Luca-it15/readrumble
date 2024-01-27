@@ -108,7 +108,6 @@ public class BookDAO {
         }
     }
 
-
     public ResponseEntity<String> addToWishlist(String username, Long bookId, WishlistBookDTO book) {
         Jedis jedis = RedisConfig.getSession();
 
@@ -223,8 +222,6 @@ public class BookDAO {
         if (BookDocuments.isEmpty()) {
             return null;
         } else {
-            System.out.println(BookDocuments);
-
             return BookDocuments;
         }
     }

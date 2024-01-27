@@ -78,7 +78,7 @@ function CompetitionSpec() {
     }, []);
 
     function joinCompetition(Name, Tag) {
-        const response = axios.post("http://localhost:8080/api/competition/join", {
+        axios.post("http://localhost:8080/api/competition/join", {
             parametro1: usernameToAdd,
             parametro2: Name,
             parametro3: Tag
@@ -192,6 +192,15 @@ function CompetitionSpec() {
                         </Grid>
                     </Grid>
                 </Grid>
+                {points != null ? (
+                    <Grid>
+                        <Typography variant="h5">Your pages read: {points}</Typography>
+                    </Grid>
+                ) : (
+                    <Grid>
+                        <Typography variant="h5">You are not participating in this competition</Typography>
+                    </Grid>
+                )}
                 <Grid>
                     {points != null ? (
                         <Button variant="filledTonal" sx={{

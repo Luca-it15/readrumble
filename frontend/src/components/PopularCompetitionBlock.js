@@ -19,23 +19,28 @@ function PopularCompetitionBlock() {
     const [data, setData] = useState([]);
     const navigate = useNavigate();
     const [displayCount, setDisplayCount] = useState(3);
-// questo blocco deve mostrarmi le competitizioni più gettonate, tipo 10
     const goComp = () => {
         navigate('/competitions');
     }
 
     const goSpecificComp = (Name) => {
-        console.log("ecco il nome: " + Name);
         var dynamic_path = "/competition/" + Name;
         navigate(dynamic_path);
 
     }
+
     function createRank(value) {
+        if (value[0] == null) {
+            return (
+                <Typography>No one joined this competition</Typography>
+            )
+        }
+
         const creator = []
         creator[0] = value[0]
         creator[1] = value[1]
         creator[2] = value[2]
-        console.log(creator)
+
         return (
             creator.map(item => (
                 <Grid container item direction="row" justifyContent="space-between"
@@ -48,15 +53,14 @@ function PopularCompetitionBlock() {
     }
 
     useEffect(() => {
-        // Effettua la richiesta GET al tuo backend
         axios.get('http://localhost:8080/api/competition/retrieve/popular')
             .then(response => {
                 const jsonData = response.data.map(document => JSON.parse(JSON.stringify(document)));
-                console.log(jsonData);
+
                 setData(jsonData);
             })
             .catch(error => console.error('Errore nella richiesta GET:', error));
-    }, []); // L'array vuoto come dipendenza indica che questo effetto viene eseguito solo una volta al montaggio del componente
+    }, []);
 
     function loadMoreCompetitions() {
         setDisplayCount(displayCount + 3);
@@ -104,7 +108,8 @@ function PopularCompetitionBlock() {
                     </React.Fragment>
                 )}
 
-                <Button variant="filled" sx={{backgroundColor: blue[600], marginBottom: '10px'}}
+                <Button variant="filled" sx={{backgroundColor: blue[600], marginBottom: '10px',
+                    '&:hover': {backgroundColor: blue[500]}}}
                         onClick={goComp}><Typography>Find other competitions</Typography></Button>
             </Grid>
         </Paper>
