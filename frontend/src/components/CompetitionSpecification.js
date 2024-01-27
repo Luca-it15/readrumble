@@ -156,8 +156,8 @@ function CompetitionSpec() {
                 </Grid>
                 <Grid container direction="column" spacing={2} alignItems="center" justifyContent="space-around">
                     <Grid item xs={12} sx={{margin:'30px 0px 0px 0px'}}><Typography variant="h5">Top ten</Typography>
-                        <Grid container direction="column" spacing={2} alignItems="center" justifyContent="space-around"
-                            sx={{marginTop: '10px'}}>
+                        <Grid container direction="column" spacing={2} alignItems="center" justifyContent="center"
+                            sx={{margin: '10px 0px 5px 0px', padding: '0px'}}>
                             {rank.map(item => (
                                 <React.Fragment>
                                     <Grid container item xs={12} direction="row" justifyContent="space-between"
@@ -165,10 +165,10 @@ function CompetitionSpec() {
                                               backgroundColor: colors[(rank.indexOf(item) > 2) ? 3 : (rank.indexOf(item))],
                                               margin: '10px',
                                               borderRadius: 8,
-                                              paddingBottom: '15px',
+                                              paddingBottom: '0px',
                                               width: rank.indexOf(item) in [0, 1, 2] ? '450px' : '400px'
                                           }}>
-                                        <Grid item xs={1}>
+                                        <Grid item xs={2}>
                                             <Typography sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
                                                 {rank.indexOf(item) + 1}°</Typography>
                                         </Grid>
@@ -176,7 +176,7 @@ function CompetitionSpec() {
                                             <Typography sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
                                                 {item.username}</Typography>
                                         </Grid>
-                                        <Grid item xs={5}>
+                                        <Grid item xs={3}>
                                             <Typography sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
                                                 {item.tot_pages}</Typography>
                                         </Grid>

@@ -59,9 +59,11 @@ const NavAppAdmin = () => {
                     <Typography>Books</Typography>
                 </Button>
                 <Button sx={{color: '#ffffff', width: "70px", height: "25px", backgroundColor: 'transparent',
+                    marginLeft: '40px',
                     '&:hover': {backgroundColor: red[500]}}} onClick={handleClickOpen}>
                     <Typography>Logout</Typography>
                 </Button>
+
                 <Dialog open={open} onClose={handleClose} aria-labelledby="alert-dialog-title"
                         aria-describedby="alert-dialog-description">
                     <DialogTitle id="alert-dialog-title"><Typography variant='h5'>Confirm

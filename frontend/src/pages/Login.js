@@ -39,7 +39,6 @@ function LoginForm() {
     async function fetchAll(id) {
         const currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
-        console.log("Fetching currently reading books " + id);
         // Fetch currently reading books
         const fetchedCurrentlyReadingBooks = await axios.get(`http://localhost:8080/api/book/currentlyReadingBooks/${id}`)
         const currentlyReadingBooks = JSON.parse(JSON.stringify(fetchedCurrentlyReadingBooks.data));
@@ -52,12 +51,10 @@ function LoginForm() {
                 num_pages: book.num_pages,
                 tags: book.tags
             }));
-            console.log(currentlyReadingBooks);
         } else {
             currentUser['currentlyReading'] = [];
         }
 
-        console.log("Fetching read books " + id);
         // Fetch recently read books
         const fetchedRecentBooks = await axios.get(`http://localhost:8080/api/book/recentlyReadBooks/${id}`)
         const recentlyReadBooks = JSON.parse(JSON.stringify(fetchedRecentBooks.data));
@@ -67,12 +64,10 @@ function LoginForm() {
                 id: book.id,
                 title: book.title.replace(/"/g, '')
             }));
-            console.log(recentlyReadBooks);
         } else {
             currentUser['recentlyReadBooks'] = [];
         }
 
-        console.log("Fetching favorite books " + id);
         // Fetch favorite books
         const fetchedFavoriteBooks = await axios.get(`http://localhost:8080/api/book/favoriteBooks/${id}`)
         const favoriteBooks = JSON.parse(JSON.stringify(fetchedFavoriteBooks.data));
@@ -82,27 +77,21 @@ function LoginForm() {
                 id: book.id,
                 title: book.title.replace(/"/g, '')
             }));
-            console.log(currentUser['favoriteBooks']);
         } else {
             currentUser['favoriteBooks'] = [];
         }
 
-        console.log("Fetching following list " + id);
         // Fetch following list
         const fetchedFollowingList = await axios.get(`http://localhost:8080/api/following/${id}`)
         if (fetchedFollowingList.data) {
             currentUser['following'] = JSON.parse(JSON.stringify(fetchedFollowingList.data))
-            console.log(fetchedFollowingList.data);
         } else {
             currentUser['following'] = [];
         }
 
-        console.log("Fetching wishlist " + id);
         // Fetch wishlist
         const fetchedWishlist = await axios.get(`http://localhost:8080/api/book/wishlist/${id}`)
         const wishlist = JSON.parse(JSON.stringify(fetchedWishlist.data));
-
-        console.log(wishlist);
 
         if (wishlist) {
             currentUser['wishlist'] = wishlist.map(book => ({
@@ -113,28 +102,21 @@ function LoginForm() {
             currentUser['wishlist'] = [];
         }
 
-        console.log("Fetching competitions");
         // Fetch competitions
         const fetchedCompetitions = await axios.get(`http://localhost:8080/api/competition/joinedBy/${id}`)
         const competitions = JSON.parse(JSON.stringify(fetchedCompetitions.data));
 
         if (competitions) {
-            console.log(competitions);
-
             currentUser['competitions'] = competitions.map(competition => ({
                 name: competition.name.replace(/_/g, ' '),
                 pages: competition.pages,
                 tag: competition.tag
             }));
-
-            console.log(currentUser['competitions']);
         } else {
             currentUser['competitions'] = [];
         }
 
         localStorage.setItem('logged_user', JSON.stringify(currentUser));
-
-        console.log(JSON.parse(localStorage.getItem('logged_user')));
 
         setTimeout(function () {
             window.location.href = "/home"

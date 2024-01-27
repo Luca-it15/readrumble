@@ -74,12 +74,13 @@ function CompetitionPage() {
                 {data.map(item => (
                     <React.Fragment>
                         <Grid item xs={4}>
-                            <Paper elevation={1} sx={{
+                            <Paper sx={{
                                 backgroundColor: '#ffffff',
                                 borderRadius: 8,
                                 margin: '10px',
                                 padding: '10px',
-                                '&:hover': {backgroundColor: '#f1f7fa'}
+                                boxShadow: '0px 5px 10px 0px rgba(0,0,0,0.2)',
+                                '&:hover': {boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.2)'}
                             }}>
                                 <Typography variant="h6">{item.name}</Typography>
                                 <Typography sx={{color: '#888888'}}>Tag: {item.tag}</Typography>

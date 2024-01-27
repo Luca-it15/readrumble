@@ -27,23 +27,23 @@ const ProfilePage = () => {
     const navigate = useNavigate();
 
     const fetchWishlist = async () => {
-        if (currentUser['wihslist'] && currentUser['wihslist'].length > 0) {
-            setBooks(currentUser['wihslist']);
+        if (currentUser['wishlist'] && currentUser['wishlist'].length > 0) {
+            setBooks(currentUser['wishlist']);
         } else {
             try {
-                axios.get(`http://localhost:8080/api/book/wishlist/${currentUser['_id']}`)
-                    .then(response => {
-                        // Returns book.id and book.title
-                        const booksData = response.data.map(book => ({
-                            id: book.id,
-                            title: book.title.replace(/"/g, '')
-                        }));
+                const response = await axios.get(`http://localhost:8080/api/book/wishlist/${currentUser['_id']}`)
 
-                        setBooks(booksData);
-                        currentUser['wishlist'] = booksData;
+                console.log(JSON.stringify(response.data));
 
-                        localStorage.setItem('logged_user', JSON.stringify(currentUser));
-                    })
+                const booksData = response.data.map(book => ({
+                    id: book.id,
+                    title: book.title.replace(/"/g, '')
+                }));
+
+                setBooks(booksData);
+                currentUser['wishlist'] = booksData;
+
+                localStorage.setItem('logged_user', JSON.stringify(currentUser));
             } catch (error) {
                 console.log(error.response)
             }

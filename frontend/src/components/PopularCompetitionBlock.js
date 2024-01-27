@@ -98,12 +98,12 @@ function PopularCompetitionBlock() {
                 ) : (
                     <React.Fragment>
                         <Button variant="filled" sx={{backgroundColor: red[200], width: '140px', height: '30px',
-                            margin: '10px', '&:hover': {backgroundColor: red[100]}}} onClick={loadLessCompetitions}>
-                            <Typography>Show less</Typography>
+                            marginTop: '20px', '&:hover': {backgroundColor: '#ff8a80'}}} onClick={loadLessCompetitions}>
+                            <Typography sx={{color: '#000000'}}>Show less</Typography>
                         </Button>
                         <Button variant="filled" sx={{backgroundColor: blue[200], width: '140px', height: '30px',
-                            margin: '10px', '&:hover': {backgroundColor: blue[100]}}} onClick={loadMoreCompetitions}>
-                            <Typography>Show more</Typography>
+                            margin: '10px 20px 20px 20px', '&:hover': {backgroundColor: '#82b1ff'}}} onClick={loadMoreCompetitions}>
+                            <Typography sx={{color: '#000000'}}>Show more</Typography>
                         </Button>
                     </React.Fragment>
                 )}

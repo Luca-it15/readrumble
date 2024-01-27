@@ -183,3 +183,7 @@ main {
 .css-jmsowk-MuiGrid-root>.MuiGrid-item {
     padding-left: 0px !important;
 }
+
+.css-vwmql2-MuiGrid-root>.MuiGrid-item {
+    padding: 10px !important;
+}

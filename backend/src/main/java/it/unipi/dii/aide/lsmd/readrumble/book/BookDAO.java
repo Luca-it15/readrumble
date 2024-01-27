@@ -102,7 +102,6 @@ public class BookDAO {
     public ResponseEntity<String> addToWishlist(String username, Long bookId, WishlistBookDTO book) {
         Jedis jedis = RedisConfig.getSession();
 
-
         // See if the book is already in the wishlist
         if (jedis.exists("wishlist:" + username + ":" + bookId)) {
             return ResponseEntity.badRequest().body("Book already in wishlist");
