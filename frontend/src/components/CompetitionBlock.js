@@ -4,21 +4,18 @@ import {Container, Grid, Typography, Paper, Link, ListItem, List} from '@mui/mat
 import {useNavigate} from 'react-router-dom';
 import '../App.css';
 import {blue} from "@mui/material/colors";
+import axios from "axios";
 
 function CompetitionProfBlock({user}) {
     const currentUser = JSON.parse(localStorage.getItem('logged_user'));
     const [competitions, setCompetitions] = useState([]);
-    const [Username, setUsername] = useState('');
-    const [data, setData] = useState([])
     const navigate = useNavigate();
-    console.log("ciao user: ");
 
     const goComp = () => {
         navigate("/competitions");
     }
 
     const goSpecificComp = (Name) => {
-        console.log("ecco il nome: " + Name);
         var dynamic_path = "/competition/" + Name;
         navigate(dynamic_path);
 
@@ -26,47 +23,43 @@ function CompetitionProfBlock({user}) {
 
     function drawComp() {
         if (currentUser['_id'] === user) {
-            const competitions_partecipated = currentUser["competitions"];
+            let participated_competitions = currentUser["competitions"];
             const competitions_to_store = [];
             let i = 0;
-            if (competitions_partecipated == null)
-            {
-                competitions_partecipated=[]
+
+            if (participated_competitions == null) {
+                participated_competitions = []
             }
-            while (competitions_partecipated[i] != null && i < 3) {
-                competitions_to_store[i] = competitions_partecipated[i];
+            while (participated_competitions[i] != null && i < 3) {
+                competitions_to_store[i] = participated_competitions[i];
                 i = i + 1;
             }
             setCompetitions(competitions_to_store)
         } else {
-            axios.post('http://localhost:8080/api/competition/retrieve/personal',user)
-            .then(response => {
-                const jsonData = response.data.map(document => JSON.parse(JSON.stringify(document)));
-                const competitions_to_store = [];
-                let i = 0;
-                if (jsonData == null)
-                {
-                    jsonData=[]
-                }
-                while (jsonData[i] != null && i < 3) {
-                    competitions_to_store[i] = jsonData[i];
-                    i = i + 1;
-                }
-                setCompetitions(competitions_to_store)
-            })
-            .catch(error => console.error('Errore nella richiesta GET:', error));
+            axios.post('http://localhost:8080/api/competition/retrieve/personal', user)
+                .then(response => {
+                    let jsonData = response.data.map(document => JSON.parse(JSON.stringify(document)));
+                    const competitions_to_store = [];
+                    let i = 0;
+
+                    if (jsonData == null) {
+                        jsonData = []
+                    }
+
+                    while (jsonData[i] != null && i < 3) {
+                        competitions_to_store[i] = jsonData[i];
+                        i = i + 1;
+                    }
+
+                    setCompetitions(competitions_to_store)
+                })
+                .catch(error => console.error('Error: ', error));
         }
     }
 
     useEffect(() => {
         drawComp();
-    }, []); // L'array vuoto come dipendenza indica che questo effetto viene eseguito solo una volta al montaggio del componente
-
-    /*useEffect(() => {
-      // Effettua la richiesta GET al tuo backend
-
-    }, []); // L'array vuoto come dipendenza indica che questo effetto viene eseguito solo una volta al montaggio del componente
-  */
+    }, []);
 
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
@@ -93,14 +86,12 @@ function CompetitionProfBlock({user}) {
                 <Grid container direction="column" justifyContent="space-around">
                     <Grid item><Typography variant="h5">Competitions</Typography></Grid>
                     <List sx={ListStyle}>
-                        {competitions.length === 0 && (
-                            <Grid item>
+                        {competitions.length === 0 && (<Grid item>
                                 <ListItem>
                                     <Typography>{currentUser['_id'] === user ? "You are " : user + " is "}
                                         not participating in any competition</Typography>
                                 </ListItem>
-                            </Grid>
-                        )}
+                            </Grid>)}
                         {competitions.map(item => (
                             <Grid item>
                                 <ListItem>
@@ -114,11 +105,12 @@ function CompetitionProfBlock({user}) {
                         ))}
                     </List>
                 </Grid>
+
                 <Button variant="filled" sx={{backgroundColor: blue[600], marginBottom: '10px'}}
                         onClick={goComp}><Typography>Find other competitions</Typography></Button>
             </Paper>
         </Container>
     );
-};
+}
 
 export default CompetitionProfBlock;
