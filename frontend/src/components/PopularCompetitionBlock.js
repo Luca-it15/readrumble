@@ -78,9 +78,9 @@ function PopularCompetitionBlock() {
                 {data.slice(0, displayCount).map((item) => (
                     <Grid item>
                         <Paper elevation={2} style={PaperStyle}>
-                            <Link variant="h6" onClick={() => {
-                                goSpecificComp(item.name)
-                            }}>{item.name}</Link>
+                            <Link variant="h6" onClick={() => {goSpecificComp(item.name)}}>
+                                {item.name}
+                            </Link>
                             <Typography>Tag: {item.tag}</Typography>
                             <Divider variant="middle" sx={{margin: '10px'}}/>
                             <Typography>Total pages read in the Top 10: {item.Total_Pages}</Typography>

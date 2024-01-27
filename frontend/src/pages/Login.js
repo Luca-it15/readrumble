@@ -176,7 +176,11 @@ function LoginForm() {
                 localStorage.setItem('isAdmin', JSON.stringify(isAdmin));
                 localStorage.setItem('logged_user', JSON.stringify(response.data));
 
-                fetchAll(response.data._id);
+                if (response.data.isAdmin === 1) {
+                    window.location.href = "/home"
+                } else {
+                    fetchAll(response.data._id);
+                }
             }
             // Imposta il flag di login nello stato e in localStorage
         } catch (error) {

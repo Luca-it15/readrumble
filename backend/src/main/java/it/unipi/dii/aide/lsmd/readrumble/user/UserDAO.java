@@ -101,19 +101,14 @@ public class UserDAO {
         String _id = user.getId();
         String password = user.getPassword();
 
-        System.out.println(_id + " " + password);
-
         try (MongoCursor<Document> cursor = MongoConfig.getCollection("Users")
                 .find(eq("_id", _id)).iterator()) {
 
             if (cursor.hasNext()) {
-                Document utente_registrato = cursor.next();
+                Document registered_user = cursor.next();
 
-                System.out.println(utente_registrato);
-                System.out.println(utente_registrato.get("_id"));
-
-                if (password.equals(utente_registrato.get("password"))) {
-                    return utente_registrato;
+                if (password.equals(registered_user.get("password"))) {
+                    return registered_user;
                 } else {
                     return null;
                 }
@@ -121,16 +116,17 @@ public class UserDAO {
                 return null;
             }
         } catch (Exception e) {
-            System.out.println("Exception error catched: " + e.getMessage());
             return null;
         }
     }
 
     public ResponseEntity<String> RegUser(Document user) {
-        System.out.println(user);
         String username = (String) user.get("_id");
+
         MongoCollection<Document> collection = MongoConfig.getCollection("Users");
+
         List<Document> usersCollection = collection.find(eq("_id", username)).into(new ArrayList<>());
+
         if (usersCollection.isEmpty()) {
             inMemoryUsers.add(user);
             return ResponseEntity.ok("Registration succeeded! You will now be redirected to the home page!");
@@ -149,9 +145,6 @@ public class UserDAO {
             if (cursor.hasNext()) {
                 Document userDoc = cursor.next();
 
-                System.out.println(userDoc);
-                System.out.println(userDoc.get("Username"));
-
                 if (password.equals(userDoc.get("Password"))) {
                     return userDoc;
                 } else {
@@ -161,7 +154,6 @@ public class UserDAO {
                 return null;
             }
         } catch (Exception e) {
-            System.out.println("Exception error catched: " + e.getMessage());
             return null;
         }
     }
@@ -171,7 +163,9 @@ public class UserDAO {
         String new_field = (String) changes.get("new_field");
         String type_of_change_request = (String) changes.get("type_of_change_request");
         String username_to_use = (String) changes.get("username_to_use");
+
         MongoCollection<Document> collection = MongoConfig.getCollection("Users");
+
         try (MongoCursor<Document> cursor = collection.find(eq("_id", username_to_use)).cursor()) {
             if (cursor.hasNext()) {
                 collection.updateOne(eq("_id", username_to_use), set(type_of_change_request, new_field));
@@ -181,7 +175,6 @@ public class UserDAO {
                 return ResponseEntity.ok("NOT FOUND");
             }
         } catch (Exception e) {
-            System.out.println("Exception error catched: " + e.getMessage());
             return ResponseEntity.ok("EXCEPTION IN SERVER");
         }
     }
@@ -196,8 +189,6 @@ public class UserDAO {
         MongoCollection<Document> collection = MongoConfig.getCollection("Users");
 
         Document user = collection.find(eq("_id", username)).first();
-
-        System.out.println(user);
 
         if (user != null) {
             return Map.of(
@@ -242,8 +233,6 @@ public class UserDAO {
 
     public List<Map<String, Object>> getSuggestedFriends(@PathVariable String username) {
         if (checkUserExist(username)) {
-            System.out.println("Retrieving suggestend friends for " + username);
-
             try (Session session = Neo4jConfig.getSession()) {
                 Result result = session.run(
                         "MATCH (u1:User {name: $username})-[:FOLLOWS]->(u2:User)-[:FOLLOWS]->(f:User) " +

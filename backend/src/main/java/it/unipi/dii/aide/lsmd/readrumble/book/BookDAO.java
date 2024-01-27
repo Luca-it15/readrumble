@@ -227,8 +227,6 @@ public class BookDAO {
     }
 
     public List<LightBookDTO> getFavoriteBooks(@PathVariable String username) {
-        System.out.println("Richiesta libri preferiti per: " + username);
-
         if (checkUserExist(username)) {
             try (Session session = Neo4jConfig.getSession()) {
                 // If the username exists, proceed with the query
@@ -238,13 +236,9 @@ public class BookDAO {
                 List<LightBookDTO> books = new ArrayList<>();
                 while (result.hasNext()) {
                     Record record = result.next();
-                    System.out.println(record);
                     LightBookDTO book = new LightBookDTO(Long.parseLong(record.get("id").asString()), record.get("title").asString());
                     books.add(book);
                 }
-
-                System.out.println("Favorite books for user " + username + ":");
-                System.out.println(books);
 
                 return books;
             } catch (Exception e) {
@@ -277,7 +271,6 @@ public class BookDAO {
 
     public List<LightBookDTO> getSuggestedBooks(@PathVariable String username) {
         if (!checkUserExist(username)) {
-            System.out.println("User " + username + " does not exist");
             return null;
         }
 

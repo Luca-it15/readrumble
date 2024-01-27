@@ -16,94 +16,64 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
 
 public class AdminUserDAO {
-    public List<Document> adminGetBannedUser()
-    {
-        MongoCollection<Document> collection =MongoConfig.getCollection("Users");
-        List<Document> list = collection.find(eq("isBanned",1)).into(new ArrayList<Document>());
-        return list;
+    public List<Document> adminGetBannedUser() {
+        MongoCollection<Document> collection = MongoConfig.getCollection("Users");
+        return collection.find(eq("isBanned", 1)).into(new ArrayList<>());
     }
-    public Document AdminSearchUser(String _id)
-    {
-        MongoCollection<Document> collection =MongoConfig.getCollection("Users");
-        try(MongoCursor<Document> doc = collection.find(eq("_id",_id)).cursor())
-        {
-            if(doc.hasNext())
-            {
+
+    public Document AdminSearchUser(String _id) {
+        MongoCollection<Document> collection = MongoConfig.getCollection("Users");
+        try (MongoCursor<Document> doc = collection.find(eq("_id", _id)).cursor()) {
+            if (doc.hasNext()) {
                 Document user = doc.next();
-                if(!user.containsKey("isBanned"))
-                {
-                    user.append("isBanned",0);
+                if (!user.containsKey("isBanned")) {
+                    user.append("isBanned", 0);
                 }
                 return user;
-            }
-            else
-            {
+            } else {
                 return null;
             }
-        }
-        catch(Exception e)
-        {
-            System.out.println("Exception Message: " + e.getMessage());
+        } catch (Exception e) {
             return null;
         }
     }
-    public ResponseEntity<String> goAdminBan(String _id)
-    {
-        MongoCollection<Document> collection =MongoConfig.getCollection("Users");
-        try(MongoCursor<Document> doc = collection.find(eq("_id",_id)).cursor())
-        {
-            if(doc.hasNext())
-            {
-                Document user =  doc.next();
-                if(user.containsKey("isBanned"))
-                {
+
+    public ResponseEntity<String> goAdminBan(String _id) {
+        MongoCollection<Document> collection = MongoConfig.getCollection("Users");
+        try (MongoCursor<Document> doc = collection.find(eq("_id", _id)).cursor()) {
+            if (doc.hasNext()) {
+                Document user = doc.next();
+                if (user.containsKey("isBanned")) {
                     return ResponseEntity.ok("User is already Banned");
+                } else {
+                    user.append("isBanned", 1);
+                    collection.updateOne(eq("_id", _id), Updates.set("isBanned", 1));
+                    return ResponseEntity.ok(_id + " user is now Banned");
                 }
-                else
-                {
-                    user.append("isBanned",1);
-                    collection.updateOne(eq("_id",_id), Updates.set("isBanned",1));
-                    return ResponseEntity.ok(_id +" user is now Banned");
-                }
-            }
-            else
-            {
+            } else {
                 return ResponseEntity.ok("No User with such username");
             }
-        }
-        catch(Exception e)
-        {
-            System.out.println("Exception Message: " + e.getMessage());
+        } catch (Exception e) {
             return null;
         }
     }
-    public ResponseEntity<String> goAdminUnban(String _id)
-    {
-        MongoCollection<Document> collection =MongoConfig.getCollection("Users");
-        try(MongoCursor<Document> doc = collection.find(eq("_id",_id)).cursor())
-        {
-            if(doc.hasNext())
-            {
-                Document user =  doc.next();
-                if(!user.containsKey("isBanned"))
-                {
+
+    public ResponseEntity<String> goAdminUnban(String _id) {
+        MongoCollection<Document> collection = MongoConfig.getCollection("Users");
+        try (MongoCursor<Document> doc = collection.find(eq("_id", _id)).cursor()) {
+            if (doc.hasNext()) {
+                Document user = doc.next();
+                if (!user.containsKey("isBanned")) {
                     return ResponseEntity.ok("User is not banned");
+                } else {
+                    user.append("isBanned", 1);
+                    collection.updateOne(eq("_id", _id), Updates.unset("isBanned"));
+                    return ResponseEntity.ok(_id + " user is now Unbanned");
                 }
-                else
-                {
-                    user.append("isBanned",1);
-                    collection.updateOne(eq("_id",_id), Updates.unset("isBanned"));
-                    return ResponseEntity.ok(_id +" user is now Unbanned");
-                }
-            }
-            else
-            {
+            } else {
                 return ResponseEntity.ok("No User with such username");
             }
-        }
-        catch(Exception e)
-        {
-            System.out.println("Exception Message: " + e.getMessage());
+        } catch (Exception e) {
             return null;
         }
     }
