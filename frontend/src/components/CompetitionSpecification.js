@@ -6,6 +6,7 @@ import {useNavigate, useParams} from 'react-router-dom';
 import '../App.css'
 import {blue, red} from "@mui/material/colors";
 import Button from "@mui/material-next/Button";
+import GoBack from "./GoBack";
 
 function CompetitionSpec() {
     const PaperStyle = {
@@ -131,16 +132,16 @@ function CompetitionSpec() {
     }
 
     const colors = [
-        'rgba(255, 215, 0, 0.4)', // #FFD700
-        'rgba(192, 192, 192, 0.4)', // #C0C0C0
-        'rgba(205, 127, 50, 0.4)', // #cd7f32
-        'rgba(255, 255, 255, 1)',
-        'rgba(255, 255, 255, 1)',
-        'rgba(255, 255, 255, 1)',
-        'rgba(255, 255, 255, 1)',
-        'rgba(255, 255, 255, 1)',
-        'rgba(255, 255, 255, 1)',
-        'rgba(255, 255, 255, 1)'
+        {backgroundImage: 'linear-gradient(to right bottom, rgba(255, 215, 0, 0.5), rgba(175, 145, 0, 0.65))'}, // #FFD700
+        {backgroundImage: 'linear-gradient(to left top, rgba(192, 192, 192, 0.6), rgba(132, 132, 132, 0.6))'}, // #C0C0C0
+        {backgroundImage: 'linear-gradient(to right top, rgba(205, 127, 50, 0.4), rgba(185, 107, 30, 0.6))'}, // #cd7f32
+        {backgroundColor: 'rgba(255, 255, 255, 1)'},
+        {backgroundColor: 'rgba(255, 255, 255, 1)'},
+        {backgroundColor: 'rgba(255, 255, 255, 1)'},
+        {backgroundColor: 'rgba(255, 255, 255, 1)'},
+        {backgroundColor: 'rgba(255, 255, 255, 1)'},
+        {backgroundColor: 'rgba(255, 255, 255, 1)'},
+        {backgroundColor: 'rgba(255, 255, 255, 1)'}
     ]
 
     return (
@@ -148,8 +149,15 @@ function CompetitionSpec() {
             <Paper elevation={2} style={PaperStyle}>
                 <Grid item>
                     <Card sx={CardStyle} elevation={0}>
-                        <Typography variant="h4">{data.name}</Typography>
-                        <Typography variant="h5">Tag: {data.tag}</Typography>
+                        <Grid container item direction="row" alignItems="center" justifyContent="space-around">
+                            <Grid item xs={1}>
+                                <GoBack/>
+                            </Grid>
+                            <Grid item xs={10}>
+                                <Typography sx={{marginRight: '150px'}} variant="h4">{data.name}</Typography>
+                                <Typography sx={{marginRight: '150px'}} variant="h5">Tag: {data.tag}</Typography>
+                            </Grid>
+                        </Grid>
                     </Card>
                 </Grid>
                 <Grid container direction="column" spacing={2} alignItems="center" justifyContent="space-around">
@@ -163,14 +171,20 @@ function CompetitionSpec() {
                                               backgroundColor: colors[rank.indexOf(item)],
                                               margin: '10px',
                                               borderRadius: 8,
-                                              paddingBottom: '10px',
-                                              width: '400px'
+                                              paddingBottom: '15px',
+                                              width: rank.indexOf(item) in [0, 1, 2] ? '450px' : '400px'
                                           }}>
-                                        <Grid item xs={5}>
-                                            <Typography>{item.username}</Typography>
+                                        <Grid item xs={1}>
+                                            <Typography sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
+                                                {rank.indexOf(item) + 1}°</Typography>
                                         </Grid>
                                         <Grid item xs={5}>
-                                            <Typography>{item.tot_pages}</Typography>
+                                            <Typography sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
+                                                {item.username}</Typography>
+                                        </Grid>
+                                        <Grid item xs={5}>
+                                            <Typography sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
+                                                {item.tot_pages}</Typography>
                                         </Grid>
                                     </Grid>
                                 </React.Fragment>
