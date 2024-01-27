@@ -6,29 +6,28 @@ import com.mongodb.ConnectionString;
 import org.bson.Document;
 
 public final class MongoConfig {
-    private static final String protocol = "mongodb";
-    private static final String hostname = "localhost";
-    private static final String port = "27017";
-    private static final String dbName = "ReadRumbleDB";
-    private static final String options = null;
+    private static final String PROTOCOL = "mongodb";
+    private static final String HOSTNAME = "localhost";
+    private static final String PORT = "27017";
+    private static final String DATABASE = "ReadRumbleDB";
     private static MongoClient conn = null;
 
     /**
-     * private constructor for avoid instantiation
+     * Private constructor to avoid instantiation
      */
     private MongoConfig() {
     }
 
     /**
-     * function for create mongodb connection
+     * Function to create Mongo connection
      */
     private static void makeConnection() {
-        ConnectionString cs = new ConnectionString(protocol + "://" + hostname + ":" + port + "/");
+        ConnectionString cs = new ConnectionString(PROTOCOL + "://" + HOSTNAME + ":" + PORT + "/");
         conn = MongoClients.create(MongoClientSettings.builder().applyConnectionString(cs).build());
     }
 
     /**
-     * function to retrieve the current state of the connection, if the connection has not yet been made it creates it
+     * Function to retrieve the current state of the connection, if the connection has not yet been made it creates it
      *
      * @return conn
      */
@@ -38,22 +37,22 @@ public final class MongoConfig {
     }
 
     /**
-     * function returns the connection to a given collection
+     * This function returns the connection to a given collection
      *
      * @param collectionName CollectionName is the name of collection that we need to use
      * @return MongoCollection<Document>
      * we return the connection to the collection for make the CRUD operation
      */
     public static MongoCollection<Document> getCollection(String collectionName) {
-        MongoDatabase database = getConnection().getDatabase(dbName);
+        MongoDatabase database = getConnection().getDatabase(DATABASE);
         return database.getCollection(collectionName);
     }
 
     /**
-     * function to close the connection
+     * Function to close the connection
      */
     public static void closeConnection() {
-        System.out.println("close connection");
+        System.out.println("Close connection");
         if (conn != null) {
             conn.close();
             conn = null;

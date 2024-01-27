@@ -31,8 +31,8 @@ import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.checkUserExi
 
 public class BookDAO {
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
-    private HashMap<String, List<LightBookDTO>> inMemoryFavoriteBooks = new HashMap<>();
-    private HashMap<String, List<LightBookDTO>> inMemoryFavoriteBooksToBeDeleted = new HashMap<>();
+    private final HashMap<String, List<LightBookDTO>> inMemoryFavoriteBooks = new HashMap<>();
+    private final HashMap<String, List<LightBookDTO>> inMemoryFavoriteBooksToBeDeleted = new HashMap<>();
 
     /**
      * This method saves the favorite books in memory to the graph DB every hour
@@ -102,7 +102,7 @@ public class BookDAO {
             for (String key : keys) {
                 Map<String, String> book = jedis.hgetAll(key);
 
-                Long bookId = Long.parseLong(key.split(":")[2]);
+                long bookId = Long.parseLong(key.split(":")[2]);
 
                 books.add(new LightBookDTO(bookId, book.get("book_title")));
             }
@@ -187,7 +187,6 @@ public class BookDAO {
 
     public List<LightBookDTO> getFriendsRecentlyReadBooks(String usernames) {
         if (usernames.isEmpty()) {
-            System.out.println("User has no friends");
             return null;
         }
 
@@ -208,15 +207,11 @@ public class BookDAO {
         if (BookDocuments.isEmpty()) {
             return null;
         } else {
-            List<LightBookDTO> books = setResult(BookDocuments);
-
-            return books;
+            return setResult(BookDocuments);
         }
     }
 
     public List<Document> getPagesReadByTag(String username) {
-        System.out.println("Richiesta pagine lette per ogni tag da: " + username);
-
         MongoCollection<Document> ActiveBooksCollection = MongoConfig.getCollection("ActiveBooks");
 
         List<Document> BookDocuments = ActiveBooksCollection.aggregate(List.of(
@@ -231,7 +226,6 @@ public class BookDAO {
         )).into(new ArrayList<>());
 
         if (BookDocuments.isEmpty()) {
-            System.out.println("User never read a book");
             return null;
         } else {
             System.out.println(BookDocuments);
@@ -308,7 +302,7 @@ public class BookDAO {
             List<LightBookDTO> books = new ArrayList<>();
             while (result.hasNext()) {
                 Record record = result.next();
-                Long id = Long.parseLong(record.get("id").asString());
+                long id = Long.parseLong(record.get("id").asString());
                 String title = record.get("title").asString();
                 LightBookDTO book = new LightBookDTO(id, title);
                 books.add(book);

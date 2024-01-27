@@ -1,7 +1,6 @@
 package it.unipi.dii.aide.lsmd.readrumble.book;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -10,25 +9,17 @@ import java.util.List;
 public class Book {
     @Id
     private long id;
-    private String isbn;
-    private String description;
-    private String link;
-    private List<String> authors;
-    private String publisher;
-    private int num_pages;
-    private int publication_year;
-    private String url;
-    private String image_url;
+    private final String isbn;
+    private final String description;
+    private final String link;
+    private final List<String> authors;
+    private final String publisher;
+    private final int num_pages;
+    private final int publication_year;
+    private final String url;
+    private final String image_url;
     private String title;
-    private List<String> tags;
-
-    @Transient
-    private String _class;
-    // Costruttori
-
-    public Book() {
-        // Costruttore vuoto necessario per MongoDB
-    }
+    private final List<String> tags;
 
     public Book(long id, String isbn, String description, String link, List<String> authors, String publisher, int num_pages, int publication_year, String url, String image_url, String title, List<String> tags) {
         this.id = id;
