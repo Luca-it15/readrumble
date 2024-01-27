@@ -12,15 +12,17 @@ public class RedisConfig {
      * Private constructor to avoid instantiation
      */
     private RedisConfig() {
-
     }
 
     /**
      * Function to create Redis connection
      */
     private static void makeConnection() {
-        JedisPool pool = new JedisPool(HOST, PORT);
-        conn = pool.getResource();
+        try (JedisPool pool = new JedisPool(HOST, PORT)) {
+            conn = pool.getResource();
+        } catch (Exception e) {
+            System.err.println("Error while establishing connection: " + e.getMessage());
+        }
     }
 
     /**

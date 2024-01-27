@@ -12,6 +12,10 @@ function RecentlyReadBooks({user}) {
     let initialRecentlyReadBooks;
 
     if (user === currentUser['_id']) {
+        if (!currentUser['recentlyReadBooks']) {
+            currentUser['recentlyReadBooks'] = [];
+        }
+
         initialRecentlyReadBooks = currentUser['recentlyReadBooks'];
     } else {
         initialRecentlyReadBooks = [];

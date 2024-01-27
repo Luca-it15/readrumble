@@ -8,7 +8,6 @@ public class WishlistBookDTO {
     private int num_pages;
     private List<String> tags;
 
-    // getters and setters
     public Long getBook_id() {
         return book_id;
     }

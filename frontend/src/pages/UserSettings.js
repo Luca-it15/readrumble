@@ -5,30 +5,13 @@ import FormForAll from '../components/FormForAll';
 import {blue} from "@mui/material/colors";
 import GoBack from "../components/GoBack";
 
-function goProfile() {
-    window.location.href = 'http://localhost:3000/profile';
-}
-
-var storedData = localStorage.getItem('logged_user');
-console.log("ecco la storedData " + storedData)
-// Verifica se il valore è presente
-if (storedData) {
-    // Il valore è presente, lo converte da stringa JSON a oggetto JavaScript
-    var user = JSON.parse(storedData);
-
-    // Ora puoi utilizzare la variabile 'isLoggedIn' come desideri
-    console.log("ecco il nome da user['Name'] " + user["name"]);
-} else {
-    // La chiave 'isLoggedIn' non è presente in localStorage
-    console.log('La chiave "logged_user" non è presente in localStorage.');
-}
-//<Button onClick={setChangeUser(true)}>Cambia Username</Button>}
 const UserSettings = () => {
     const [selectedForm, setSelectedForm] = useState(null);
+    let currentUser = localStorage.getItem('logged_user');
 
-    var obj2 = {"name": "name", "_id": user["_id"]};
-    var obj3 = {"name": "surname", "_id": user["_id"]};
-    var obj4 = {"name": "password", "_id": user["_id"]};
+    let obj2 = {"name": "name", "_id": currentUser["_id"]};
+    let obj3 = {"name": "surname", "_id": currentUser["_id"]};
+    let obj4 = {"name": "password", "_id": currentUser["_id"]};
 
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
@@ -61,7 +44,7 @@ const UserSettings = () => {
             <Grid item xs={12} sm={8} md={6}>
                 <GoBack/>
                 <ToggleButtonGroup value={selectedForm} exclusive aria-label="form selection" color="primary"
-                    onChange={(event, newSelectedForm) => setSelectedForm(newSelectedForm)}>
+                                   onChange={(event, newSelectedForm) => setSelectedForm(newSelectedForm)}>
                     <ToggleButton sx={toggle} value="name" aria-label="change name">
                         Change Name
                     </ToggleButton>
@@ -73,7 +56,7 @@ const UserSettings = () => {
                     </ToggleButton>
                 </ToggleButtonGroup>
             </Grid>
-            <Grid item xs={12} >
+            <Grid item xs={12}>
                 {selectedForm === 'name' && <FormForAll prop={obj2}/>}
                 {selectedForm === 'surname' && <FormForAll prop={obj3}/>}
                 {selectedForm === 'password' && <FormForAll prop={obj4}/>}

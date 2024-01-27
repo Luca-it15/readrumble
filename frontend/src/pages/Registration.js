@@ -38,13 +38,11 @@ function RegistrationForm() {
         setFormData((prevData) => ({
             ...prevData,
             [name]: type === 'checkbox' ? checked : value,
-
         }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(formData);
 
         if (Object.values(formData).some((value) => value === '')) {
             setValidationError('All fields must be filled!');
@@ -58,9 +56,23 @@ function RegistrationForm() {
             setRegistrationStatus({message: response.data, variant: 'success'});
 
             timeout_text();
-            setTimeout(() => {
-                window.location.href = 'http://localhost:3000/login';
-            }, 1300);
+
+            let currentUser = localStorage.getItem('logged_user');
+
+            if (!currentUser) {
+                currentUser = {};
+            } else {
+                currentUser = JSON.parse(currentUser);
+            }
+
+            currentUser['_id'] = formData['_id'];
+            currentUser['name'] = formData['name'];
+            currentUser['surname'] = formData['surname'];
+
+            localStorage.setItem('logged_user', JSON.stringify(currentUser));
+            localStorage.setItem('isLoggedIn', 'true');
+
+            window.location.href = '/home';
         } catch (error) {
             setRegistrationStatus({message: error.response ? error.response.data : error.message, variant: 'danger'});
             timeout_text();

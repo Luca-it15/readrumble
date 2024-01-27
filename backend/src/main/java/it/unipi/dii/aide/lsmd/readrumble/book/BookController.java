@@ -2,11 +2,9 @@ package it.unipi.dii.aide.lsmd.readrumble.book;
 
 import com.mongodb.client.MongoCollection;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
-import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
 import org.bson.Document;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import redis.clients.jedis.Jedis;
 
 import java.util.*;
 
@@ -14,7 +12,7 @@ import java.util.*;
 @RequestMapping("/api/book")
 @CrossOrigin(origins = "http://localhost:3000")
 public class BookController {
-    private BookDAO bookDAO = new BookDAO();
+    private final BookDAO bookDAO = new BookDAO();
 
     private List<LightBookDTO> setResult(List<Document> bookDocuments) {
         List<LightBookDTO> books = new ArrayList<>();
@@ -22,37 +20,6 @@ public class BookController {
             books.add(new LightBookDTO(doc.getLong("id"), doc.getString("title")));
         }
         return books;
-    }
-
-    // currentlyReadingBook object that has id, title, bookmark and num_pages
-    public class currentlyReadingBook {
-        private long id;
-        private String title;
-        private int bookmark;
-        private int num_pages;
-
-        public currentlyReadingBook(long id, String title, int bookmark, int num_pages) {
-            this.id = id;
-            this.title = title;
-            this.bookmark = bookmark;
-            this.num_pages = num_pages;
-        }
-
-        public long getId() {
-            return id;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public int getBookmark() {
-            return bookmark;
-        }
-
-        public int getNum_pages() {
-            return num_pages;
-        }
     }
 
     /**
@@ -276,5 +243,16 @@ public class BookController {
     @GetMapping("/favoriteBooks/{username}")
     public List<LightBookDTO> getFavoriteBooks(@PathVariable String username) {
         return bookDAO.getFavoriteBooks(username);
+    }
+
+    /**
+     * This analytics method returns the monthly number of pages read by the user in the last six month
+     *
+     * @param username the username of the user
+     * @return dates and pages read
+     */
+    @GetMapping("/analytics/pagesTrend/{username}")
+    public List<Document> getPagesTrend(@PathVariable String username) {
+        return bookDAO.getPagesTrend(username);
     }
 }

@@ -20,28 +20,15 @@ import axios from "axios";
 import {useNavigate} from "react-router-dom";
 
 const ProfilePage = () => {
-    let currentUser = localStorage.getItem('logged_user');
-    // Verifica se il valore è presente
-    if (currentUser) {
-        // Il valore è presente, lo converte da stringa JSON a oggetto JavaScript
-        currentUser = JSON.parse(currentUser);
-    } else {
-        // La chiave 'isLoggedIn' non è presente in localStorage
-        console.log('La chiave "logged_user" non è presente in localStorage.');
-    }
+    let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
     const [books, setBooks] = useState([]);
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
 
-    console.log("Wishlist: " + JSON.stringify(currentUser['wishlist']))
-
     const fetchWishlist = async () => {
-        console.log(currentUser['wihslist']);
-
         if (currentUser['wihslist'] && currentUser['wihslist'].length > 0) {
             setBooks(currentUser['wihslist']);
-            console.log(books);
         } else {
             try {
                 axios.get(`http://localhost:8080/api/book/wishlist/${currentUser['_id']}`)
@@ -54,7 +41,6 @@ const ProfilePage = () => {
 
                         setBooks(booksData);
                         currentUser['wishlist'] = booksData;
-                        console.log("Wishlist: " + JSON.stringify(currentUser['wishlist']));
 
                         localStorage.setItem('logged_user', JSON.stringify(currentUser));
                     })
@@ -65,8 +51,6 @@ const ProfilePage = () => {
     };
 
     const removeFromWishlist = async (book) => {
-        console.log("Removing book from wishlist: " + book.id);
-
         await axios.delete(`http://localhost:8080/api/book/removeFromWishlist/${currentUser["_id"]}/${book.id}`);
 
         // Remove book from wishlist
@@ -151,10 +135,7 @@ const ProfilePage = () => {
             <Grid container spacing={3} textAlign="center">
                 <Grid item xs={3} md={3}>
                     <FollowingList user={currentUser['_id']}/>
-                    <Paper elevation={2} style={PaperStyle}>
-                        <Typography variant="h4">Competitions</Typography>
-                        <CompetitionProfBlock user={''}/>
-                    </Paper>
+                    <CompetitionProfBlock user={currentUser['_id']}/>
                 </Grid>
                 <Grid item xs={6} md={6}>
                     <Paper elevation={2} style={PaperStyle}>

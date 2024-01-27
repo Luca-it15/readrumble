@@ -105,10 +105,7 @@ function OtherUserProfile() {
             <Grid container spacing={3} textAlign="center">
                 <Grid item xs={3} md={3}>
                     <FollowingList user={username}/>
-                    <Paper elevation={2} style={PaperStyle}>
-                        <Typography variant="h5">Competitions</Typography>
-                        <CompetitionProfBlock user={username}/>
-                    </Paper>
+                    <CompetitionProfBlock user={username}/>
                 </Grid>
                 <Grid item xs={6}>
                     <Paper elevation={2} style={PaperStyle}>

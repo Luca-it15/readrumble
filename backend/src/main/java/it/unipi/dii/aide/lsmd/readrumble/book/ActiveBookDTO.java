@@ -3,7 +3,6 @@ package it.unipi.dii.aide.lsmd.readrumble.book;
 import java.util.List;
 
 public class ActiveBookDTO {
-
     private long id;
     private String title;
     private List<String> tags;

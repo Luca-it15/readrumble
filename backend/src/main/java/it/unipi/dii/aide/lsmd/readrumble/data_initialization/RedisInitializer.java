@@ -1,8 +1,9 @@
 package it.unipi.dii.aide.lsmd.readrumble.data_initialization;
 
-import com.mongodb.client.MongoCollection;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
+
+import com.mongodb.client.MongoCollection;
 import jakarta.annotation.PostConstruct;
 import org.bson.Document;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,9 @@ import org.slf4j.LoggerFactory;
 public class RedisInitializer {
     private static final Logger logger = LoggerFactory.getLogger(RedisInitializer.class);
 
+    /**
+     * This method loads the wishlists from MongoDB to Redis if Redis is empty.
+     */
     @PostConstruct
     public void loadWishlistsFromMongoToRedis() {
         logger.info("Loading wishlists from MongoDB to Redis...");
@@ -50,8 +54,11 @@ public class RedisInitializer {
                     jedis.hset("wishlist:" + username + ":" + book_id, fields);
                 }
             }
+
+            logger.info("Wishlists loaded from MongoDB to Redis.");
+        } else {
+            logger.info("Wishlists already loaded in Redis.");
         }
 
-        logger.info("Wishlists loaded from MongoDB to Redis.");
     }
 }

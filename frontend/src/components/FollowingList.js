@@ -42,7 +42,6 @@ function FollowingList({user}) {
 
         try {
             const response = await axios.get(`http://localhost:8080/api/following/${user}`);
-            console.log("Received: " + response.data)
             setFollowing(response.data);
         } catch (error) {
             console.log(error.response)
