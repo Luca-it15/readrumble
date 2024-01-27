@@ -19,7 +19,7 @@ const Home = () => {
     return (
         <Container maxWidth="xl">
             <Paper elevation={2} style={PaperStyle}>
-                <Typography variant="h5">Welcome back, {currentUser['name']}!</Typography>
+                <Typography variant="h5">Welcome, {currentUser['name']}!</Typography>
             </Paper>
             <Grid container spacing={2} textAlign="center" direction="row" alignItems="flex-start" justifyContent="space-around">
                 <Grid item xs={3} md={3}>
