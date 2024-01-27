@@ -43,7 +43,7 @@ const BookSelector = ({ handleChangeBookTitle }) => {
                 }));
 
                  const bookTags = response.data.map((book) => ({
-                value: book.book_tags,
+                value: book.tags,
                 label: book.book_title,
             }));
             const bookmark = response.data.map((book) => ({
@@ -70,7 +70,7 @@ const BookSelector = ({ handleChangeBookTitle }) => {
             }));
 
             const bookTags = bookData.map((book) => ({
-                value: book.book_tags,
+                value: book.tags,
                 label: book.book_title,
             }));
             const bookmark = bookData.map((book) => ({
@@ -81,6 +81,7 @@ const BookSelector = ({ handleChangeBookTitle }) => {
             setOptions(bookTitles);
             setBook_id(book_ids); 
             setTags(bookTags); 
+            console.log(bookTags);
             setBookmark(bookmark); 
         }
     }, []);

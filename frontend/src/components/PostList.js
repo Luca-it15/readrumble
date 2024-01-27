@@ -38,7 +38,24 @@ const PostsList = (user, username, book_id, size, all, path) => {
                 
                 let postLocalStorageJson = localStorage.getItem('last_posts');
                 if(postLocalStorageJson != null) {
-                 let postLocalStorage = JSON.parse(postLocalStorageJson);
+                 
+                let posts = JSON.parse(postLocalStorageJson);
+                //remove the posts make 15 minutes ago o more
+                let now = new Date();
+
+                posts = posts.filter(post => {
+                   
+                    let postDate = new Date(post.date_added);
+                
+                 
+                    let differenceInMinutes = (now - postDate) / 1000 / 60;
+                
+                   
+                    return differenceInMinutes <= 15;
+                });
+              
+                localStorage.setItem('posts', JSON.stringify(posts));   
+                 let postLocalStorage = posts;
 
                 
                  let postMongoDB = response.data;

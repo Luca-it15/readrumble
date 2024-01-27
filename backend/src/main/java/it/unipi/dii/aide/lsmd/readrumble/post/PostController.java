@@ -53,9 +53,14 @@ public class PostController {
         return postDAO.allPost();
     }
 
-    @DeleteMapping("/remove/{id}")
-    public String removePostUser(@PathVariable ObjectId id) {
-        return postDAO.removePost(id);
+    @DeleteMapping("/removeredis/{key}")
+    public ResponseEntity<String> removePostUserRedis(@PathVariable String key) {
+        return postDAO.removePostRedis(key);
+    }
+
+    @DeleteMapping("/removemongo/{id}")
+    public ResponseEntity<String> removePostUserMongo(@PathVariable ObjectId id) {
+        return postDAO.removePostMongo(id);
     }
 
     @PostMapping("/friends")

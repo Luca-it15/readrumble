@@ -88,12 +88,12 @@ function PostDetails() {
             const actualPost = JSON.parse(localStorage.getItem('post_details')); 
             console.log(actualPost[0]); 
             setPost(actualPost[0]); 
-            setTags(actualPost[0].tags); 
-            console.log(actualPost[0].tags); 
+            setTags(actualPost[0].tag); 
+            console.log(actualPost[0].tag); 
             setDate(actualPost[0].date_added); 
             console.log(actualPost[0].date_added); 
              setRating(actualPost[0].rating); 
-                if(currentUser['_id'] === post.username) 
+                if(currentUser['_id'] === actualPost[0].username) 
                 setPostUser(true); 
             }            
         } catch (error) {
@@ -101,15 +101,58 @@ function PostDetails() {
         }
     }
     const removePost = (id) => async () => {
-      try {
-              const response = await axios.delete('http://localhost:8080/api/post/remove/' + id);
-              setLoginStatus({message: response.data, variant: 'success'});
-              handleClose(); 
-              timeout_text("success"); 
-              console.log('Recensione inviata con successo!');
+      try {   
+              let input = date; 
+              let dateTime = new Date(input);
+              let hours = dateTime.getHours();
+              let minutes = dateTime.getMinutes();
+              let seconds = dateTime.getSeconds();
+        
+        // Aggiungi uno zero davanti se le ore, i minuti o i secondi sono minori di 10
+              if (hours < 10) hours = '0' + hours;
+              if (minutes < 10) minutes = '0' + minutes;
+              if (seconds < 10) seconds = '0' + seconds;
+        
+              let time = hours + ":" + minutes + ":" + seconds;
+        
+              let arrayPostJson = localStorage.getItem('last_posts');
+              let arrayPost = JSON.parse(arrayPostJson);
+
+              let dateToFind = date; 
+              let postExists = arrayPost.some(post => post.date_added === dateToFind);
+
+
+              if(postExists === true) {
+
+               let postFilter = arrayPost.filter(post => post.date_added != dateToFind);
+         
+               let postFilterJson = JSON.stringify(postFilter);
+               localStorage.removeItem('post_details'); 
+
+               if(postFilter != null)
+               localStorage.setItem('last_posts', postFilterJson);
+
+              
+               const key = "post:" + time + ":" + post.username + ":" + post.book_id + ":" + post.rating + ":" + post.bookmark + ":" + post.pages_read;
+               const response = await axios.delete('http://localhost:8080/api/post/removeredis/' + key);
+            
+
+               setLoginStatus({message: response.data, variant: 'success'});
+               handleClose(); 
+               timeout_text("success"); 
+               console.log('cancellation successfull!');
+              } else {
+                const response = await axios.delete('http://localhost:8080/api/post/removemongo/' + id);
+            
+
+                setLoginStatus({message: response.data, variant: 'success'});
+                handleClose(); 
+                timeout_text("success"); 
+                console.log('cancellation successfull!');
+              } 
               
       } catch (error) {
-          console.error('Errore durante l\'invio della recensione:', error);
+          console.error('Error during the cancellation:', error);
           setLoginStatus({message: error.response ? JSON.stringify(error.response.data) : error.message, variant: 'danger'});
           timeout_text("error"); 
       }
@@ -159,11 +202,15 @@ function PostDetails() {
           </Card>
           </Grid>
            <Grid item xs={12} md={11}>
-                   {(post.rating != 0) && <><Paper elevation={0} sx={DescriptionPaperStyle}>
+                   {(post.rating != 0) ? (<><Paper elevation={0} sx={DescriptionPaperStyle}>
                     <Typography variant="h5">Description</Typography>
                         <Typography>{post.review_text}</Typography>
                         </Paper>
-                        </>
+                        </>) : (<><Paper elevation={0} sx={DescriptionPaperStyle}>
+                    <Typography variant="h5">Description</Typography>
+                        <Typography>I reached the page {post.pages_read}</Typography>
+                        </Paper>
+                        </>)
                         }
           </Grid>
           {(postUser || isAdmin) && ( 
@@ -182,15 +229,15 @@ function PostDetails() {
               <DialogTitle id="alert-dialog-title">{"Conferma eliminazione"}</DialogTitle>
               <DialogContent>
                   <DialogContentText id="alert-dialog-description">
-                        Sei sicuro di voler eliminare questo post?
+                  are you sure?
                   </DialogContentText>
               </DialogContent>
                <DialogActions>
                     <Button onClick={handleClose}>
-                    <Typography>Annulla</Typography>
+                    <Typography>No</Typography>
                       </Button>
                     <Button onClick={removePost(id)} >
-                        <Typography>Elimina</Typography>
+                        <Typography>Yes</Typography>
                     </Button>
                 </DialogActions>
             </Dialog>

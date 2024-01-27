@@ -1,5 +1,6 @@
 package it.unipi.dii.aide.lsmd.readrumble.post;
 
+import com.google.gson.Gson;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Aggregates;
@@ -22,9 +23,12 @@ import static com.mongodb.client.model.Updates.set;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.Locale;
+import java.time.*;
+
 import redis.clients.jedis.Jedis;
 
 public class PostDAO {
@@ -35,20 +39,26 @@ public class PostDAO {
 
                  Jedis jedis = RedisConfig.getSession();
 
-                  // Creazione della chiave personalizzata
-                  String dateAdded = (post.getDate_added()).toString();
-                  String username = post.getUsername();
+                 String input = post.getDate_added().toString();
+                 DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("EEE MMM d HH:mm:ss zzz yyyy", Locale.ENGLISH);
+                 ZonedDateTime zonedDateTime = ZonedDateTime.parse(input, inputFormatter);
+
+                 DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+                 String time = zonedDateTime.format(outputFormatter);
+
+                String username = post.getUsername();
                   String bookId = "" + (post.getBook_id());
                   String ranking = "" + post.getRating();
                   String bookmark = "" + post.getBookmark();
                   String pagesRead = "" + post.getPages_read();
-                  String key = "post:" + dateAdded + ":" + username + ":" + bookId + ":" + ranking + ":" + bookmark + ":" + pagesRead;
+                  String key = "post:" + time + ":" + username + ":" + bookId + ":" + ranking + ":" + bookmark + ":" + pagesRead;
                   System.out.println("ho aggiunto il post con chiave: " + key);
-                  // Salvataggio dell'oggetto nel database Redis
-                  jedis.hset(key, "descrizione", "quasi finito");
-                  jedis.hset(key, "tags", "thriller, mistero");
+                  Gson gson = new Gson();
+                  jedis.hset(key, "description", post.getReview_text());
+                  jedis.hset(key, "tags", gson.toJson(post.getTags()));
+                  jedis.hset(key, "book_title", post.getBook_title());
 
-                  // Chiusura della connessione
+
                   jedis.close();
 
           return ResponseEntity.ok("Post added: " + key);
@@ -194,15 +204,32 @@ public class PostDAO {
         return reviews;
     }
 
-    public String removePost( ObjectId id) {
+    public ResponseEntity<String> removePostRedis(String key) {
+        System.out.println("provo ad eliminare " + key);
+        Jedis jedis = RedisConfig.getSession();
+        String response = null;
+
+
+        long res = jedis.del(key);
+        if(res == 1)
+            response = "Post delete: " + key;
+        else if(res == 0)
+            response = "post not delete: " + key;
+        jedis.close();
+        return ResponseEntity.ok(response);
+    }
+
+    public ResponseEntity<String> removePostMongo( ObjectId id) {
         MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
         Document query = new Document("_id", id);
         Document target = collection.find(query).first();
+        String response = null;
         if(target != null) {
             collection.deleteOne(target);
-            return "post successful remove";
+            response =  "post successful remove";
         } else
-            return "failed to remove the post";
+            response =  "failed to remove the post";
+        return ResponseEntity.ok(response);
     }
 
     public List<PostDTO> getRecentFriendsPosts(List<String> friends) {

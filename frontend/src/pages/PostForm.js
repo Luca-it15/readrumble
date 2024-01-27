@@ -56,7 +56,7 @@ export default function PostForm() {
         date_added: ' ',
         book_title: '', 
         username: currentUser['_id'], 
-        tags: [],
+        tag: [],
         bookmark: 0,
         pages_read: 0
     });
@@ -69,7 +69,7 @@ export default function PostForm() {
             setFormData({
                 ...formData,
                 ['pages_read']: num_pages,
-                ['bookmark']: parseInt(value)
+                ['bookmark']: parseInt(value), 
             });
         } else {
             setFormData({
@@ -83,12 +83,13 @@ export default function PostForm() {
         setSelectedTitle(selectedTitle);
         setBook_id(selectedBook_id);
         setOldBookmark(parseInt(selectedBookmark));
+        console.log(selectedTags); 
         setTags(selectedTags);
         setFormData({
             ...formData,
             book_title: selectedTitle,
             book_id: selectedBook_id,
-            tags: selectedTags
+            tag: selectedTags
         });
     }
 
@@ -117,17 +118,8 @@ export default function PostForm() {
             let arrayPostJson = localStorage.getItem('last_posts');
             if (arrayPostJson != null) {
                 let arrayPost = JSON.parse(arrayPostJson);
-
+            
                 arrayPost.push(formData);
-
-                let arrayPostUpdate = JSON.stringify(arrayPost);
-                localStorage.setItem('last_post', arrayPostUpdate);
-
-
-             console.log(formData);
-             arrayPost.push(formData);
-             console.log("ho inserito un nuovo post: " + formData);
-             console.log("i post sono: " + arrayPost);
 
              arrayPost.sort((a, b) => {
                 if (a.date_added < b.date_added) {
@@ -144,12 +136,27 @@ export default function PostForm() {
             } else {
                 let arrayPost = [formData];
 
-                let arrayPostJson = JSON.stringify(arrayPost);
                let arrayPostJson = JSON.stringify(arrayPost);
                console.log(arrayPostJson);
 
                 localStorage.setItem('last_posts', arrayPostJson);
             }
+           
+            let competitions = JSON.parse(localStorage.getItem('competitions'));
+
+
+             if (competitions) {
+  
+                formData.tag.forEach(tag => {
+                    
+                    let competition = competitions.find(c => c.tag === tag);
+                     competition.pages += formData.pages_read;
+                     console.log("we have add " + formData.pages + " new pages read a the competition of " + tag); 
+
+                });
+                localStorage.setItem('competitions', JSON.stringify(competitions));
+             }
+
             const response = await axios.post('http://localhost:8080/api/post/submit', formData);
             setSubmitStatus({message: response.data, variant: 'success'});
             timeout_text()

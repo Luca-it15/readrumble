@@ -24,6 +24,7 @@ export default function PostRow({id, title, username, rating, readOnly, date, us
          let postFilterJson = JSON.stringify(postFilter);
 
 // Salva la stringa JSON nel Local Storage
+        localStorage.removeItem('post_details'); 
         localStorage.setItem('post_details', postFilterJson);
         navigate(`/posts/${id}/`); 
         }
