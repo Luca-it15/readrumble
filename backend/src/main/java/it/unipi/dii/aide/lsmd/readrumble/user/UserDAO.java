@@ -1,13 +1,22 @@
 package it.unipi.dii.aide.lsmd.readrumble.user;
+import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
+import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
+
+import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.checkUserExist;
+import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.getMaps;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
-import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
+
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.set;
+
 import org.bson.Document;
+
 import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.Values;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,11 +24,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Updates.set;
-import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.checkUserExist;
-import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.getMaps;
 
 public class UserDAO {
     private List<Document> inMemoryUsers = new ArrayList<>();
@@ -83,14 +87,13 @@ public class UserDAO {
 
         MongoCollection<Document> collection = MongoConfig.getCollection("User");
 
-        // Ottieni le prime 10 recensioni
         for (Document doc : collection.find().limit(10)) {
-
             UserDTO user = new UserDTO(
                     doc.getString("_id"),
                     doc.getString("name"),
                     doc.getString("surname")
             );
+
             users.add(user);
         }
 

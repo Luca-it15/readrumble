@@ -34,7 +34,7 @@ public class LibraryBookDAO {
                 libraryBooks.add(lb);
             }
         }
-        MongoConfig.closeConnection();
+
         return libraryBooks;
     }
 

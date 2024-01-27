@@ -138,8 +138,8 @@ public class CompetitionDAO {
                 System.out.println(jedis.get(key));
                 return ResponseEntity.ok("You Left The Competition !");
             }
-        } finally {
-            RedisConfig.closeConnection();
+        } catch (Exception e) {
+            return ResponseEntity.ok("Exception : " + e.getMessage());
         }
     }
 }

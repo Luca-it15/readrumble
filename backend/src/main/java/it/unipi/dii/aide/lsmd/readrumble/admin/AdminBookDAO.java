@@ -103,8 +103,5 @@ public class AdminBookDAO {
         {
             return ResponseEntity.ok("EXCEPTION IN SERVER");
         }
-        finally {
-            MongoConfig.closeConnection();
-        }
     }
 }

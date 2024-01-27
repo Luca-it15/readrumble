@@ -126,8 +126,7 @@ public class PostDAO {
             } catch(MongoException e){
                 e.printStackTrace();
                 response = "Errore durante il salvataggio della recensione.";
-            } finally{
-                MongoConfig.closeConnection();
+            } finally {
                 return response;
             }
     }

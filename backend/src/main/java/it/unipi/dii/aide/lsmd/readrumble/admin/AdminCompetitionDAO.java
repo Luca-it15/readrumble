@@ -64,8 +64,6 @@ public class AdminCompetitionDAO {
             jedis.del(key);
         } catch (Exception e) {
             return ResponseEntity.ok("Exception : " + e.getMessage());
-        } finally {
-            RedisConfig.closeConnection();
         }
 
         try (MongoCursor<Document> competitions = collection.find(eq("name", CompName)).cursor()) {

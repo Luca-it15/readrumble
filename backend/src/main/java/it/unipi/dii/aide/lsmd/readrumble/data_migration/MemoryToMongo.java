@@ -1,7 +1,6 @@
 package it.unipi.dii.aide.lsmd.readrumble.data_migration;
 
 import it.unipi.dii.aide.lsmd.readrumble.user.UserDAO;
-import it.unipi.dii.aide.lsmd.readrumble.book.BookDAO;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
