@@ -5,6 +5,7 @@ import axios from 'axios';
 import '../App.css';
 import {useNavigate} from 'react-router-dom';
 import {blue} from "@mui/material/colors";
+import Button from "@mui/material-next/Button";
 
 function CompetitionPage() {
     const PaperStyle = {
@@ -68,25 +69,30 @@ function CompetitionPage() {
 
     return (
         <Paper sx={PaperStyle}>
-                    <Typography variant="h4">Ongoing competitions</Typography>
-            <Grid container direction="column" textAlign="center" alignItems="center" justifyContent="center">
-                <Paper elevation={1} sx={{backgroundColor: '#ffffff', borderRadius: 8, margin: '10px', width: '50%'}}>
-                    <List>
-                        {data.map(item => (
-                            <React.Fragment>
-                                <ListItem sx={{'&:hover': {backgroundColor: '#f1f7fa'}}}
-                                          secondaryAction={
-                                              <Tooltip title="Go to the competition page">
-                                                  <InfoTwoToneIcon sx={{color: blue[300]}} onClick={() => {goSpecificComp(item.name)}}/>
-                                              </Tooltip>
-                                          }>
-                                    <Typography variant="h6">{item.name}</Typography>
-                                </ListItem>
-                                <Divider variant="middle" component="li"/>
-                            </React.Fragment>
-                        ))}
-                    </List>
-                </Paper>
+            <Typography variant="h4">Ongoing competitions</Typography>
+            <Grid container direction="row" textAlign="center" alignItems="center" justifyContent="space-around">
+                {data.map(item => (
+                    <React.Fragment>
+                        <Grid item xs={4}>
+                            <Paper elevation={1} sx={{
+                                backgroundColor: '#ffffff',
+                                borderRadius: 8,
+                                margin: '10px',
+                                padding: '10px',
+                                '&:hover': {backgroundColor: '#f1f7fa'}
+                            }}>
+                                <Typography variant="h6">{item.name}</Typography>
+                                <Typography sx={{color: '#888888'}}>Tag: {item.tag}</Typography>
+                                <Button variant="filledTonal" sx={{
+                                    marginTop: '10px', backgroundColor: blue[200], padding: '5px 15px',
+                                    '&:hover': {backgroundColor: blue[100]}
+                                }} onClick={() => {goSpecificComp(item.name)}}>
+                                    <Typography>See details</Typography>
+                                </Button>
+                            </Paper>
+                        </Grid>
+                    </React.Fragment>
+                ))}
             </Grid>
         </Paper>
     )

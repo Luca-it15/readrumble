@@ -135,12 +135,6 @@ function CompetitionSpec() {
         {backgroundImage: 'linear-gradient(to right bottom, rgba(255, 215, 0, 0.5), rgba(175, 145, 0, 0.65))'}, // #FFD700
         {backgroundImage: 'linear-gradient(to left top, rgba(192, 192, 192, 0.6), rgba(132, 132, 132, 0.6))'}, // #C0C0C0
         {backgroundImage: 'linear-gradient(to right top, rgba(205, 127, 50, 0.4), rgba(185, 107, 30, 0.6))'}, // #cd7f32
-        {backgroundColor: 'rgba(255, 255, 255, 1)'},
-        {backgroundColor: 'rgba(255, 255, 255, 1)'},
-        {backgroundColor: 'rgba(255, 255, 255, 1)'},
-        {backgroundColor: 'rgba(255, 255, 255, 1)'},
-        {backgroundColor: 'rgba(255, 255, 255, 1)'},
-        {backgroundColor: 'rgba(255, 255, 255, 1)'},
         {backgroundColor: 'rgba(255, 255, 255, 1)'}
     ]
 
@@ -168,7 +162,7 @@ function CompetitionSpec() {
                                 <React.Fragment>
                                     <Grid container item xs={12} direction="row" justifyContent="space-between"
                                           sx={{
-                                              backgroundColor: colors[rank.indexOf(item)],
+                                              backgroundColor: colors[(rank.indexOf(item) > 2) ? 3 : (rank.indexOf(item))],
                                               margin: '10px',
                                               borderRadius: 8,
                                               paddingBottom: '15px',
