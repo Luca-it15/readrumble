@@ -38,13 +38,11 @@ function RegistrationForm() {
         setFormData((prevData) => ({
             ...prevData,
             [name]: type === 'checkbox' ? checked : value,
-
         }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(formData);
 
         if (Object.values(formData).some((value) => value === '')) {
             setValidationError('All fields must be filled!');
@@ -72,10 +70,6 @@ function RegistrationForm() {
             currentUser['surname'] = formData['surname'];
 
             localStorage.setItem('logged_user', JSON.stringify(currentUser));
-
-            console.log("Logged user: " + JSON.stringify(currentUser));
-            console.log(registrationStatus)
-
             localStorage.setItem('isLoggedIn', 'true');
 
             window.location.href = '/home';

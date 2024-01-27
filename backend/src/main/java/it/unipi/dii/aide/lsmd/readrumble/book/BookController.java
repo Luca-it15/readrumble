@@ -244,4 +244,15 @@ public class BookController {
     public List<LightBookDTO> getFavoriteBooks(@PathVariable String username) {
         return bookDAO.getFavoriteBooks(username);
     }
+
+    /**
+     * This analytics method returns the monthly number of pages read by the user in the last six month
+     *
+     * @param username the username of the user
+     * @return dates and pages read
+     */
+    @GetMapping("/analytics/pagesTrend/{username}")
+    public List<Document> getPagesTrend(@PathVariable String username) {
+        return bookDAO.getPagesTrend(username);
+    }
 }

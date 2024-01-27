@@ -3,9 +3,9 @@ import { grey } from '@mui/material/colors';
 
 const FooterApp = () => {
     return (
-        <Box sx={{ bgcolor: grey[900], color: grey[50], p: 3 }}>
-            <Typography variant="body1" align="center">
-                Powered by Luca Chiocchetti, Massimiliano Romani and Francesco Pio Crispino
+        <Box sx={{ backgroundColor: grey[900], color: grey[50], p: 3 }}>
+            <Typography align="center">
+                Powered by Luca Chiocchetti, Francesco Pio Crispino and Massimiliano Romani
             </Typography>
         </Box>
     );

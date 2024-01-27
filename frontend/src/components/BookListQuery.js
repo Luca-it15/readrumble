@@ -14,7 +14,6 @@ function BookListQuery({query}) {
     }
 
     const usernames = Array.isArray(currentUser['following']) ? currentUser['following'] : currentUser['following'].split(",");
-    console.log(usernames);
 
     const [books, setBooks] = useState([]);
 

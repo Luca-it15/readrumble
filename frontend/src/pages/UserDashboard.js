@@ -1,12 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {AppBar, Toolbar, Typography, Card, CardContent, Paper, Grid} from '@mui/material';
+import {Typography, Paper, Grid} from '@mui/material';
 import {Bar, Line} from 'react-chartjs-2';
-import {DataGrid} from '@mui/x-data-grid';
-import {CategoryScale} from 'chart.js';
 import axios from 'axios';
 import Chart from 'chart.js/auto';
-import {Navigate} from "react-router-dom";
-import {blue} from "@mui/material/colors";
 
 const Dashboard = () => {
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
@@ -16,9 +12,15 @@ const Dashboard = () => {
 
     async function fetchPagesTrend() {
         try {
-            const response = await axios.get(`http://localhost:8080/api/analytics/pagesTrend/${currentUser['_id']}`);
-            console.log("Pages trend: ", response.data);
-            const data = response.data.map(doc => ({month: doc.month, year: doc.year, pages: doc.pages}));
+            const response = await axios.get(`http://localhost:8080/api/book/analytics/pagesTrend/${currentUser['_id']}`);
+            const data = response.data.map(doc => (
+                {
+                    month: doc.month,
+                    year: doc.year,
+                    pages: doc.pages
+                }
+            ));
+
             setReadingProgressData(data);
         } catch (error) {
             console.log(error.response);
@@ -28,8 +30,8 @@ const Dashboard = () => {
     async function fetchReadingStats() {
         try {
             const response = await axios.get(`http://localhost:8080/api/book/pagesReadByTag/${currentUser['_id']}`);
-            console.log("Pages by tag: ", response.data);
             const data = response.data.map(doc => ({tag: doc._id, pagesRead: doc.pages_read}));
+
             setReadingStatsData(data);
         } catch (error) {
             console.log(error.response);
@@ -58,8 +60,14 @@ const Dashboard = () => {
     );
 
     const totalPages = readingStatsData.reduce((total, data) => total + data.pagesRead, 0);
-    const favoriteTag = readingStatsData.reduce((max, data) => max.pagesRead > data.pagesRead ? max : data, {pagesRead: 0, tag: ''}).tag;
-    const leastFavoriteTag = readingStatsData.reduce((min, data) => min.pagesRead < data.pagesRead ? min : data, {pagesRead: Infinity, tag: ''}).tag;
+    const favoriteTag = readingStatsData.reduce((max, data) => max.pagesRead > data.pagesRead ? max : data, {
+        pagesRead: 0,
+        tag: ''
+    }).tag;
+    const leastFavoriteTag = readingStatsData.reduce((min, data) => min.pagesRead < data.pagesRead ? min : data, {
+        pagesRead: Infinity,
+        tag: ''
+    }).tag;
 
     const readingStatsChart = [
         <Bar
@@ -104,30 +112,40 @@ const Dashboard = () => {
             <Typography variant="h5">
                 {currentUser['_id']}'s dashboard
             </Typography>
-        <Grid container direction="row" justifyContent="space-around" alignItems="center" spacing={1}>
-            <Grid item xs={6}>
-            <Paper sx={{textAlign: 'center', borderRadius: 5, backgroundColor: '#ffffff', width:'100%', padding: '20px'}}>
-                <Typography variant="h5">Reading progress of the last months</Typography>
-                {readingProgressChart}
-            </Paper>
+            <Grid container direction="row" justifyContent="space-around" alignItems="center" spacing={1}>
+                <Grid item xs={6}>
+                    <Paper sx={{
+                        textAlign: 'center',
+                        borderRadius: 5,
+                        backgroundColor: '#ffffff',
+                        width: '100%',
+                        padding: '20px'
+                    }}>
+                        <Typography variant="h5">Reading progress of the last months</Typography>
+                        {readingProgressChart}
+                    </Paper>
+                </Grid>
+                <Grid item xs={6}>
+                    <Paper sx={{
+                        display: 'flex', flexDirection: 'column', textAlign: 'center', borderRadius: 5,
+                        backgroundColor: '#ffffff', width: '100%', padding: '20px'
+                    }}>
+                        <Typography variant="h5">Pages read by tag in the last six months</Typography>
+                        {readingStatsChart}
+                    </Paper>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                    <Paper sx={{
+                        display: 'flex', flexDirection: 'column', textAlign: 'center', borderRadius: 5,
+                        backgroundColor: '#ffffff', width: '100%', padding: '20px'
+                    }}>
+                        <Typography variant="h5">Other reading stats</Typography>
+                        <Typography>Total pages read in the last six months: <strong>{totalPages}</strong></Typography>
+                        <Typography>Favorite tag: <strong>{favoriteTag}</strong></Typography>
+                        <Typography>Least favorite tag: <strong>{leastFavoriteTag}</strong></Typography>
+                    </Paper>
+                </Grid>
             </Grid>
-            <Grid item xs={6}>
-            <Paper sx={{display: 'flex', flexDirection: 'column', textAlign: 'center', borderRadius: 5,
-                backgroundColor: '#ffffff', width:'100%', padding: '20px'}}>
-                <Typography variant="h5">Pages read by tag in the last six months</Typography>
-                {readingStatsChart}
-            </Paper>
-            </Grid>
-            <Grid item xs={12} md={4}>
-                <Paper sx={{display: 'flex', flexDirection: 'column', textAlign: 'center', borderRadius: 5,
-                    backgroundColor: '#ffffff', width:'100%', padding: '20px'}}>
-                    <Typography variant="h5">Other reading stats</Typography>
-                    <Typography>Total pages read in the last six months: <strong>{totalPages}</strong></Typography>
-                    <Typography>Favorite tag: <strong>{favoriteTag}</strong></Typography>
-                    <Typography>Least favorite tag: <strong>{leastFavoriteTag}</strong></Typography>
-                </Paper>
-            </Grid>
-        </Grid>
         </Paper>
     );
 };

@@ -33,7 +33,6 @@ function FavoriteBookList({user}) {
 
             if (currentUser['favoriteBooks'] && currentUser['favoriteBooks'].length > 0) {
                 setBooks(currentUser['favoriteBooks']);
-                console.log(currentUser['favoriteBooks'])
                 return;
             }
         }

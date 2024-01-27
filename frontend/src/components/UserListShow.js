@@ -11,7 +11,6 @@ function UserListShow({username}) {
     const [users, setUsers] = useState([]);
     const [displayCount, setDisplayCount] = useState(10);
 
-
     const ListStyle = {
         py: 0,
         width: '100%',
@@ -21,9 +20,7 @@ function UserListShow({username}) {
         backgroundColor: 'background.paper',
     };
 
-
     const fetchUsers = async () => {
-
         try {
             const response = await axios.get(`http://localhost:8080/api/search/users/${username}}`);
 
@@ -32,7 +29,6 @@ function UserListShow({username}) {
             setUsers(users.map(user => ({
                 id: user.id,
             })));
-
 
         } catch (error) {
             console.log(error.response)
@@ -52,44 +48,36 @@ function UserListShow({username}) {
     }
 
     const PaperStyle = {
-        backgroundColor: '#f1f7fa',
-        padding: '10px',
-        margin: '20px 10px 0px 10px',
-        borderRadius: 5,
-        width: '100%'
+        backgroundColor: '#f1f7fa', padding: '10px', margin: '20px 10px 0px 10px', borderRadius: 5, width: '100%'
     }
 
     return (
         <Paper sx={PaperStyle}>
             <List sx={ListStyle}>
-                {users.length === 0 ? (
-                    <ListItem>
-                        <Typography>No users to show</Typography>
-                    </ListItem>
-                ) : (
-                    Array.isArray(users) && users.slice(0, displayCount).map((user, index) => (
-                        <React.Fragment key={index}>
-                            <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
-                                <Link onClick={() => {
-                                    seeDetails(user.id)
-                                }} sx={{color: "#000000"}}>
-                                    <Typography>{user.id}</Typography>
-                                </Link>
-                            </ListItem>
-                            <Divider variant="middle" component="li"/>
-                        </React.Fragment>
-                    ))
-                )}
+                {users.length === 0 ? (<ListItem>
+                    <Typography>No users to show</Typography>
+                </ListItem>) : (Array.isArray(users) && users.slice(0, displayCount).map((user, index) => (
+                    <React.Fragment key={index}>
+                        <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
+                            <Link onClick={() => {
+                                seeDetails(user.id)
+                            }} sx={{color: "#000000"}}>
+                                <Typography>{user.id}</Typography>
+                            </Link>
+                        </ListItem>
+                        <Divider variant="middle" component="li"/>
+                    </React.Fragment>)))}
             </List>
             {users.length > displayCount && (
-                <Button sx={{
-                    backgroundColor: blue[100], marginTop: "10px", height: "30px",
-                    '&:hover': {backgroundColor: blue[100]}
-                }}
-                        variant="filledTonal" onClick={loadAllUsers}>
+                <Button variant="filledTonal" onClick={loadAllUsers}
+                        sx={{
+                            backgroundColor: blue[100],
+                            marginTop: "10px",
+                            height: "30px",
+                            '&:hover': {backgroundColor: blue[100]}
+                        }}>
                     <Typography>Show all</Typography>
-                </Button>
-            )}
+                </Button>)}
         </Paper>
     );
 }

@@ -23,8 +23,6 @@ function CurrentlyReading({user}) {
         }
 
         try {
-            console.log("Fetching currently reading books of " + user);
-
             const response = await axios.get(`http://localhost:8080/api/book/currentlyReadingBooks/${user}`);
 
             const booksReceived = JSON.parse(JSON.stringify(response.data));
@@ -75,24 +73,29 @@ function CurrentlyReading({user}) {
     return (
         <Paper sx={PaperStyle}>
             <Typography variant="h5" textAlign='center'>Now reading</Typography>
-                <Grid container direction="column" justifyContent="space-around" sx={{gap: '15px'}}>
-                    <Grid container item direction="row" justifyContent="space-around" sx={{gap: '15px'}}>
-                        {currentlyReading.length === 0 ? (
+            <Grid container direction="column" justifyContent="space-around" sx={{gap: '15px'}}>
+                <Grid container item direction="row" justifyContent="space-around" sx={{gap: '15px'}}>
+                    {currentlyReading.length === 0 ? (
                         <Grid item xs={12} sx={{textAlign: 'center', borderRadius: '20px', backgroundColor: '#ffffff'}}>
                             <Typography>No books to show
                                 {user === JSON.parse(localStorage.getItem('logged_user'))['_id'] ? (
-                                    <Typography> - <Link sx={{color: blue[700]}} onClick={goExplore}>Add some!</Link></Typography>
+                                    <Typography> - <Link sx={{color: blue[700]}} onClick={goExplore}>Add
+                                        some!</Link></Typography>
                                 ) : ("")}
                             </Typography>
                         </Grid>
-                        ) : (
+                    ) : (
                         Array.isArray(currentlyReading) && currentlyReading.slice(0, displayCount).map((book, index) => (
                             <React.Fragment key={index}>
                                 <Grid container direction="row" justifyContent="center" alignItems="center"
-                                      sx={{borderRadius: '15px', backgroundColor: '#ffffff', padding: '10px',
-                                          width: '32%', textAlign: 'center'}}>
+                                      sx={{
+                                          borderRadius: '15px', backgroundColor: '#ffffff', padding: '10px',
+                                          width: '32%', textAlign: 'center'
+                                      }}>
                                     <Grid item xs={12}>
-                                        <Link onClick={() => {seeDetails(book.id)}} sx={{color: "#000000"}}>
+                                        <Link onClick={() => {
+                                            seeDetails(book.id)
+                                        }} sx={{color: "#000000"}}>
                                             <Typography>{book.title}</Typography>
                                         </Link>
                                     </Grid>
@@ -102,29 +105,35 @@ function CurrentlyReading({user}) {
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={8}>
-                                        <LinearProgress sx={{borderRadius: 10, height: '7px'}} variant="determinate" value={book.bookmark * 100 / book.num_pages}/>
+                                        <LinearProgress sx={{borderRadius: 10, height: '7px'}} variant="determinate"
+                                                        value={book.bookmark * 100 / book.num_pages}/>
                                     </Grid>
                                 </Grid>
                             </React.Fragment>
                         )))}
-                    </Grid>
-                    <Grid container item xs={12} direction="row" justifyContent="center" alignItems="center" sx={{gap:'10px'}}>
-                        {displayCount > 6 && currentlyReading.length > 6 ? (
-                            <Button sx={{backgroundColor: red[100], marginTop: "10px", height: "30px",
-                                '&:hover': {backgroundColor: red[100]}}}
-                                    variant="filledTonal" onClick={loadLessBooks}>
-                                <Typography>Show less</Typography>
-                            </Button>
-                        ) : null}
-                        {currentlyReading.length > displayCount ? (
-                            <Button sx={{backgroundColor: blue[100], marginTop: "10px", height: "30px",
-                                '&:hover': {backgroundColor: blue[100]}}}
-                                    variant="filledTonal" onClick={loadAllBooks}>
-                                <Typography>Show more</Typography>
-                            </Button>
-                        ) : null}
-                    </Grid>
                 </Grid>
+                <Grid container item xs={12} direction="row" justifyContent="center" alignItems="center"
+                      sx={{gap: '10px'}}>
+                    {displayCount > 6 && currentlyReading.length > 6 ? (
+                        <Button sx={{
+                            backgroundColor: red[100], marginTop: "10px", height: "30px",
+                            '&:hover': {backgroundColor: red[100]}
+                        }}
+                                variant="filledTonal" onClick={loadLessBooks}>
+                            <Typography>Show less</Typography>
+                        </Button>
+                    ) : null}
+                    {currentlyReading.length > displayCount ? (
+                        <Button sx={{
+                            backgroundColor: blue[100], marginTop: "10px", height: "30px",
+                            '&:hover': {backgroundColor: blue[100]}
+                        }}
+                                variant="filledTonal" onClick={loadAllBooks}>
+                            <Typography>Show more</Typography>
+                        </Button>
+                    ) : null}
+                </Grid>
+            </Grid>
         </Paper>
     );
 }

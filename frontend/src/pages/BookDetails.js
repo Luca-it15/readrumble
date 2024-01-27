@@ -32,7 +32,7 @@ function BookDetails() {
     let wishlistBooksIds = [];
     const [deleteStatus, setDeleteStatus] = useState({
         message: '',
-        variant: 'success', // o 'danger' in caso di errore 
+        variant: 'success',
     });
 
     if (currentUser['favoriteBooks'].length > 0) {
@@ -89,8 +89,6 @@ function BookDetails() {
         setHiddenReview(true);
     }
 
-    console.log("Book: " + id);
-
     const toggleFavorite = (id, isFavorite) => async () => {
         if (isFavorite) {
             // Removes a book from favorite list in database
@@ -131,8 +129,6 @@ function BookDetails() {
             num_pages: pages,
             tags: tags
         }
-
-        console.log(bookInfo);
 
         if (isInWishlist) {
             // Removes a book from favorite list in database
@@ -193,7 +189,7 @@ function BookDetails() {
                 </Grid>
                 <Grid container item direction="column" alignItems="center" justifyContent="center" xs={3}>
                     {isAdmin ? (
-                        <>
+                        <React.Fragment>
                             <Typography variant='h4'>Admin Functionality</Typography>
                             <Button onClick={updateBook(id)} sx={{
                                 backgroundColor: green[200],
@@ -212,7 +208,7 @@ function BookDetails() {
                                 <Typography>Remove Book</Typography>
                             </Button>
 
-                        </>
+                        </React.Fragment>
                     ) : (<>
                         {isFavorite ? (
                             <Button onClick={toggleFavorite(id, isFavorite)} sx={{
@@ -285,19 +281,19 @@ function BookDetails() {
                         fontStyle: 'italic'
                     }}>Tags: {tags}</Typography>
                     {hiddenReview ? (
-                        <>
+                        <React.Fragment>
                             <Paper elevation={0} sx={DescriptionPaperStyle}>
                                 <Typography variant="h5">Description</Typography>
                                 <Typography>{book['description']}</Typography>
                             </Paper>
-                        </>) : (
-                        <>
+                        </React.Fragment>) : (
+                        <React.Fragment>
                             <Grid item xs={12} ClassName='choice'>
                                 <Typography variant="h5"
                                             sx={{textAlign: 'center', marginTop: '30px'}}>Reviews</Typography>
                                 <PostList user={false} book_id={id} username={currentUser['_id']} size={5} all={false}/>
                             </Grid>
-                        </>
+                        </React.Fragment>
                     )}
                 </Grid>
             </Grid>

@@ -14,13 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import redis.clients.jedis.Jedis;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -310,5 +305,49 @@ public class BookDAO {
 
             return books;
         }
+    }
+
+    public List<Document> getPagesTrend(@PathVariable String username) {
+        MongoCollection<Document> collection = MongoConfig.getCollection("ActiveBooks");
+
+        // Initialize a map with all the months of the last six months to zero
+        Map<String, Integer> monthYearToPages = new LinkedHashMap<>();
+        LocalDate date = LocalDate.now().minusMonths(6);
+        for (int i = 0; i <= 6; i++) {
+            monthYearToPages.put(date.getMonthValue() + "/" + date.getYear(), 0);
+            date = date.plusMonths(1);
+        }
+
+        List<Document> results = collection.aggregate(List.of(
+                new Document("$match", new Document("username", username)),
+                new Document("$sort", new Document("year", -1).append("month", -1)), // Sort stage
+                new Document("$limit", 6), // Limit stage
+                new Document("$unwind", "$books"),
+                new Document("$group", new Document("_id", new Document("month", "$month").append("year", "$year"))
+                        .append("pages_read_sum", new Document("$sum", "$books.pages_read"))),
+                new Document("$project", new Document("_id", 0)
+                        .append("month", "$_id.month")
+                        .append("year", "$_id.year")
+                        .append("pages", "$pages_read_sum"))
+        )).into(new ArrayList<>());
+
+        // Update the map with the number of pages read for each month
+        for (Document doc : results) {
+            String key = doc.getInteger("month") + "/" + doc.getInteger("year");
+            if (monthYearToPages.containsKey(key)) {
+                monthYearToPages.put(key, doc.getInteger("pages"));
+            }
+        }
+
+        // Convert the map to a list of documents
+        List<Document> response = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : monthYearToPages.entrySet()) {
+            String[] dateParts = entry.getKey().split("/");
+            response.add(new Document("month", Integer.parseInt(dateParts[0]))
+                    .append("year", Integer.parseInt(dateParts[1]))
+                    .append("pages", entry.getValue()));
+        }
+
+        return response;
     }
 }
