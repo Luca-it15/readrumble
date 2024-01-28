@@ -89,7 +89,7 @@ function FavoriteBookList({user}) {
 
     return (
         <Paper sx={PaperStyle}>
-            <Typography variant="h5">Favorite books</Typography>
+            <Typography variant="h5" sx={{marginBottom:'5px'}}>Favorite books</Typography>
             <List sx={ListStyle}>
                 {books.length === 0 ? (
                     <ListItem>

@@ -26,9 +26,9 @@ import java.util.List;
 import java.util.Map;
 
 public class UserDAO {
-    private List<Document> inMemoryUsers = new ArrayList<>();
-    private List<Document> inMemoryFollowRelations = new ArrayList<>();
-    private List<Document> inMemoryFollowRelationsToBeDeleted = new ArrayList<>();
+    private static List<Document> inMemoryUsers = new ArrayList<>();
+    private static List<Document> inMemoryFollowRelations = new ArrayList<>();
+    private static List<Document> inMemoryFollowRelationsToBeDeleted = new ArrayList<>();
 
     public void saveInMemoryUsers() {
         for (Document user : inMemoryUsers) {
@@ -111,6 +111,12 @@ public class UserDAO {
                 Document registered_user = cursor.next();
 
                 if (password.equals(registered_user.get("password"))) {
+                    if (registered_user.containsKey("isAdmin")) {
+                        registered_user.append("isAdmin", true);
+                    } else {
+                        registered_user.append("isAdmin", false);
+                    }
+
                     return registered_user;
                 } else {
                     return null;

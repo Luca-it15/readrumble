@@ -18,7 +18,6 @@ function CompetitionProfBlock({user}) {
     const goSpecificComp = (Name) => {
         var dynamic_path = "/competition/" + Name;
         navigate(dynamic_path);
-
     }
 
     function drawComp() {

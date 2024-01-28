@@ -6,9 +6,9 @@ import {Divider, Link, List, ListItem, Paper} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {blue, red} from "@mui/material/colors";
 
-let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
 function RecentlyReadBooks({user}) {
+    let currentUser = JSON.parse(localStorage.getItem('logged_user'));
     let initialRecentlyReadBooks;
 
     if (user === currentUser['_id']) {
@@ -22,11 +22,9 @@ function RecentlyReadBooks({user}) {
     }
 
     const [recentlyReadBooks, setRecentlyReadBooks] = useState(initialRecentlyReadBooks);
-    const [displayCount, setDisplayCount] = useState(10);
+    const [displayCount, setDisplayCount] = useState(6);
 
     const navigate = useNavigate();
-
-    console.log(user)
 
     const ListStyle = {
         py: 0,
@@ -36,8 +34,6 @@ function RecentlyReadBooks({user}) {
         borderColor: 'divider',
         backgroundColor: 'background.paper',
     };
-
-    console.log("Recently read books: " + recentlyReadBooks.length);
 
     const fetchBooks = async () => {
         if (currentUser['recentlyReadBooks'].length === 0) {
@@ -51,8 +47,6 @@ function RecentlyReadBooks({user}) {
 
         try {
             const response = await axios.get(`http://localhost:8080/api/book/recentlyReadBooks/${user}`);
-
-            console.log("Recently read books: " + JSON.stringify(response.data));
 
             const booksReceived = JSON.parse(JSON.stringify(response.data));
 
@@ -83,9 +77,6 @@ function RecentlyReadBooks({user}) {
         navigate(`/bookdetails/${id}`);
     }
 
-    console.log("Recently read books: " + JSON.stringify(recentlyReadBooks));
-    console.log(recentlyReadBooks.length)
-
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
         padding: '10px',
@@ -95,12 +86,12 @@ function RecentlyReadBooks({user}) {
     }
 
     function loadLessBooks() {
-        setDisplayCount(10);
+        setDisplayCount(6);
     }
 
     return (
         <Paper sx={PaperStyle}>
-            <Typography variant="h5">Recently read</Typography>
+            <Typography variant="h5" sx={{marginBottom:'5px'}}>Recently read</Typography>
             <List sx={ListStyle}>
                 {recentlyReadBooks.length === 0 ? (
                     <ListItem>
@@ -121,12 +112,18 @@ function RecentlyReadBooks({user}) {
                     ))
                 )}
             </List>
-            {recentlyReadBooks.length > displayCount && (
-                <Button sx={{backgroundColor: blue[100], marginTop: "10px", height: "30px",
-                    '&:hover': {backgroundColor: blue[100]}}}
-                        variant="filledTonal" onClick={loadAllBooks}>
-                    <Typography>Show all</Typography>
-                </Button>
+            {displayCount < recentlyReadBooks.length ? (
+                <Button onClick={loadAllBooks} sx={{
+                    backgroundColor: blue[100], marginTop: "10px", height: "30px",
+                    '&:hover': {backgroundColor: blue[100]}
+                }}
+                    variant="filledTonal"><Typography>Show more</Typography></Button>
+            ) : (
+                <Button onClick={loadLessBooks} sx={{
+                    backgroundColor: red[100], marginTop: "10px", height: "30px",
+                    '&:hover': {backgroundColor: red[100]}
+                }}
+                        variant="filledTonal"><Typography>Show less</Typography></Button>
             )}
         </Paper>
     );

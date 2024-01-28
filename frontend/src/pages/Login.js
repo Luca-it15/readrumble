@@ -14,7 +14,7 @@ function LoginForm() {
     const [validationError, setValidationError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const GoRegister = () => {
+    const register = () => {
         navigate('/registration');
     }
 
@@ -25,7 +25,7 @@ function LoginForm() {
 
     const [loginStatus, setLoginStatus] = useState({
         message: '',
-        variant: 'success', // o 'danger' in caso di errore
+        variant: 'success'
     });
 
     const handleChange = (e) => {
@@ -83,6 +83,7 @@ function LoginForm() {
 
         // Fetch following list
         const fetchedFollowingList = await axios.get(`http://localhost:8080/api/following/${id}`)
+
         if (fetchedFollowingList.data) {
             currentUser['following'] = JSON.parse(JSON.stringify(fetchedFollowingList.data))
         } else {
@@ -118,15 +119,12 @@ function LoginForm() {
 
         localStorage.setItem('logged_user', JSON.stringify(currentUser));
 
-        setTimeout(function () {
-            window.location.href = "/home"
-        })
+        window.location.href = "/home"
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validazione: Verifica se almeno un campo è vuoto
         if (Object.values(formData).some((value) => value === '')) {
             setValidationError('All fields must be filled !');
             return;
@@ -135,27 +133,23 @@ function LoginForm() {
         try {
             setIsLoading(true);
 
-            console.log(formData);
-            // Invia la richiesta HTTP qui usando axios
             const response = await axios.post('http://localhost:8080/api/login', formData);
-            // Gestisci la risposta qui
 
-            console.log(response.data);
             if (response.data === '') {
-                setLoginStatus({message: "Username or Password are incorrect", variant: 'danger'});
+                setLoginStatus({message: "Wrong username or password", variant: 'danger'});
+                setIsLoading(false);
             } else {
                 setLoginStatus({
-                    message: "You Logged in Successfully, you will now be redirected to your home ",
+                    message: "Login successful!",
                     variant: 'success'
                 });
+
                 const isLoggedIn = true;
+
                 setLoginStatus(true);
-                var isAdmin = false
-                if (response.data.isAdmin === 1) {
-                    isAdmin = true;
-                }
+
                 localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
-                localStorage.setItem('isAdmin', JSON.stringify(isAdmin));
+                localStorage.setItem('isAdmin', JSON.stringify(response.data.isAdmin === 1));
                 localStorage.setItem('logged_user', JSON.stringify(response.data));
 
                 if (response.data.isAdmin === 1) {
@@ -164,9 +158,7 @@ function LoginForm() {
                     fetchAll(response.data._id);
                 }
             }
-            // Imposta il flag di login nello stato e in localStorage
         } catch (error) {
-            // Gestisci gli errori qui
             setLoginStatus({message: error.response ? error.response.data : error.message, variant: 'danger'});
 
             setIsLoading(false);
@@ -195,15 +187,29 @@ function LoginForm() {
                                   placeholder="Password" onChange={handleChange}/>
                 </Form.Group>
                 <Grid item sx={{textAlign: 'center', marginBottom: '70px'}}>
+                    {validationError && (
+                        <Alert severity="error">
+                            {validationError}
+                        </Alert>
+                    )}
+
+                    {loginStatus.message && (
+                        <Alert severity={loginStatus.variant}>
+                            {loginStatus.message}
+                        </Alert>
+                    )}
+
                     <Button variant="filled" type="submit"
                             sx={{backgroundColor: blue[400], '&:hover': {backgroundColor: green[400]}}}>
                         {isLoading ? <CircularProgress color="inherit" size={24}/> : <Typography>Login</Typography>}
                     </Button>
                 </Grid>
             </Form>
+
+
             <Grid item sx={{textAlign: 'right'}}>
                 <Typography>Don't have an account?
-                    <Button variant="filled" onClick={GoRegister} sx={{
+                    <Button variant="filled" onClick={register} sx={{
                         marginLeft: '20px',
                         backgroundColor: blue[700],
                         '&:hover': {backgroundColor: blue[400]}
@@ -212,17 +218,6 @@ function LoginForm() {
                     </Button></Typography>
             </Grid>
 
-            {validationError && (
-                <Alert severity="error">
-                    {validationError}
-                </Alert>
-            )}
-
-            {loginStatus.message && (
-                <Alert severity={loginStatus.variant}>
-                    {loginStatus.message}
-                </Alert>
-            )}
         </Paper>
     );
 }
