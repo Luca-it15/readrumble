@@ -26,8 +26,6 @@ const ProfilePage = () => {
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
 
-    console.log(currentUser['wishlist'])
-
     const fetchWishlist = async () => {
         if (currentUser['wishlist'] && currentUser['wishlist'].length > 0) {
             setBooks(currentUser['wishlist']);
@@ -99,7 +97,7 @@ const ProfilePage = () => {
 
     return (
         <Container maxWidth="xl">
-            <Paper elevation={3} style={PaperStyle}>
+            <Paper elevation={2} style={PaperStyle}>
                 <Grid container direction="row" justifyContent="space-around">
                     <Grid item xs={4}>
                         <Profile {...currentUser} />
@@ -138,7 +136,7 @@ const ProfilePage = () => {
                     <CompetitionProfBlock user={currentUser['_id']}/>
                 </Grid>
                 <Grid item xs={6} md={6}>
-                    <Paper elevation={3} style={PaperStyle}>
+                    <Paper elevation={2} style={PaperStyle}>
                         <Typography variant="h5">Posts</Typography>
                         <Button sx={{backgroundColor: blue[200], height: "40px", marginBottom: '10px',
                                 '&:hover': {backgroundColor: blue[400]}}}
@@ -195,7 +193,6 @@ const ProfilePage = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-
         </Container>
     );
 }

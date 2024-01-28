@@ -113,6 +113,7 @@ public class UserDAO {
                 if (password.equals(registered_user.get("password"))) {
                     if (registered_user.containsKey("isAdmin")) {
                         registered_user.append("isAdmin", true);
+                        System.out.println("Admin logged in");
                     } else {
                         registered_user.append("isAdmin", false);
                     }
@@ -178,7 +179,7 @@ public class UserDAO {
         try (MongoCursor<Document> cursor = collection.find(eq("_id", username_to_use)).cursor()) {
             if (cursor.hasNext()) {
                 collection.updateOne(eq("_id", username_to_use), set(type_of_change_request, new_field));
-                String result = (String) type_of_change_request + " Changed from " + old_field + " To " + new_field;
+                String result = type_of_change_request + " Changed from " + old_field + " To " + new_field;
                 return ResponseEntity.ok(result);
             } else {
                 return ResponseEntity.ok("NOT FOUND");

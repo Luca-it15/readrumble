@@ -1,19 +1,15 @@
+import React from "react";
 import FooterApp from "../components/FooterApp";
-import "../App.css"; 
-import logo from '../img/logoRR.png'; 
-import SiteLogo from "../components/SiteLogo";
+import "../App.css";
 
+const GuestLayout = ({children}) => {
 
-
-const GuestLayout = ({ children }) => {
-  
     return (
-      <>
-      <SiteLogo imageSrc={logo} imageAlt={"Logo ReadRumble"} />
-        <main>{children}</main>
-        <FooterApp />
-      </>
+        <React.Fragment>
+            <main>{children}</main>
+            <FooterApp/>
+        </React.Fragment>
     );
-  };
-  
-  export default GuestLayout; 
+};
+
+export default GuestLayout;

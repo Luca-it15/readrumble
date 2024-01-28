@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material-next/Button";
 import {blue, green} from "@mui/material/colors";
 import CircularProgress from '@mui/material/CircularProgress';
+import Logo from "../img/logoRR.png";
 
 function LoginForm() {
     const navigate = useNavigate();
@@ -149,7 +150,7 @@ function LoginForm() {
                 setLoginStatus(true);
 
                 localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
-                localStorage.setItem('isAdmin', JSON.stringify(response.data.isAdmin === 1));
+                localStorage.setItem('isAdmin', JSON.stringify(response.data.isAdmin == 1));
                 localStorage.setItem('logged_user', JSON.stringify(response.data));
 
                 if (response.data.isAdmin === 1) {
@@ -168,13 +169,16 @@ function LoginForm() {
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
         padding: '30px 50px 30px 50px',
-        margin: '10px',
+        margin: '7vh 0px 10vh 0px',
         borderRadius: 10,
         width: '40%'
     }
 
     return (
         <Paper sx={PaperStyle}>
+            <Grid item sx={{textAlign: 'center', marginBottom: '30px'}}>
+            <img src={Logo} alt="logo"/>
+            </Grid>
             <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="formBasicUsername">
                     <Form.Label style={{marginLeft: '10px'}}><Typography>Username</Typography></Form.Label>
@@ -205,7 +209,6 @@ function LoginForm() {
                     </Button>
                 </Grid>
             </Form>
-
 
             <Grid item sx={{textAlign: 'right'}}>
                 <Typography>Don't have an account?

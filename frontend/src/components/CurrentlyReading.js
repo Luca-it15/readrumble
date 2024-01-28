@@ -71,7 +71,7 @@ function CurrentlyReading({user}) {
     }
 
     return (
-        <Paper sx={PaperStyle} elevation={3}>
+        <Paper sx={PaperStyle} elevation={2}>
             <Typography variant="h5" textAlign='center' sx={{marginBottom: '8px'}}>Now reading</Typography>
             <Grid container direction="column" justifyContent="space-around" sx={{gap: '15px'}}>
                 <Grid container item direction="row" justifyContent="space-around" sx={{gap: '15px'}}>
@@ -90,7 +90,7 @@ function CurrentlyReading({user}) {
                                 <Grid container direction="row" justifyContent="center" alignItems="center"
                                       sx={{
                                           borderRadius: '15px', backgroundColor: '#ffffff', padding: '10px',
-                                          width: '32%', textAlign: 'center', '&:hover': {boxShadow: '0px 3px 5px 0px rgba(0,0,0,0.2)',
+                                          width: '32%', textAlign: 'center', '&:hover': {boxShadow: '0px 2px 5px 0px rgba(0,0,0,0.2)',
                                           cursor: 'pointer', marginBottom: '3px', marginTop: '-3px'}
                                       }} onClick={() => {seeDetails(book.id)}}>
                                     <Grid item xs={12}>
