@@ -85,15 +85,11 @@ public class BookDAO {
     public List<LightBookDTO> getWishlist(String username) {
         MongoCollection<Document> WishlistCollection = MongoConfig.getCollection("Wishlists");
 
-        System.out.println("Wishlist for " + username + ":");
-
         List<Document> BookDocuments = WishlistCollection.aggregate(List.of(
                 new Document("$match", new Document("_id", username)),
                 new Document("$unwind", "$books"),
                 new Document("$project", new Document("_id", 0).append("id", "$books.book_id").append("title", "$books.book_title"))
         )).into(new ArrayList<>());
-
-        System.out.println(BookDocuments);
 
         if (BookDocuments.isEmpty()) {
             return null;
