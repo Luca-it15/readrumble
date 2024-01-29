@@ -45,15 +45,11 @@ function OtherUserProfile() {
     };
 
     async function fetchUserInformation() {
-        console.log("Fetching user information for " + username);
         try {
             const response = await axios.get(`http://localhost:8080/api/user/${username}`);
             setUserInfo(response.data);
-            console.log("Received: " + JSON.stringify(response.data))
-            console.log("User info: " + JSON.stringify(userInfo))
         } catch (error) {
             console.log(error.response)
-            console.log("User not found")
         }
 
         setIsFollowing(currentUser['following'].includes(username))

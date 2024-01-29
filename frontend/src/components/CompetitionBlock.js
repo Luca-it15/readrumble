@@ -94,9 +94,8 @@ function CompetitionProfBlock({user}) {
                         {competitions.map(item => (
                             <Grid item>
                                 <ListItem>
-                                    <Link onClick={() => {
-                                        goSpecificComp(item.name)
-                                    }}>
+                                    <Link onClick={() => {goSpecificComp(item.name)}}
+                                        sx={{color: '#000000', '&:hover': {cursor: 'pointer'}}}>
                                         <Typography>{item.name}</Typography>
                                     </Link>
                                 </ListItem>
@@ -105,8 +104,10 @@ function CompetitionProfBlock({user}) {
                     </List>
                 </Grid>
 
-                <Button variant="filled" sx={{backgroundColor: blue[600], marginBottom: '10px'}}
-                        onClick={goComp}><Typography>Find other competitions</Typography></Button>
+                <Button variant="filled" sx={{backgroundColor: blue[600], marginBottom: '10px',
+                    '&:hover': {backgroundColor: blue[400]}}} onClick={goComp}>
+                    <Typography>Find other competitions</Typography>
+                </Button>
             </Paper>
         </Container>
     );

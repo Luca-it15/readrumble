@@ -5,8 +5,8 @@ import it.unipi.dii.aide.lsmd.readrumble.user.UserDAO;
 import org.springframework.scheduling.annotation.Scheduled;
 
 public class MemoryToNeo4j {
-    private final UserDAO userDAO;
-    private final BookDAO bookDAO;
+    private UserDAO userDAO;
+    private BookDAO bookDAO;
 
     public MemoryToNeo4j() {
         this.userDAO = new UserDAO();

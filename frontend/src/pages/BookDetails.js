@@ -66,7 +66,7 @@ function BookDetails() {
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
         padding: '10px',
-        margin: '10px',
+        margin: '20px 10px 10px 10px',
         borderRadius: 5,
         width: '85vw'
     }
@@ -179,17 +179,17 @@ function BookDetails() {
             <GoBack/>
             <Typography variant="h4" fontWeight="bold" textAlign="center">{book['title']}</Typography>
             <Grid container direction="row" alignItems="center" justifyContent="center" spacing={3}
-                sx={{marginTop: '10px'}}>
+                  sx={{marginTop: '10px'}}>
+                <Grid container item xs={3} direction="column" alignItems="center">
+                    <img alt="Book cover" src={book['image_url']} height="280px"
+                         style={{boxShadow: '0px 5px 10px 0px rgba(0,0,0,0.2)'}}/>
+                </Grid>
                 <Grid item xs={3}>
                     <Typography variant="h5">By: <i>{authors}</i></Typography>
                     <Typography>Publisher: <i>{book['publisher']}</i></Typography>
                     <Typography>Publication year: <i>{book['publication_year']}</i></Typography>
                     <Typography>ISBN: <i>{book['isbn']}</i></Typography>
                     <Typography>Pages: <i>{book['num_pages']}</i></Typography>
-                </Grid>
-                <Grid container item xs={3} direction="column" alignItems="center">
-                    <img alt="Book cover" src={book['image_url']} height="280px"
-                         style={{boxShadow: '0px 5px 10px 0px rgba(0,0,0,0.2)'}}/>
                 </Grid>
                 <Grid container item direction="column" alignItems="center" justifyContent="center" xs={3}>
                     {isAdmin ? (

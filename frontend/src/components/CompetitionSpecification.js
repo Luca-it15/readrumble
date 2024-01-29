@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {Alert} from 'react-bootstrap';
-import {Container, Grid, Typography, Paper, Card} from '@mui/material';
+import {Container, Grid, Typography, Paper, Card, Link} from '@mui/material';
 import axios from 'axios';
 import {useNavigate, useParams} from 'react-router-dom';
 import '../App.css'
@@ -23,7 +23,11 @@ function CompetitionSpec() {
     const navigate = useNavigate();
     const [joinStatus, setJoinStatus] = useState({
         message: '',
-        variant: 'success', // o 'danger' in caso di errore
+        variant: 'success',
+    });
+    const [deleteStatus, setDeleteStatus] = useState({
+        message: '',
+        variant: 'success',
     });
     const [data, setData] = useState([]);
     const [rank, setRank] = useState([])
@@ -138,6 +142,27 @@ function CompetitionSpec() {
         {backgroundColor: 'rgba(255, 255, 255, 1)'}
     ]
 
+    function seeProfile(username) {
+        if (username === JSON.parse(localStorage.getItem('logged_user'))["_id"]) {
+            navigate("/profile")
+        } else {
+            navigate(`/user/${username}`)
+        }
+    }
+
+    function deleteCompetition(Name) {
+        const response = axios.post("http://localhost:8080/api/admin/competition/delete", {CompName: Name})
+            .then(response => {
+                setDeleteStatus({message: response.data, variant: 'success'});
+            })
+
+        setTimeout(function () {
+            setDeleteStatus({message: "", variant: 'success'});
+        }, 1000);
+
+        navigate("/admin_competition")
+    }
+
     return (
         <Container>
             <Paper elevation={2} style={PaperStyle}>
@@ -155,9 +180,9 @@ function CompetitionSpec() {
                     </Card>
                 </Grid>
                 <Grid container direction="column" spacing={2} alignItems="center" justifyContent="space-around">
-                    <Grid item xs={12} sx={{margin:'30px 0px 0px 0px'}}><Typography variant="h5">Top ten</Typography>
+                    <Grid item xs={12} sx={{margin: '30px 0px 0px 0px'}}><Typography variant="h5">Top ten</Typography>
                         <Grid container direction="column" spacing={2} alignItems="center" justifyContent="center"
-                            sx={{margin: '10px 0px 5px 0px', padding: '0px'}}>
+                              sx={{margin: '10px 0px 5px 0px', padding: '0px'}}>
                             {rank.map(item => (
                                 <React.Fragment>
                                     <Grid container item xs={12} direction="row" justifyContent="space-between"
@@ -169,15 +194,33 @@ function CompetitionSpec() {
                                               width: rank.indexOf(item) in [0, 1, 2] ? '450px' : '400px'
                                           }}>
                                         <Grid item xs={2}>
-                                            <Typography sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
+                                            <Typography
+                                                sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
                                                 {rank.indexOf(item) + 1}°</Typography>
                                         </Grid>
                                         <Grid item xs={5}>
-                                            <Typography sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
-                                                {item.username}</Typography>
+                                            {JSON.parse(localStorage.getItem('isAdmin')) != 1 ? (
+                                                <Link onClick={() => {
+                                                     seeProfile(item.username)
+                                                }} sx={{
+                                                    color: "#000000",
+                                                    '&:hover': {cursor: 'pointer'}
+                                                }}>
+                                                    <Typography
+                                                        sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
+                                                        {item.username}
+                                                    </Typography>
+                                                </Link>
+                                            ) : (
+                                                <Typography
+                                                    sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
+                                                    {item.username}
+                                                </Typography>
+                                            )}
                                         </Grid>
                                         <Grid item xs={3}>
-                                            <Typography sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
+                                            <Typography
+                                                sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
                                                 {item.tot_pages}</Typography>
                                         </Grid>
                                     </Grid>
@@ -186,49 +229,68 @@ function CompetitionSpec() {
                         </Grid>
                     </Grid>
                 </Grid>
-                {points != null ? (
-                    <Grid>
-                        <Typography variant="h5">Your pages read: {points}</Typography>
-                    </Grid>
-                ) : (
-                    <Grid>
-                        <Typography variant="h5">You are not participating in this competition</Typography>
-                    </Grid>
-                )}
-                <Grid>
-                    {points != null ? (
-                        <Button variant="filledTonal" sx={{
-                            backgroundColor: red[200],
+                {JSON.parse(localStorage.getItem('isAdmin')) == 1 ? (
+                    <React.Fragment>
+                        <Button variant="filledTonal" sx={{backgroundColor: red[200],
                             margin: '10px', '&:hover': {backgroundColor: red[100]}
-                        }} onClick={() => {
-                            joinCompetition(data.name, data.tag)
-                        }}>
-                            <Typography>Leave this competition</Typography>
+                        }} onClick={() => {deleteCompetition(data.name)}}>
+                            <Typography>Delete this competition</Typography>
                         </Button>
-                    ) : (
-                        <Button variant="filledTonal" sx={{
-                            backgroundColor: blue[200],
-                            margin: '10px', '&:hover': {backgroundColor: blue[100]}
-                        }} onClick={() => {
-                            joinCompetition(data.name, data.tag)
-                        }}>
-                            <Typography>Join this competition</Typography>
-                        </Button>
-                    )}
-                </Grid>
-                <Grid>
-                    {joinStatus.message && (
-                        <Alert variant={joinStatus.variant}>
-                            {joinStatus.message}
-                        </Alert>
-                    )}
-                </Grid>
+
+                        {deleteStatus.message && (
+                            <Alert variant={deleteStatus.variant}>
+                                {deleteStatus.message}
+                            </Alert>
+                        )}
+                    </React.Fragment>
+                ) : (
+                    <React.Fragment>
+                        {points != null ? (
+                            <Grid>
+                                <Typography variant="h5">Your pages read: {points}</Typography>
+                            </Grid>
+                        ) : (
+                            <Grid>
+                                <Typography variant="h5">You are not participating in this competition</Typography>
+                            </Grid>
+                        )}
+
+                        <Grid>
+                            {points != null ? (
+                                <Button variant="filledTonal" sx={{
+                                    backgroundColor: red[200],
+                                    margin: '10px', '&:hover': {backgroundColor: red[100]}
+                                }} onClick={() => {
+                                    joinCompetition(data.name, data.tag)
+                                }}>
+                                    <Typography>Leave this competition</Typography>
+                                </Button>
+                            ) : (
+                                <Button variant="filledTonal" sx={{
+                                    backgroundColor: blue[200],
+                                    margin: '10px', '&:hover': {backgroundColor: blue[100]}
+                                }} onClick={() => {
+                                    joinCompetition(data.name, data.tag)
+                                }}>
+                                    <Typography>Join this competition</Typography>
+                                </Button>
+                            )}
+                        </Grid>
+                        <Grid>
+                            {joinStatus.message && (
+                                <Alert variant={joinStatus.variant}>
+                                    {joinStatus.message}
+                                </Alert>
+                            )}
+                        </Grid>
+                    </React.Fragment>
+                )}
                 <Grid>
                     <Button variant="filledTonal" sx={{
                         backgroundColor: blue[500], color: '#ffffff',
                         margin: '10px', '&:hover': {backgroundColor: blue[300]}
                     }} onClick={() => {
-                        navigate("/competitions")
+                        navigate(JSON.parse(localStorage.getItem('isAdmin')) == 1 ? "/admin_competition" : "/competitions")
                     }}>
                         <Typography variant="h5">More competitions</Typography>
                     </Button>

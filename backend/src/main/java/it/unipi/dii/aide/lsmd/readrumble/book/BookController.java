@@ -30,16 +30,13 @@ public class BookController {
      */
     @GetMapping("/{id}")
     Book getBookDetails(@PathVariable long id) {
-        System.out.println("Richiesta libro con id: " + id);
-
         MongoCollection<Document> BookCollection = MongoConfig.getCollection("Books");
         Document BookDocument = BookCollection.find(new Document("_id", id)).first();
 
         if (BookDocument == null) {
-            System.out.println("Book not found");
             return null;
         } else {
-            Book book = new Book(BookDocument.getLong("_id"),
+            return new Book(BookDocument.getLong("_id"),
                     BookDocument.getString("isbn"),
                     BookDocument.getString("description"),
                     BookDocument.getString("link"),
@@ -51,10 +48,6 @@ public class BookController {
                     BookDocument.getString("image_url"),
                     BookDocument.getString("title"),
                     BookDocument.getList("tags", String.class));
-
-            System.out.println(book);
-
-            return book;
         }
     }
 
@@ -66,11 +59,8 @@ public class BookController {
      */
     @GetMapping("/recentlyReadBooks/{username}")
     List<LightBookDTO> getRecentlyReadBooks(@PathVariable String username) {
-        System.out.println("Richiesta libri recentemente letti da: " + username);
-
         MongoCollection<Document> ActiveBooksCollection = MongoConfig.getCollection("ActiveBooks");
 
-        // Get the documents with "username" = username, then sort by year and month, then take the books.book_id and books.title of the documents in the arrays "books" with state = 1
         List<Document> BookDocuments = ActiveBooksCollection.aggregate(List.of(
                 new Document("$match", new Document("username", username)),
                 new Document("$sort", new Document("year", -1).append("month", -1)),
@@ -81,14 +71,9 @@ public class BookController {
         )).into(new ArrayList<>());
 
         if (BookDocuments.isEmpty()) {
-            System.out.println("User never read a book");
             return null;
         } else {
-            List<LightBookDTO> books = setResult(BookDocuments);
-
-            System.out.println(books);
-
-            return books;
+            return setResult(BookDocuments);
         }
     }
 
@@ -100,8 +85,6 @@ public class BookController {
      */
     @GetMapping("/currentlyReadingBooks/{username}")
     public List<ActiveBookDTO> getCurrentlyReadingBooks(@PathVariable String username) {
-        System.out.println("Richiesta libri attualmente letti da: " + username);
-
         MongoCollection<Document> ActiveBooksCollection = MongoConfig.getCollection("ActiveBooks");
 
         List<Document> BookDocuments = ActiveBooksCollection.aggregate(List.of(
@@ -114,7 +97,6 @@ public class BookController {
         )).into(new ArrayList<>());
 
         if (BookDocuments.isEmpty()) {
-            System.out.println("User never read a book");
             return null;
         } else {
             List<ActiveBookDTO> books = new ArrayList<>();
@@ -126,7 +108,6 @@ public class BookController {
                         doc.getInteger("bookmark"),
                         doc.getInteger("num_pages")));
             }
-            System.out.println(books);
 
             return books;
         }

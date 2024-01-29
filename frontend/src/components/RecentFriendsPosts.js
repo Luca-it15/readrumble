@@ -42,8 +42,7 @@ const RecentFriendsPosts = () => {
     }, [user]);
 
     return (
-        <Grid container direction="row" justifyContent="center" alignItems="center"
-              sx={12}>
+        <Grid container direction="row" justifyContent="center" alignItems="center">
             {(posts != null&& posts.length > 0) ? (posts.map((post, index) => (
                 <React.Fragment key={index}>
                     <Grid direction="coloumn" xs={12}

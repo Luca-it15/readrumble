@@ -113,7 +113,6 @@ public class UserDAO {
                 if (password.equals(registered_user.get("password"))) {
                     if (registered_user.containsKey("isAdmin")) {
                         registered_user.append("isAdmin", true);
-                        System.out.println("Admin logged in");
                     } else {
                         registered_user.append("isAdmin", false);
                     }
