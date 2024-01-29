@@ -26,9 +26,9 @@ import java.util.List;
 import java.util.Map;
 
 public class UserDAO {
-    private List<Document> inMemoryUsers = new ArrayList<>();
-    private List<Document> inMemoryFollowRelations = new ArrayList<>();
-    private List<Document> inMemoryFollowRelationsToBeDeleted = new ArrayList<>();
+    private static List<Document> inMemoryUsers = new ArrayList<>();
+    private static List<Document> inMemoryFollowRelations = new ArrayList<>();
+    private static List<Document> inMemoryFollowRelationsToBeDeleted = new ArrayList<>();
 
     public void saveInMemoryUsers() {
         for (Document user : inMemoryUsers) {
@@ -111,6 +111,13 @@ public class UserDAO {
                 Document registered_user = cursor.next();
 
                 if (password.equals(registered_user.get("password"))) {
+                    if (registered_user.containsKey("isAdmin")) {
+                        registered_user.append("isAdmin", true);
+                        System.out.println("Admin logged in");
+                    } else {
+                        registered_user.append("isAdmin", false);
+                    }
+
                     return registered_user;
                 } else {
                     return null;
@@ -172,7 +179,7 @@ public class UserDAO {
         try (MongoCursor<Document> cursor = collection.find(eq("_id", username_to_use)).cursor()) {
             if (cursor.hasNext()) {
                 collection.updateOne(eq("_id", username_to_use), set(type_of_change_request, new_field));
-                String result = (String) type_of_change_request + " Changed from " + old_field + " To " + new_field;
+                String result = type_of_change_request + " Changed from " + old_field + " To " + new_field;
                 return ResponseEntity.ok(result);
             } else {
                 return ResponseEntity.ok("NOT FOUND");

@@ -71,8 +71,8 @@ function CurrentlyReading({user}) {
     }
 
     return (
-        <Paper sx={PaperStyle}>
-            <Typography variant="h5" textAlign='center'>Now reading</Typography>
+        <Paper sx={PaperStyle} elevation={2}>
+            <Typography variant="h5" textAlign='center' sx={{marginBottom: '8px'}}>Now reading</Typography>
             <Grid container direction="column" justifyContent="space-around" sx={{gap: '15px'}}>
                 <Grid container item direction="row" justifyContent="space-around" sx={{gap: '15px'}}>
                     {currentlyReading.length === 0 ? (
@@ -85,19 +85,16 @@ function CurrentlyReading({user}) {
                             </Typography>
                         </Grid>
                     ) : (
-                        Array.isArray(currentlyReading) && currentlyReading.slice(0, displayCount).map((book, index) => (
+                        currentlyReading.slice(0, displayCount).map((book, index) => (
                             <React.Fragment key={index}>
                                 <Grid container direction="row" justifyContent="center" alignItems="center"
                                       sx={{
                                           borderRadius: '15px', backgroundColor: '#ffffff', padding: '10px',
-                                          width: '32%', textAlign: 'center'
-                                      }}>
+                                          width: '32%', textAlign: 'center', '&:hover': {boxShadow: '0px 2px 5px 0px rgba(0,0,0,0.2)',
+                                          cursor: 'pointer', marginBottom: '3px', marginTop: '-3px'}
+                                      }} onClick={() => {seeDetails(book.id)}}>
                                     <Grid item xs={12}>
-                                        <Link onClick={() => {
-                                            seeDetails(book.id)
-                                        }} sx={{color: "#000000"}}>
-                                            <Typography>{book.title}</Typography>
-                                        </Link>
+                                        <Typography>{book.title}</Typography>
                                     </Grid>
                                     <Grid item xs={3}>
                                         <Typography sx={{color: '#777777'}}>

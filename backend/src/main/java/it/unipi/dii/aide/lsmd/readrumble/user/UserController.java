@@ -18,10 +18,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public Document goLogin(@RequestBody Document utente) {
-        User user = new User(utente);
-        System.out.println(utente);
-        System.out.println(user);
+    public Document goLogin(@RequestBody Document loggingUser) {
+        User user = new User(loggingUser);
+
         return userDAO.LogUser(user);
     }
 

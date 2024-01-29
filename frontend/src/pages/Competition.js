@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
-import {Container, Grid, Typography, Paper, ListItem, List, Divider, Tooltip} from '@mui/material';
+import {Grid, Typography, Paper} from '@mui/material';
 import axios from 'axios';
 import '../App.css';
 import {useNavigate} from 'react-router-dom';
@@ -17,27 +16,8 @@ function CompetitionPage() {
         textAlign: 'center'
     }
 
-    const PaperStyleJoined = {
-        backgroundColor: 'greenyellow',
-        padding: '10px',
-        margin: '20px 10px 0px 10px',
-        borderRadius: 18,
-        width: '100%',
-        textAlign: 'center'
-    }
-
-    const PaperStyleNotJoined = {
-        backgroundColor: 'tomato',
-        padding: '10px',
-        margin: '20px 10px 0px 10px',
-        borderRadius: 18,
-        width: '100%',
-        textAlign: 'center'
-    }
-
     const [data, setData] = useState([]);
     const navigate = useNavigate();
-    const logged_user = JSON.parse(localStorage.getItem('logged_user'));
 
     const goSpecificComp = (Name) => {
         var dynamic_path = "/competition/" + Name;
@@ -54,23 +34,10 @@ function CompetitionPage() {
             }).catch(error => console.error('Errore nella richiesta GET:', error));
     }, []);
 
-    function giveClass(value) {
-        let i = 0;
-        const iter = logged_user.competitions;
-
-        while (iter[i] != null) {
-            if (iter[i].name == value) {
-                return PaperStyleJoined;
-            }
-            i = i + 1;
-        }
-        return PaperStyleNotJoined;
-    }
-
     return (
         <Paper sx={PaperStyle}>
-            <Typography variant="h4">Ongoing competitions</Typography>
-            <Grid container direction="row" textAlign="center" alignItems="center" justifyContent="space-around">
+            <Typography variant="h4" sx={{margin: '10px'}}>Ongoing competitions</Typography>
+            <Grid container direction="row" textAlign="center" alignItems="center" justifyContent="space-evenly">
                 {data.map(item => (
                     <React.Fragment>
                         <Grid item xs={4}>
@@ -79,9 +46,8 @@ function CompetitionPage() {
                                 borderRadius: 8,
                                 margin: '10px',
                                 padding: '10px',
-                                boxShadow: '0px 5px 10px 0px rgba(0,0,0,0.2)',
-                                '&:hover': {boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.2)'}
-                            }}>
+                                '&:hover': {boxShadow: '0px 3px 8px 0px rgba(0,0,0,0.2)'}
+                            }} elevation={0}>
                                 <Typography variant="h6">{item.name}</Typography>
                                 <Typography sx={{color: '#888888'}}>Tag: {item.tag}</Typography>
                                 <Button variant="filledTonal" sx={{

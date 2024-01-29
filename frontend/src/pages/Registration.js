@@ -5,9 +5,21 @@ import axios from 'axios';
 import {Paper, Grid, Typography} from "@mui/material";
 import {blue, green} from "@mui/material/colors";
 import Button from "@mui/material-next/Button"
+import Logo from "../img/logoRR.png";
 
 function RegistrationForm() {
     const navigate = useNavigate();
+    const [formData, setFormData] = useState({
+        name: '',
+        surname: '',
+        _id: '',
+        password: '',
+    });
+    const [registrationStatus, setRegistrationStatus] = useState({
+        message: '',
+        variant: 'success', // o 'danger' in caso di errore
+    });
+    const [validationError, setValidationError] = useState('');
 
     function timeout_text() {
         setTimeout(function () {
@@ -20,19 +32,7 @@ function RegistrationForm() {
     const GoLogin = () => {
         navigate('/login');
     }
-    const [formData, setFormData] = useState({
-        name: '',
-        surname: '',
-        _id: '',
-        password: '',
-    });
 
-    const [registrationStatus, setRegistrationStatus] = useState({
-        message: '',
-        variant: 'success', // o 'danger' in caso di errore
-    });
-
-    const [validationError, setValidationError] = useState('');
     const handleChange = (e) => {
         const {name, value, type, checked} = e.target;
         setFormData((prevData) => ({
@@ -89,6 +89,9 @@ function RegistrationForm() {
 
     return (
         <Paper sx={PaperStyle}>
+            <Grid item sx={{textAlign: 'center', marginBottom: '30px'}}>
+                <img src={Logo} alt="logo"/>
+            </Grid>
             <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="formBasicName">
                     <Form.Label style={{marginLeft: '10px'}}><Typography>Name</Typography></Form.Label>

@@ -2,8 +2,6 @@ import React, {useState} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {BrowserRouter, Route, Routes, Navigate} from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 
 import Home from './pages/Home';
 import ProfilePage from './pages/ProfilePage';
@@ -36,12 +34,8 @@ import AddBook from './pages/admin/AddBook';
 import UpdateBook from './pages/admin/UpdateBook';
 
 const App = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(
-        JSON.parse(localStorage.getItem('isLoggedIn')) || false
-    );
-    const [isAdmin, setIsAdmin] = useState(
-        JSON.parse(localStorage.getItem('isAdmin')) || false
-    );
+    const [isLoggedIn, setIsLoggedIn] = useState(JSON.parse(localStorage.getItem('isLoggedIn')) || false);
+    const [isAdmin, setIsAdmin] = useState(JSON.parse(localStorage.getItem('isAdmin')) || false);
 
     const handleLogin = () => {
         setIsLoggedIn(true);
@@ -50,143 +44,142 @@ const App = () => {
     return (
         <BrowserRouter>
             <Container fluid="false">
-                <Row>
-                    <Col>
-                        {isLoggedIn ? (isAdmin ?
-                            (<AdminLayout>
-                                <Routes>
-                                    <Route
-                                        path="/admin/user/banunban/:name"
-                                        element={<BanUnbanProfile/>}
-                                    />
-                                    <Route
-                                        exact
-                                        path="/home"
-                                        element={<DashboardAdmin/>}
-                                    />
-                                    <Route
-                                        path="/admin_book"
-                                        element={
-                                            <BookAdmin/>}
-                                    />
-                                    <Route
-                                        path="/admin_competition"
-                                        element={
-                                            <CompetitionAdmin/>}
-                                    />
-                                    <Route
-                                        path="/admin_competition/:name"
-                                        element={
-                                            <CompetitionSpecAdmin/>}
-                                    />
-                                    <Route
-                                        path="/admin_competition/add_comp"
-                                        element={
-                                            <AddCompetition/>}
-                                    />
-                                    <Route
-                                        path="/admin_user"
-                                        element={
-                                            <UserAdmin/>}
-                                    />
-                                    <Route
-                                        path="/admin_post"
-                                        element={
-                                            <PostAdmin/>}
-                                    />
-                                    <Route
-                                        path="/posts/:id"
-                                        element={<PostDetails/>}
-                                    />
-                                    <Route
-                                        path="/bookdetails/:id"
-                                        element={<BookDetails/>}
-                                    />
-                                      <Route
-                                        path="/addBook"
-                                        element={<AddBook/>}
-                                    />
-                                       <Route
-                                        path="/updateBook/:id"
-                                        element={<UpdateBook/>}
-                                    />
-                                </Routes>
-                            </AdminLayout>) : (
-                                <AuthenticationLayout>
-                                    <Routes>
-                                        <Route
-                                            exact
-                                            path="/popular"
-                                            element={<PopularCompetitionBlock/>}
-                                        />
-                                        <Route
-                                            path="/home"
-                                            element={<Home/>}
-                                        />
-                                        <Route
-                                            path="/explore"
-                                            element={<Explore/>}
-                                        />
-                                        <Route
-                                            path="/settings"
-                                            element={<UserSettings/>}
-                                        />
-                                        <Route
-                                            path="/profile"
-                                            element={<ProfilePage/>}
-                                        />
-                                        <Route
-                                            path="/user/:username"
-                                            element={<OtherUserProfile/>}
-                                        />
-                                        <Route
-                                            path="/post"
-                                            element={<PostForm/>}
-                                        />
-                                        <Route
-                                            path="/dashboard"
-                                            element={<Dashboard/>}
-                                        />
-                                        <Route
-                                            path="/competitions"
-                                            element={<CompetitionPage/>}
-                                        />
-                                        <Route
-                                            path="/competition/:name"
-                                            element={<CompetitionSpec/>}
-                                        />
-                                        <Route
-                                            path="/bookdetails/:id"
-                                            element={<BookDetails/>}
-                                        />
-                                        <Route
-                                            path="/posts/:id"
-                                            element={<PostDetails/>}
-                                        />
-                                        <Route
-                                            path="/"
-                                            element={<Navigate to="/home" replace/>}
-                                        />
-                                        <Route path="*" element={<Error/>}/>
-                                    </Routes>
-                                </AuthenticationLayout>
-                            )) : (
-                            <GuestLayout>
-                                <Routes>
-                                    <Route
-                                        path="/"
-                                        element={<LoginForm onLogin={handleLogin}/>}
-                                    />
-                                    <Route
-                                        path="/registration"
-                                        element={<RegistrationForm/>}
-                                    />
-                                    <Route path="*" element={<Navigate to="/"/>}/>
-                                </Routes>
-                            </GuestLayout>
-                        )}
-                    </Col>
-                </Row>
+                {isLoggedIn ? (isAdmin ?
+                    (
+                        <AdminLayout>
+                            <Routes>
+                                <Route
+                                    path="/admin/user/banunban/:name"
+                                    element={<BanUnbanProfile/>}
+                                />
+                                <Route
+                                    exact
+                                    path="/home"
+                                    element={<DashboardAdmin/>}
+                                />
+                                <Route
+                                    path="/admin_book"
+                                    element={
+                                        <BookAdmin/>}
+                                />
+                                <Route
+                                    path="/admin_competition"
+                                    element={
+                                        <CompetitionAdmin/>}
+                                />
+                                <Route
+                                    path="/admin_competition/:name"
+                                    element={
+                                        <CompetitionSpecAdmin/>}
+                                />
+                                <Route
+                                    path="/admin_competition/add_comp"
+                                    element={
+                                        <AddCompetition/>}
+                                />
+                                <Route
+                                    path="/admin_user"
+                                    element={
+                                        <UserAdmin/>}
+                                />
+                                <Route
+                                    path="/admin_post"
+                                    element={
+                                        <PostAdmin/>}
+                                />
+                                <Route
+                                    path="/posts/:id"
+                                    element={<PostDetails/>}
+                                />
+                                <Route
+                                    path="/bookdetails/:id"
+                                    element={<BookDetails/>}
+                                />
+                                  <Route
+                                    path="/addBook"
+                                    element={<AddBook/>}
+                                />
+                                   <Route
+                                    path="/updateBook/:id"
+                                    element={<UpdateBook/>}
+                                />
+                            </Routes>
+                        </AdminLayout>
+                    ) : (
+                        <AuthenticationLayout>
+                            <Routes>
+                                <Route
+                                    exact
+                                    path="/popular"
+                                    element={<PopularCompetitionBlock/>}
+                                />
+                                <Route
+                                    path="/home"
+                                    element={<Home/>}
+                                />
+                                <Route
+                                    path="/explore"
+                                    element={<Explore/>}
+                                />
+                                <Route
+                                    path="/settings"
+                                    element={<UserSettings/>}
+                                />
+                                <Route
+                                    path="/profile"
+                                    element={<ProfilePage/>}
+                                />
+                                <Route
+                                    path="/user/:username"
+                                    element={<OtherUserProfile/>}
+                                />
+                                <Route
+                                    path="/post"
+                                    element={<PostForm/>}
+                                />
+                                <Route
+                                    path="/dashboard"
+                                    element={<Dashboard/>}
+                                />
+                                <Route
+                                    path="/competitions"
+                                    element={<CompetitionPage/>}
+                                />
+                                <Route
+                                    path="/competition/:name"
+                                    element={<CompetitionSpec/>}
+                                />
+                                <Route
+                                    path="/bookdetails/:id"
+                                    element={<BookDetails/>}
+                                />
+                                <Route
+                                    path="/posts/:id"
+                                    element={<PostDetails/>}
+                                />
+                                <Route
+                                    path="/"
+                                    element={<Navigate to="/home" replace/>}
+                                />
+                                <Route path="*" element={<Error/>}/>
+                            </Routes>
+                        </AuthenticationLayout>
+                    )
+                ) : (
+                    <GuestLayout>
+                        <Routes>
+                            <Route
+                                path="/"
+                                element={<LoginForm onLogin={handleLogin}/>}
+                            />
+                            <Route
+                                path="/registration"
+                                element={<RegistrationForm/>}
+                            />
+                            <Route path="*" element={<Navigate to="/"/>}/>
+                        </Routes>
+                    </GuestLayout>
+                )}
             </Container>
         </BrowserRouter>
     );

@@ -86,7 +86,7 @@ function FollowingList({user}) {
 
     return (
         <Paper sx={PaperStyle}>
-            <Typography variant="h5">
+            <Typography variant="h5" sx={{marginBottom:'5px'}}>
                 {user === currentUser['_id'] ? "Users you follow" : user + " is following"}
             </Typography>
             <List sx={ListStyle}>

@@ -33,8 +33,6 @@ const ProfilePage = () => {
             try {
                 const response = await axios.get(`http://localhost:8080/api/book/wishlist/${currentUser['_id']}`)
 
-                console.log(JSON.stringify(response.data));
-
                 const booksData = response.data.map(book => ({
                     id: book.id,
                     title: book.title.replace(/"/g, '')
@@ -140,7 +138,8 @@ const ProfilePage = () => {
                 <Grid item xs={6} md={6}>
                     <Paper elevation={2} style={PaperStyle}>
                         <Typography variant="h5">Posts</Typography>
-                        <Button sx={{backgroundColor: blue[200], height: "40px", '&:hover': {backgroundColor: blue[400]}}}
+                        <Button sx={{backgroundColor: blue[200], height: "40px", marginBottom: '10px',
+                                '&:hover': {backgroundColor: blue[400]}}}
                                 variant="filledTonal" onClick={goReview}
                                 startIcon={<EditNoteTwoToneIcon sx={{color: blue[700]}}/>}>
                             <Typography>Make a post</Typography>
@@ -194,7 +193,6 @@ const ProfilePage = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-
         </Container>
     );
 }

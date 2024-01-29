@@ -3,7 +3,7 @@ import { grey } from '@mui/material/colors';
 
 const FooterApp = () => {
     return (
-        <Box sx={{ backgroundColor: grey[900], color: grey[50], p: 3 }}>
+        <Box sx={{ backgroundColor: grey[900], color: grey[50], p: 3, height: '70px'}}>
             <Typography align="center">
                 Powered by Luca Chiocchetti, Francesco Pio Crispino and Massimiliano Romani
             </Typography>
