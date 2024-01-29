@@ -77,7 +77,11 @@ function FollowingList({user}) {
     };
 
     function seeProfile(username) {
-        navigate(`/user/${username}`)
+        if (username === currentUser['_id']) {
+            navigate('/profile')
+        } else {
+            navigate(`/user/${username}`)
+        }
     }
 
     function loadLessFollowings() {
@@ -86,7 +90,7 @@ function FollowingList({user}) {
 
     return (
         <Paper sx={PaperStyle}>
-            <Typography variant="h5" sx={{marginBottom:'5px'}}>
+            <Typography variant="h5" sx={{marginBottom: '5px'}}>
                 {user === currentUser['_id'] ? "Users you follow" : user + " is following"}
             </Typography>
             <List sx={ListStyle}>
@@ -98,17 +102,17 @@ function FollowingList({user}) {
                     following.slice(0, displayCount).map((username, index) => (
                         <React.Fragment key={index}>
                             <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}
-                                secondaryAction={user === currentUser['_id'] && (
-                                    <Tooltip title="Unfollow">
-                                        <IconButton sx={{color: blue[500], '&:hover': {color: red[500]}}}
-                                                    onClick={() => unfollow()}>
-                                            <PersonRemoveTwoToneIcon/>
-                                        </IconButton>
-                                    </Tooltip>
-                                )}>
+                                      secondaryAction={user === currentUser['_id'] && (
+                                          <Tooltip title="Unfollow">
+                                              <IconButton sx={{color: blue[500], '&:hover': {color: red[500]}}}
+                                                          onClick={() => unfollow()}>
+                                                  <PersonRemoveTwoToneIcon/>
+                                              </IconButton>
+                                          </Tooltip>
+                                      )}>
                                 <Link onClick={() => {
                                     seeProfile(username)
-                                }} sx={{color: "#000000"}}>
+                                }} sx={{color: "#000000", '&:hover': {cursor: 'pointer'}}}>
                                     <Typography>{username}</Typography>
                                 </Link>
                             </ListItem>
@@ -117,14 +121,18 @@ function FollowingList({user}) {
                     )))}
             </List>
             {following.length > displayCount ? (
-                <Button sx={{backgroundColor: blue[100], marginTop: "10px", height: "30px",
-                    '&:hover': {backgroundColor: blue[100]}}}
+                <Button sx={{
+                    backgroundColor: blue[100], marginTop: "10px", height: "30px",
+                    '&:hover': {backgroundColor: blue[100]}
+                }}
                         variant="filledTonal" onClick={loadAllFollowings}>
                     <Typography>Show all</Typography>
                 </Button>
             ) : (
-                <Button sx={{backgroundColor: blue[100], marginTop: "10px", height: "30px",
-                    '&:hover': {backgroundColor: blue[100]}}}
+                <Button sx={{
+                    backgroundColor: blue[100], marginTop: "10px", height: "30px",
+                    '&:hover': {backgroundColor: blue[100]}
+                }}
                         variant="filledTonal" onClick={loadLessFollowings}>
                     <Typography>Show less</Typography>
                 </Button>

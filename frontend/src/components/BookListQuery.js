@@ -9,7 +9,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 function BookListQuery({query}) {
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
-    if(!currentUser['following']) {
+    if (!currentUser['following']) {
         currentUser['following'] = [];
     }
 

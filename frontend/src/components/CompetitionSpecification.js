@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {Alert} from 'react-bootstrap';
-import {Container, Grid, Typography, Paper, Card} from '@mui/material';
+import {Container, Grid, Typography, Paper, Card, Link} from '@mui/material';
 import axios from 'axios';
 import {useNavigate, useParams} from 'react-router-dom';
 import '../App.css'
@@ -138,6 +138,14 @@ function CompetitionSpec() {
         {backgroundColor: 'rgba(255, 255, 255, 1)'}
     ]
 
+    function seeProfile(username) {
+        if (username === JSON.parse(localStorage.getItem('logged_user'))["_id"]) {
+            navigate("/profile")
+        } else {
+            navigate(`/user/${username}`)
+        }
+    }
+
     return (
         <Container>
             <Paper elevation={2} style={PaperStyle}>
@@ -155,9 +163,9 @@ function CompetitionSpec() {
                     </Card>
                 </Grid>
                 <Grid container direction="column" spacing={2} alignItems="center" justifyContent="space-around">
-                    <Grid item xs={12} sx={{margin:'30px 0px 0px 0px'}}><Typography variant="h5">Top ten</Typography>
+                    <Grid item xs={12} sx={{margin: '30px 0px 0px 0px'}}><Typography variant="h5">Top ten</Typography>
                         <Grid container direction="column" spacing={2} alignItems="center" justifyContent="center"
-                            sx={{margin: '10px 0px 5px 0px', padding: '0px'}}>
+                              sx={{margin: '10px 0px 5px 0px', padding: '0px'}}>
                             {rank.map(item => (
                                 <React.Fragment>
                                     <Grid container item xs={12} direction="row" justifyContent="space-between"
@@ -169,15 +177,26 @@ function CompetitionSpec() {
                                               width: rank.indexOf(item) in [0, 1, 2] ? '450px' : '400px'
                                           }}>
                                         <Grid item xs={2}>
-                                            <Typography sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
+                                            <Typography
+                                                sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
                                                 {rank.indexOf(item) + 1}°</Typography>
                                         </Grid>
                                         <Grid item xs={5}>
-                                            <Typography sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
-                                                {item.username}</Typography>
+                                            <Link onClick={() => {
+                                                seeProfile(item.username)
+                                            }} sx={{
+                                                color: "#000000",
+                                                '&:hover': {cursor: 'pointer'}
+                                            }}>
+                                                <Typography
+                                                    sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
+                                                    {item.username}
+                                                </Typography>
+                                            </Link>
                                         </Grid>
                                         <Grid item xs={3}>
-                                            <Typography sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
+                                            <Typography
+                                                sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
                                                 {item.tot_pages}</Typography>
                                         </Grid>
                                     </Grid>

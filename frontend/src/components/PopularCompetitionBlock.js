@@ -45,7 +45,11 @@ function PopularCompetitionBlock() {
             creator.map(item => (
                 <Grid container item direction="row" justifyContent="space-between"
                       sx={{backgroundColor: '#ffffff', padding: '10px', borderRadius: 8, marginBottom: '10px'}}>
-                    <Typography><strong>{item.username}</strong></Typography>
+                    <Link onClick={() => {
+                        seeProfile(item.username)
+                    }} sx={{color: '#000000', '&:hover': {cursor: 'pointer'}}}>
+                        <Typography>{item.username}</Typography>
+                    </Link>
                     <Typography>Points: {item.tot_pages}</Typography>
                 </Grid>
             ))
@@ -70,15 +74,28 @@ function PopularCompetitionBlock() {
         setDisplayCount(3);
     }
 
+    function seeProfile(username) {
+        if (username === JSON.parse(localStorage.getItem('logged_user'))["_id"]) {
+            navigate("/profile")
+        } else {
+            navigate(`/user/${username}`)
+        }
+    }
+
     return (
-        <Paper sx={{backgroundColor: '#f1f7fa', paddingRight: '16px', margin: '20px 10px 0px 10px', borderRadius: 8,
-                width: '100%', textAlign: 'center'}}>
+        <Paper sx={{
+            backgroundColor: '#f1f7fa', paddingRight: '16px', margin: '20px 10px 0px 10px', borderRadius: 8,
+            width: '100%', textAlign: 'center'
+        }}>
             <Grid container direction="column" alignItems="center" justifyContent="center">
-                <Typography variant="h5" textAlign='center' sx={{marginTop: '10px', marginBottom: '-10px'}}>Popular competitions</Typography>
+                <Typography variant="h5" textAlign='center' sx={{marginTop: '10px', marginBottom: '-10px'}}>Popular
+                    competitions</Typography>
                 {data.slice(0, displayCount).map((item) => (
                     <Grid item>
                         <Paper elevation={2} style={PaperStyle}>
-                            <Link variant="h6" onClick={() => {goSpecificComp(item.name)}}>
+                            <Link variant="h6" onClick={() => {
+                                goSpecificComp(item.name)
+                            }} sx={{'&:hover': {cursor: 'pointer'}}}>
                                 {item.name}
                             </Link>
                             <Typography>Tag: {item.tag}</Typography>
@@ -91,25 +108,33 @@ function PopularCompetitionBlock() {
                 ))}
 
                 {(data.length > 3 && displayCount === 3) ? (
-                    <Button variant="filled" sx={{backgroundColor: blue[200], width: '140px', height: '30px',
-                        margin: '10px', '&:hover': {backgroundColor: blue[100]}}}
+                    <Button variant="filled" sx={{
+                        backgroundColor: blue[200], width: '140px', height: '30px',
+                        margin: '10px', '&:hover': {backgroundColor: blue[100]}
+                    }}
                             onClick={loadMoreCompetitions}><Typography>Show more</Typography>
                     </Button>
                 ) : (
                     <React.Fragment>
-                        <Button variant="filled" sx={{backgroundColor: red[200], width: '140px', height: '30px',
-                            marginTop: '20px', '&:hover': {backgroundColor: '#ff8a80'}}} onClick={loadLessCompetitions}>
+                        <Button variant="filled" sx={{
+                            backgroundColor: red[200], width: '140px', height: '30px',
+                            marginTop: '20px', '&:hover': {backgroundColor: '#ff8a80'}
+                        }} onClick={loadLessCompetitions}>
                             <Typography sx={{color: '#000000'}}>Show less</Typography>
                         </Button>
-                        <Button variant="filled" sx={{backgroundColor: blue[200], width: '140px', height: '30px',
-                            margin: '10px 20px 20px 20px', '&:hover': {backgroundColor: '#82b1ff'}}} onClick={loadMoreCompetitions}>
+                        <Button variant="filled" sx={{
+                            backgroundColor: blue[200], width: '140px', height: '30px',
+                            margin: '10px 20px 20px 20px', '&:hover': {backgroundColor: '#82b1ff'}
+                        }} onClick={loadMoreCompetitions}>
                             <Typography sx={{color: '#000000'}}>Show more</Typography>
                         </Button>
                     </React.Fragment>
                 )}
 
-                <Button variant="filled" sx={{backgroundColor: blue[600], marginBottom: '10px',
-                    '&:hover': {backgroundColor: blue[500]}}}
+                <Button variant="filled" sx={{
+                    backgroundColor: blue[600], marginBottom: '10px',
+                    '&:hover': {backgroundColor: blue[500]}
+                }}
                         onClick={goComp}><Typography>Find other competitions</Typography></Button>
             </Grid>
         </Paper>

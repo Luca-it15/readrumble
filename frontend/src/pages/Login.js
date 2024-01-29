@@ -177,7 +177,7 @@ function LoginForm() {
     return (
         <Paper sx={PaperStyle}>
             <Grid item sx={{textAlign: 'center', marginBottom: '30px'}}>
-            <img src={Logo} alt="logo"/>
+                <img src={Logo} alt="logo"/>
             </Grid>
             <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="formBasicUsername">
