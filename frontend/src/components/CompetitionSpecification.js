@@ -199,17 +199,24 @@ function CompetitionSpec() {
                                                 {rank.indexOf(item) + 1}°</Typography>
                                         </Grid>
                                         <Grid item xs={5}>
-                                            <Link onClick={() => {
-                                                seeProfile(item.username)
-                                            }} sx={{
-                                                color: "#000000",
-                                                '&:hover': {cursor: 'pointer'}
-                                            }}>
+                                            {JSON.parse(localStorage.getItem('isAdmin')) != 1 ? (
+                                                <Link onClick={() => {
+                                                     seeProfile(item.username)
+                                                }} sx={{
+                                                    color: "#000000",
+                                                    '&:hover': {cursor: 'pointer'}
+                                                }}>
+                                                    <Typography
+                                                        sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
+                                                        {item.username}
+                                                    </Typography>
+                                                </Link>
+                                            ) : (
                                                 <Typography
                                                     sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
                                                     {item.username}
                                                 </Typography>
-                                            </Link>
+                                            )}
                                         </Grid>
                                         <Grid item xs={3}>
                                             <Typography
