@@ -5,10 +5,15 @@ import com.mongodb.client.MongoCollection;
 
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
+import it.unipi.dii.aide.lsmd.readrumble.utils.Status;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 
+import static com.mongodb.client.model.Filters.eq;
+
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.Locale;
@@ -72,8 +77,8 @@ public class PostDAO {
                   doc.getInteger("rating"),
                   doc.getDate("date_added"),
                   doc.getString("book_title"),
-                  doc.getString("username")
-            );
+                  doc.getString("username"),
+                    doc.getString("text"));
             posts.add(post);
         }
 
@@ -115,8 +120,8 @@ public class PostDAO {
                     doc.getInteger("rating"),
                     doc.getDate("date_added"),
                     doc.getString("book_title"),
-                    doc.getString("username")
-            );
+                    doc.getString("username"),
+                    doc.getString("text"));
             reviews.add(review);
         }
 
@@ -159,13 +164,14 @@ public class PostDAO {
         List<Document> posts = collection.aggregate(List.of(
                 new Document("$match", new Document("username", new Document("$in", friends))),
                 new Document("$sort", new Document("date_added", -1)),
-                new Document("$group", new Document("_id", "$username").append("mostRecentPost", new Document("$first", "$$ROOT"))),
-                new Document("$project", new Document("id", "$mostRecentPost._id")
-                        .append("book_id", "$mostRecentPost.book_id")
-                        .append("rating", "$mostRecentPost.rating")
-                        .append("date_added", "$mostRecentPost.date_added")
-                        .append("book_title", "$mostRecentPost.book_title")
-                        .append("username", "$mostRecentPost.username"))
+                new Document("$limit", 20),
+                new Document("$project", new Document("id", "$_id")
+                        .append("book_id", "$book_id")
+                        .append("rating", "$rating")
+                        .append("date_added", "$date_added")
+                        .append("book_title", "$book_title")
+                        .append("username", "$username")
+                        .append("text", "$review_text"))
         )).into(new ArrayList<>());
 
         for (Document doc : posts) {
@@ -175,7 +181,8 @@ public class PostDAO {
                     doc.getInteger("rating"),
                     doc.getDate("date_added"),
                     doc.getString("book_title"),
-                    doc.getString("username")
+                    doc.getString("username"),
+                    doc.getString("text")
             );
             postsTarget.add(post);
         }

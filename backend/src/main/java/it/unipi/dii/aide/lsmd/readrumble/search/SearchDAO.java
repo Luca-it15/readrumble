@@ -32,8 +32,8 @@ public class SearchDAO {
                     doc.getInteger("rating"),
                     doc.getDate("date_added"),
                     doc.getString("book_title"),
-                    doc.getString("username")
-            );
+                    doc.getString("username"),
+                    doc.getString("text"));
             target.add(post);
         }
 
