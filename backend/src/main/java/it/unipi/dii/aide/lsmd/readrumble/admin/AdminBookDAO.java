@@ -101,13 +101,7 @@ public class AdminBookDAO {
         }
         catch(Exception e)
         {
-            System.out.println("Exception error catched: " + e.getMessage());
             return ResponseEntity.ok("EXCEPTION IN SERVER");
         }
-        finally {
-            MongoConfig.closeConnection();
-        }
-
-
     }
 }

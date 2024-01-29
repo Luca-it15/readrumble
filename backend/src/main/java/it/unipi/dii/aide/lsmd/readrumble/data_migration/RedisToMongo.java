@@ -1,41 +1,47 @@
 package it.unipi.dii.aide.lsmd.readrumble.data_migration;
 
-import com.mongodb.MongoException;
 import it.unipi.dii.aide.lsmd.readrumble.utils.Status;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Updates;
-import org.bson.conversions.Bson;
+import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
+import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.bson.conversions.Bson;
+import org.bson.Document;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
+import redis.clients.jedis.Transaction;
+
+import com.mongodb.MongoException;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import com.mongodb.client.MongoCollection;
-import org.bson.Document;
-import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
-import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 
-import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Component
 public class RedisToMongo {
     private static final Logger logger = LoggerFactory.getLogger(RedisToMongo.class);
     private Jedis jedis;
     private MongoCollection<Document> mongoCollection;
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private DateTimeFormatter isoFormat;
-
 
     /**
      * This method is scheduled to run every 2 hours.
@@ -45,21 +51,17 @@ public class RedisToMongo {
     public void updateMongoWishlists() {
         logger.info("Updating MongoDB wishlists...");
 
-        lock.writeLock().lock();
-
         Map<String, List<Document>> userWishlists;
 
         try {
             jedis = RedisConfig.getSession();
             mongoCollection = MongoConfig.getCollection("Wishlists");
 
-            // Clear the entire wishlists collection
             mongoCollection.deleteMany(new Document());
 
-            Pipeline pipeline = jedis.pipelined();
-            Response<Set<String>> keysResponse = pipeline.keys("wishlist:*");
-
-            pipeline.sync();
+            Transaction transaction = jedis.multi();
+            Response<Set<String>> keysResponse = transaction.keys("wishlist:*");
+            transaction.exec();
 
             Set<String> keys = keysResponse.get();
 
@@ -69,8 +71,11 @@ public class RedisToMongo {
             for (String key : keys) {
                 String username = key.split(":")[1];
 
-                // Get all the fields and their values for the current key
-                Map<String, String> fields = jedis.hgetAll(key);
+                Transaction transactionForHGetAll = jedis.multi();
+                Response<Map<String, String>> fieldsResponse = transactionForHGetAll.hgetAll(key);
+                transactionForHGetAll.exec();
+
+                Map<String, String> fields = fieldsResponse.get();
 
                 // Convert the tags string into an array of strings (the tags are separated by commas)
                 String tagsField = fields.get("tags");
@@ -85,11 +90,14 @@ public class RedisToMongo {
                 // Add the Document to the user's wishlist in the map
                 userWishlists.computeIfAbsent(username, k -> new ArrayList<>()).add(doc);
             }
-        } finally {
-            lock.writeLock().unlock();
+        } catch (Exception e) {
+            logger.error("Error while updating MongoDB wishlists: " + e.getMessage());
+            return;
         }
 
-        // Insert the MongoDB wishlists for each user
+        List<Document> userDocs = new ArrayList<>();
+
+        // Create the MongoDB wishlists for each user
         for (Map.Entry<String, List<Document>> entry : userWishlists.entrySet()) {
             String username = entry.getKey();
             List<Document> wishlist = entry.getValue();
@@ -97,9 +105,11 @@ public class RedisToMongo {
             Document userDoc = new Document("_id", username)
                     .append("books", wishlist);
 
-            // Insert the user document into the MongoDB wishlists collection
-            mongoCollection.insertOne(userDoc);
+            // Add the user document to the list
+            userDocs.add(userDoc);
         }
+
+        mongoCollection.insertMany(userDocs);
 
         logger.info("MongoDB wishlists updated!");
     }
@@ -310,8 +320,6 @@ public class RedisToMongo {
             }
         } catch (MongoException e) {
             e.printStackTrace();
-        } finally {
-            jedis.close();
         }
     }
 

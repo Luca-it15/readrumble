@@ -78,7 +78,7 @@ function CompetitionSpec() {
     }, []);
 
     function joinCompetition(Name, Tag) {
-        const response = axios.post("http://localhost:8080/api/competition/join", {
+        axios.post("http://localhost:8080/api/competition/join", {
             parametro1: usernameToAdd,
             parametro2: Name,
             parametro3: Tag
@@ -135,12 +135,6 @@ function CompetitionSpec() {
         {backgroundImage: 'linear-gradient(to right bottom, rgba(255, 215, 0, 0.5), rgba(175, 145, 0, 0.65))'}, // #FFD700
         {backgroundImage: 'linear-gradient(to left top, rgba(192, 192, 192, 0.6), rgba(132, 132, 132, 0.6))'}, // #C0C0C0
         {backgroundImage: 'linear-gradient(to right top, rgba(205, 127, 50, 0.4), rgba(185, 107, 30, 0.6))'}, // #cd7f32
-        {backgroundColor: 'rgba(255, 255, 255, 1)'},
-        {backgroundColor: 'rgba(255, 255, 255, 1)'},
-        {backgroundColor: 'rgba(255, 255, 255, 1)'},
-        {backgroundColor: 'rgba(255, 255, 255, 1)'},
-        {backgroundColor: 'rgba(255, 255, 255, 1)'},
-        {backgroundColor: 'rgba(255, 255, 255, 1)'},
         {backgroundColor: 'rgba(255, 255, 255, 1)'}
     ]
 
@@ -162,19 +156,19 @@ function CompetitionSpec() {
                 </Grid>
                 <Grid container direction="column" spacing={2} alignItems="center" justifyContent="space-around">
                     <Grid item xs={12} sx={{margin:'30px 0px 0px 0px'}}><Typography variant="h5">Top ten</Typography>
-                        <Grid container direction="column" spacing={2} alignItems="center" justifyContent="space-around"
-                            sx={{marginTop: '10px'}}>
+                        <Grid container direction="column" spacing={2} alignItems="center" justifyContent="center"
+                            sx={{margin: '10px 0px 5px 0px', padding: '0px'}}>
                             {rank.map(item => (
                                 <React.Fragment>
                                     <Grid container item xs={12} direction="row" justifyContent="space-between"
                                           sx={{
-                                              backgroundColor: colors[rank.indexOf(item)],
+                                              backgroundColor: colors[(rank.indexOf(item) > 2) ? 3 : (rank.indexOf(item))],
                                               margin: '10px',
                                               borderRadius: 8,
-                                              paddingBottom: '15px',
+                                              paddingBottom: '0px',
                                               width: rank.indexOf(item) in [0, 1, 2] ? '450px' : '400px'
                                           }}>
-                                        <Grid item xs={1}>
+                                        <Grid item xs={2}>
                                             <Typography sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
                                                 {rank.indexOf(item) + 1}°</Typography>
                                         </Grid>
@@ -182,7 +176,7 @@ function CompetitionSpec() {
                                             <Typography sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
                                                 {item.username}</Typography>
                                         </Grid>
-                                        <Grid item xs={5}>
+                                        <Grid item xs={3}>
                                             <Typography sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
                                                 {item.tot_pages}</Typography>
                                         </Grid>
@@ -192,6 +186,15 @@ function CompetitionSpec() {
                         </Grid>
                     </Grid>
                 </Grid>
+                {points != null ? (
+                    <Grid>
+                        <Typography variant="h5">Your pages read: {points}</Typography>
+                    </Grid>
+                ) : (
+                    <Grid>
+                        <Typography variant="h5">You are not participating in this competition</Typography>
+                    </Grid>
+                )}
                 <Grid>
                     {points != null ? (
                         <Button variant="filledTonal" sx={{

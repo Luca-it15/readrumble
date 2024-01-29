@@ -12,6 +12,9 @@ In localStorage, all'indice 'logged_user' vengono registrati vari dati durante i
 - currentlyReading:
     - id
     - title
+- competitions:
+    - name
+    - pages
 
 currentUser['following']: amici
 currentUser['last_post']: vettore degli ultimi post dell'utente; 

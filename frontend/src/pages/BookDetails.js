@@ -67,7 +67,8 @@ function BookDetails() {
         backgroundColor: '#f1f7fa',
         padding: '10px',
         margin: '10px',
-        borderRadius: 5
+        borderRadius: 5,
+        width: '85vw'
     }
 
     const DescriptionPaperStyle = {
@@ -135,20 +136,22 @@ function BookDetails() {
             await axios.delete(`http://localhost:8080/api/book/removeFromWishlist/${currentUser["_id"]}/${id}`);
 
             // Remove book from wishlist in local storage
-            const updatedWishlist = wishlist.filter(item => item.id !== bookInfo.id && item.title !== bookInfo.title);
+            const updatedWishlist = currentUser['wishlist'].filter(item => item.id !== bookInfo.book_id);
             setWishlist(updatedWishlist);
+
             currentUser['wishlist'] = updatedWishlist;
         } else {
             // Add a book to favorite list in database
             await axios.post(`http://localhost:8080/api/book/addToWishlist/${currentUser['_id']}/${id}`, bookInfo);
 
             const newWishlistBook = {
-                id: book['id'],
-                title: book['title']
+                id: bookInfo['book_id'],
+                title: bookInfo['book_title']
             }
 
             // Add book to favorite list in local storage
             currentUser['wishlist'].push(newWishlistBook);
+            setWishlist([...wishlist, newWishlistBook]);
         }
 
         localStorage.setItem('logged_user', JSON.stringify(currentUser));
@@ -174,18 +177,19 @@ function BookDetails() {
     return (
         <Paper sx={PaperStyle}>
             <GoBack/>
-            <Typography variant="h4" fontWeight="bold" textAlign="center"
-                        marginBottom="20px">{book['title']}</Typography>
-            <Grid container direction="row" alignItems="center" justifyContent="center" spacing={3}>
-                <Grid item xs={3} md={2}>
-                    <img alt="Book cover" src={book['image_url']} width="100%"/>
-                </Grid>
+            <Typography variant="h4" fontWeight="bold" textAlign="center">{book['title']}</Typography>
+            <Grid container direction="row" alignItems="center" justifyContent="center" spacing={3}
+                sx={{marginTop: '10px'}}>
                 <Grid item xs={3}>
-                    <Typography variant="h5">By: {authors}</Typography>
-                    <Typography>Publisher: {book['publisher']}</Typography>
-                    <Typography>Publication year: {book['publication_year']}</Typography>
-                    <Typography>ISBN: {book['isbn']}</Typography>
-                    <Typography>Pages: {book['num_pages']}</Typography>
+                    <Typography variant="h5">By: <i>{authors}</i></Typography>
+                    <Typography>Publisher: <i>{book['publisher']}</i></Typography>
+                    <Typography>Publication year: <i>{book['publication_year']}</i></Typography>
+                    <Typography>ISBN: <i>{book['isbn']}</i></Typography>
+                    <Typography>Pages: <i>{book['num_pages']}</i></Typography>
+                </Grid>
+                <Grid container item xs={3} direction="column" alignItems="center">
+                    <img alt="Book cover" src={book['image_url']} height="280px"
+                         style={{boxShadow: '0px 5px 10px 0px rgba(0,0,0,0.2)'}}/>
                 </Grid>
                 <Grid container item direction="column" alignItems="center" justifyContent="center" xs={3}>
                     {isAdmin ? (
@@ -209,60 +213,64 @@ function BookDetails() {
                             </Button>
 
                         </React.Fragment>
-                    ) : (<>
-                        {isFavorite ? (
-                            <Button onClick={toggleFavorite(id, isFavorite)} sx={{
-                                backgroundColor: blue[200],
-                                margin: "5px",
-                                '&:hover': {backgroundColor: blue[100]}
-                            }}
-                                    variant="filledTonal" startIcon={<FavoriteTwoTone sx={{color: red[600]}}/>}>
-                                <Typography>Remove from favorites</Typography>
-                            </Button>
-                        ) : (
-                            <Button onClick={toggleFavorite(id, isFavorite)} sx={{
-                                backgroundColor: blue[200],
-                                margin: "5px",
-                                '&:hover': {backgroundColor: blue[100]}
-                            }}
-                                    variant="filledTonal" startIcon={<FavoriteTwoTone sx={{color: '#bbbbbb'}}/>}>
-                                <Typography>Add to favorites</Typography>
-                            </Button>
-                        )}
+                    ) : (
+                        <React.Fragment>
+                            {isFavorite ? (
+                                <Button onClick={toggleFavorite(id, isFavorite)} sx={{
+                                    backgroundColor: blue[200],
+                                    margin: "5px",
+                                    '&:hover': {backgroundColor: blue[100]}
+                                }}
+                                        variant="filledTonal" startIcon={<FavoriteTwoTone sx={{color: red[600]}}/>}>
+                                    <Typography>Remove from favorites</Typography>
+                                </Button>
+                            ) : (
+                                <Button onClick={toggleFavorite(id, isFavorite)} sx={{
+                                    backgroundColor: blue[200],
+                                    margin: "5px",
+                                    '&:hover': {backgroundColor: blue[100]}
+                                }}
+                                        variant="filledTonal" startIcon={<FavoriteTwoTone sx={{color: '#bbbbbb'}}/>}>
+                                    <Typography>Add to favorites</Typography>
+                                </Button>
+                            )}
 
-                        {isInWishlist ? (
-                            <Button onClick={toggleInWishlist(true, id, book['title'], book['num_pages'], book['tags'])}
+                            {isInWishlist ? (
+                                <Button
+                                    onClick={toggleInWishlist(true, id, book['title'], book['num_pages'], book['tags'])}
                                     sx={{
                                         backgroundColor: blue[200],
                                         margin: "5px",
                                         '&:hover': {backgroundColor: blue[100]}
                                     }}
                                     variant="filledTonal" startIcon={<BookmarkRemoveIcon sx={{color: blue[700]}}/>}>
-                                <Typography>Remove from wishlist</Typography>
-                            </Button>
-                        ) : (
-                            <Button
-                                onClick={toggleInWishlist(false, id, book['title'], book['num_pages'], book['tags'])}
+                                    <Typography>Remove from wishlist</Typography>
+                                </Button>
+                            ) : (
+                                <Button
+                                    onClick={toggleInWishlist(false, id, book['title'], book['num_pages'], book['tags'])}
+                                    sx={{
+                                        backgroundColor: blue[200],
+                                        margin: "5px",
+                                        '&:hover': {backgroundColor: blue[100]}
+                                    }}
+                                    variant="filledTonal" startIcon={<BookmarkAddIcon sx={{color: blue[700]}}/>}>
+                                    <Typography>Add to wishlist</Typography>
+                                </Button>
+                            )}
+                        </React.Fragment>)}
+                    {hiddenReview ? (
+                        <Button onClick={handleSeeReview}
                                 sx={{
                                     backgroundColor: blue[200],
                                     margin: "5px",
                                     '&:hover': {backgroundColor: blue[100]}
                                 }}
-                                variant="filledTonal" startIcon={<BookmarkAddIcon sx={{color: blue[700]}}/>}>
-                                <Typography>Add to wishlist</Typography>
-                            </Button>
-                        )}
-                    </>)}
-                    {hiddenReview ? (<Button onClick={handleSeeReview}
-                                             sx={{
-                                                 backgroundColor: blue[200],
-                                                 margin: "5px",
-                                                 '&:hover': {backgroundColor: blue[100]}
-                                             }}
-                                             variant="filledTonal"
-                                             startIcon={<StarTwoToneIcon sx={{color: yellow[400]}}/>}>
-                        <Typography>See reviews</Typography>
-                    </Button>) : (
+                                variant="filledTonal"
+                                startIcon={<StarTwoToneIcon sx={{color: yellow[400]}}/>}>
+                            <Typography>See reviews</Typography>
+                        </Button>
+                    ) : (
                         <Button onClick={handleHiddenReview}
                                 sx={{
                                     backgroundColor: blue[200],
@@ -277,9 +285,8 @@ function BookDetails() {
                     <Typography sx={{
                         marginLeft: '30px',
                         marginRight: '30px',
-                        textAlign: 'center',
-                        fontStyle: 'italic'
-                    }}>Tags: {tags}</Typography>
+                        textAlign: 'center'
+                    }}>Tags: <i>{tags}</i></Typography>
                     {hiddenReview ? (
                         <React.Fragment>
                             <Paper elevation={0} sx={DescriptionPaperStyle}>

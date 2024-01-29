@@ -19,16 +19,14 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class AdminCompetitionDAO {
     public ResponseEntity<String> adminAddCompetition(Document params) {
-        //it only creates it in MongoDB
         String CompName = (String) params.get("name");
         String CompTag = (String) params.get("tag");
         String DATE_START = (String) params.get("start_date");
         String DATE_END = (String) params.get("end_date");
-        System.out.println(params);
+
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
-        System.out.println(CompName + " " + CompTag);
-        try(MongoCursor<Document> competitions = collection.find(eq("Name", CompName)).cursor())
-        {
+
+        try (MongoCursor<Document> competitions = collection.find(eq("Name", CompName)).cursor()) {
             if (competitions.hasNext()) {
                 return ResponseEntity.ok("Competition Already Exists !");
             } else {
@@ -38,11 +36,11 @@ public class AdminCompetitionDAO {
                     Date end_date = sdf.parse(DATE_END);
                     ArrayList array = new ArrayList<>();
                     Document Doc = new Document();
-                    Doc.append("name",CompName);
-                    Doc.append("tag",CompTag);
-                    Doc.append("start_date",start_date);
-                    Doc.append("end_date",end_date);
-                    Doc.append("rank",array);
+                    Doc.append("name", CompName);
+                    Doc.append("tag", CompTag);
+                    Doc.append("start_date", start_date);
+                    Doc.append("end_date", end_date);
+                    Doc.append("rank", array);
                     collection.insertOne(Doc);
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -50,47 +48,34 @@ public class AdminCompetitionDAO {
 
                 return ResponseEntity.ok("Competition Created !");
             }
-        }
-        catch(Exception e)
-        {
-            System.out.println("Error catched: " + e.getMessage());
+        } catch (Exception e) {
             return ResponseEntity.ok("Exception : " + e.getMessage());
         }
 
 
     }
+
     public ResponseEntity<String> adminDeleteCompetition(Document params) {
         Jedis jedis = RedisConfig.getSession();
         String CompName = (String) params.get("CompName");
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         try {
-            // Chiave composta
-            String key = "competition:"+CompName+":*";
-            System.out.println("the key is = " + key);
+            String key = "competition:" + CompName + ":*";
             jedis.del(key);
-        }catch(Exception e)
-        {
-            System.out.println("Catched Exception: "+e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.ok("Exception : " + e.getMessage());
         }
-        finally {
-            RedisConfig.closeConnection();
-        }
-        try(MongoCursor<Document> competitions = collection.find(eq("name", CompName)).cursor())
-        {
+
+        try (MongoCursor<Document> competitions = collection.find(eq("name", CompName)).cursor()) {
             if (competitions.hasNext()) {
                 collection.deleteOne(eq("name", CompName));
                 return ResponseEntity.ok("Competition Deleted !");
             } else {
                 return ResponseEntity.ok("Competition Does not exist !");
             }
-        }
-        catch(Exception e)
-        {
-            System.out.println("Error catched: " + e.getMessage());
+        } catch (Exception e) {
             return ResponseEntity.ok("Exception : " + e.getMessage());
         }
-
-
     }
 
     public Map<String, Integer> getPagesByTag() {

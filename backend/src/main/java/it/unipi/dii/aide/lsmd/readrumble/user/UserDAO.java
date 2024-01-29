@@ -1,13 +1,22 @@
 package it.unipi.dii.aide.lsmd.readrumble.user;
+import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
+import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
+
+import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.checkUserExist;
+import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.getMaps;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
-import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
+
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.set;
+
 import org.bson.Document;
+
 import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.Values;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,15 +25,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Updates.set;
-import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.checkUserExist;
-import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.getMaps;
-
 public class UserDAO {
-    private List<Document> inMemoryUsers = new ArrayList<>();
-    private List<Document> inMemoryFollowRelations = new ArrayList<>();
-    private List<Document> inMemoryFollowRelationsToBeDeleted = new ArrayList<>();
+    private static List<Document> inMemoryUsers = new ArrayList<>();
+    private static List<Document> inMemoryFollowRelations = new ArrayList<>();
+    private static List<Document> inMemoryFollowRelationsToBeDeleted = new ArrayList<>();
 
     public void saveInMemoryUsers() {
         for (Document user : inMemoryUsers) {
@@ -83,14 +87,13 @@ public class UserDAO {
 
         MongoCollection<Document> collection = MongoConfig.getCollection("User");
 
-        // Ottieni le prime 10 recensioni
         for (Document doc : collection.find().limit(10)) {
-
             UserDTO user = new UserDTO(
                     doc.getString("_id"),
                     doc.getString("name"),
                     doc.getString("surname")
             );
+
             users.add(user);
         }
 
@@ -101,19 +104,21 @@ public class UserDAO {
         String _id = user.getId();
         String password = user.getPassword();
 
-        System.out.println(_id + " " + password);
-
         try (MongoCursor<Document> cursor = MongoConfig.getCollection("Users")
                 .find(eq("_id", _id)).iterator()) {
 
             if (cursor.hasNext()) {
-                Document utente_registrato = cursor.next();
+                Document registered_user = cursor.next();
 
-                System.out.println(utente_registrato);
-                System.out.println(utente_registrato.get("_id"));
+                if (password.equals(registered_user.get("password"))) {
+                    if (registered_user.containsKey("isAdmin")) {
+                        registered_user.append("isAdmin", true);
+                        System.out.println("Admin logged in");
+                    } else {
+                        registered_user.append("isAdmin", false);
+                    }
 
-                if (password.equals(utente_registrato.get("password"))) {
-                    return utente_registrato;
+                    return registered_user;
                 } else {
                     return null;
                 }
@@ -121,16 +126,17 @@ public class UserDAO {
                 return null;
             }
         } catch (Exception e) {
-            System.out.println("Exception error catched: " + e.getMessage());
             return null;
         }
     }
 
     public ResponseEntity<String> RegUser(Document user) {
-        System.out.println(user);
         String username = (String) user.get("_id");
+
         MongoCollection<Document> collection = MongoConfig.getCollection("Users");
+
         List<Document> usersCollection = collection.find(eq("_id", username)).into(new ArrayList<>());
+
         if (usersCollection.isEmpty()) {
             inMemoryUsers.add(user);
             return ResponseEntity.ok("Registration succeeded! You will now be redirected to the home page!");
@@ -149,9 +155,6 @@ public class UserDAO {
             if (cursor.hasNext()) {
                 Document userDoc = cursor.next();
 
-                System.out.println(userDoc);
-                System.out.println(userDoc.get("Username"));
-
                 if (password.equals(userDoc.get("Password"))) {
                     return userDoc;
                 } else {
@@ -161,7 +164,6 @@ public class UserDAO {
                 return null;
             }
         } catch (Exception e) {
-            System.out.println("Exception error catched: " + e.getMessage());
             return null;
         }
     }
@@ -171,17 +173,18 @@ public class UserDAO {
         String new_field = (String) changes.get("new_field");
         String type_of_change_request = (String) changes.get("type_of_change_request");
         String username_to_use = (String) changes.get("username_to_use");
+
         MongoCollection<Document> collection = MongoConfig.getCollection("Users");
+
         try (MongoCursor<Document> cursor = collection.find(eq("_id", username_to_use)).cursor()) {
             if (cursor.hasNext()) {
                 collection.updateOne(eq("_id", username_to_use), set(type_of_change_request, new_field));
-                String result = (String) type_of_change_request + " Changed from " + old_field + " To " + new_field;
+                String result = type_of_change_request + " Changed from " + old_field + " To " + new_field;
                 return ResponseEntity.ok(result);
             } else {
                 return ResponseEntity.ok("NOT FOUND");
             }
         } catch (Exception e) {
-            System.out.println("Exception error catched: " + e.getMessage());
             return ResponseEntity.ok("EXCEPTION IN SERVER");
         }
     }
@@ -196,8 +199,6 @@ public class UserDAO {
         MongoCollection<Document> collection = MongoConfig.getCollection("Users");
 
         Document user = collection.find(eq("_id", username)).first();
-
-        System.out.println(user);
 
         if (user != null) {
             return Map.of(
@@ -242,8 +243,6 @@ public class UserDAO {
 
     public List<Map<String, Object>> getSuggestedFriends(@PathVariable String username) {
         if (checkUserExist(username)) {
-            System.out.println("Retrieving suggestend friends for " + username);
-
             try (Session session = Neo4jConfig.getSession()) {
                 Result result = session.run(
                         "MATCH (u1:User {name: $username})-[:FOLLOWS]->(u2:User)-[:FOLLOWS]->(f:User) " +

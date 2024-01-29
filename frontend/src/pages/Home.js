@@ -9,7 +9,7 @@ const Home = () => {
         backgroundColor: '#f1f7fa',
         padding: '10px',
         margin: '20px 10px 0px 10px',
-        borderRadius: 18,
+        borderRadius: '30px',
         width: '100%',
         textAlign: 'center'
     }
@@ -19,19 +19,19 @@ const Home = () => {
     return (
         <Container maxWidth="xl">
             <Paper elevation={2} style={PaperStyle}>
-                <Typography variant="h5">Welcome back, {currentUser['name']}!</Typography>
+                <Typography variant="h5">Welcome, {currentUser['name']}!</Typography>
             </Paper>
             <Grid container spacing={2} textAlign="center" direction="row" alignItems="flex-start" justifyContent="space-around">
-                <Grid item xs={3} md={3}>
+                <Grid item xs={3}>
                     <PopularCompetitionBlock/>
                 </Grid>
-                <Grid item xs={6} md={6}>
+                <Grid item xs={6}>
                     <Paper elevation={2} style={PaperStyle}>
                         <Typography variant="h5">Friends' posts</Typography>
                         <RecentFriendsPosts/>
                     </Paper>
                 </Grid>
-                <Grid item xs={3} md={3}>
+                <Grid item xs={3}>
                     <BookListQuery query={"friends"}/>
                 </Grid>
             </Grid>

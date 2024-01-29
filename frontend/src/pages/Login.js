@@ -8,13 +8,14 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material-next/Button";
 import {blue, green} from "@mui/material/colors";
 import CircularProgress from '@mui/material/CircularProgress';
+import Logo from "../img/logoRR.png";
 
 function LoginForm() {
     const navigate = useNavigate();
     const [validationError, setValidationError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const GoRegister = () => {
+    const register = () => {
         navigate('/registration');
     }
 
@@ -25,7 +26,7 @@ function LoginForm() {
 
     const [loginStatus, setLoginStatus] = useState({
         message: '',
-        variant: 'success', // o 'danger' in caso di errore
+        variant: 'success'
     });
 
     const handleChange = (e) => {
@@ -39,7 +40,6 @@ function LoginForm() {
     async function fetchAll(id) {
         const currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
-        console.log("Fetching currently reading books " + id);
         // Fetch currently reading books
         const fetchedCurrentlyReadingBooks = await axios.get(`http://localhost:8080/api/book/currentlyReadingBooks/${id}`)
         const currentlyReadingBooks = JSON.parse(JSON.stringify(fetchedCurrentlyReadingBooks.data));
@@ -52,12 +52,10 @@ function LoginForm() {
                 num_pages: book.num_pages,
                 tags: book.tags
             }));
-            console.log(currentlyReadingBooks);
         } else {
             currentUser['currentlyReading'] = [];
         }
 
-        console.log("Fetching read books " + id);
         // Fetch recently read books
         const fetchedRecentBooks = await axios.get(`http://localhost:8080/api/book/recentlyReadBooks/${id}`)
         const recentlyReadBooks = JSON.parse(JSON.stringify(fetchedRecentBooks.data));
@@ -67,12 +65,10 @@ function LoginForm() {
                 id: book.id,
                 title: book.title.replace(/"/g, '')
             }));
-            console.log(recentlyReadBooks);
         } else {
             currentUser['recentlyReadBooks'] = [];
         }
 
-        console.log("Fetching favorite books " + id);
         // Fetch favorite books
         const fetchedFavoriteBooks = await axios.get(`http://localhost:8080/api/book/favoriteBooks/${id}`)
         const favoriteBooks = JSON.parse(JSON.stringify(fetchedFavoriteBooks.data));
@@ -82,27 +78,22 @@ function LoginForm() {
                 id: book.id,
                 title: book.title.replace(/"/g, '')
             }));
-            console.log(currentUser['favoriteBooks']);
         } else {
             currentUser['favoriteBooks'] = [];
         }
 
-        console.log("Fetching following list " + id);
         // Fetch following list
         const fetchedFollowingList = await axios.get(`http://localhost:8080/api/following/${id}`)
+
         if (fetchedFollowingList.data) {
             currentUser['following'] = JSON.parse(JSON.stringify(fetchedFollowingList.data))
-            console.log(fetchedFollowingList.data);
         } else {
             currentUser['following'] = [];
         }
 
-        console.log("Fetching wishlist " + id);
         // Fetch wishlist
         const fetchedWishlist = await axios.get(`http://localhost:8080/api/book/wishlist/${id}`)
         const wishlist = JSON.parse(JSON.stringify(fetchedWishlist.data));
-
-        console.log(wishlist);
 
         if (wishlist) {
             currentUser['wishlist'] = wishlist.map(book => ({
@@ -113,38 +104,28 @@ function LoginForm() {
             currentUser['wishlist'] = [];
         }
 
-        console.log("Fetching competitions");
         // Fetch competitions
         const fetchedCompetitions = await axios.get(`http://localhost:8080/api/competition/joinedBy/${id}`)
         const competitions = JSON.parse(JSON.stringify(fetchedCompetitions.data));
 
         if (competitions) {
-            console.log(competitions);
-
             currentUser['competitions'] = competitions.map(competition => ({
                 name: competition.name.replace(/_/g, ' '),
                 pages: competition.pages,
                 tag: competition.tag
             }));
-
-            console.log(currentUser['competitions']);
         } else {
             currentUser['competitions'] = [];
         }
 
         localStorage.setItem('logged_user', JSON.stringify(currentUser));
 
-        console.log(JSON.parse(localStorage.getItem('logged_user')));
-
-        setTimeout(function () {
-            window.location.href = "/home"
-        })
+        window.location.href = "/home"
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validazione: Verifica se almeno un campo è vuoto
         if (Object.values(formData).some((value) => value === '')) {
             setValidationError('All fields must be filled !');
             return;
@@ -153,34 +134,32 @@ function LoginForm() {
         try {
             setIsLoading(true);
 
-            console.log(formData);
-            // Invia la richiesta HTTP qui usando axios
             const response = await axios.post('http://localhost:8080/api/login', formData);
-            // Gestisci la risposta qui
 
-            console.log(response.data);
             if (response.data === '') {
-                setLoginStatus({message: "Username or Password are incorrect", variant: 'danger'});
+                setLoginStatus({message: "Wrong username or password", variant: 'danger'});
+                setIsLoading(false);
             } else {
                 setLoginStatus({
-                    message: "You Logged in Successfully, you will now be redirected to your home ",
+                    message: "Login successful!",
                     variant: 'success'
                 });
+
                 const isLoggedIn = true;
+
                 setLoginStatus(true);
-                var isAdmin = false
-                if (response.data.isAdmin === 1) {
-                    isAdmin = true;
-                }
+
                 localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
-                localStorage.setItem('isAdmin', JSON.stringify(isAdmin));
+                localStorage.setItem('isAdmin', JSON.stringify(response.data.isAdmin == 1));
                 localStorage.setItem('logged_user', JSON.stringify(response.data));
 
-                fetchAll(response.data._id);
+                if (response.data.isAdmin === 1) {
+                    window.location.href = "/home"
+                } else {
+                    fetchAll(response.data._id);
+                }
             }
-            // Imposta il flag di login nello stato e in localStorage
         } catch (error) {
-            // Gestisci gli errori qui
             setLoginStatus({message: error.response ? error.response.data : error.message, variant: 'danger'});
 
             setIsLoading(false);
@@ -190,13 +169,16 @@ function LoginForm() {
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
         padding: '30px 50px 30px 50px',
-        margin: '10px',
+        margin: '7vh 0px 10vh 0px',
         borderRadius: 10,
         width: '40%'
     }
 
     return (
         <Paper sx={PaperStyle}>
+            <Grid item sx={{textAlign: 'center', marginBottom: '30px'}}>
+            <img src={Logo} alt="logo"/>
+            </Grid>
             <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="formBasicUsername">
                     <Form.Label style={{marginLeft: '10px'}}><Typography>Username</Typography></Form.Label>
@@ -209,15 +191,28 @@ function LoginForm() {
                                   placeholder="Password" onChange={handleChange}/>
                 </Form.Group>
                 <Grid item sx={{textAlign: 'center', marginBottom: '70px'}}>
+                    {validationError && (
+                        <Alert severity="error">
+                            {validationError}
+                        </Alert>
+                    )}
+
+                    {loginStatus.message && (
+                        <Alert severity={loginStatus.variant}>
+                            {loginStatus.message}
+                        </Alert>
+                    )}
+
                     <Button variant="filled" type="submit"
                             sx={{backgroundColor: blue[400], '&:hover': {backgroundColor: green[400]}}}>
                         {isLoading ? <CircularProgress color="inherit" size={24}/> : <Typography>Login</Typography>}
                     </Button>
                 </Grid>
             </Form>
+
             <Grid item sx={{textAlign: 'right'}}>
                 <Typography>Don't have an account?
-                    <Button variant="filled" onClick={GoRegister} sx={{
+                    <Button variant="filled" onClick={register} sx={{
                         marginLeft: '20px',
                         backgroundColor: blue[700],
                         '&:hover': {backgroundColor: blue[400]}
@@ -226,17 +221,6 @@ function LoginForm() {
                     </Button></Typography>
             </Grid>
 
-            {validationError && (
-                <Alert severity="error">
-                    {validationError}
-                </Alert>
-            )}
-
-            {loginStatus.message && (
-                <Alert severity={loginStatus.variant}>
-                    {loginStatus.message}
-                </Alert>
-            )}
         </Paper>
     );
 }

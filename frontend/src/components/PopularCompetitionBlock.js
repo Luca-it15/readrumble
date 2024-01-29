@@ -19,23 +19,28 @@ function PopularCompetitionBlock() {
     const [data, setData] = useState([]);
     const navigate = useNavigate();
     const [displayCount, setDisplayCount] = useState(3);
-// questo blocco deve mostrarmi le competitizioni più gettonate, tipo 10
     const goComp = () => {
         navigate('/competitions');
     }
 
     const goSpecificComp = (Name) => {
-        console.log("ecco il nome: " + Name);
         var dynamic_path = "/competition/" + Name;
         navigate(dynamic_path);
 
     }
+
     function createRank(value) {
+        if (value[0] == null) {
+            return (
+                <Typography>No one joined this competition</Typography>
+            )
+        }
+
         const creator = []
         creator[0] = value[0]
         creator[1] = value[1]
         creator[2] = value[2]
-        console.log(creator)
+
         return (
             creator.map(item => (
                 <Grid container item direction="row" justifyContent="space-between"
@@ -48,15 +53,14 @@ function PopularCompetitionBlock() {
     }
 
     useEffect(() => {
-        // Effettua la richiesta GET al tuo backend
         axios.get('http://localhost:8080/api/competition/retrieve/popular')
             .then(response => {
                 const jsonData = response.data.map(document => JSON.parse(JSON.stringify(document)));
-                console.log(jsonData);
+
                 setData(jsonData);
             })
             .catch(error => console.error('Errore nella richiesta GET:', error));
-    }, []); // L'array vuoto come dipendenza indica che questo effetto viene eseguito solo una volta al montaggio del componente
+    }, []);
 
     function loadMoreCompetitions() {
         setDisplayCount(displayCount + 3);
@@ -74,9 +78,9 @@ function PopularCompetitionBlock() {
                 {data.slice(0, displayCount).map((item) => (
                     <Grid item>
                         <Paper elevation={2} style={PaperStyle}>
-                            <Link variant="h6" onClick={() => {
-                                goSpecificComp(item.name)
-                            }}>{item.name}</Link>
+                            <Link variant="h6" onClick={() => {goSpecificComp(item.name)}}>
+                                {item.name}
+                            </Link>
                             <Typography>Tag: {item.tag}</Typography>
                             <Divider variant="middle" sx={{margin: '10px'}}/>
                             <Typography>Total pages read in the Top 10: {item.Total_Pages}</Typography>
@@ -94,17 +98,18 @@ function PopularCompetitionBlock() {
                 ) : (
                     <React.Fragment>
                         <Button variant="filled" sx={{backgroundColor: red[200], width: '140px', height: '30px',
-                            margin: '10px', '&:hover': {backgroundColor: red[100]}}} onClick={loadLessCompetitions}>
-                            <Typography>Show less</Typography>
+                            marginTop: '20px', '&:hover': {backgroundColor: '#ff8a80'}}} onClick={loadLessCompetitions}>
+                            <Typography sx={{color: '#000000'}}>Show less</Typography>
                         </Button>
                         <Button variant="filled" sx={{backgroundColor: blue[200], width: '140px', height: '30px',
-                            margin: '10px', '&:hover': {backgroundColor: blue[100]}}} onClick={loadMoreCompetitions}>
-                            <Typography>Show more</Typography>
+                            margin: '10px 20px 20px 20px', '&:hover': {backgroundColor: '#82b1ff'}}} onClick={loadMoreCompetitions}>
+                            <Typography sx={{color: '#000000'}}>Show more</Typography>
                         </Button>
                     </React.Fragment>
                 )}
 
-                <Button variant="filled" sx={{backgroundColor: blue[600], marginBottom: '10px'}}
+                <Button variant="filled" sx={{backgroundColor: blue[600], marginBottom: '10px',
+                    '&:hover': {backgroundColor: blue[500]}}}
                         onClick={goComp}><Typography>Find other competitions</Typography></Button>
             </Grid>
         </Paper>
