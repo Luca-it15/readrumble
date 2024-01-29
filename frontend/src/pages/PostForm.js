@@ -145,17 +145,21 @@ export default function PostForm() {
             let currentUser = JSON.parse(localStorage.getItem('logged_user'));
             let competitions = currentUser['competitions']; 
 
-
+             console.log("le competitions sono :");  
              if (competitions) {
   
                 formData.tag.forEach(tag => {
-                    
-                    let competition = competitions.find(c => c.tag === tag.toUpperCase());
-                     competition.pages += formData.pages_read;
-                     console.log("we have add " + formData.pages + " new pages read a the competition of " + tag); 
-
+                    let i = 0; 
+                    console.log("vado ad inserire le pagine"); 
+                    while(competitions[i] != null) {
+                     if(competitions[i].tag.toUpperCase() == tag.toUpperCase())
+                      competitions[i].pages += formData.pages_read;
+                      console.log("we have add " + formData.pages_read + " new pages read a the competition of " + tag); 
+                     i++; 
+                    }
                 });
-                localStorage.setItem('competitions', JSON.stringify(competitions));
+                currentUser['competitions'] = competitions; 
+                localStorage.setItem('logged_user', JSON.stringify(currentUser));
              }
 
             const response = await axios.post('http://localhost:8080/api/post/submit', formData);

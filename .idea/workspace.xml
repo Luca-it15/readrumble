@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="explore finish">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/data_migration/RedisToMongo.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/data_migration/RedisToMongo.java" afterDir="false" />
+    <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="some changes">
+      <change afterPath="$PROJECT_DIR$/bookShop/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/post/PostDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/post/PostDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/search/SearchDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/search/SearchDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PostForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PostForm.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,7 +70,7 @@
       <recent name="C:\Users\roman.LAPTOP-AP4SF555\Documents\PROGETTO_LARGE_SCALE\backend\src\main\java\it\unipi\dii\aide\lsmd\readrumble\admin" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Spring Boot.ReadrumbleApplication">
     <configuration name="ReadrumbleApplication (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="backend_part (2)" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="it.unipi.dii.aide.lsmd.readrumble.ReadrumbleApplication" />
@@ -360,7 +361,8 @@
     <MESSAGE value="post and book admin" />
     <MESSAGE value="remove and add books" />
     <MESSAGE value="update book finish" />
-    <option name="LAST_COMMIT_MESSAGE" value="update book finish" />
+    <MESSAGE value="some changes" />
+    <option name="LAST_COMMIT_MESSAGE" value="some changes" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
