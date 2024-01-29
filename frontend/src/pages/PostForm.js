@@ -142,14 +142,15 @@ export default function PostForm() {
                 localStorage.setItem('last_posts', arrayPostJson);
             }
            
-            let competitions = JSON.parse(localStorage.getItem('competitions'));
+            let currentUser = JSON.parse(localStorage.getItem('logged_user'));
+            let competitions = currentUser['competitions']; 
 
 
              if (competitions) {
   
                 formData.tag.forEach(tag => {
                     
-                    let competition = competitions.find(c => c.tag === tag);
+                    let competition = competitions.find(c => c.tag === tag.toUpperCase());
                      competition.pages += formData.pages_read;
                      console.log("we have add " + formData.pages + " new pages read a the competition of " + tag); 
 

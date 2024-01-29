@@ -21,14 +21,14 @@ public class SearchDAO {
         String decodedString = URLDecoder.decode(searchString, StandardCharsets.UTF_8);
         String cleanedString = decodedString.substring(0, decodedString.length() - 1);
 
-
-        Document query1 = new Document("review_text", new Document("$regex", cleanedString));
+        System.out.println("sto cercando " + cleanedString);
+        Document query1 = new Document("book_title", new Document("$regex", cleanedString));
         List<Document> results1 = collection.find(query1).limit(10).into(new ArrayList<>());
         //retrieve the first results of document that match the filter
         for (Document doc : results1) {
             PostDTO post = new PostDTO(
-                    doc.getString("_id"),
-                    doc.getInteger("book_id"),
+                    (doc.get("_id")).toString(),
+                    doc.getLong("book_id"),
                     doc.getInteger("rating"),
                     doc.getDate("date_added"),
                     doc.getString("book_title"),
