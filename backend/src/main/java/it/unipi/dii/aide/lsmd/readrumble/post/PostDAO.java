@@ -59,7 +59,7 @@ public class PostDAO {
                   jedis.hset(key, "book_title", post.getBook_title());
 
 
-                  jedis.close();
+
 
           return ResponseEntity.ok("Post added: " + key);
 
@@ -214,7 +214,6 @@ public class PostDAO {
             response = "Post delete: " + key;
         else if(res == 0)
             response = "post not delete: " + key;
-        jedis.close();
         return ResponseEntity.ok(response);
     }
 

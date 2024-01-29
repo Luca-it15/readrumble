@@ -280,7 +280,7 @@ public class RedisToMongo {
      * This method is scheduled to run every 24 hours.
      * It eliminates the old competitions from Redis and MongoDB.
      */
-    @Scheduled(fixedRate =  86400000) // 24 hours in milliseconds
+    @Scheduled(fixedRate =  86400000, initialDelay = 36000000) // 24 hours in milliseconds
     public void eliminateOldMongoCompetitions() {
         logger.info("Eliminating old MongoDB competitions...");
         LocalDate today = LocalDate.now();
