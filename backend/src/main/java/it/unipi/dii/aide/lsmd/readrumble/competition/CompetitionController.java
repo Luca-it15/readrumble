@@ -5,6 +5,7 @@ import org.bson.Document;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.Transaction;
 
@@ -55,16 +56,10 @@ public class CompetitionController {
     @GetMapping("/joinedBy/{id}")
     public List<Map<String, String>> getJoinedCompetitions(@PathVariable String id) {
         Jedis jedis = RedisConfig.getSession();
-
-        Transaction transaction = jedis.multi();
-
-        Response<Set<String>> keysResponse = (Response<Set<String>>) transaction.keys("competition:*:" + id);
-
-        transaction.exec();
-
+        Pipeline pipeline = jedis.pipelined();
+        Response<Set<String>> keysResponse = pipeline.keys("competition:*:" + id+":*");
+        pipeline.sync();
         Set<String> keys = keysResponse.get();
-
-
         if (keys.isEmpty()) {
             return new ArrayList<>();
         }
@@ -72,14 +67,12 @@ public class CompetitionController {
         List<Map<String, String>> competitions = new ArrayList<>();
 
         for (String key : keys) {
+            System.out.println("We are in Doc construction");
             String competition = key.split(":")[1]; // Competition name
             String tag = key.split(":")[3]; // Competition tag
 
-            transaction = jedis.multi();
 
-            Integer pages = Integer.parseInt(String.valueOf(transaction.get(key)));
-
-            transaction.exec();
+            Integer pages = Integer.parseInt(String.valueOf(jedis.get(key)));
 
             Map<String, String> competitionMap = new HashMap<>();
             competitionMap.put("name", competition);
@@ -87,8 +80,6 @@ public class CompetitionController {
             competitionMap.put("tag", tag);
             competitions.add(competitionMap);
         }
-
-        transaction.exec();
 
         return competitions;
     }

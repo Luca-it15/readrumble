@@ -4,6 +4,9 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.*;
 import com.mongodb.client.result.DeleteResult;
+import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
+import org.neo4j.driver.Session;
+import org.neo4j.driver.Values;
 import redis.clients.jedis.Jedis;
 import com.mongodb.client.result.UpdateResult;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
@@ -19,6 +22,7 @@ import java.util.stream.Collectors;
 import static com.mongodb.client.model.Filters.eq;
 
 public class CompetitionDAO {
+
     public List<Document> getAllCompetition()
     {
 

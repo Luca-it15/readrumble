@@ -18,6 +18,22 @@ import java.util.Date;
 import static com.mongodb.client.model.Filters.eq;
 
 public class AdminCompetitionDAO {
+
+    static List<Document> inMemoryCompetitions = new ArrayList<>();
+    public void saveInMemoryCompetitions() {
+        MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
+        if(!inMemoryCompetitions.isEmpty())
+        {
+            collection.insertMany(inMemoryCompetitions);
+            System.out.println("New Competitions Inserted Succesfully");
+            inMemoryCompetitions.clear();
+        }
+        else
+        {
+            System.out.println("There aren't new competitions to insert");
+        }
+    }
+
     public ResponseEntity<String> adminAddCompetition(Document params) {
         String CompName = (String) params.get("name");
         String CompTag = (String) params.get("tag");
@@ -41,7 +57,7 @@ public class AdminCompetitionDAO {
                     Doc.append("start_date", start_date);
                     Doc.append("end_date", end_date);
                     Doc.append("rank", array);
-                    collection.insertOne(Doc);
+                    inMemoryCompetitions.add(Doc);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
