@@ -56,10 +56,11 @@ public class CompetitionController {
     @GetMapping("/joinedBy/{id}")
     public List<Map<String, String>> getJoinedCompetitions(@PathVariable String id) {
         Jedis jedis = RedisConfig.getSession();
-        Pipeline pipeline = jedis.pipelined();
-        Response<Set<String>> keysResponse = pipeline.keys("competition:*:" + id+":*");
-        pipeline.sync();
-        Set<String> keys = keysResponse.get();
+
+        Set<String> keys = jedis.keys("competition:*:" + id+":*");
+
+        System.out.println(keys);
+
         if (keys.isEmpty()) {
             return new ArrayList<>();
         }
@@ -67,10 +68,8 @@ public class CompetitionController {
         List<Map<String, String>> competitions = new ArrayList<>();
 
         for (String key : keys) {
-            System.out.println("We are in Doc construction");
             String competition = key.split(":")[1]; // Competition name
             String tag = key.split(":")[3]; // Competition tag
-
 
             Integer pages = Integer.parseInt(String.valueOf(jedis.get(key)));
 

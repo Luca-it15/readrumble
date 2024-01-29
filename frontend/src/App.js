@@ -68,9 +68,9 @@ const App = () => {
                                         <CompetitionAdmin/>}
                                 />
                                 <Route
-                                    path="/admin_competition/:name"
+                                    path="/competition/:name"
                                     element={
-                                        <CompetitionSpecAdmin/>}
+                                        <CompetitionSpec/>}
                                 />
                                 <Route
                                     path="/admin_competition/add_comp"

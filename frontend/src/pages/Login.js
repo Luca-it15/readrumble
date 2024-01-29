@@ -153,7 +153,7 @@ function LoginForm() {
                 localStorage.setItem('isAdmin', JSON.stringify(response.data.isAdmin == 1));
                 localStorage.setItem('logged_user', JSON.stringify(response.data));
 
-                if (response.data.isAdmin === 1) {
+                if (response.data.isAdmin == 1) {
                     window.location.href = "/home"
                 } else {
                     fetchAll(response.data._id);
