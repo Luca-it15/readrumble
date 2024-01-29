@@ -51,7 +51,7 @@ const PostsList = (user, username, book_id, size, all, path) => {
                     let differenceInMinutes = (now - postDate) / 1000 / 60;
                 
                    
-                    return differenceInMinutes <= 15;
+                    return differenceInMinutes <= 120;
                 });
               
                 localStorage.setItem('posts', JSON.stringify(posts));   

@@ -43,7 +43,7 @@ const NavAppAdmin = () => {
                 <Typography variant="h5" sx={{flexGrow: 1}}>
                     Administrator
                 </Typography>
-                <Button sx={{color: '#ffffff'}} component={NavLink} to="/dashboard" exact>
+                <Button sx={{color: '#ffffff'}} component={NavLink} to="/home" exact>
                     <Typography>Home</Typography>
                 </Button>
                 <Button sx={{color: '#ffffff'}} component={NavLink} to="/admin_post">

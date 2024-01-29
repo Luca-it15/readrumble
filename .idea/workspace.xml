@@ -5,6 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="explore finish">
+    <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="friends posts">
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_18_01_2024_19_01_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_18_01_2024_19_01__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/competition/CompetitionDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/competition/CompetitionDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/LocalStorage_Guida" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/LocalStorage_Guida" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/PostList.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/PostList.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/PostRow.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/PostRow.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/RatingStars.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/RatingStars.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PostDetails.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PostDetails.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PostForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PostForm.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/readrumble" beforeDir="false" afterPath="$PROJECT_DIR$/readrumble" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/data_migration/RedisToMongo.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/data_migration/RedisToMongo.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
