@@ -18,36 +18,39 @@ public class PostController {
     public PostController() {
         postDAO = new PostDAO();
     }
+
     /**
      * <h3>Review functionality</h3>
+     * <p>
+     * Funcion to insert a review into the reviews collection
      *
-     * Funcion for insert a review into the reviews collection
-     * @param  post
-     * post contain the request body
-     * @return String
-     * return the response
+     * @param post contains the request body
+     * @return the response string
      */
     @PostMapping("/submit")
     public ResponseEntity<String> submitPost(@RequestBody Post post) {
-      return postDAO.addPostsRedis(post);
+        return postDAO.addPostsRedis(post);
     }
 
     /**
-     * Function for retrieve the first 10 review and send them at the frontend
-     * @param parametro that contain the username of the user that call this method if the param user is true
-     *                  o the book_id if the value of user is false
-     * @param user that contain true if the method was call for retrieve the post of the user or false
-     *             if we need to retrieve the book post
-     * @return List<Review> include the first 10 review
+     * Function to retrieve the first 10 review and send them at the frontend
+     *
+     * @param parameter the username of the user that calls this method if the param user is true
+     *                  or the book_id if the value of user is false
+     * @param user      that is true if the method was called to retrieve the posts of the user or false
+     *                  if it was called to retrieve a book's posts
+     * @return List<Review> includes the first 10 reviews
      */
-    @GetMapping("/all/{parametro}/{user}")
-    public List<PostDTO> getAllPostUsers(@PathVariable String parametro, @PathVariable boolean user) {
-        return postDAO.allPostsUser(parametro, user);
+    @GetMapping("/all/{parameter}/{user}")
+    public List<PostDTO> getAllPostUsers(@PathVariable String parameter, @PathVariable boolean user) {
+        return postDAO.allPostsUser(parameter, user);
     }
+
     @GetMapping("/details/{id}")
     public Post getPostDetails(@PathVariable ObjectId id) {
         return postDAO.postDetails(id);
     }
+
     @GetMapping("/all")
     public List<PostDTO> getAllReviews() {
         return postDAO.allPost();
@@ -67,5 +70,4 @@ public class PostController {
     public List<PostDTO> recentFriendsPosts(@RequestBody List<String> friends) {
         return postDAO.getRecentFriendsPosts(friends);
     }
-
 }

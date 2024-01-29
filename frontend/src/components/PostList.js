@@ -9,15 +9,12 @@ import {blue} from "@mui/material/colors";
 const PostsList = (user, username, book_id, size, all, path) => {
     const [posts, setPosts] = useState([]);
 
-    console.log(user);
     let parameter2 = user.user;
 
     let parameter1 = '';
 
     parameter2 ? (parameter1 = user.username) : (parameter1 = user.book_id);
-    console.log(parameter2);
-    console.log(parameter1);
-    console.log("il path scelto e' " + user.path); 
+
     useEffect(() => {
 
         if (user.path === 0) {
@@ -29,43 +26,38 @@ const PostsList = (user, username, book_id, size, all, path) => {
                 .catch(error => {
                     console.error('There was an error!', error);
                 });
-        } else if(user.path === 1){
+        } else if (user.path === 1) {
 
             //user post
             axios.get(`http://localhost:8080/api/post/all/${parameter1}/${parameter2}`)
                 .then(response => {
+                    let postLocalStorageJson = localStorage.getItem('last_posts');
 
-                
-                let postLocalStorageJson = localStorage.getItem('last_posts');
-                if(postLocalStorageJson != null) {
-                 
-                let posts = JSON.parse(postLocalStorageJson);
-                //remove the posts make 15 minutes ago o more
-                let now = new Date();
+                    if (postLocalStorageJson != null) {
+                        let posts = JSON.parse(postLocalStorageJson);
 
-                posts = posts.filter(post => {
-                   
-                    let postDate = new Date(post.date_added);
-                
-                 
-                    let differenceInMinutes = (now - postDate) / 1000 / 60;
-                
-                   
-                    return differenceInMinutes <= 15;
-                });
-              
-                localStorage.setItem('posts', JSON.stringify(posts));   
-                 let postLocalStorage = posts;
+                        //remove the posts make 15 minutes ago o more
+                        let now = new Date();
 
-                
-                 let postMongoDB = response.data;
+                        posts = posts.filter(post => {
+                            let postDate = new Date(post.date_added);
 
-              
-                 let totalPost = [...postLocalStorage, ...postMongoDB];
-                    setPosts(totalPost);
-                 }
-                 else 
-                  setPosts(response.data); 
+                            let differenceInMinutes = (now - postDate) / 1000 / 60;
+
+                            return differenceInMinutes <= 15;
+                        });
+
+                        localStorage.setItem('posts', JSON.stringify(posts));
+
+                        let postLocalStorage = posts;
+
+                        let postMongoDB = response.data;
+
+                        let totalPost = [...postLocalStorage, ...postMongoDB];
+
+                        setPosts(totalPost);
+                    } else
+                        setPosts(response.data);
                 })
                 .catch(error => {
                     console.error('There was an error!', error);
@@ -83,27 +75,28 @@ const PostsList = (user, username, book_id, size, all, path) => {
     }, [user.username]);
 
     return (
-        <Grid item container direction="row" justifyContent="center" alignItems="center"
-              sx={12}>
+        <Grid item container direction="row" justifyContent="center" alignItems="flex-start" sx={{gap: '10px'}}>
             {(posts.length > 0) ? (posts.map((post, index) => (
-                <React.Fragment key={index}>
-                    <Grid direction="coloumn" xs={user.size} item
-                          sx={{borderRadius: 6, textAlign: 'center', border: '2pt solid ' + blue[400], margin: '0.5%'}}>
-                        <PostRow
-                            key={index}
-                            id={post._id}
-                            title={post.book_title}
-                            username={post.username}
-                            post={post.post}
-                            rating={post.rating}
-                            readOnly={true}
-                            date={post.date_added}
-                            user={user}
-                            all={user.all}
-                        />
-                    </Grid>
-                </React.Fragment>
-            ))):(<Typography variant='h4'>Nessun Post trovato</Typography>)}
+                <Grid container item direction="coloumn" xs={user.size}
+                      sx={{borderRadius: 6, textAlign: 'center',
+                          boxShadow: '0px 2px 5px 0px rgba(0,0,0,0.2)',
+                          '&:hover': {boxShadow: '0px 0px 2px 0px rgba(0,0,0,0.2)'}}}>
+                    <PostRow
+                        key={index}
+                        id={post._id}
+                        title={post.book_title}
+                        username={post.username}
+                        post={post.post}
+                        rating={post.rating}
+                        readOnly={true}
+                        date={post.date_added}
+                        user={user}
+                        all={user.all}
+                    />
+                </Grid>
+            ))) : (
+                <Typography variant='h5'>No post found</Typography>
+            )}
         </Grid>
     );
 };

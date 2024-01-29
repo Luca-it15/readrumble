@@ -1,76 +1,95 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import {useNavigate} from 'react-router-dom';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
+import UserIcon from '@mui/icons-material/PermIdentityTwoTone';
+import DateIcon from '@mui/icons-material/CalendarTodayTwoTone';
 import Typography from '@mui/material/Typography';
-import RatingStars from './RatingStars'; // Assicurati che il percorso sia corretto
+import RatingStars from './RatingStars';
 import DateFormatter from './DataFormatter';
-import {Link} from '@mui/material';
+import {Grid, Link, Paper} from '@mui/material';
+import Button from '@mui/material-next/Button';
+import {blue} from "@mui/material/colors";
 
-export default function PostRow({id, title, username, rating, readOnly, date, user, all}) {
-
+export default function PostRow({id, book_id, title, username, rating, text, readOnly, date, user, all}) {
     const navigate = useNavigate();
 
-    function seeDetails(id) {
-        if(id === 0)  {
-       
-          let arrayPostJson = localStorage.getItem('last_posts');
-          let arrayPost = JSON.parse(arrayPostJson);
-
-         let dateToFind = date
-         let postFilter = arrayPost.filter(post => post.date_added === dateToFind);
-         
-         let postFilterJson = JSON.stringify(postFilter);
-
-// Salva la stringa JSON nel Local Storage
-        localStorage.removeItem('post_details'); 
-        localStorage.setItem('post_details', postFilterJson);
-        navigate(`/posts/${id}/`); 
-        }
-        else 
-            navigate(`/posts/${id}/`); 
+    if (text === undefined) {
+        text = "";
+    } else {
+        text = text.substring(0, 150) + "...";
     }
-    
 
-    console.log(user);
-    console.log(all);
+    function seeDetails(id) {
+        if (id === 0) {
+            let arrayPostJson = localStorage.getItem('last_posts');
+            let arrayPost = JSON.parse(arrayPostJson);
+
+            let dateToFind = date
+            let postFilter = arrayPost.filter(post => post.date_added === dateToFind);
+
+            let postFilterJson = JSON.stringify(postFilter);
+
+            localStorage.removeItem('post_details');
+            localStorage.setItem('post_details', postFilterJson);
+            navigate(`/posts/${id}/`);
+        } else
+            navigate(`/posts/${id}/`);
+    }
+
+    function seeBookDetails(book_id) {
+        navigate(`/bookdetails/${book_id}/`);
+    }
+
+    function seeProfile(username) {
+        navigate(`/user/${username}/`);
+    }
+
     return (
-        <Box sx={{minWidth: 275}}>
-            <Card variant="outlined" sx={{padding: '4%', textAlign: 'center', borderRadius: 5}}>
-                <CardContent>
-                    <Link onClick={() => {
-                        seeDetails(id)
-                    }} sx={{color: "#000000"}}>
-                        {all ? (
-                                <>
-                                    <Typography variant="h5" component="div">
-                                        {title}
-                                    </Typography>
-                                    <Typography variant="h6" component="div">
-                                        {username}
-                                    </Typography>
-                                </>
-                            ) :
-                            (user.user ? (
-                                    <Typography variant="h5" component="div">
-                                        {title}
-                                    </Typography>) :
-                                (
-                                    <Typography variant="h6" component="div">
-                                        {username}
-                                    </Typography>))} </Link>
-                    <Typography variant="h6" component="div">
-                        <RatingStars
-                            onChange={rating}
-                            readOnly={readOnly}
-                            isStatic={true}
-                            star={rating}
-                        />
+        <Paper elevation={0} sx={{borderRadius: 5, padding: '18px 24px 10px 24px', width: '100%'}}>
+            <Grid container direction="row" alignItems="center" justifyContent="center" xs={12} sx={{width: '100%'}}>
+                {!user.user && (
+                    <Grid item xs={6}>
+                        <Link sx={{color: "#000000", textAlign: 'left'}}>
+                            <Typography onClick={() => {seeProfile(username)}} sx={{'&:hover': {cursor: 'pointer'}}}>
+                                <UserIcon sx={{color: blue[400], margin: '0px 3px 3px 0px'}}/>
+                                {username}
+                            </Typography>
+                        </Link>
+                    </Grid>
+                )}
+
+                <Grid item xs={!user.user ? 6 : 12}>
+                    <Typography textAlign="right" sx={{color: '#999999'}}>
+                        <DateFormatter timestamp={date}/>
+                        <DateIcon sx={{color: blue[400], margin: '0px 0px 5px 3px', height: '20px'}}/>
                     </Typography>
-                </CardContent>
-                <DateFormatter timestamp={date}/>
-            </Card>
-        </Box>
+                </Grid>
+
+                <Grid item xs={12}>
+                    <Link onClick={() => {seeBookDetails(book_id)}} sx={{color: "#000000", textAlign: 'center'}}>
+                        <Typography variant="h6" sx={{margin: '5px', '&:hover': {cursor: 'pointer'}}}>
+                            {title}
+                        </Typography>
+                    </Link>
+                </Grid>
+
+                <Grid item xs={12}>
+                    <RatingStars onChange={rating} readOnly={readOnly} isStatic={true} star={rating}/>
+                </Grid>
+
+                {text !== undefined && (
+                    <Grid item xs={12}>
+                        <Typography sx={{textAlign: 'justify', margin: '5px'}}>{text}</Typography>
+                    </Grid>
+                )}
+
+                <Grid item xs={12}>
+                    <Button onClick={() => {seeDetails(id)}} sx={{backgroundColor: blue[100], marginY: "10px",
+                        height: "30px", '&:hover': {backgroundColor: blue[100]}}} variant="filledTonal">
+                        <Typography sx={{margin: '5px'}}>See more</Typography>
+                    </Button>
+                </Grid>
+            </Grid>
+        </Paper>
     );
 }

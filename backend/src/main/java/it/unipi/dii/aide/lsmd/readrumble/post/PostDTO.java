@@ -1,11 +1,6 @@
 package it.unipi.dii.aide.lsmd.readrumble.post;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.annotation.Id;
-
 import java.util.Date;
-import java.util.List;
 
 /**
  * PostDTO class rappresent a part of the posts class,
@@ -22,15 +17,17 @@ public class PostDTO {
     private Date date_added;
     private String book_title;
     private String username;
+    private String text;
 
 
-    public PostDTO(String _id, long book_id, int rating, Date date, String book_title, String username) {
+    public PostDTO(String _id, long book_id, int rating, Date date, String book_title, String username, String text) {
         this._id = _id;
         this.book_id = book_id;
         this.rating = rating;
         this.date_added = date;
         this.book_title = book_title;
         this.username = username;
+        this.text = text;
     }
 
     public String get_id() {
@@ -52,6 +49,11 @@ public class PostDTO {
     public String getUsername() {
         return username;
     }
+
+    public String getText() {
+        return text;
+    }
+
     public void setRating(int rating) {
         this.rating = rating;
     }
@@ -76,5 +78,7 @@ public class PostDTO {
         this.username = username;
     }
 
-
+    public void setText(String text) {
+        this.text = text;
+    }
 }
