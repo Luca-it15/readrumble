@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 @Component
 public class RedisToMongo {
-    private static final Logger logger = LoggerFactory.getLogger(RedisToMongo.class);
+    private static Logger logger = LoggerFactory.getLogger(RedisToMongo.class);
     private Jedis jedis;
     private MongoCollection<Document> mongoCollection;
     private DateTimeFormatter isoFormat;

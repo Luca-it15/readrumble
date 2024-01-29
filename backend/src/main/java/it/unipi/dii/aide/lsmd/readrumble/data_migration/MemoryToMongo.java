@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MemoryToMongo {
-    private final UserDAO userDAO;
-    private final AdminCompetitionDAO adminCompetitionDAO;
+    private UserDAO userDAO;
+    private AdminCompetitionDAO adminCompetitionDAO;
     public MemoryToMongo() {
         this.userDAO = new UserDAO();
         this.adminCompetitionDAO = new AdminCompetitionDAO();

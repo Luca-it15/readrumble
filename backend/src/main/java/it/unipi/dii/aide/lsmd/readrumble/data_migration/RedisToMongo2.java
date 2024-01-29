@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 @Component
 public class RedisToMongo2 {
-    private static final Logger logger = LoggerFactory.getLogger(RedisToMongo.class);
+    /*private static final Logger logger = LoggerFactory.getLogger(RedisToMongo.class);
 
     private Jedis jedis;
     private MongoCollection<Document> mongoCollection;
@@ -32,7 +32,7 @@ public class RedisToMongo2 {
      * This method is scheduled to run every 2 hours.
      * It updates the MongoDB wishlist collection with the data from Redis.
      */
-    @Scheduled(fixedRate = 36000000, initialDelay = 36000000) // 10 hours in milliseconds
+    /*@Scheduled(fixedRate = 36000000, initialDelay = 36000000) // 10 hours in milliseconds
     public void updateMongoWishlists() {
         logger.info("Updating MongoDB wishlists...");
 
@@ -202,7 +202,7 @@ public class RedisToMongo2 {
             System.out.println("Catched Exceptio: " + e.getMessage());
         }
         logger.info("Cleared the old competition");
-    }
+    }*/
 }
 
 
