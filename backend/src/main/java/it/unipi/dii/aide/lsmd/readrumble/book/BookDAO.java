@@ -122,7 +122,6 @@ public class BookDAO {
     public ResponseEntity<String> removeFromWishlist(String username, Long bookId) {
         Jedis jedis = RedisConfig.getSession();
 
-        // See if the book is not in the wishlist
         if (!jedis.hexists("wishlist:" + username + ":" + bookId, "book_title")) {
             return ResponseEntity.badRequest().body("Book not in wishlist");
         }
