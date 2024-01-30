@@ -57,10 +57,10 @@ const RecentFriendsPosts = () => {
                     />
                 </Grid>
             ))) : (
-                friends != null && friends.length != 0 ? (
+                friends != null && friends.length !== 0 ? (
                     <CircularProgress size={50} sx={{marginY: '90px'}}/>
                 ) : (
-                    <Typography variant='h4'>No friends added</Typography>
+                    <Typography variant='h6'>Posts by the users you follow will be displayed here</Typography>
                 )
             )}
         </Grid>

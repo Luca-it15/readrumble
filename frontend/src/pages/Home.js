@@ -15,7 +15,6 @@ const Home = () => {
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
         padding: '10px',
-        margin: '20px 10px 0px 10px',
         borderRadius: '30px',
         width: '100%',
         textAlign: 'center'

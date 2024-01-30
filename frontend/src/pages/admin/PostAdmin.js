@@ -9,17 +9,15 @@ import TextField from '@mui/material/TextField';
 import {blue} from "@mui/material/colors";
 import '../../App.css';
 
-
 export default function PostAdmin() {
-
     const [value, setValue] = useState(0);
     const [searchText, setSearchText] = useState('');
-    const [last, setLast] = useState(true); 
-    const [find, setFind] = useState(false); 
+    const [last, setLast] = useState(true);
+    const [find, setFind] = useState(false);
 
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
-        padding: '10px',
+        padding: '10px 10%',
         margin: '10px',
         borderRadius: 5,
         width: '90%',
@@ -50,15 +48,14 @@ export default function PostAdmin() {
 
     const handleSearchTextChange = (event) => {
         setLast(false);
-        setFind(false); 
+        setFind(false);
         setSearchText(event.target.value);
     };
 
     const handleSearchButtonClick = () => {
         setLast(false);
-        setFind(true); 
-    }  
-
+        setFind(true);
+    }
 
     return (
         <Paper sx={PaperStyle}>
@@ -70,19 +67,18 @@ export default function PostAdmin() {
                     <SearchRounded sx={{color: '#ffffff'}}/>
                 </Button>
             </Box>
-            <Paper sx={PaperStyle}>
-                {last? (
-                <>    
-                <Typography variant='h3'>Last Post</Typography><PostsList all={true} size={12} path={0} />
-                </>
-                ) : (find && (
-                  <>  
-                <Typography variant='h3'>Search Posts</Typography>
-                <PostsList all={true} size={12} username={searchText} path={2} user={true}/> 
-                </>
-             ))}
-            </Paper>
+
+            {last ? (
+                <React.Fragment>
+                    <Typography variant='h5'>Latest posts</Typography>
+                    <PostsList all={true} size={12} path={0}/>
+                </React.Fragment>
+            ) : (
+                <React.Fragment>
+                    <Typography variant='h5'>Search results:</Typography>
+                    <PostsList all={true} size={12} username={searchText} path={2} user={true}/>
+                </React.Fragment>
+            )}
         </Paper>
     );
-
 }

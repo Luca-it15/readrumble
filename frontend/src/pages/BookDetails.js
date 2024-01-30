@@ -9,7 +9,9 @@ import {blue, red, yellow, green} from "@mui/material/colors";
 import StarTwoToneIcon from "@mui/icons-material/StarTwoTone";
 import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemoveTwoTone";
 import BookmarkAddIcon from "@mui/icons-material/BookmarkAddTwoTone";
-import {UpgradeRounded, FavoriteTwoTone} from "@mui/icons-material";
+import {FavoriteTwoTone} from "@mui/icons-material";
+import UpdateIcon from '@mui/icons-material/UploadTwoTone';
+import RemoveIcon from '@mui/icons-material/DeleteTwoTone';
 import GoBack from "../components/GoBack";
 import PostList from "../components/PostList";
 
@@ -35,11 +37,13 @@ function BookDetails() {
         variant: 'success',
     });
 
-    if (currentUser['favoriteBooks'].length > 0) {
-        favoriteBooksIds = currentUser['favoriteBooks'].map(book => book.id);
-    }
-    if (currentUser['wishlist'].length > 0) {
-        wishlistBooksIds = currentUser['wishlist'].map(book => book.id);
+    if (!isAdmin) {
+        if (currentUser['favoriteBooks'].length > 0) {
+            favoriteBooksIds = currentUser['favoriteBooks'].map(book => book.id);
+        }
+        if (currentUser['wishlist'].length > 0) {
+            wishlistBooksIds = currentUser['wishlist'].map(book => book.id);
+        }
     }
 
     id = parseInt(id)
@@ -194,22 +198,22 @@ function BookDetails() {
                 <Grid container item direction="column" alignItems="center" justifyContent="center" xs={3}>
                     {isAdmin ? (
                         <React.Fragment>
-                            <Typography variant='h4'>Admin Functionality</Typography>
+                            <Typography variant='h6'>Admin actions:</Typography>
                             <Button onClick={updateBook(id)} sx={{
                                 backgroundColor: green[200],
                                 margin: "5px",
                                 '&:hover': {backgroundColor: green[100]}
                             }}
-                                    variant="filledTonal" startIcon={<UpgradeRounded sx={{color: green[600]}}/>}>
-                                <Typography>Update Book</Typography>
+                                    variant="filledTonal" startIcon={<UpdateIcon sx={{color: green[600]}}/>}>
+                                <Typography>Edit book data</Typography>
                             </Button>
                             <Button onClick={removeBook(id)} sx={{
                                 backgroundColor: red[200],
                                 margin: "5px",
                                 '&:hover': {backgroundColor: red[100]}
                             }}
-                                    variant="filledTonal" startIcon={<FavoriteTwoTone sx={{color: red[600]}}/>}>
-                                <Typography>Remove Book</Typography>
+                                    variant="filledTonal" startIcon={<RemoveIcon sx={{color: '#bd3838'}}/>}>
+                                <Typography>Remove book</Typography>
                             </Button>
 
                         </React.Fragment>

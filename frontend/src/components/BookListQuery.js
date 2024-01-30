@@ -21,6 +21,7 @@ function BookListQuery({query}) {
 
     const fetchLastBooksOfFriends = async () => {
         if (usernames.length === 0) {
+            setIsLoading(false)
             return;
         }
 
@@ -104,7 +105,7 @@ function BookListQuery({query}) {
                 <CircularProgress sx={{marginY: '50px'}}/>
                 : (
                 <React.Fragment>
-                    {currentUser['following'].length === 0 ? (
+                    {query === 'friends' && currentUser['following'].length === 0 ? (
                         <List sx={ListStyle}>
                             <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
                                 <Typography sx={{textAlign: 'center'}}>You are not following anyone yet</Typography>

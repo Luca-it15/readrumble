@@ -116,7 +116,6 @@ public class PostDAO {
                      doc.getInteger("bookmark"),
                      doc.getInteger("pages_read")
                      );
-
     }
 
     public List<PostDTO> allPost() {
