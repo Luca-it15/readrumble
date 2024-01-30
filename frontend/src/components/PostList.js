@@ -88,16 +88,16 @@ const PostsList = (user, username, book_id, size, all, path) => {
                 posts.length > 0 ? (
                     posts.map((post, index) => (
                         <Grid container item direction="coloumn" xs={user.size}
-                              sx={{borderRadius: 6, textAlign: 'center',
-                                  boxShadow: '0px 2px 5px 0px rgba(0,0,0,0.2)',
-                                  '&:hover': {boxShadow: '0px 0px 2px 0px rgba(0,0,0,0.2)'}}}>
+                              sx={{borderRadius: 6, textAlign: 'center'}}>
                             <PostRow
                                 key={index}
                                 id={post._id}
+                                book_id={post.book_id}
                                 title={post.book_title}
                                 username={post.username}
                                 post={post.post}
                                 rating={post.rating}
+                                text={post.review_text}
                                 readOnly={true}
                                 date={post.date_added}
                                 user={user}
