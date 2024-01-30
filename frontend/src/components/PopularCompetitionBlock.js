@@ -9,9 +9,8 @@ import {blue, red} from "@mui/material/colors";
 function PopularCompetitionBlock() {
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
-        padding: '10px',
-        margin: '20px 10px 0px 10px',
-        borderRadius: 18,
+        padding: '5px 10px',
+        borderRadius: '30px',
         width: '100%',
         textAlign: 'center'
     }
@@ -83,15 +82,12 @@ function PopularCompetitionBlock() {
     }
 
     return (
-        <Paper sx={{
-            backgroundColor: '#f1f7fa', paddingRight: '16px', margin: '20px 10px 0px 10px', borderRadius: 8,
-            width: '100%', textAlign: 'center'
-        }}>
-            <Grid container direction="column" alignItems="center" justifyContent="center">
-                <Typography variant="h5" textAlign='center' sx={{marginTop: '10px', marginBottom: '-10px'}}>Popular
-                    competitions</Typography>
+        <Paper sx={PaperStyle}>
+            <Typography variant="h5" textAlign='center' sx={{margin: '5px'}}>Popular
+                competitions</Typography>
+            <Grid container direction="column" alignItems="center" justifyContent="center" spacing={1.5}>
                 {data.slice(0, displayCount).map((item) => (
-                    <Grid item>
+                    <Grid container item>
                         <Paper elevation={2} style={PaperStyle}>
                             <Link variant="h6" onClick={() => {
                                 goSpecificComp(item.name)
@@ -108,7 +104,7 @@ function PopularCompetitionBlock() {
                 ))}
 
                 {(data.length > 3 && displayCount === 3) ? (
-                    <Button variant="filled" sx={{
+                    <Button variant="filledTonal" sx={{
                         backgroundColor: blue[200], width: '140px', height: '30px',
                         margin: '10px', '&:hover': {backgroundColor: blue[100]}
                     }}
@@ -116,13 +112,13 @@ function PopularCompetitionBlock() {
                     </Button>
                 ) : (
                     <React.Fragment>
-                        <Button variant="filled" sx={{
+                        <Button variant="filledTonal" sx={{
                             backgroundColor: red[200], width: '140px', height: '30px',
                             marginTop: '20px', '&:hover': {backgroundColor: '#ff8a80'}
                         }} onClick={loadLessCompetitions}>
-                            <Typography sx={{color: '#000000'}}>Show less</Typography>
+                            <Typography>Show less</Typography>
                         </Button>
-                        <Button variant="filled" sx={{
+                        <Button variant="filledTonal" sx={{
                             backgroundColor: blue[200], width: '140px', height: '30px',
                             margin: '10px 20px 20px 20px', '&:hover': {backgroundColor: '#82b1ff'}
                         }} onClick={loadMoreCompetitions}>
@@ -131,8 +127,7 @@ function PopularCompetitionBlock() {
                     </React.Fragment>
                 )}
 
-                <Button variant="filled" sx={{
-                    backgroundColor: blue[600], marginBottom: '10px',
+                <Button variant="filledTonal" sx={{color: '#ffffff', backgroundColor: blue[600], marginBottom: '10px',
                     '&:hover': {backgroundColor: blue[500]}
                 }}
                         onClick={goComp}><Typography>Find other competitions</Typography></Button>

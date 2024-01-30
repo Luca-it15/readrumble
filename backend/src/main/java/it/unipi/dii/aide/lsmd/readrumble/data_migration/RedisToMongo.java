@@ -128,9 +128,7 @@ public class RedisToMongo {
             while(cursor.hasNext())
             {
                 Document comp_found = cursor.next();
-                System.out.println(comp_found);
                 Bson filter = Filters.eq("name",comp_found.get("name").toString());
-                // Esegui l'aggiornamento utilizzando pullAll per rimuovere tutti gli elementi dall'array
                 Document update = new Document("$set", new Document("rank",new ArrayList<>()));
                 mongoCollection.updateOne(filter,update);
             }
@@ -140,33 +138,22 @@ public class RedisToMongo {
             System.out.println("Catched Exceptio: " + e.getMessage());
         }
         logger.info("Cleared the rank field of the active competitions");
-        Pipeline pipeline = jedis.pipelined();
-        Response<Set<String>> keysResponse = pipeline.keys("competition:*");
-        pipeline.sync();
-        Set<String> keys = keysResponse.get();
+        Set<String> keys = jedis.keys("competition:*");
         // Create a list to store all the competition, user and total page read
         ArrayList<Document> Competitions_to_change = new ArrayList<>();
         logger.info("Starting to create documents");
 
         // Map to keep track of documents for every value of competition_name
         Map<String, List<Document>> mapByCompetitionName = new HashMap<>();
-        int i = 0;
         for (String key : keys) {
-            if(i == 10000)
-            {
-                break;
-            }
-            i = i+1;
             //competition:competition_name:username:tag->value
-            logger.info("Here is the key: " + key);
             String competition_name = key.split(":")[1];
             String username = key.split(":")[2];
-            Integer pages_read = Integer.parseInt(jedis.get(key));
-            System.out.println(username + " " + competition_name + " " + pages_read);
+            Integer tot_pages = Integer.parseInt(jedis.get(key));
             Document doc = new Document()
                     .append("competition_name", competition_name)
                     .append("username", username)
-                    .append("pages_read", pages_read);
+                    .append("tot_pages", tot_pages);
             Competitions_to_change.add(doc);
         }
 
@@ -180,7 +167,7 @@ public class RedisToMongo {
         ArrayList<Document> topTenForEachCompetition = new ArrayList<>();
 
         for (List<Document> documents : mapByCompetitionName.values()) {
-            documents.sort(Comparator.comparingInt((Document doc3) -> doc3.getInteger("pages_read")).reversed());
+            documents.sort(Comparator.comparingInt((Document doc3) -> doc3.getInteger("tot_pages")).reversed());
             int count = 0;
             for (Document doc4 : documents) {
                 if (count < 10) {
@@ -284,16 +271,14 @@ public class RedisToMongo {
     public void eliminateOldMongoCompetitions() {
         logger.info("Eliminating old MongoDB competitions...");
         LocalDate today = LocalDate.now();
-
-
         LocalDate OneMonthAgo = today.minus(Period.ofMonths(1));
         jedis = RedisConfig.getSession();
         mongoCollection = MongoConfig.getCollection("Competitions");
-        //Bson dateFilter1 = Filters.gte("end_date", OneMonthAgo);
+        Bson dateFilter1 = Filters.gte("end_date", OneMonthAgo);
         Bson dateFilter2 = Filters.lt("end_date", today);
-        //Bson dateFilter = Filters.and(dateFilter1, dateFilter2);
+        Bson dateFilter = Filters.and(dateFilter1, dateFilter2);
 
-        try (MongoCursor<Document> cursor = mongoCollection.find(dateFilter2).cursor()) {
+        try (MongoCursor<Document> cursor = mongoCollection.find(dateFilter).cursor()) {
             while (cursor.hasNext()) {
                 Document comp_found = cursor.next();
                 System.out.println(comp_found.get("name"));
@@ -304,7 +289,7 @@ public class RedisToMongo {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Catched Exceptio: " + e.getMessage());
+            System.out.println("Catched Exception: " + e.getMessage());
         }
         logger.info("Cleared the old competition");
     }

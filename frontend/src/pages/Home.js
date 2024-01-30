@@ -10,6 +10,8 @@ import BookListQuery from "../components/BookListQuery";
 import RecentFriendsPosts from '../components/RecentFriendsPosts';
 
 const Home = () => {
+    const currentUser = JSON.parse(localStorage.getItem('logged_user'));
+
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
         padding: '10px',
@@ -19,22 +21,23 @@ const Home = () => {
         textAlign: 'center'
     }
 
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
     function goPost() {
         navigate("/post");
     }
 
-    const currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
     console.log("Compeittions: " + JSON.stringify(currentUser['competitions']))
 
     return (
         <Container maxWidth="xl">
-            <Paper elevation={2} style={PaperStyle}>
+            <Paper elevation={2} style={PaperStyle} sx={{marginTop: '10px'}}>
                 <Typography variant="h5">Welcome, {currentUser['name']}!</Typography>
             </Paper>
-            <Grid container spacing={2} textAlign="center" direction="row" alignItems="flex-start" justifyContent="space-around">
+
+            <Grid container spacing={2} textAlign="center" direction="row" alignItems="flex-start" justifyContent="space-around"
+                sx={{paddingTop: '10px'}}>
                 <Grid item xs={3}>
                     <PopularCompetitionBlock/>
                 </Grid>

@@ -5,11 +5,13 @@ import Typography from '@mui/material/Typography';
 import {Divider, Link, List, ListItem, Paper} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {blue} from "@mui/material/colors";
+import CircularProgress from "@mui/material/CircularProgress";
 
 function SuggestedBooks({user}) {
     const navigate = useNavigate();
     const [suggestedBooks, setSuggestedBooks] = useState([]);
     const [displayCount, setDisplayCount] = useState(10);
+    const [isLoading, setIsLoading] = useState(true);
 
     const ListStyle = {
         py: 0,
@@ -32,6 +34,8 @@ function SuggestedBooks({user}) {
             }));
 
             setSuggestedBooks(books);
+
+            setIsLoading(false);
         } catch (error) {
             console.log(error.response);
         }
@@ -56,7 +60,6 @@ function SuggestedBooks({user}) {
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
         padding: '10px',
-        margin: '20px 10px 0px 10px',
         borderRadius: 5,
         width: '100%',
         display: 'flex',
@@ -67,42 +70,46 @@ function SuggestedBooks({user}) {
     return (
         <Paper sx={PaperStyle}>
             <Typography variant="h5" sx={{textAlign: 'center'}}>Suggestions by users you follow</Typography>
-            <List sx={ListStyle}>
-                {suggestedBooks.length === 0 ? (
-                    <ListItem>
-                        <Typography>No books to show</Typography>
-                    </ListItem>
-                ) : (
-                    Array.isArray(suggestedBooks) && suggestedBooks.slice(0, displayCount).map((book, index) => (
-                        <React.Fragment key={index}>
-                            <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
-                                <Link onClick={() => {
-                                    seeDetails(book.id)
-                                }} sx={{color: "#000000"}}>
-                                    <Typography>{book.title}</Typography>
-                                </Link>
+            {isLoading ? <CircularProgress/> : (
+                <React.Fragment>
+                    <List sx={ListStyle}>
+                        {suggestedBooks.length === 0 ? (
+                            <ListItem>
+                                <Typography>No books to show</Typography>
                             </ListItem>
-                            <Divider variant="middle" component="li"/>
-                        </React.Fragment>
-                    ))
-                )}
-            </List>
-            {suggestedBooks.length > displayCount ? (
-                <Button sx={{
-                    backgroundColor: blue[100], marginTop: "10px", height: "30px",
-                    '&:hover': {backgroundColor: blue[100]}
-                }} variant="filledTonal" onClick={loadAllBooks}>
-                    <Typography>Show all</Typography>
-                </Button>
-            ) : (
-                suggestedBooks.length > 10 && (
-                    <Button sx={{
-                        backgroundColor: blue[100], marginTop: "10px", height: "30px",
-                        '&:hover': {backgroundColor: blue[100]}
-                    }} variant="filledTonal" onClick={loadLessBooks}>
-                        <Typography>Show less</Typography>
-                    </Button>
-                )
+                        ) : (
+                            Array.isArray(suggestedBooks) && suggestedBooks.slice(0, displayCount).map((book, index) => (
+                                <React.Fragment key={index}>
+                                    <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
+                                        <Link onClick={() => {
+                                            seeDetails(book.id)
+                                        }} sx={{color: "#000000"}}>
+                                            <Typography>{book.title}</Typography>
+                                        </Link>
+                                    </ListItem>
+                                    <Divider variant="middle" component="li"/>
+                                </React.Fragment>
+                            ))
+                        )}
+                    </List>
+                    {suggestedBooks.length > displayCount ? (
+                        <Button sx={{
+                            backgroundColor: blue[100], marginTop: "10px", height: "30px",
+                            '&:hover': {backgroundColor: blue[100]}
+                        }} variant="filledTonal" onClick={loadAllBooks}>
+                            <Typography>Show all</Typography>
+                        </Button>
+                    ) : (
+                        suggestedBooks.length > 10 && (
+                            <Button sx={{
+                                backgroundColor: blue[100], marginTop: "10px", height: "30px",
+                                '&:hover': {backgroundColor: blue[100]}
+                            }} variant="filledTonal" onClick={loadLessBooks}>
+                                <Typography>Show less</Typography>
+                            </Button>
+                        )
+                    )}
+                </React.Fragment>
             )}
         </Paper>
     );

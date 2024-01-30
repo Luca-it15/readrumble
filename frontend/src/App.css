@@ -14,7 +14,6 @@ img {
 
 body {
     width: 100vw;
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
@@ -25,13 +24,8 @@ main {
     align-items: center;
     justify-content: flex-start;
     background-color: #e1eef3;
-    padding-bottom: 30px;
-    min-height: 84.7vh;
-}
-
-.MuiGrid-root .MuiGrid-item .MuiGrid-grid-xs-4 .MuiGrid-grid-md-4 .css-gj1fbr-MuiGrid-root, .css-1jpv6k6-MuiGrid-root > .MuiGrid-item {
-    padding-left: 12px !important;
-    padding-right: 12px !important;
+    min-height: 100vh;
+    min-width: 100vw;
 }
 
 .App {
@@ -73,87 +67,6 @@ main {
     }
 }
 
-/*BUTTONs*/
-.style_of_the_button_unpressed {
-    background-color: cadetblue;
-    width: 20%;
-    left: 40%;
-    margin: 5pt;
-    position: relative;
-}
-
-.style_of_the_button {
-    background-color: cornflowerblue;
-    width: 30%;
-    height: 20%;
-    left: 35%;
-    margin: 5pt;
-    position: relative;
-}
-
-.MuiContainer-root {
-    display: flex !important;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
-
-.label {
-    font-size: 18pt;
-    font-weight: bold;
-    width: 100%;
-    margin: 1%;
-}
-
-.CompCon {
-    width: 50%;
-    position: relative;
-    background-color: cadetblue;
-    text-align: center;
-}
-
-.competitionPage {
-    position: relative;
-    background-color: cadetblue;
-    text-align: center;
-}
-
-.competitionLinkTrue {
-    background-color: red;
-    position: relative;
-    width: 50%;
-    left: 25%;
-    text-align: center;
-}
-
-.competitionLinkFalse {
-    background-color: green;
-    position: relative;
-    width: 50%;
-    left: 25%;
-    text-align: center;
-}
-
-.compButton {
-    width: 50%;
-    position: relative;
-    left: 25%;
-    height: 70%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.compMoreComp {
-    width: 70%;
-    position: relative;
-    left: 15%;
-}
-
-.logo {
-    margin: 0 auto;
-}
-
 .choice {
     margin-Bottom: 5%;
     margin-top: 5%;
@@ -179,12 +92,4 @@ main {
 .toggle {
     border: 3pt solid cadetblue; 
     background-color: white;
-}
-
-.css-jmsowk-MuiGrid-root>.MuiGrid-item {
-    padding-left: 0 !important;
-}
-
-.css-vwmql2-MuiGrid-root>.MuiGrid-item {
-    padding: 10px !important;
 }
