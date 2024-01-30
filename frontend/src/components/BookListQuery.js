@@ -21,6 +21,7 @@ function BookListQuery({query}) {
 
     const fetchLastBooksOfFriends = async () => {
         if (usernames.length === 0) {
+            setIsLoading(false)
             return;
         }
 

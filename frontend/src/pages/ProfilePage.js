@@ -155,10 +155,10 @@ const ProfilePage = () => {
                 </Grid>
 
                 <Grid container item xs={3} direction="column" alignItems="center" justifyContent="center" spacing={1}>
-                    <Grid item>
+                    <Grid item sx={{width: '100%'}}>
                         <FavoriteBookList user={currentUser['_id']}/>
                     </Grid>
-                    <Grid item>
+                    <Grid item sx={{width: '100%'}}>
                         <RecentlyReadBooks user={currentUser['_id']}/>
                     </Grid>
                 </Grid>

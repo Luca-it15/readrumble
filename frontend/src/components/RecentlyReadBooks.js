@@ -6,7 +6,6 @@ import {Divider, Link, List, ListItem, Paper} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {blue, red} from "@mui/material/colors";
 
-
 function RecentlyReadBooks({user}) {
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
     let initialRecentlyReadBooks;
@@ -118,11 +117,13 @@ function RecentlyReadBooks({user}) {
                 }}
                     variant="filledTonal"><Typography>Show more</Typography></Button>
             ) : (
-                <Button onClick={loadLessBooks} sx={{
-                    backgroundColor: red[100], marginTop: "10px", height: "30px",
-                    '&:hover': {backgroundColor: red[100]}
-                }}
-                        variant="filledTonal"><Typography>Show less</Typography></Button>
+                recentlyReadBooks.length > 0 && (
+                    <Button onClick={loadLessBooks} sx={{
+                        backgroundColor: red[100], marginTop: "10px", height: "30px",
+                        '&:hover': {backgroundColor: red[100]}
+                    }}
+                            variant="filledTonal"><Typography>Show less</Typography></Button>
+                )
             )}
         </Paper>
     );

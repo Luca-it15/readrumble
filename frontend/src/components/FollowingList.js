@@ -95,7 +95,7 @@ function FollowingList({user}) {
             <List sx={ListStyle}>
                 {following.length === 0 ? (
                     <ListItem>
-                        <Typography>No users following</Typography>
+                        <Typography>Not following anybody</Typography>
                     </ListItem>
                 ) : (
                     following.slice(0, displayCount).map((username, index) => (
@@ -128,13 +128,15 @@ function FollowingList({user}) {
                     <Typography>Show all</Typography>
                 </Button>
             ) : (
-                <Button sx={{
-                    backgroundColor: blue[100], marginTop: "10px", height: "30px",
-                    '&:hover': {backgroundColor: blue[100]}
-                }}
-                        variant="filledTonal" onClick={loadLessFollowings}>
-                    <Typography>Show less</Typography>
-                </Button>
+                following.length > 0 && (
+                    <Button sx={{
+                        backgroundColor: red[100], marginTop: "10px", height: "30px",
+                        '&:hover': {backgroundColor: red[100]}
+                    }}
+                            variant="filledTonal" onClick={loadLessFollowings}>
+                        <Typography>Show less</Typography>
+                    </Button>
+                )
             )}
         </Paper>
     );
