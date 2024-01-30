@@ -58,7 +58,9 @@ export default function PostForm() {
         username: currentUser['_id'], 
         tag: [],
         bookmark: 0,
-        pages_read: 0
+        pages_read: 0,
+        competitions_name: [],
+        competitions_tag: []
     });
 
     const handleChange = (e) => {
@@ -147,17 +149,26 @@ export default function PostForm() {
 
              console.log("le competitions sono :");  
              if (competitions) {
-  
+                
+                let competitions_name = Array(); 
+                let competitions_tag = Array(); 
                 formData.tag.forEach(tag => {
                     let i = 0; 
+                
                     console.log("vado ad inserire le pagine"); 
                     while(competitions[i] != null) {
-                     if(competitions[i].tag.toUpperCase() == tag.toUpperCase())
+                     if(competitions[i].tag.toUpperCase() == tag.toUpperCase()) {
                       competitions[i].pages += formData.pages_read;
+                      competitions_name.push(competitions[i].name);  
+                      competitions_tag.push(competitions[i].tag); 
+                     }
                       console.log("we have add " + formData.pages_read + " new pages read a the competition of " + tag); 
                      i++; 
                     }
                 });
+
+                formData.competitions_name = competitions_name; 
+                formData.competitions_tag = competitions_tag; 
                 currentUser['competitions'] = competitions; 
                 localStorage.setItem('logged_user', JSON.stringify(currentUser));
              }

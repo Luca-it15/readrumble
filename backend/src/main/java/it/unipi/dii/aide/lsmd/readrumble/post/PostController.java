@@ -28,7 +28,7 @@ public class PostController {
      * @return the response string
      */
     @PostMapping("/submit")
-    public ResponseEntity<String> submitPost(@RequestBody Post post) {
+    public ResponseEntity<String> submitPost(@RequestBody Document post) {
         return postDAO.addPostsRedis(post);
     }
 

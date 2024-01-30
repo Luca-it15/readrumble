@@ -29,6 +29,13 @@ public class SearchController {
     public List<LightBookDTO> searchBooks(@PathVariable String searchString) {
         return searchDao.findByStringBooks(searchString);
     }
+    @GetMapping("/books")
+    public List<LightBookDTO> getLastBooks() {
+        return searchDao.getLastBooks();
+    }
+
+
+
 
 
 }

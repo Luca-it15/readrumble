@@ -21,19 +21,11 @@ public class SearchDAO {
         String decodedString = URLDecoder.decode(searchString, StandardCharsets.UTF_8);
         String cleanedString = decodedString.substring(0, decodedString.length() - 1);
 
-        System.out.println("sto cercando " + cleanedString);
         Document query1 = new Document("book_title", new Document("$regex", cleanedString));
         List<Document> results1 = collection.find(query1).limit(10).into(new ArrayList<>());
         //retrieve the first results of document that match the filter
         for (Document doc : results1) {
-            PostDTO post = new PostDTO(
-                    (doc.get("_id")).toString(),
-                    doc.getLong("book_id"),
-                    doc.getInteger("rating"),
-                    doc.getDate("date_added"),
-                    doc.getString("book_title"),
-                    doc.getString("username"),
-                    doc.getString("text"));
+            PostDTO post = new PostDTO((doc.get("_id")).toString(), doc.getLong("book_id"), doc.getInteger("rating"), doc.getDate("date_added"), doc.getString("book_title"), doc.getString("username"), doc.getString("text"));
             target.add(post);
         }
 
@@ -50,11 +42,7 @@ public class SearchDAO {
         List<Document> results = collection.find(query).limit(10).into(new ArrayList<>());
         //retrieve the first results of document that match the filter
         for (Document doc : results) {
-            UserDTO user = new UserDTO(
-                    doc.getString("_id"),
-                    doc.getString("name"),
-                    doc.getString("surname")
-            );
+            UserDTO user = new UserDTO(doc.getString("_id"), doc.getString("name"), doc.getString("surname"));
             target.add(user);
         }
 
@@ -72,10 +60,20 @@ public class SearchDAO {
         List<Document> results = collection.find(query).limit(10).into(new ArrayList<>());
         //retrieve the first results of document that match the filter
         for (Document doc : results) {
-            LightBookDTO lightBookDTO = new LightBookDTO(
-                    doc.getLong("_id"),
-                    doc.getString("title")
-            );
+            LightBookDTO lightBookDTO = new LightBookDTO(doc.getLong("_id"), doc.getString("title"));
+            target.add(lightBookDTO);
+        }
+        return target;
+    }
+
+    public List<LightBookDTO> getLastBooks() {
+        List<LightBookDTO> target = new ArrayList<>();
+        MongoCollection<Document> collection = MongoConfig.getCollection("Books");
+
+        List<Document> results = collection.find().limit(10).into(new ArrayList<>());
+        //retrieve the first results of document that match the filter
+        for (Document doc : results) {
+            LightBookDTO lightBookDTO = new LightBookDTO(doc.getLong("_id"), doc.getString("title"));
             target.add(lightBookDTO);
         }
         return target;

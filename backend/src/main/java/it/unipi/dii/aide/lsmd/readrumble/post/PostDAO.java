@@ -25,31 +25,45 @@ public class PostDAO {
 
 
 
-      public ResponseEntity<String> addPostsRedis(Post post) {
+      public ResponseEntity<String> addPostsRedis(Document post) {
 
                  Jedis jedis = RedisConfig.getSession();
 
-                 String input = post.getDate_added().toString();
-                 DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("EEE MMM d HH:mm:ss zzz yyyy", Locale.ENGLISH);
+                 String input = post.getString("date_added");
+                 DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.ENGLISH);
                  ZonedDateTime zonedDateTime = ZonedDateTime.parse(input, inputFormatter);
+
 
                  DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
                  String time = zonedDateTime.format(outputFormatter);
 
-                String username = post.getUsername();
-                  String bookId = "" + (post.getBook_id());
-                  String ranking = "" + post.getRating();
-                  String bookmark = "" + post.getBookmark();
-                  String pagesRead = "" + post.getPages_read();
+                String username = post.getString("username");
+                  String bookId = "" + (post.getLong("book_id"));
+                  String ranking = "" + post.getInteger("rating");
+                  String bookmark = "" + post.getInteger("bookmark");
+                  int pagesRead = post.getInteger("pages_read");
+                  System.out.println(pagesRead);
                   String key = "post:" + time + ":" + username + ":" + bookId + ":" + ranking + ":" + bookmark + ":" + pagesRead;
-                  System.out.println("ho aggiunto il post con chiave: " + key);
                   Gson gson = new Gson();
-                  jedis.hset(key, "description", post.getReview_text());
-                  jedis.hset(key, "tags", gson.toJson(post.getTags()));
-                  jedis.hset(key, "book_title", post.getBook_title());
+                  jedis.hset(key, "description", post.getString("review_text"));
+                  jedis.hset(key, "tags", gson.toJson((List<String>)post.get("tag")));
+                  jedis.hset(key, "book_title", post.getString("book_title"));
 
-
-
+                  List<String> competitions_names = (List<String>) post.get("competitions_name");
+                  List<String> competitions_tag = (List<String>) post.get("competitions_tag");
+                  //String key = "competition:"+competitionTitle + ":" + competitionTag + ":" + username;
+                  int i = 0;
+                  int j = 0;
+               for(;!competitions_names.isEmpty() && i < competitions_names.size() && j < competitions_tag.size(); i++, j++ ) {
+                      String compkey = "competition:"+competitions_names.get(i) + ":" + competitions_tag.get(j) + ":" + username;
+                      System.out.println("la competizione che vogliamo aggiornare a chiave: " + compkey);
+                      String value = jedis.get(compkey);
+                      System.out.println("before update " + value);
+                      int new_pages_read = Integer.parseInt(value) + pagesRead;
+                      System.out.println("after update " + new_pages_read);
+                      jedis.set(compkey, String.valueOf(new_pages_read));
+                      i++;
+                  }
 
           return ResponseEntity.ok("Post added: " + key);
 

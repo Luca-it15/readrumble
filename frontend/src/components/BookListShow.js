@@ -6,7 +6,7 @@ import {Divider, Link, List, ListItem, Paper} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {blue} from "@mui/material/colors";
 
-function BookListShow({title}) {
+function BookListShow({title, path}) {
     const navigate = useNavigate();
     const [books, setBooks] = useState([]);
     const [displayCount, setDisplayCount] = useState(10);
@@ -25,7 +25,9 @@ function BookListShow({title}) {
     const fetchBooks = async () => {
 
         try {
-            const response = await axios.get(`http://localhost:8080/api/search/books/${title}}`);
+
+            if(path == 0) {
+            const response = await axios.get(`http://localhost:8080/api/search/books`);
 
             const books = response.data
             // Returns book.id and book.title
@@ -33,8 +35,17 @@ function BookListShow({title}) {
                 id: book.id,
                 title: book.title
             })));
-
-
+        } else { 
+         const response = await axios.get(`http://localhost:8080/api/search/books/${title}}`);
+ 
+         const books = response.data
+        // Returns book.id and book.title
+         setBooks(books.map(book => ({
+            id: book.id,
+            title: book.title
+         })));
+        }
+         
         } catch (error) {
             console.log(error.response)
         }
