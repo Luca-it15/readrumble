@@ -5,9 +5,11 @@ import NavApp from "../components/NavApp";
 const AuthenticationLayout = ({children}) => {
     return (
         <React.Fragment>
-            <NavApp/>
-            <main>{children}</main>
-            <FooterApp/>
+            <main>
+                <NavApp/>
+                {children}
+                <FooterApp/>
+            </main>
         </React.Fragment>
     );
 };

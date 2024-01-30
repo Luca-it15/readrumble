@@ -81,7 +81,6 @@ const ProfilePage = () => {
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
         padding: '10px',
-        margin: '20px 10px 0px 10px',
         borderRadius: 18,
         width: '100%'
     }
@@ -96,7 +95,8 @@ const ProfilePage = () => {
     };
 
     return (
-        <Container maxWidth="xl">
+        <Container sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth: '100% !important',
+            gap: '15px', marginTop: '20px'}}>
             <Paper elevation={2} style={PaperStyle}>
                 <Grid container direction="row" justifyContent="space-around">
                     <Grid item xs={4}>
@@ -130,12 +130,18 @@ const ProfilePage = () => {
 
             <CurrentlyReading user={currentUser['_id']}/>
 
-            <Grid container spacing={3} textAlign="center">
-                <Grid item xs={3} md={3}>
-                    <FollowingList user={currentUser['_id']}/>
-                    <CompetitionProfBlock user={currentUser['_id']}/>
+            <Grid container textAlign="center" direction="row" alignItems="flex-start" justifyContent="space-betwwen"
+                spacing={1}>
+                <Grid container item xs={3} direction="column" alignItems="center" justifyContent="center" spacing={1}>
+                    <Grid item xs={12} sx={{width: '100%'}}>
+                        <FollowingList user={currentUser['_id']}/>
+                    </Grid>
+                    <Grid item xs={12} sx={{width: '100%'}}>
+                        <CompetitionProfBlock user={currentUser['_id']}/>
+                    </Grid>
                 </Grid>
-                <Grid item xs={6} md={6}>
+
+                <Grid container item xs={6} direction="column" alignItems="center" justifyContent="center">
                     <Paper elevation={2} style={PaperStyle}>
                         <Typography variant="h5">Posts</Typography>
                         <Button sx={{backgroundColor: blue[200], height: "40px", marginBottom: '10px',
@@ -147,9 +153,14 @@ const ProfilePage = () => {
                         <PostsList user={true} username={currentUser['_id']} size={12} all={false} path={1}/>
                     </Paper>
                 </Grid>
-                <Grid item xs={3} md={3}>
-                    <FavoriteBookList user={currentUser['_id']}/>
-                    <RecentlyReadBooks user={currentUser['_id']}/>
+
+                <Grid container item xs={3} direction="column" alignItems="center" justifyContent="center" spacing={1}>
+                    <Grid item>
+                        <FavoriteBookList user={currentUser['_id']}/>
+                    </Grid>
+                    <Grid item>
+                        <RecentlyReadBooks user={currentUser['_id']}/>
+                    </Grid>
                 </Grid>
             </Grid>
 

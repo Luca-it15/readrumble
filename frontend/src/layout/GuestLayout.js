@@ -3,11 +3,11 @@ import FooterApp from "../components/FooterApp";
 import "../App.css";
 
 const GuestLayout = ({children}) => {
-
     return (
         <React.Fragment>
-            <main>{children}</main>
-            <FooterApp/>
+            <main>{children}
+                <FooterApp/>
+            </main>
         </React.Fragment>
     );
 };

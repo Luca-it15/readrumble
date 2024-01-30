@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Button from '@mui/material-next/Button';
-import {Container, Grid, Typography, Paper, Link, ListItem, List} from '@mui/material';
+import {Grid, Typography, Paper, Link, ListItem, List} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import '../App.css';
 import {blue} from "@mui/material/colors";
@@ -63,10 +63,8 @@ function CompetitionProfBlock({user}) {
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
         padding: '10px',
-        margin: '20px 10px 0px 22px',
-        borderRadius: 8,
-        width: '21vw',
-        textAlign: 'center'
+        borderRadius: 5,
+        width: '100%'
     }
 
     const ListStyle = {
@@ -80,36 +78,34 @@ function CompetitionProfBlock({user}) {
     };
 
     return (
-        <Container>
-            <Paper sx={PaperStyle}>
-                <Grid container direction="column" justifyContent="space-around">
-                    <Grid item><Typography variant="h5">Competitions</Typography></Grid>
-                    <List sx={ListStyle}>
-                        {competitions.length === 0 && (<Grid item>
-                                <ListItem>
-                                    <Typography>{currentUser['_id'] === user ? "You are " : user + " is "}
-                                        not participating in any competition</Typography>
-                                </ListItem>
-                            </Grid>)}
-                        {competitions.map(item => (
-                            <Grid item>
-                                <ListItem>
-                                    <Link onClick={() => {goSpecificComp(item.name)}}
-                                        sx={{color: '#000000', '&:hover': {cursor: 'pointer'}}}>
-                                        <Typography>{item.name}</Typography>
-                                    </Link>
-                                </ListItem>
-                            </Grid>
-                        ))}
-                    </List>
-                </Grid>
+        <Paper sx={PaperStyle}>
+            <Grid container direction="column" justifyContent="space-around">
+                <Grid item><Typography variant="h5">Competitions</Typography></Grid>
+                <List sx={ListStyle}>
+                    {competitions.length === 0 && (<Grid item>
+                            <ListItem>
+                                <Typography>{currentUser['_id'] === user ? "You are " : user + " is "}
+                                    not participating in any competition</Typography>
+                            </ListItem>
+                        </Grid>)}
+                    {competitions.map(item => (
+                        <Grid item>
+                            <ListItem>
+                                <Link onClick={() => {goSpecificComp(item.name)}}
+                                    sx={{color: '#000000', '&:hover': {cursor: 'pointer'}}}>
+                                    <Typography>{item.name}</Typography>
+                                </Link>
+                            </ListItem>
+                        </Grid>
+                    ))}
+                </List>
+            </Grid>
 
-                <Button variant="filled" sx={{backgroundColor: blue[600], marginBottom: '10px',
-                    '&:hover': {backgroundColor: blue[400]}}} onClick={goComp}>
-                    <Typography>Find other competitions</Typography>
-                </Button>
-            </Paper>
-        </Container>
+            <Button variant="filled" sx={{backgroundColor: blue[600], marginBottom: '10px',
+                '&:hover': {backgroundColor: blue[400]}}} onClick={goComp}>
+                <Typography>Find other competitions</Typography>
+            </Button>
+        </Paper>
     );
 }
 

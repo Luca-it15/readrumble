@@ -1,26 +1,19 @@
 import React, {useEffect, useState} from 'react';
-import axios from 'axios'; // Assicurati di aver installato axios con npm install axios
+import axios from 'axios';
 import {Grid, Typography} from '@mui/material';
 
-import PostRow from './PostRow'; // Assicurati che il percorso sia corretto
+import PostRow from './PostRow';
 import '../App.css';
-import {blue} from "@mui/material/colors";
+import CircularProgress from '@mui/material/CircularProgress';
 
 const RecentFriendsPosts = () => {
     const [posts, setPosts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    let currentUser = localStorage.getItem('logged_user');
-    // Verifica se il valore è presente
-    if (currentUser) {
-        // Il valore è presente, lo converte da stringa JSON a oggetto JavaScript
-        currentUser = JSON.parse(currentUser);
-    } else {
-        // La chiave 'isLoggedIn' non è presente in localStorage
-        console.log('La chiave "logged_user" non è presente in localStorage.');
-    }
+    let currentUser = JSON.parse(localStorage.getItem('logged_user'));
+
     let user = currentUser['_id'];
     let friends = currentUser['following'];
-
 
     const recentFriendsPosts = async () => {
         if (friends != null && friends.length != 0) {
@@ -29,8 +22,7 @@ const RecentFriendsPosts = () => {
 
                 setPosts(response.data);
 
-                console.log(response.data);
-
+                setIsLoading(false);
             } catch (error) {
                 console.log("error in retrieving your friends' posts")
             }
@@ -44,7 +36,7 @@ const RecentFriendsPosts = () => {
 
     return (
         <Grid container direction="column" justifyContent="center" alignItems="center">
-            {(posts != null && posts.length > 0) ? (posts.map((post, index) => (
+            {(!isLoading) ? (posts.map((post, index) => (
                 <Grid item xs={12} sx={{
                     width: '100%', marginY: '5px', borderRadius: 5,
                     boxShadow: '0px 2px 5px 0px rgba(0,0,0,0.2)', '&:hover': {boxShadow: '0px 0px 2px 0px rgba(0,0,0,0.2)'}
@@ -65,7 +57,11 @@ const RecentFriendsPosts = () => {
                     />
                 </Grid>
             ))) : (
-                <Typography variant='h4'>No friends added</Typography>
+                friends != null && friends.length != 0 ? (
+                    <CircularProgress size={50} sx={{marginY: '90px'}}/>
+                ) : (
+                    <Typography variant='h4'>No friends added</Typography>
+                )
             )}
         </Grid>
     );

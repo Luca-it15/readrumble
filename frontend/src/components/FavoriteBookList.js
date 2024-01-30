@@ -16,6 +16,13 @@ function FavoriteBookList({user}) {
 
     const navigate = useNavigate();
 
+    const PaperStyle = {
+        backgroundColor: '#f1f7fa',
+        padding: '10px',
+        borderRadius: 5,
+        width: '100%'
+    }
+
     const ListStyle = {
         py: 0,
         width: '100%',
@@ -77,14 +84,6 @@ function FavoriteBookList({user}) {
 
     function seeDetails(id) {
         navigate(`/bookdetails/${id}`);
-    }
-
-    const PaperStyle = {
-        backgroundColor: '#f1f7fa',
-        padding: '10px',
-        margin: '20px 10px 0px 10px',
-        borderRadius: 5,
-        width: '100%'
     }
 
     return (

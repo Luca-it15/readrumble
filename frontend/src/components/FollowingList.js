@@ -28,7 +28,6 @@ function FollowingList({user}) {
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
         padding: '10px',
-        margin: '20px 10px 0px 10px',
         borderRadius: 5,
         width: '100%'
     }
