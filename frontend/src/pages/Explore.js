@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import Typography from '@mui/material/Typography';
 import {ToggleButton, ToggleButtonGroup} from '@mui/material';
 import '../App.css';
-import UserList from '../components/UserList';
 import PostsList from '../components/PostList';
 import {Grid, Paper} from '@mui/material';
 import Box from '@mui/material/Box';
@@ -24,8 +23,8 @@ export default function Explore() {
     const [toggle1, setToggle1] = useState(true);
     const [toggle2, setToggle2] = useState(false);
     const [toggle3, setToggle3] = useState(false);
-    const [suggest, setSuggest] = useState(true); 
-    const [find, setFind] = useState(false); 
+    const [suggest, setSuggest] = useState(true);
+    const [find, setFind] = useState(false);
     const [searchText, setSearchText] = useState('');
 
     const PaperStyle = {
@@ -71,7 +70,7 @@ export default function Explore() {
 
     function getBook() {
         setValue(0);
-        setSuggest(true); 
+        setSuggest(true);
         setToggle1(true);
         setToggle2(false);
         setToggle3(false);
@@ -79,7 +78,7 @@ export default function Explore() {
 
     function getPost() {
         setValue(1);
-        setSuggest(true); 
+        setSuggest(true);
         setToggle1(false);
         setToggle2(true);
         setToggle3(false);
@@ -87,31 +86,27 @@ export default function Explore() {
 
     function getUser() {
         setValue(2);
-        setSuggest(true); 
+        setSuggest(true);
         setToggle1(false);
         setToggle2(false);
         setToggle3(true);
     }
 
     const handleSearchTextChange = (event) => {
-        setSuggest(false); 
-        setFind(false); 
+        setSuggest(false);
+        setFind(false);
         setSearchText(event.target.value);
     };
 
     const handleSearchButtonClick = () => {
-        setSuggest(false); 
+        setSuggest(false);
         setFind(true);
-        
-
-
-         
     };
 
     const Choice = ({value}) => {
         if (value === 0) {
             return (
-                <Grid container direction="row" sx={{gap: '10%'}} justifyContent="center">
+                <Grid container direction="row" sx={{marginTop: '10px'}} justifyContent="space-evenly">
                     <Grid iterm xs={4}>
                         <SuggestedBooks user={currentUser['_id']}/>
                     </Grid>
@@ -123,15 +118,15 @@ export default function Explore() {
         } else if (value === 1) {
             return (
                 <Paper sx={PaperStyle}>
-                    <Typography variant='h3'>Recent Posts</Typography>
+                    <Typography variant='h5'>Recent Posts</Typography>
                     <PostsList all={true} size={12} path={0}/>
                 </Paper>
             );
         } else {
             return (
                 <Paper sx={PaperStyle}>
-                  <Typography variant='h3'>Suggested Friends</Typography>
-                   <SuggestedFriends user={currentUser['_id']} />
+                    <Typography variant='h5'>Suggested Friends</Typography>
+                    <SuggestedFriends user={currentUser['_id']}/>
                 </Paper>
             );
         }
@@ -160,7 +155,7 @@ export default function Explore() {
                         <Typography>Users</Typography>
                     </ToggleButton>
                 </ToggleButtonGroup>
-                {suggest? (<Choice value={value}/>) : (find && <SearchChoice value={value} searchText={searchText} />)}
+                {suggest ? (<Choice value={value}/>) : (find && <SearchChoice value={value} searchText={searchText}/>)}
             </Grid>
         </Paper>
     );
