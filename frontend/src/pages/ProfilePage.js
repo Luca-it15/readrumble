@@ -74,8 +74,8 @@ const ProfilePage = () => {
         return window.location.href = "http://localhost:3000/dashboard";
     }
 
-    function goReview() {
-        return window.location.href = "http://localhost:3000/post";
+    function goPost() {
+       navigate("/post");
     }
 
     const PaperStyle = {
@@ -140,7 +140,7 @@ const ProfilePage = () => {
                         <Typography variant="h5">Posts</Typography>
                         <Button sx={{backgroundColor: blue[200], height: "40px", marginBottom: '10px',
                                 '&:hover': {backgroundColor: blue[400]}}}
-                                variant="filledTonal" onClick={goReview}
+                                variant="filledTonal" onClick={goPost}
                                 startIcon={<EditNoteTwoToneIcon sx={{color: blue[700]}}/>}>
                             <Typography>Make a post</Typography>
                         </Button>
