@@ -114,7 +114,7 @@ public class RedisToMongo {
      * This method is scheduled to run every 2 hours.
      * It updates the MongoDB competitions collection with the data from Redis.
      */
-    @Scheduled(fixedRate = 36000000) // 10 hours in milliseconds
+    @Scheduled(fixedRate = 36000000, initialDelay = 36000000) // 10 hours in milliseconds
     public void updateMongoCompetitions() {
         logger.info("Updating MongoDB competitions...");
         jedis = RedisConfig.getSession();
