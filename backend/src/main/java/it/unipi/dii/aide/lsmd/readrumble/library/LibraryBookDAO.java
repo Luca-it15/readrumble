@@ -25,13 +25,15 @@ public class LibraryBookDAO {
             List<Document> books = (List<Document>) userDocument.get("books");
             for (Document book : books) {
                 List<String> arrayTags = (List<String>) book.get("tags");
-                LibraryBookDTO lb = new LibraryBookDTO(
-                        book.getLong("book_id"),
-                        book.getString("book_title"),
-                        arrayTags,
-                        book.getInteger("bookmark")
-                );
-                libraryBooks.add(lb);
+                if(book.getInteger("state") == 0) {
+                    LibraryBookDTO lb = new LibraryBookDTO(
+                            book.getLong("book_id"),
+                            book.getString("book_title"),
+                            arrayTags,
+                            book.getInteger("bookmark")
+                    );
+                    libraryBooks.add(lb);
+                }
             }
         }
 

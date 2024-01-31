@@ -10,6 +10,7 @@ import TextField from '@mui/material/TextField';
 import {blue} from "@mui/material/colors";
 import '../../App.css';
 import BookListShow from '../../components/BookListShow';
+import BookListQuery from '../../components/BookListQuery';
 
 
 export default function BookAdmin() {
@@ -81,12 +82,15 @@ export default function BookAdmin() {
             <Paper sx={PaperStyle}>
                 {last? (
                 <>    
-                <Typography variant='h3'>Last Books</Typography><BookListShow path={0} />
+                <Typography variant='h3'>Last Books</Typography>
+                <Grid iterm xs={4}>
+                        <BookListQuery query={"trending"}/>
+                    </Grid>
                 </>
                 ) : (
                   <>  
                 <Typography variant='h3'>Search Books</Typography>
-                <BookListShow title={searchText} path={1} /> 
+                <BookListShow title={searchText} /> 
                 </>
              )}
             </Paper>

@@ -25,9 +25,8 @@ function BookListShow({title, path}) {
     const fetchBooks = async () => {
 
         try {
-
-            if(path == 0) {
-            const response = await axios.get(`http://localhost:8080/api/search/books`);
+            
+            const response = await axios.get(`http://localhost:8080/api/search/books/${title}}`);
 
             const books = response.data
             // Returns book.id and book.title
@@ -35,17 +34,8 @@ function BookListShow({title, path}) {
                 id: book.id,
                 title: book.title
             })));
-        } else { 
-         const response = await axios.get(`http://localhost:8080/api/search/books/${title}}`);
- 
-         const books = response.data
-        // Returns book.id and book.title
-         setBooks(books.map(book => ({
-            id: book.id,
-            title: book.title
-         })));
-        }
-         
+
+
         } catch (error) {
             console.log(error.response)
         }

@@ -45,7 +45,7 @@ public class PostDAO {
                   System.out.println(pagesRead);
                   String key = "post:" + time + ":" + username + ":" + bookId + ":" + ranking + ":" + bookmark + ":" + pagesRead;
                   Gson gson = new Gson();
-                  jedis.hset(key, "description", post.getString("review_text"));
+                  jedis.hset(key, "review_text", post.getString("review_text"));
                   jedis.hset(key, "tags", gson.toJson((List<String>)post.get("tag")));
                   jedis.hset(key, "book_title", post.getString("book_title"));
 
