@@ -164,7 +164,7 @@ function CompetitionSpec() {
     }
 
     return (
-        <Container>
+        <Container sx={{marginBottom: '20px'}}>
             <Paper elevation={2} style={PaperStyle}>
                 <Grid item>
                     <Card sx={CardStyle} elevation={0}>
@@ -180,25 +180,25 @@ function CompetitionSpec() {
                     </Card>
                 </Grid>
                 <Grid container direction="column" spacing={2} alignItems="center" justifyContent="space-around">
-                    <Grid item xs={12} sx={{margin: '30px 0px 0px 0px'}}><Typography variant="h5">Top ten</Typography>
+                    <Grid item xs={12} sx={{margin: '20px 0px 0px 0px'}}><Typography variant="h5">Top 10:</Typography>
                         <Grid container direction="column" spacing={2} alignItems="center" justifyContent="center"
-                              sx={{margin: '10px 0px 5px 0px', padding: '0px'}}>
+                              sx={{margin: '5px 0px 5px 0px', padding: '0px'}}>
                             {rank.map(item => (
                                 <React.Fragment>
                                     <Grid container item xs={12} direction="row" justifyContent="space-between"
                                           sx={{
                                               backgroundColor: colors[(rank.indexOf(item) > 2) ? 3 : (rank.indexOf(item))],
-                                              margin: '10px',
+                                              margin: '6px',
                                               borderRadius: 8,
-                                              paddingBottom: '0px',
+                                              paddingBottom: '10px',
                                               width: rank.indexOf(item) in [0, 1, 2] ? '450px' : '400px'
                                           }}>
-                                        <Grid item xs={2}>
+                                        <Grid item xs={2} sx={{marginTop: '-5px'}}>
                                             <Typography
                                                 sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
                                                 {rank.indexOf(item) + 1}°</Typography>
                                         </Grid>
-                                        <Grid item xs={5}>
+                                        <Grid item xs={5} sx={{marginTop: '-5px'}}>
                                             {JSON.parse(localStorage.getItem('isAdmin')) != 1 ? (
                                                 <Link onClick={() => {
                                                      seeProfile(item.username)
@@ -218,7 +218,7 @@ function CompetitionSpec() {
                                                 </Typography>
                                             )}
                                         </Grid>
-                                        <Grid item xs={3}>
+                                        <Grid item xs={3} sx={{marginTop: '-5px'}}>
                                             <Typography
                                                 sx={{fontSize: rank.indexOf(item) in [0, 1, 2] ? '18px' : '16px'}}>
                                                 {item.tot_pages}</Typography>
@@ -247,11 +247,11 @@ function CompetitionSpec() {
                     <React.Fragment>
                         {points != null ? (
                             <Grid>
-                                <Typography variant="h5">Your pages read: {points}</Typography>
+                                <Typography variant="h5" sx={{marginTop: '15px'}}>Your pages read: {points}</Typography>
                             </Grid>
                         ) : (
                             <Grid>
-                                <Typography variant="h5">You are not participating in this competition</Typography>
+                                <Typography variant="h5" sx={{marginTop: '15px'}}>You are not attending this competition</Typography>
                             </Grid>
                         )}
 
@@ -263,7 +263,7 @@ function CompetitionSpec() {
                                 }} onClick={() => {
                                     joinCompetition(data.name, data.tag)
                                 }}>
-                                    <Typography>Leave this competition</Typography>
+                                    <Typography>Leave competition</Typography>
                                 </Button>
                             ) : (
                                 <Button variant="filledTonal" sx={{
@@ -272,7 +272,7 @@ function CompetitionSpec() {
                                 }} onClick={() => {
                                     joinCompetition(data.name, data.tag)
                                 }}>
-                                    <Typography>Join this competition</Typography>
+                                    <Typography>Join competition</Typography>
                                 </Button>
                             )}
                         </Grid>

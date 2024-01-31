@@ -38,9 +38,9 @@ const Home = () => {
                     <PopularCompetitionBlock/>
                 </Grid>
                 <Grid item xs={6}>
-                    <Paper elevation={2} style={PaperStyle}>
+                    <Paper elevation={2} style={PaperStyle} sx={{marginBottom: '20px'}}>
                     <Button sx={{backgroundColor: blue[200], height: "40px", marginBottom: '10px',
-                                '&:hover': {backgroundColor: blue[400]}}}
+                                '&:hover': {backgroundColor: blue[100]}}}
                                 variant="filledTonal" onClick={goPost}
                                 startIcon={<EditNoteTwoToneIcon sx={{color: blue[700]}}/>}>
                             <Typography>Make a post</Typography>

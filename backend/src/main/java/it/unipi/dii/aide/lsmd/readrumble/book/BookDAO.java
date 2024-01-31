@@ -21,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Transaction;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -131,9 +130,7 @@ public class BookDAO {
         bookMap.put("num_pages", String.valueOf(book.getNum_pages()));
         bookMap.put("tags", String.join(",", book.getTags()));
 
-        Transaction transaction = jedis.multi();
-        transaction.hset("wishlist:" + username + ":" + bookId, bookMap);
-        transaction.exec();
+        jedis.hset("wishlist:" + username + ":" + bookId, bookMap);
 
         return ResponseEntity.ok("Book added to wishlist");
     }
@@ -147,13 +144,11 @@ public class BookDAO {
     public ResponseEntity<String> removeFromWishlist(String username, Long bookId) {
         Jedis jedis = RedisConfig.getSession();
 
-        if (!jedis.hexists("wishlist:" + username + ":" + bookId, "book_title")) {
+        if (!jedis.exists("wishlist:" + username + ":" + bookId)) {
             return ResponseEntity.badRequest().body("Book not in wishlist");
         }
 
-        Transaction transaction = jedis.multi();
-        transaction.del("wishlist:" + username + ":" + bookId);
-        transaction.exec();
+        jedis.del("wishlist:" + username + ":" + bookId);
 
         return ResponseEntity.ok("Book removed from wishlist");
     }
