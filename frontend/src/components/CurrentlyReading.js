@@ -95,7 +95,7 @@ function CurrentlyReading({user}) {
                                     <Grid item xs={12}>
                                         <Typography>{book.title}</Typography>
                                     </Grid>
-                                    <Grid item xs={3}>
+                                    <Grid item xs={2.5}>
                                         <Typography sx={{color: '#777777'}}>
                                             {book.bookmark} / {book.num_pages}
                                         </Typography>
@@ -104,27 +104,31 @@ function CurrentlyReading({user}) {
                                         <LinearProgress sx={{borderRadius: 10, height: '7px'}} variant="determinate"
                                                         value={book.bookmark * 100 / book.num_pages}/>
                                     </Grid>
+                                    <Grid item xs={1.5}>
+                                        <Typography sx={{color: blue[700]}}>
+                                            {Math.round(book.bookmark * 100 / book.num_pages)}%
+                                        </Typography>
+                                    </Grid>
                                 </Grid>
                             </React.Fragment>
                         )))}
                 </Grid>
+
                 <Grid container item xs={12} direction="row" justifyContent="center" alignItems="center"
                       sx={{gap: '10px'}}>
                     {displayCount > 6 && currentlyReading.length > 6 ? (
-                        <Button sx={{
+                        <Button variant="filledTonal" onClick={loadLessBooks} sx={{
                             backgroundColor: red[100], marginTop: "10px", height: "30px",
                             '&:hover': {backgroundColor: red[100]}
-                        }}
-                                variant="filledTonal" onClick={loadLessBooks}>
+                        }}>
                             <Typography>Show less</Typography>
                         </Button>
                     ) : null}
                     {currentlyReading.length > displayCount ? (
-                        <Button sx={{
+                        <Button variant="filledTonal" onClick={loadAllBooks} sx={{
                             backgroundColor: blue[100], marginTop: "10px", height: "30px",
                             '&:hover': {backgroundColor: blue[100]}
-                        }}
-                                variant="filledTonal" onClick={loadAllBooks}>
+                        }}>
                             <Typography>Show more</Typography>
                         </Button>
                     ) : null}

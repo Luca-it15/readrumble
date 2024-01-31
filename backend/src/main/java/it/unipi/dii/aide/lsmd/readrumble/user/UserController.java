@@ -67,7 +67,7 @@ public class UserController {
     }
 
     /**
-     * This method returns the friends of a user
+     * This method returns the followees of a user
      *
      * @param username the username of the user
      * @return the list of friends

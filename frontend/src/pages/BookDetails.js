@@ -18,7 +18,6 @@ import PostList from "../components/PostList";
 function BookDetails() {
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
-    // Fetch book details from database
     const [book, setBook] = useState([]);
     let {id} = useParams();
     let [authors, setAuthors] = useState([]);

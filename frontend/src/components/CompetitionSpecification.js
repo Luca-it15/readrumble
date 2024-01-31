@@ -82,10 +82,10 @@ function CompetitionSpec() {
     }, []);
 
     function joinCompetition(Name, Tag) {
-        axios.post("http://localhost:8080/api/competition/join", {
-            parametro1: usernameToAdd,
-            parametro2: Name,
-            parametro3: Tag
+        axios.post("http://localhost:8080/api/competition/joinleave", {
+            username: usernameToAdd,
+            competitionTitle: Name,
+            competitionTag: Tag
         }).then(response => {
             setJoinStatus({message: response.data, variant: 'success'});
         })

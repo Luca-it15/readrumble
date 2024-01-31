@@ -18,19 +18,15 @@ import java.util.Date;
 import static com.mongodb.client.model.Filters.eq;
 
 public class AdminCompetitionDAO {
-
     static List<Document> inMemoryCompetitions = new ArrayList<>();
+
     public void saveInMemoryCompetitions() {
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
-        if(!inMemoryCompetitions.isEmpty())
-        {
+
+        if (!inMemoryCompetitions.isEmpty()) {
             collection.insertMany(inMemoryCompetitions);
-            System.out.println("New Competitions Inserted Succesfully");
+
             inMemoryCompetitions.clear();
-        }
-        else
-        {
-            System.out.println("There aren't new competitions to insert");
         }
     }
 
@@ -50,13 +46,17 @@ public class AdminCompetitionDAO {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                     Date start_date = sdf.parse(DATE_START);
                     Date end_date = sdf.parse(DATE_END);
+
                     ArrayList array = new ArrayList<>();
+
                     Document Doc = new Document();
+
                     Doc.append("name", CompName);
                     Doc.append("tag", CompTag);
                     Doc.append("start_date", start_date);
                     Doc.append("end_date", end_date);
                     Doc.append("rank", array);
+
                     inMemoryCompetitions.add(Doc);
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -67,42 +67,47 @@ public class AdminCompetitionDAO {
         } catch (Exception e) {
             return ResponseEntity.ok("Exception : " + e.getMessage());
         }
-
-
     }
 
     public ResponseEntity<String> adminDeleteCompetition(Document params) {
         Jedis jedis = RedisConfig.getSession();
+
         String CompName = (String) params.get("CompName");
+
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
+
         try {
             String key = "competition:" + CompName + ":*";
+
             jedis.del(key);
         } catch (Exception e) {
-            return ResponseEntity.ok("Exception : " + e.getMessage());
+            return ResponseEntity.ok("Exception: " + e.getMessage());
         }
 
         try (MongoCursor<Document> competitions = collection.find(eq("name", CompName)).cursor()) {
             if (competitions.hasNext()) {
                 collection.deleteOne(eq("name", CompName));
-                return ResponseEntity.ok("Competition Deleted !");
+
+                return ResponseEntity.ok("Competition deleted!");
             } else {
-                return ResponseEntity.ok("Competition Does not exist !");
+                return ResponseEntity.ok("Competition does not exist!");
             }
         } catch (Exception e) {
-            return ResponseEntity.ok("Exception : " + e.getMessage());
+            return ResponseEntity.ok("Exception: " + e.getMessage());
         }
     }
 
+    /**
+     * This method is used to retrieve the list of tags and average points of the last six months, based on the first 10 users in ranking
+     *
+     * @return the list of tags and average points of the last 12 months
+     */
     public Map<String, Integer> getPagesByTag() {
-        // Get the collection of competitions
         MongoCollection<Document> CompetitionsCollection = MongoConfig.getCollection("Competitions");
 
-        // Get the competitions with start date in the last six months
         LocalDate today = LocalDate.now();
         LocalDate sixMonthsAgo = today.minusMonths(6);
 
-        // Get the competitions with start date in the last six months, get the average pages_read of the rank, then group by tag
         List<Document> result = CompetitionsCollection.aggregate(List.of(
                 new Document("$match", new Document("start_date", new Document("$gte", Date.from(sixMonthsAgo.atStartOfDay(ZoneId.systemDefault()).toInstant())))),
                 new Document("$unwind", "$rank"),
@@ -122,15 +127,17 @@ public class AdminCompetitionDAO {
         return pagesByTag;
     }
 
+    /**
+     * This method is used to retrieve the list of months and average points by tag of the last 12 months, based on the first 10 users in the rankings
+     *
+     * @return the list of tags and average points of the last six months
+     */
     public Map<String, Map<String, Integer>> getPagesByMonthAndTag() {
-        // Get the collection of competitions
         MongoCollection<Document> CompetitionsCollection = MongoConfig.getCollection("Competitions");
 
-        // Get the competitions with start date in the last 12 months
         LocalDate today = LocalDate.now();
         LocalDate sixMonthsAgo = today.minusMonths(12);
 
-        // Get the competitions with start date in the last 12 months, get the average pages_read of the rank, then group by tag and by month of the start date
         List<Document> result = CompetitionsCollection.aggregate(List.of(
                 new Document("$match", new Document("start_date", new Document("$gte", Date.from(sixMonthsAgo.atStartOfDay(ZoneId.systemDefault()).toInstant())))),
                 new Document("$unwind", "$rank"),

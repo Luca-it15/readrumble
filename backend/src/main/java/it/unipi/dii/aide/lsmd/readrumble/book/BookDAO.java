@@ -74,6 +74,12 @@ public class BookDAO {
         }
     }
 
+    /**
+     * This method turns a list of books' documents into a list of books
+     *
+     * @param bookDocuments the list of books
+     * @return list of books
+     */
     private List<LightBookDTO> setResult(List<Document> bookDocuments) {
         List<LightBookDTO> books = new ArrayList<>();
         for (Document doc : bookDocuments) {
@@ -82,6 +88,12 @@ public class BookDAO {
         return books;
     }
 
+    /**
+     * This method returns the wishlist of a user
+     *
+     * @param username of the user
+     * @return id and title of the book
+     */
     public List<LightBookDTO> getWishlist(String username) {
         MongoCollection<Document> WishlistCollection = MongoConfig.getCollection("Wishlists");
 
@@ -98,6 +110,13 @@ public class BookDAO {
         }
     }
 
+    /**
+     * This method adds a book to the wishlist of a user
+     *
+     * @param username of the user
+     * @param bookId   of the book
+     * @return response
+     */
     public ResponseEntity<String> addToWishlist(String username, Long bookId, WishlistBookDTO book) {
         Jedis jedis = RedisConfig.getSession();
 
@@ -119,6 +138,12 @@ public class BookDAO {
         return ResponseEntity.ok("Book added to wishlist");
     }
 
+    /**
+     * This method removes a book from the wishlist of a user
+     *
+     * @param username of the user
+     * @return response
+     */
     public ResponseEntity<String> removeFromWishlist(String username, Long bookId) {
         Jedis jedis = RedisConfig.getSession();
 
@@ -133,6 +158,11 @@ public class BookDAO {
         return ResponseEntity.ok("Book removed from wishlist");
     }
 
+    /**
+     * This method returns the trending books of this month
+     *
+     * @return id and title of the book
+     */
     public List<LightBookDTO> getTrending() {
         MongoCollection<Document> Posts = MongoConfig.getCollection("Posts");
 
@@ -173,6 +203,12 @@ public class BookDAO {
         return trendingBooks;
     }
 
+    /**
+     * This method returns the books recently read by the friends of a user
+     *
+     * @param usernames of the friends
+     * @return id and title of the book
+     */
     public List<LightBookDTO> getFriendsRecentlyReadBooks(String usernames) {
         if (usernames.isEmpty()) {
             return null;
@@ -199,6 +235,12 @@ public class BookDAO {
         }
     }
 
+    /**
+     * This method returns the pages read by a user grouped by tag
+     *
+     * @param username of the user
+     * @return list of tag and pages
+     */
     public List<Document> getPagesReadByTag(String username) {
         MongoCollection<Document> ActiveBooksCollection = MongoConfig.getCollection("ActiveBooks");
 
@@ -220,10 +262,15 @@ public class BookDAO {
         }
     }
 
+    /**
+     * This method returns the favorite books of a user
+     *
+     * @param username the username of the user
+     * @return the list of favorite books
+     */
     public List<LightBookDTO> getFavoriteBooks(@PathVariable String username) {
         if (checkUserExist(username)) {
             try (Session session = Neo4jConfig.getSession()) {
-                // If the username exists, proceed with the query
                 Result result = session.run("MATCH (u:User {name: $username})-[:FAVORS]->(b:Book) RETURN b.id AS id, b.title AS title",
                         Values.parameters("username", username));
 
@@ -243,6 +290,13 @@ public class BookDAO {
         }
     }
 
+    /**
+     * This method adds a book to the favorite books of a user
+     *
+     * @param username the username of the user
+     * @param book     the id of the book
+     * @return a ResponseEntity with the result of the operation
+     */
     public ResponseEntity<String> addFavoriteBook(@PathVariable String username, @PathVariable String book) {
         if (checkUserExist(username) && checkBookExist(book)) {
             inMemoryFavoriteBooks.computeIfAbsent(username, k -> new ArrayList<>());
@@ -253,6 +307,13 @@ public class BookDAO {
         }
     }
 
+    /**
+     * This method removes a book from the favorite books of a user
+     *
+     * @param username the username of the user
+     * @param book     the id of the book
+     * @return a ResponseEntity with the result of the operation
+     */
     public ResponseEntity<String> removeFavoriteBook(@PathVariable String username, @PathVariable String book) {
         if (checkUserExist(username) && checkBookExist(book)) {
             inMemoryFavoriteBooksToBeDeleted.computeIfAbsent(username, k -> new ArrayList<>());
@@ -263,6 +324,13 @@ public class BookDAO {
         }
     }
 
+    /**
+     * This method returns the suggested books for a user, based on the books that his friends like.
+     * If the majority of the friends like a book, and the user does not like it, then the book is suggested.
+     *
+     * @param username the username of the user
+     * @return the list of suggested books
+     */
     public List<LightBookDTO> getSuggestedBooks(@PathVariable String username) {
         if (!checkUserExist(username)) {
             return null;
@@ -291,6 +359,12 @@ public class BookDAO {
         }
     }
 
+    /**
+     * This analytics method returns the monthly number of pages read by the user in the last six month
+     *
+     * @param username the username of the user
+     * @return dates and pages read
+     */
     public List<Document> getPagesTrend(@PathVariable String username) {
         MongoCollection<Document> collection = MongoConfig.getCollection("ActiveBooks");
 
@@ -304,8 +378,8 @@ public class BookDAO {
 
         List<Document> results = collection.aggregate(List.of(
                 new Document("$match", new Document("username", username)),
-                new Document("$sort", new Document("year", -1).append("month", -1)), // Sort stage
-                new Document("$limit", 6), // Limit stage
+                new Document("$sort", new Document("year", -1).append("month", -1)),
+                new Document("$limit", 6),
                 new Document("$unwind", "$books"),
                 new Document("$group", new Document("_id", new Document("month", "$month").append("year", "$year"))
                         .append("pages_read_sum", new Document("$sum", "$books.pages_read"))),

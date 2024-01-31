@@ -96,7 +96,7 @@ const ProfilePage = () => {
 
     return (
         <Container sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth: '100% !important',
-            gap: '15px', marginTop: '20px'}}>
+            gap: '15px', marginTop: '10px'}}>
             <Paper elevation={2} style={PaperStyle}>
                 <Grid container direction="row" justifyContent="space-around">
                     <Grid item xs={4}>

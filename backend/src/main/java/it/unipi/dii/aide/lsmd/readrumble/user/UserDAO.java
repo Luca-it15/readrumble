@@ -1,4 +1,5 @@
 package it.unipi.dii.aide.lsmd.readrumble.user;
+
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
 
@@ -30,6 +31,9 @@ public class UserDAO {
     private static List<Document> inMemoryFollowRelations = new ArrayList<>();
     private static List<Document> inMemoryFollowRelationsToBeDeleted = new ArrayList<>();
 
+    /**
+     * This method saves the users in the inMemoryUsers list to the graph DB
+     */
     public void saveInMemoryUsers() {
         for (Document user : inMemoryUsers) {
             String username = (String) user.get("_id");
@@ -47,6 +51,9 @@ public class UserDAO {
         inMemoryUsers.clear();
     }
 
+    /**
+     * This method saves the users in the inMemoryUsers list to the graph DB
+     */
     public void saveInMemoryFollowRelations() {
         for (Document followRelation : inMemoryFollowRelations) {
             String follower = (String) followRelation.get("follower");
@@ -65,6 +72,9 @@ public class UserDAO {
         inMemoryFollowRelations.clear();
     }
 
+    /**
+     * This method deletes the follow relations in the inMemoryFollowRelationsToBeDeleted list
+     */
     public void saveInMemoryFollowRelationsToBeDeleted() {
         for (Document followRelation : inMemoryFollowRelationsToBeDeleted) {
             String follower = (String) followRelation.get("follower");
@@ -150,7 +160,6 @@ public class UserDAO {
         String password = user.getPassword();
 
         try (MongoCursor<Document> cursor = MongoConfig.getCollection("Users").find(eq("_id", username)).iterator()) {
-
             if (cursor.hasNext()) {
                 Document userDoc = cursor.next();
 
@@ -210,18 +219,34 @@ public class UserDAO {
         }
     }
 
+    /**
+     * This method returns the followees of a user
+     *
+     * @param username the username of the user
+     * @return the list of friends
+     */
     public List<String> getFollowing(@PathVariable String username) {
         try (Session session = Neo4jConfig.getSession()) {
             Result result = session.run("MATCH (u:User {name: $username})-[:FOLLOWS]->(f:User) RETURN f.name AS following",
                     Values.parameters("username", username));
+
             List<String> following = new ArrayList<>();
+
             while (result.hasNext()) {
                 following.add(result.next().get("following").asString());
             }
+
             return following;
         }
     }
 
+    /**
+     * This method creates the relation :FOLLOWS from follower to followee
+     *
+     * @param follower the username of the follower
+     * @param followee the username of the "soon to be" followed
+     * @return a ResponseEntity with the result of the operation
+     */
     public ResponseEntity<String> follow(@PathVariable String follower, @PathVariable String followee) {
         if (checkUserExist(follower) && checkUserExist(followee)) {
             inMemoryFollowRelations.add(new Document("follower", follower).append("followee", followee));
@@ -231,6 +256,13 @@ public class UserDAO {
         }
     }
 
+    /**
+     * This method deletes the relation :FOLLOWS from follower to followee
+     *
+     * @param follower the username of the follower
+     * @param followee the username of the "soon to be" unfollowed
+     * @return a ResponseEntity with the result of the operation
+     */
     public ResponseEntity<String> unfollow(@PathVariable String follower, @PathVariable String followee) {
         if (checkUserExist(follower) && checkUserExist(followee)) {
             inMemoryFollowRelationsToBeDeleted.add(new Document("follower", follower).append("followee", followee));
@@ -240,6 +272,12 @@ public class UserDAO {
         }
     }
 
+    /**
+     * This method returns a list of suggested friends for the user with the given username
+     *
+     * @param username the username of the user
+     * @return the list of suggested friends
+     */
     public List<Map<String, Object>> getSuggestedFriends(@PathVariable String username) {
         if (checkUserExist(username)) {
             try (Session session = Neo4jConfig.getSession()) {

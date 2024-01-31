@@ -36,7 +36,7 @@ public class AdminCompetitionController {
     }
 
     /**
-     * This method is used to retrieve the list of months and average points by tag of the last 12 months, based on the first 10 users in ranking
+     * This method is used to retrieve the list of months and average points by tag of the last 12 months, based on the first 10 users in the rankings
      *
      * @return the list of tags and average points of the last six months
      */

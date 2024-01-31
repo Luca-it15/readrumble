@@ -117,27 +117,29 @@ public class CompetitionDAO {
         System.out.println(doc);
         return doc;
     }
-    public ResponseEntity<String> userJoinsCompetition(Document userDoc)
+    public ResponseEntity<String> userJoinsOrLeavesCompetition(Document userDoc)
     {
-        //nel qual caso io decida di lasciare la competizione il rank viene aggiornato comunque
-        //devo però fare in modo di lanciare la query di aggiornamento del documento competition alla scadenza della competizione
         Jedis jedis = RedisConfig.getSession();
-        String username = (String) userDoc.get("parametro1");
-        String competitionTitle = (String) userDoc.get("parametro2");
-        String competitionTag = (String) userDoc.get("parametro3");
+        String username = (String) userDoc.get("username");
+        String competitionTitle = (String) userDoc.get("competitionTitle");
+        String competitionTag = (String) userDoc.get("competitionTag");
         try {
-            // Chiave composta
             String key = "competition:"+competitionTitle + ":" + competitionTag + ":" + username;
             System.out.println("the key is = " + key);
             if(jedis.get(key)==null)
             {
-                //User is not in the competition so we make him join
+                //If there is not the key-value couple for that user and that competition
+                //then it means that the user wants to join the competition
+                //so we create it's key-value couple and put into the redis database
                 jedis.set(key, "0");
                 System.out.println(jedis.get(key));
                 return ResponseEntity.ok(username +" You joined the " + competitionTitle + " Competititon !");
             }
             else
             {
+                //if there is the key-value couple in the database then it means that
+                //the user wants to leave the competition so we delete the key-value couple
+                //from the database
                 jedis.del(key);
                 System.out.println(jedis.get(key));
                 return ResponseEntity.ok("You Left The Competition !");

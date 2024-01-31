@@ -20,9 +20,9 @@ public class CompetitionController {
     public CompetitionController() {
         competitionDAO = new CompetitionDAO();
     }
-    @PostMapping("/join")
-    public ResponseEntity<String> joinCompetition(@RequestBody Document userDoc) {
-        return competitionDAO.userJoinsCompetition(userDoc);
+    @PostMapping("/joinleave")
+    public ResponseEntity<String> joinOrLeaveCompetition(@RequestBody Document userDoc) {
+        return competitionDAO.userJoinsOrLeavesCompetition(userDoc);
 
     }
 
