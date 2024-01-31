@@ -14,6 +14,12 @@ import java.util.*;
 public class BookController {
     private final BookDAO bookDAO = new BookDAO();
 
+    /**
+     * This method turns a list of books' documents into a list of books
+     *
+     * @param bookDocuments the list of books
+     * @return list of books
+     */
     private List<LightBookDTO> setResult(List<Document> bookDocuments) {
         List<LightBookDTO> books = new ArrayList<>();
         for (Document doc : bookDocuments) {

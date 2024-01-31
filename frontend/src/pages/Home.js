@@ -26,9 +26,6 @@ const Home = () => {
         navigate("/post");
     }
 
-
-    console.log("Compeittions: " + JSON.stringify(currentUser['competitions']))
-
     return (
         <Container maxWidth="xl">
             <Paper elevation={2} style={PaperStyle} sx={{marginTop: '10px'}}>
