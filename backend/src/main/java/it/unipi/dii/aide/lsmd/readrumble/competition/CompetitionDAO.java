@@ -5,6 +5,7 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.*;
 import com.mongodb.client.result.DeleteResult;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
+import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.Values;
 import redis.clients.jedis.Jedis;
@@ -15,6 +16,10 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.springframework.http.ResponseEntity;
 import com.mongodb.client.AggregateIterable;
+import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.params.ScanParams;
+import redis.clients.jedis.resps.ScanResult;
+
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,8 +32,8 @@ public class CompetitionDAO {
     {
 
         LocalDate date_of_today = LocalDate.now();
-        Bson end_dateFilter = Filters.gte("end_date", LocalDate.now());
-        Bson start_dateFilter = Filters.lte("start_date", LocalDate.now());
+        Bson end_dateFilter = Filters.gte("end_date", date_of_today);
+        Bson start_dateFilter = Filters.lte("start_date", date_of_today);
         Bson dateFilter = Filters.and(start_dateFilter,end_dateFilter);
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         List<Document> competitions = collection.find(dateFilter)
@@ -55,41 +60,51 @@ public class CompetitionDAO {
             Aggregates.limit(10)
         ));
         List<Document> competitions = new ArrayList<Document>();
-        // Iterare sui risultati dell'aggregazione
         for (Document document : aggregation) {
             String name = document.getString("name");
             String tag = document.getString("tag");
 
             int Total_Pages = document.getInteger("Total_Pages");
             competitions.add(document);
-            // Fai qualcosa con i dati ottenuti
-            System.out.println("name: " + name + ", tag: " + tag + ", Total_Pages: " + Total_Pages);
         }
         return competitions;
     }
     public List<Document> getPersonalCompetition(String _id)
     {
-        System.out.println("Siamo in getPersonalCompetition !!!!!! " + _id);
         try {
-            Jedis jedis = RedisConfig.getSession();
-            System.out.println("dentro ese" + _id);
+            //Jedis jedis = RedisConfig.getSession();
+            JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
             try{
-                Set<String> matchingKeys = jedis.keys("*:"+_id);
+                String pattern = "*:"+_id;
+                ScanParams scanParams = new ScanParams().match(pattern);
+                String redisCursor = "0";
                 List<Document> result = new ArrayList<Document>();
-                for (String key : matchingKeys) {
-                    try {
-                        String value = jedis.get(key);
-                        System.out.println("Key: " + key + ", Value: " + value);
-                        Document doc = new Document();
-                        doc.append("CompName", key);
-                        doc.append("Pages_read", value);
-                        result.add(doc);
-                    } catch(Exception e)
-                    {
-                        System.out.println("Catched error in appending documents and keys: " + e.getMessage());
+                do {
+                    ScanResult<String> scanResult = jedis.scan(redisCursor, scanParams);
+                    for (String key : scanResult.getResult()) {
+                        try {
+                            String value = jedis.get(key);
+                            Document doc = new Document();
+                            doc.append("CompName", key);
+                            doc.append("Pages_read", value);
+                            result.add(doc);
+                        } catch(Exception e)
+                        {
+                            System.out.println("Catched error in appending documents and keys: " + e.getMessage());
+                        }
                     }
-                }
-                jedis.close();
+                    redisCursor = scanResult.getCursor();
+                } while (!redisCursor.equals("0"));
+                /*Set<String> matchingKeys = jedis.keys("*:"+_id);
+
+                for (String key : matchingKeys) {
+                    String value = jedis.get(key);
+                    Document doc = new Document();
+                    doc.append("CompName", key);
+                    doc.append("Pages_read", value);
+                    result.add(doc);
+                }*/
+
                 return result;
             }
             catch(Exception e)
@@ -103,7 +118,7 @@ public class CompetitionDAO {
         }
         List<Document> result = new ArrayList<Document>();
         Document t = new Document();
-        t.append("CIAO","CIAO");
+        t.append("empty","empty");
         result.add(t);
         return result;
     }
@@ -119,7 +134,8 @@ public class CompetitionDAO {
     }
     public ResponseEntity<String> userJoinsOrLeavesCompetition(Document userDoc)
     {
-        Jedis jedis = RedisConfig.getSession();
+        //Jedis jedis = RedisConfig.getSession();
+        JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
         String username = (String) userDoc.get("username");
         String competitionTitle = (String) userDoc.get("competitionTitle");
         String competitionTag = (String) userDoc.get("competitionTag");

@@ -1,6 +1,7 @@
 package it.unipi.dii.aide.lsmd.readrumble.data_migration;
 
 import com.mongodb.client.AggregateIterable;
+import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 import it.unipi.dii.aide.lsmd.readrumble.utils.Status;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
@@ -10,10 +11,7 @@ import org.springframework.stereotype.Component;
 import org.bson.conversions.Bson;
 import org.bson.Document;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.Response;
-import redis.clients.jedis.Transaction;
+import redis.clients.jedis.*;
 
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCursor;
@@ -31,6 +29,8 @@ import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import redis.clients.jedis.params.ScanParams;
+import redis.clients.jedis.resps.ScanResult;
 
 @Component
 public class RedisToMongo {
@@ -117,7 +117,9 @@ public class RedisToMongo {
     @Scheduled(fixedRate = 36000000, initialDelay = 36000000) // 10 hours in milliseconds
     public void updateMongoCompetitions() {
         logger.info("Updating MongoDB competitions...");
-        jedis = RedisConfig.getSession();
+        //jedis = RedisConfig.getSession();
+        JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
+
         mongoCollection = MongoConfig.getCollection("Competitions");
         Bson end_dateFilter = Filters.gte("end_date", LocalDate.now());
         Bson start_dateFilter = Filters.lte("start_date", LocalDate.now());
@@ -135,16 +137,37 @@ public class RedisToMongo {
         }
         catch(Exception e)
         {
-            System.out.println("Catched Exceptio: " + e.getMessage());
+            System.out.println("Catched Exception: " + e.getMessage());
         }
         logger.info("Cleared the rank field of the active competitions");
-        Set<String> keys = jedis.keys("competition:*");
-        // Create a list to store all the competition, user and total page read
         ArrayList<Document> Competitions_to_change = new ArrayList<>();
         logger.info("Starting to create documents");
+        String pattern = "competition:*";
+        ScanParams scanParams = new ScanParams().match(pattern);
 
-        // Map to keep track of documents for every value of competition_name
-        Map<String, List<Document>> mapByCompetitionName = new HashMap<>();
+        String cursor = "0";
+        do {
+            ScanResult<String> scanResult = jedis.scan(cursor, scanParams);
+            for (String key : scanResult.getResult()) {
+                String competition_name = key.split(":")[1];
+                String username = key.split(":")[2];
+                Integer tot_pages = Integer.parseInt(jedis.get(key));
+                Document doc = new Document()
+                        .append("competition_name", competition_name)
+                        .append("username", username)
+                        .append("tot_pages", tot_pages);
+                Competitions_to_change.add(doc);
+            }
+
+            // Ottieni il nuovo cursore
+            cursor = scanResult.getCursor();
+        } while (!cursor.equals("0"));
+        /*
+        Set<String> keys = jedis.keys("competition:*");
+        // Create a list to store all the competition, user and total page read
+
+
+
         for (String key : keys) {
             //competition:competition_name:username:tag->value
             String competition_name = key.split(":")[1];
@@ -155,8 +178,9 @@ public class RedisToMongo {
                     .append("username", username)
                     .append("tot_pages", tot_pages);
             Competitions_to_change.add(doc);
-        }
-
+        }*/
+        // Map to keep track of documents for every value of competition_name
+        Map<String, List<Document>> mapByCompetitionName = new HashMap<>();
         logger.info("Filling the Map");
         // Filling the map
         for (Document doc2 : Competitions_to_change) {
@@ -272,7 +296,8 @@ public class RedisToMongo {
         logger.info("Eliminating old MongoDB competitions...");
         LocalDate today = LocalDate.now();
         LocalDate OneMonthAgo = today.minus(Period.ofMonths(1));
-        jedis = RedisConfig.getSession();
+        //jedis = RedisConfig.getSession();
+        JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
         mongoCollection = MongoConfig.getCollection("Competitions");
         Bson dateFilter1 = Filters.gte("end_date", OneMonthAgo);
         Bson dateFilter2 = Filters.lt("end_date", today);
@@ -283,10 +308,19 @@ public class RedisToMongo {
                 Document comp_found = cursor.next();
                 System.out.println(comp_found.get("name"));
                 String keyFromMongo = "competition:" + comp_found.get("name") + ":*";
-                Set<String> keys = jedis.keys(keyFromMongo);
+                ScanParams scanParams = new ScanParams().match(keyFromMongo);
+                String redisCursor = "0";
+                do {
+                    ScanResult<String> scanResult = jedis.scan(redisCursor, scanParams);
+                    for (String key : scanResult.getResult()) {
+                        jedis.del(key);
+                    }
+                    redisCursor = scanResult.getCursor();
+                } while (!redisCursor.equals("0"));
+                /*Set<String> keys = jedis.keys(keyFromMongo);
                 for (String key : keys) {
                     jedis.del(key);
-                }
+                }*/
             }
         } catch (Exception e) {
             System.out.println("Catched Exception: " + e.getMessage());
