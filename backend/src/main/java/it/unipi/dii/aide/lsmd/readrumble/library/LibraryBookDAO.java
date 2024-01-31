@@ -2,6 +2,7 @@ package it.unipi.dii.aide.lsmd.readrumble.library;
 
 import com.mongodb.client.MongoCollection;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
+import it.unipi.dii.aide.lsmd.readrumble.utils.Status;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class LibraryBookDAO {
             List<Document> books = (List<Document>) userDocument.get("books");
             for (Document book : books) {
                 List<String> arrayTags = (List<String>) book.get("tags");
-                if(book.getInteger("state") == 0) {
+                if(book.getInteger("state") == Status.IN_READING.getValue()) {
                     LibraryBookDTO lb = new LibraryBookDTO(
                             book.getLong("book_id"),
                             book.getString("book_title"),

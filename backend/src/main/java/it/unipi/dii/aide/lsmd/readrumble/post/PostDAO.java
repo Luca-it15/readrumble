@@ -5,6 +5,7 @@ import com.mongodb.client.MongoCollection;
 
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
+import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 import it.unipi.dii.aide.lsmd.readrumble.utils.Status;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -20,6 +21,7 @@ import java.util.Locale;
 import java.time.*;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCluster;
 
 public class PostDAO {
 
@@ -27,7 +29,7 @@ public class PostDAO {
 
       public ResponseEntity<String> addPostsRedis(Document post) {
 
-                 Jedis jedis = RedisConfig.getSession();
+                 JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
 
                  String input = post.getString("date_added");
                  DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.ENGLISH);

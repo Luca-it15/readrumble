@@ -294,8 +294,10 @@ public class RedisToMongo {
         logger.info("Cleared the old competition");
     }
 
-    @Scheduled(fixedRate = 7200000, initialDelay = 36000000) // 2 hours in milliseconds
+    @Scheduled(fixedRate = 900000) // 15 minutes in milliseconds
     public void updateMongoPost() {
+
+        System.out.println("#---------------- START UPDATE POST IN MONGO ---------------------------#");
         Jedis jedis = RedisConfig.getSession();
         isoFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         try {
@@ -313,11 +315,9 @@ public class RedisToMongo {
 
 
                     LocalDateTime now = LocalDateTime.now();
-                    String postTime = key.split(":")[1] + ":" + key.split(":")[2] + ":" + key.split(":")[3];
-                    String[] timeParts = postTime.split(":");
-                    int postHour = Integer.parseInt(timeParts[0]);
-                    int postMinute = Integer.parseInt(timeParts[1]);
-                    int postSecond = Integer.parseInt(timeParts[2]);
+                    int postHour = Integer.parseInt(keySplit[1]);
+                    int postMinute = Integer.parseInt(keySplit[2]);
+                    int postSecond = Integer.parseInt(keySplit[3]);
 
                     if (now.getHour() < postHour ||
                             (now.getHour() == postHour && now.getMinute() < postMinute) ||
@@ -326,16 +326,16 @@ public class RedisToMongo {
                     }
 
                     now = now.withHour(postHour).withMinute(postMinute).withSecond(postSecond);
-
-                    Document new_doc = new Document("book_id", Long.parseLong(keySplit[3]))
-                            .append("rating", keySplit[4])
+                    System.out.println("post key is: " + key);
+                    Document new_doc = new Document("book_id", Long.parseLong(keySplit[5]))
+                            .append("rating", keySplit[6])
                             .append("review_text", postData.get("review_text"))
                             .append("date_added", isoFormat.format(now))
                             .append("book_title", postData.get("book_title"))
-                            .append("username", keySplit[2])
+                            .append("username", keySplit[4])
                             .append("tags", postData.get("tags"))
-                            .append("bookmark", Integer.parseInt(keySplit[5]))
-                            .append("pages_read", Integer.parseInt(keySplit[6]));
+                            .append("bookmark", Integer.parseInt(keySplit[7]))
+                            .append("pages_read", Integer.parseInt(keySplit[8]));
                     //add the document into the post list
                     posts.add(new_doc);
 
@@ -343,7 +343,7 @@ public class RedisToMongo {
                     //current year and month
                     int year = now.getYear();
                     int month = now.getMonthValue();
-                    Document query = new Document("username", keySplit[2])
+                    Document query = new Document("username", keySplit[4])
                             .append("year", year).append("month", month);
                     Document userDocument = collection2.find(query).first();
                     Document lb = null;
@@ -351,14 +351,14 @@ public class RedisToMongo {
                         List<Document> books = (List<Document>) userDocument.get("books");
                         int index = 0;
                         for (Document book : books) {
-                            if (Long.parseLong(keySplit[3]) == book.getLong("book_id")) {
+                            if (Long.parseLong(keySplit[5]) == book.getLong("book_id")) {
                                 lb = book;
                                 break;
                             }
                             index++;
                         }
-                        int new_bookmark = Integer.parseInt(keySplit[5]);
-                        int new_pages_read = lb.getInteger("pages_read") + Integer.parseInt(keySplit[6]);
+                        int new_bookmark = Integer.parseInt(keySplit[7]);
+                        int new_pages_read = lb.getInteger("pages_read") + Integer.parseInt(keySplit[8]);
                         lb.put("bookmark", new_bookmark);
                         lb.put("pages_read", new_pages_read);
                         //update che active book with the new bookmark

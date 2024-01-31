@@ -7,8 +7,7 @@ import org.bson.Document;
 
 public final class MongoConfig {
     private static final String PROTOCOL = "mongodb";
-    private static final String HOSTNAME = "localhost";
-    private static final String PORT = "27017";
+    private static final String HOSTNAME = "10.1.1.43:27021, 10.1.1.44:27021, 10.1.1.45:27021";
     private static final String DATABASE = "ReadRumbleDB";
     private static MongoClient conn = null;
 
@@ -22,7 +21,7 @@ public final class MongoConfig {
      * Function to create Mongo connection
      */
     private static void makeConnection() {
-        ConnectionString cs = new ConnectionString(PROTOCOL + "://" + HOSTNAME + ":" + PORT + "/");
+        ConnectionString cs = new ConnectionString(PROTOCOL + "://" + HOSTNAME + "/");
         conn = MongoClients.create(MongoClientSettings.builder().applyConnectionString(cs).build());
     }
 
