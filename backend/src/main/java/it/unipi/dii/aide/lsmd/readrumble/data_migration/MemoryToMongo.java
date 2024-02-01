@@ -4,6 +4,7 @@ import it.unipi.dii.aide.lsmd.readrumble.admin.AdminBookDAO;
 import it.unipi.dii.aide.lsmd.readrumble.admin.AdminCompetitionDAO;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.user.UserDAO;
+import it.unipi.dii.aide.lsmd.readrumble.utils.SemaphoreRR;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -39,20 +40,42 @@ public class MemoryToMongo {
      */
     @Scheduled(fixedRate = 3600000, initialDelay =3600000 ) // 1 hour
     public void saveInMemoryUsers() {
+
+        SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
+        try {
+            semaphore.acquire();
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         userDAO.saveInMemoryUsers();
+        semaphore.release();
     }
     @Scheduled(fixedRate =  86400000, initialDelay =3600000) // 24 hours in milliseconds
     public void insertNewCompetitionsIntoMongoDB() {
+        SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
+        try {
+            semaphore.acquire();
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         adminCompetitionDAO.saveInMemoryCompetitions();
+        semaphore.release();
     }
 
 
     public class HandlerBookAdmin implements Runnable {
         @Override
         public void run() {
+            SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
+            try {
+                semaphore.acquire();
+            }catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             adminBookDAO.addBook();
             adminBookDAO.updateBook();
             adminBookDAO.removeBook();
+            semaphore.release();
         }
     }
 

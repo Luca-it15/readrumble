@@ -1,6 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
 import {Grid, Paper} from "@mui/material";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import {useNavigate} from 'react-router-dom';
 import Button from "@mui/material-next/Button";
 import {useParams} from "react-router-dom";
@@ -162,15 +167,30 @@ function BookDetails() {
         setInWishlist(!isInWishlist);
     }
 
+    const [open, setOpen] = useState(false);
+    const [bookId, setBookId] = useState(null);
+  
+    const handleClickOpen = (id) => {
+      setBookId(id);
+      setOpen(true);
+    };
+  
+    const handleClose = () => {
+      setOpen(false);
+    };
+
     const removeBook = (id) => async () => {
         const response = axios.delete("http://localhost:8080/api/admin/book/remove/" + id)
             .then(response => {
-                setDeleteStatus({message: response.data, variant: 'success'});
-                navigate(-1)
+                setOpen(false); 
+                setTimeout(function () {
+                    setDeleteStatus({message: "", variant: 'success'});
+                    navigate(-1)
+                }, 4000)
+              
             })
-        setTimeout(function () {
-            setDeleteStatus({message: "", variant: 'success'});
-        }, 4000);
+       ;
+        ;
     }
 
     const updateBook = (id) => async () => {
@@ -206,7 +226,7 @@ function BookDetails() {
                                     variant="filledTonal" startIcon={<UpdateIcon sx={{color: green[600]}}/>}>
                                 <Typography>Edit book data</Typography>
                             </Button>
-                            <Button onClick={removeBook(id)} sx={{
+                            <Button  onClick={() => handleClickOpen(id)} sx={{
                                 backgroundColor: red[200],
                                 margin: "5px",
                                 '&:hover': {backgroundColor: red[100]}
@@ -214,7 +234,18 @@ function BookDetails() {
                                     variant="filledTonal" startIcon={<RemoveIcon sx={{color: '#bd3838'}}/>}>
                                 <Typography>Remove book</Typography>
                             </Button>
-
+                            <Dialog open={open} onClose={handleClose}>
+                            <DialogTitle>Confirm</DialogTitle>
+                             <DialogContent>
+                             <DialogContentText>
+                                 are you sure?
+                             </DialogContentText>
+                             </DialogContent>
+                              <DialogActions>
+                              <Button onClick={handleClose}>no</Button>
+                              <Button onClick={removeBook(id)}>yes</Button>
+                                </DialogActions>
+                              </Dialog>  
                         </React.Fragment>
                     ) : (
                         <React.Fragment>

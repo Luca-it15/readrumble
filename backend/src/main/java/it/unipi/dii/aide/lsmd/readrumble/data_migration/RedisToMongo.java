@@ -2,6 +2,7 @@ package it.unipi.dii.aide.lsmd.readrumble.data_migration;
 
 import com.mongodb.client.AggregateIterable;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
+import it.unipi.dii.aide.lsmd.readrumble.utils.SemaphoreRR;
 import it.unipi.dii.aide.lsmd.readrumble.utils.Status;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
@@ -120,6 +121,12 @@ public class RedisToMongo {
      */
     @Scheduled(fixedRate = 36000000, initialDelay = 36000000) // 10 hours in milliseconds
     public void updateMongoCompetitions() {
+        SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
+        try {
+            semaphore.acquire();
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         logger.info("Updating MongoDB competitions...");
         //jedis = RedisConfig.getSession();
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
@@ -212,11 +219,17 @@ public class RedisToMongo {
             mongoCollection.updateOne(filter, Updates.push("rank", competition));
         }
         logger.info("MongoDB competitions updated!");
-
+        semaphore.release();
     }
 
     @Scheduled(fixedRate = 36000000, initialDelay = 36000000)
     public void InsertIntoRedisCompetitionsCreated() {
+        SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
+        try {
+            semaphore.acquire();
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         logger.info("Inserting things into redis");
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
         mongoCollection = MongoConfig.getCollection("ActiveBooks");
@@ -287,9 +300,10 @@ public class RedisToMongo {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                logger.info("After inserting");
+                semaphore.release();
             }
-            logger.info("After inserting");
-
         }
     }
 
@@ -299,6 +313,12 @@ public class RedisToMongo {
      */
     @Scheduled(fixedRate = 86400000, initialDelay = 36000000) // 24 hours in milliseconds
     public void eliminateOldMongoCompetitions() {
+        SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
+        try {
+            semaphore.acquire();
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         logger.info("Eliminating old MongoDB competitions...");
         LocalDate today = LocalDate.now();
         LocalDate OneMonthAgo = today.minus(Period.ofMonths(1));
@@ -330,13 +350,21 @@ public class RedisToMongo {
             }
         } catch (Exception e) {
             System.out.println("Catched Exception: " + e.getMessage());
+        } finally {
+            logger.info("Cleared the old competition");
+            semaphore.release();
         }
-        logger.info("Cleared the old competition");
+
     }
 
     @Scheduled(fixedRate = 900000, initialDelay = 36000000) // 15 minutes in milliseconds
     public void updateMongoPost() {
-
+        SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
+        try {
+            semaphore.acquire();
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         System.out.println("#---------------- START UPDATE POST IN MONGO ---------------------------#");
         Jedis jedis = RedisConfig.getSession();
         isoFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
@@ -419,7 +447,10 @@ public class RedisToMongo {
             }
         } catch (MongoException e) {
             e.printStackTrace();
+        } finally {
+            semaphore.release();
         }
+
     }
 
 }

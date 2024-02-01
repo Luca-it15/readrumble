@@ -87,6 +87,24 @@ public class Book {
     public void setTitle(String s) {
         title = s;
     }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id=" + id +
+                ", isbn='" + isbn + '\'' +
+                ", description='" + description + '\'' +
+                ", link='" + link + '\'' +
+                ", authors=" + authors +
+                ", publisher='" + publisher + '\'' +
+                ", num_pages=" + num_pages +
+                ", publication_year=" + publication_year +
+                ", url='" + url + '\'' +
+                ", image_url='" + image_url + '\'' +
+                ", title='" + title + '\'' +
+                ", tags=" + tags +
+                '}';
+    }
 }
 
 

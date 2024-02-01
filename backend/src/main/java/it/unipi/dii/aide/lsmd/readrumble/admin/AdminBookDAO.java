@@ -35,6 +35,7 @@ public class AdminBookDAO {
         if(bookToAdd == null)
             bookToAdd = new ArrayList<>();
         bookToAdd.add(book);
+        System.out.println(book);
         return ResponseEntity.ok("book will add");
     }
 

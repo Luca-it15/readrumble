@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Typography, FormControlLabel, Checkbox, ListItem, List } from '@mui/material';
 import {Paper, Grid} from '@mui/material'; 
 import {Alert} from '@mui/material';
 import {blue} from '@mui/material/colors'; 
 import {Form} from 'react-bootstrap'; 
-
 
 import GoBack from '../../components/GoBack';
 
@@ -24,28 +24,23 @@ function AddBook() {
     tags: []
   });
 
+  const navigate = useNavigate(); 
+
   const [selectedTags, setSelectedTags] = useState([]);
    
   function timeout_text() {
     setTimeout(function () {
-        // Azione da compiere dopo 1 secondo
-        setLoginStatus({message: '', variant: 'success'});
-        return window.location.href = "http://localhost:3000/profile";
+       navigate(-1);
     }, 12000)
  }
 
    function timeout_text_error() {
     setTimeout(function () {
-        // Azione da compiere dopo 1 secondo
-        setLoginStatus({message: '', variant: 'error'});
-        return window.location.href = "http://localhost:3000/profile";
+        navigate(-1);
     }, 24000)
   }
 
-const [loginStatus, setLoginStatus] = useState({
-    message: '',
-    variant: 'success', // o 'danger' in caso di errore
-});
+
 
 const [validationError, setValidationError] = useState('');
 const [validationSuccess, setValidationSuccess] = useState('');
@@ -80,27 +75,26 @@ const [validationSuccess, setValidationSuccess] = useState('');
 
     // Validazione: Verifica se almeno un campo è vuoto
     if (Object.values(book).some((value) => value === '')) {
-        setValidationError('All fields must be filled !');
-        //timeout_text()
-        return;
-    } else if(selectedTags.length < 3) {
+      setValidationError('All fields must be filled !');
+      //timeout_text()
+      return;
+  } else if(selectedTags.length < 3) {
       setValidationError('choose at least 3 type of tags!');
-        //timeout_text()
-        return;
-    }
+      console.log("ho selezionato :" + selectedTags.length + " tags"); 
+      //timeout_text()
+      return;
+  }
 
 
 
     try {
         // Invia i dati al server usando Axios
         const response = await axios.post('http://localhost:8080/api/admin/book/add', book);
-        setValidationSuccess({message: response.data, variant: 'success'});
+        setValidationSuccess(response.data);
         timeout_text()
         // Esegui altre azioni dopo la submit se necessario
-        console.log('Recensione inviata con successo!');
     } catch (error) {
-        console.error('Errore durante l\'invio della recensione:', error);
-        setValidationSuccess({message: error.response ? JSON.stringify(error.response.data) : error.message, variant: 'danger'});
+        setValidationError(error);
         timeout_text_error()
     }
 };
@@ -208,10 +202,7 @@ const [validationSuccess, setValidationSuccess] = useState('');
                         </List>
                         </Paper>
                         <br />
-                        <Button variant="contained" type="submit" sx={searchButton}>Submit</Button>
-                    </Form>
-                </Grid>
-                {(validationError && 
+                        {(validationError && 
                 <Alert variant="filled" severity="error">
                 {validationError}
                </Alert> )} 
@@ -220,12 +211,11 @@ const [validationSuccess, setValidationSuccess] = useState('');
                   {validationSuccess}
                  </Alert>
                   )}
+                        <Button variant="contained" type="submit" sx={searchButton}>Submit</Button>
+                    </Form>
+                </Grid>
+             
     
-                {loginStatus.message && (
-                    <Alert variant={loginStatus.variant}>
-                        {loginStatus.message}
-                    </Alert>
-                )}
             </Paper>
         );
     }
