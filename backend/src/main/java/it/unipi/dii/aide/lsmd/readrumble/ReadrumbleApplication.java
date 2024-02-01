@@ -6,7 +6,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-public class ReadrumbleApplication {
+public class
+ReadrumbleApplication {
     public static void main(String[] args) {
         SpringApplication.run(ReadrumbleApplication.class, args);
     }

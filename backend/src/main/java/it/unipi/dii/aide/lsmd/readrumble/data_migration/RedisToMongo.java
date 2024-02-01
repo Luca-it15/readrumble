@@ -1,25 +1,25 @@
 package it.unipi.dii.aide.lsmd.readrumble.data_migration;
 
 import com.mongodb.client.AggregateIterable;
+import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 import it.unipi.dii.aide.lsmd.readrumble.utils.Status;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
 
+import org.springframework.data.mongodb.core.aggregation.AggregationOptions;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.bson.conversions.Bson;
 import org.bson.Document;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.Response;
-import redis.clients.jedis.Transaction;
+import redis.clients.jedis.*;
 
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.MongoCollection;
+
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -31,6 +31,10 @@ import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import redis.clients.jedis.params.ScanParams;
+import redis.clients.jedis.resps.ScanResult;
+
+import java.util.Arrays;
 
 @Component
 public class RedisToMongo {
@@ -117,34 +121,53 @@ public class RedisToMongo {
     @Scheduled(fixedRate = 36000000, initialDelay = 36000000) // 10 hours in milliseconds
     public void updateMongoCompetitions() {
         logger.info("Updating MongoDB competitions...");
-        jedis = RedisConfig.getSession();
+        //jedis = RedisConfig.getSession();
+        JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
+
         mongoCollection = MongoConfig.getCollection("Competitions");
         Bson end_dateFilter = Filters.gte("end_date", LocalDate.now());
         Bson start_dateFilter = Filters.lte("start_date", LocalDate.now());
-        Bson dateFilter = Filters.and(start_dateFilter,end_dateFilter);
+        Bson dateFilter = Filters.and(start_dateFilter, end_dateFilter);
         //This block empties the rank field of all the active competitions so that they can be filled with the new rank
-        try(MongoCursor<Document> cursor = mongoCollection.find(dateFilter).cursor())
-        {
-            while(cursor.hasNext())
-            {
+        try (MongoCursor<Document> cursor = mongoCollection.find(dateFilter).cursor()) {
+            while (cursor.hasNext()) {
                 Document comp_found = cursor.next();
-                Bson filter = Filters.eq("name",comp_found.get("name").toString());
-                Document update = new Document("$set", new Document("rank",new ArrayList<>()));
-                mongoCollection.updateOne(filter,update);
+                Bson filter = Filters.eq("name", comp_found.get("name").toString());
+                Document update = new Document("$set", new Document("rank", new ArrayList<>()));
+                mongoCollection.updateOne(filter, update);
             }
-        }
-        catch(Exception e)
-        {
-            System.out.println("Catched Exceptio: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Catched Exception: " + e.getMessage());
         }
         logger.info("Cleared the rank field of the active competitions");
-        Set<String> keys = jedis.keys("competition:*");
-        // Create a list to store all the competition, user and total page read
         ArrayList<Document> Competitions_to_change = new ArrayList<>();
         logger.info("Starting to create documents");
+        String pattern = "competition:*";
+        ScanParams scanParams = new ScanParams().match(pattern);
 
-        // Map to keep track of documents for every value of competition_name
-        Map<String, List<Document>> mapByCompetitionName = new HashMap<>();
+        String cursor = "0";
+        do {
+            ScanResult<String> scanResult = jedis.scan(cursor, scanParams);
+            for (String key : scanResult.getResult()) {
+                String competition_name = key.split(":")[1];
+                String username = key.split(":")[2];
+                Integer tot_pages = Integer.parseInt(jedis.get(key));
+                Document doc = new Document()
+                        .append("competition_name", competition_name)
+                        .append("username", username)
+                        .append("tot_pages", tot_pages);
+                Competitions_to_change.add(doc);
+            }
+
+            // Ottieni il nuovo cursore
+            cursor = scanResult.getCursor();
+        } while (!cursor.equals("0"));
+        /*
+        Set<String> keys = jedis.keys("competition:*");
+        // Create a list to store all the competition, user and total page read
+
+
+
         for (String key : keys) {
             //competition:competition_name:username:tag->value
             String competition_name = key.split(":")[1];
@@ -155,8 +178,9 @@ public class RedisToMongo {
                     .append("username", username)
                     .append("tot_pages", tot_pages);
             Competitions_to_change.add(doc);
-        }
-
+        }*/
+        // Map to keep track of documents for every value of competition_name
+        Map<String, List<Document>> mapByCompetitionName = new HashMap<>();
         logger.info("Filling the Map");
         // Filling the map
         for (Document doc2 : Competitions_to_change) {
@@ -182,7 +206,7 @@ public class RedisToMongo {
         for (Document competition : topTenForEachCompetition) {
             String comp_name = competition.get("competition_name").toString();
             competition.remove("competition_name");
-            Bson filter = Filters.eq("name",comp_name);
+            Bson filter = Filters.eq("name", comp_name);
 
             // Insert the user document into the MongoDB wishlists collection
             mongoCollection.updateOne(filter, Updates.push("rank", competition));
@@ -190,22 +214,27 @@ public class RedisToMongo {
         logger.info("MongoDB competitions updated!");
 
     }
-    /*@Scheduled(fixedRate = 36000000)
+
+    @Scheduled(fixedRate = 36000000, initialDelay = 36000000)
     public void InsertIntoRedisCompetitionsCreated() {
         logger.info("Inserting things into redis");
-        jedis = RedisConfig.getSession();
+        JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
         mongoCollection = MongoConfig.getCollection("ActiveBooks");
         logger.info("Before Deleting keys from redis");
-        Pipeline pipeline = jedis.pipelined();
-        Response<Set<String>> keysResponse = pipeline.keys("competition:*");
-        pipeline.sync();
-        Set<String> keys = keysResponse.get();
-        for(String key: keys)
-        {
-            jedis.del(key);
-        }
-        logger.info("After keys deletion");
-        AggregateIterable<Document> result = mongoCollection.aggregate(Arrays.asList(new Document("$unwind",
+        //Pipeline pipeline = jedis.pipelined();
+        //Response<Set<String>> keysResponse = pipeline.keys("competition:*");
+        //pipeline.sync();
+        //Set<String> keys = keysResponse.get();
+        //for(String key: keys)
+        //{
+        //jedis.del(key);
+        //}
+        //logger.info("After keys deletion");
+        AggregateIterable<Document> result = mongoCollection.aggregate(Arrays.asList(
+                new Document("$match",
+                        new Document("year", 2024L)
+                                .append("month", 1L)),
+                new Document("$unwind",
                         new Document("path", "$books")),
                 new Document("$unwind",
                         new Document("path", "$books.tags")),
@@ -223,11 +252,13 @@ public class RedisToMongo {
                                 .append("year", "$_id.year")
                                 .append("month", "$_id.month")
                                 .append("tag", "$_id.tag")
-                                .append("tot_pages", "$tot_pages"))));
+                                .append("tot_pages", "$tot_pages")),
+                new Document("$sort",
+                        new Document("tot_pages", -1L))
+        ))/*.allowDiskUse(true)*/;
         mongoCollection = MongoConfig.getCollection("Competitions");
         logger.info("After Aggregation and Before inserting");
-        for(Document doc : result)
-        {
+        for (Document doc : result) {
             logger.info("Inside doc : result");
             String username = (String) doc.get("username");
             String tag = (String) doc.get("tag");
@@ -235,25 +266,23 @@ public class RedisToMongo {
             Integer month = (Integer) doc.get("month");
             Integer year = (Integer) doc.get("year");
             Integer pages_read = (Integer) doc.get("tot_pages");
-            String dataString = year.toString()+"-"+month.toString()+"-"+"15"; // Data sotto forma di stringa
+            String dataString = year.toString() + "-" + month.toString() + "-" + "15"; // Data sotto forma di stringa
             SimpleDateFormat formatoData = new SimpleDateFormat("yyyy-MM-dd");
 
             try {
                 // Analizza la stringa nella data
                 Date data = formatoData.parse(dataString);
-                Bson tagFilter = Filters.eq("tag",TagTag);
-                Bson startDateFilter = Filters.lte("start_date",data);
-                Bson endDateFilter = Filters.gte("end_date",data);
-                Bson dateFilter = Filters.and(startDateFilter,endDateFilter);
-                Bson filter = Filters.and(dateFilter,tagFilter);
+                Bson tagFilter = Filters.eq("tag", TagTag);
+                Bson startDateFilter = Filters.lte("start_date", data);
+                Bson endDateFilter = Filters.gte("end_date", data);
+                Bson dateFilter = Filters.and(startDateFilter, endDateFilter);
+                Bson filter = Filters.and(dateFilter, tagFilter);
                 Document Comp = mongoCollection.find(filter).first();
-                if(Comp != null)
-                {
+                if (Comp != null) {
                     String CompName = (String) Comp.get("name");
-                    if(!CompName.isEmpty())
-                    {
-                        String key = "competition:"+CompName+":"+username+":"+TagTag;
-                        jedis.set(key,pages_read.toString());
+                    if (!CompName.isEmpty()) {
+                        String key = "competition:" + CompName + ":" + username + ":" + TagTag;
+                        jedis.set(key, pages_read.toString());
                     }
                 }
             } catch (Exception e) {
@@ -262,17 +291,19 @@ public class RedisToMongo {
             logger.info("After inserting");
 
         }
-    }*/
+    }
+
     /**
      * This method is scheduled to run every 24 hours.
      * It eliminates the old competitions from Redis and MongoDB.
      */
-    @Scheduled(fixedRate =  86400000, initialDelay = 36000000) // 24 hours in milliseconds
+    @Scheduled(fixedRate = 86400000, initialDelay = 36000000) // 24 hours in milliseconds
     public void eliminateOldMongoCompetitions() {
         logger.info("Eliminating old MongoDB competitions...");
         LocalDate today = LocalDate.now();
         LocalDate OneMonthAgo = today.minus(Period.ofMonths(1));
-        jedis = RedisConfig.getSession();
+        //jedis = RedisConfig.getSession();
+        JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
         mongoCollection = MongoConfig.getCollection("Competitions");
         Bson dateFilter1 = Filters.gte("end_date", OneMonthAgo);
         Bson dateFilter2 = Filters.lt("end_date", today);
@@ -283,10 +314,19 @@ public class RedisToMongo {
                 Document comp_found = cursor.next();
                 System.out.println(comp_found.get("name"));
                 String keyFromMongo = "competition:" + comp_found.get("name") + ":*";
-                Set<String> keys = jedis.keys(keyFromMongo);
+                ScanParams scanParams = new ScanParams().match(keyFromMongo);
+                String redisCursor = "0";
+                do {
+                    ScanResult<String> scanResult = jedis.scan(redisCursor, scanParams);
+                    for (String key : scanResult.getResult()) {
+                        jedis.del(key);
+                    }
+                    redisCursor = scanResult.getCursor();
+                } while (!redisCursor.equals("0"));
+                /*Set<String> keys = jedis.keys(keyFromMongo);
                 for (String key : keys) {
                     jedis.del(key);
-                }
+                }*/
             }
         } catch (Exception e) {
             System.out.println("Catched Exception: " + e.getMessage());
@@ -294,7 +334,7 @@ public class RedisToMongo {
         logger.info("Cleared the old competition");
     }
 
-    @Scheduled(fixedRate = 900000) // 15 minutes in milliseconds
+    @Scheduled(fixedRate = 900000, initialDelay = 36000000) // 15 minutes in milliseconds
     public void updateMongoPost() {
 
         System.out.println("#---------------- START UPDATE POST IN MONGO ---------------------------#");
