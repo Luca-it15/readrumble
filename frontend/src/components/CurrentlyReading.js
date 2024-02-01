@@ -73,7 +73,7 @@ function CurrentlyReading({user}) {
         <Paper sx={PaperStyle} elevation={2}>
             <Typography variant="h5" textAlign='center' sx={{marginBottom: '8px'}}>Now reading</Typography>
             <Grid container direction="column" justifyContent="space-around" sx={{gap: '15px'}}>
-                <Grid container item direction="row" justifyContent="space-around" sx={{gap: '15px'}}>
+                <Grid container item direction="row" justifyContent="space-evenly" sx={{gap: '15px'}}>
                     {currentlyReading.length === 0 ? (
                         <Grid item xs={12} sx={{textAlign: 'center', borderRadius: '20px', backgroundColor: '#ffffff'}}>
                             <Typography>No books to show
@@ -84,33 +84,37 @@ function CurrentlyReading({user}) {
                             </Typography>
                         </Grid>
                     ) : (
-                        currentlyReading.slice(0, displayCount).map((book, index) => (
-                            <React.Fragment key={index}>
-                                <Grid container direction="row" justifyContent="center" alignItems="center"
-                                      sx={{
-                                          borderRadius: '15px', backgroundColor: '#ffffff', padding: '10px',
-                                          width: '32%', textAlign: 'center', '&:hover': {boxShadow: '0px 2px 5px 0px rgba(0,0,0,0.2)',
-                                          cursor: 'pointer', marginBottom: '3px', marginTop: '-3px'}
-                                      }} onClick={() => {seeDetails(book.id)}}>
-                                    <Grid item xs={12}>
+                        currentlyReading.slice(0, displayCount).map((book) => (
+                            <Paper elevation={0} sx={{width: '32%', boxShadow: '0px 2px 5px 0px rgba(0,0,0,0.2)',
+                                    borderRadius: 4, padding: '8px', margin: '0px',
+                                    '&:hover': {boxShadow: '0px 0px 2px 0px rgba(0,0,0,0.2)', cursor: 'pointer'}}}>
+
+                                <Grid container direction="column" justifyContent="space-around" alignItems="center"
+                                      sx={{textAlign: 'center', height: '100%'}} onClick={() => {seeDetails(book.id)}}>
+
+                                    <Grid item xs="auto">
                                         <Typography>{book.title}</Typography>
                                     </Grid>
-                                    <Grid item xs={2.5}>
-                                        <Typography sx={{color: '#777777'}}>
-                                            {book.bookmark} / {book.num_pages}
-                                        </Typography>
+
+                                    <Grid container item direction="row" justifyContent="center" alignItems="center">
+                                        <Grid item xs={3}>
+                                            <Typography sx={{color: '#777777'}}>
+                                                {book.bookmark} / {book.num_pages}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={7}>
+                                            <LinearProgress sx={{borderRadius: 10, height: '7px'}} variant="determinate"
+                                                            value={book.bookmark * 100 / book.num_pages}/>
+                                        </Grid>
+                                        <Grid item xs={1.5}>
+                                            <Typography sx={{color: blue[700]}}>
+                                                {Math.round(book.bookmark * 100 / book.num_pages)}%
+                                            </Typography>
+                                        </Grid>
                                     </Grid>
-                                    <Grid item xs={8}>
-                                        <LinearProgress sx={{borderRadius: 10, height: '7px'}} variant="determinate"
-                                                        value={book.bookmark * 100 / book.num_pages}/>
-                                    </Grid>
-                                    <Grid item xs={1.5}>
-                                        <Typography sx={{color: blue[700]}}>
-                                            {Math.round(book.bookmark * 100 / book.num_pages)}%
-                                        </Typography>
-                                    </Grid>
+
                                 </Grid>
-                            </React.Fragment>
+                            </Paper>
                         )))}
                 </Grid>
 

@@ -43,6 +43,9 @@ const NavApp = () => {
                 <Button sx={{color: '#ffffff'}} component={NavLink} to="/home" exact>
                     <Typography>Home</Typography>
                 </Button>
+                <Button sx={{color: '#ffffff'}} component={NavLink} to="/competitions" exact>
+                    <Typography>Competitions</Typography>
+                </Button>
                 <Button sx={{color: '#ffffff'}} component={NavLink} to="/explore">
                     <Typography>Explore</Typography>
                 </Button>

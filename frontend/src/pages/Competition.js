@@ -46,7 +46,8 @@ function CompetitionPage() {
                                 borderRadius: 8,
                                 margin: '10px 10px 10px 10px',
                                 padding: '10px',
-                                '&:hover': {boxShadow: '0px 3px 8px 0px rgba(0,0,0,0.2)', margin: '5px 10px 15px 10px'}
+                                boxShadow: '0px 3px 5px 0px rgba(0,0,0,0.2)',
+                                '&:hover': {boxShadow: '0px 0px 1px 0px rgba(0,0,0,0.2)'}
                             }} elevation={0}>
                                 <Typography variant="h6">{item.name}</Typography>
                                 <Typography sx={{color: '#888888'}}>Tag: {item.tag}</Typography>

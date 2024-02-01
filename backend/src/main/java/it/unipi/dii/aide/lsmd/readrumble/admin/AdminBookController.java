@@ -17,16 +17,16 @@ public class AdminBookController {
 
         @PostMapping("/add")
         public ResponseEntity<String> addBook(@RequestBody Book book) {
-            return adminBookDAO.addBook(book);
+            return adminBookDAO.addBookTemp(book);
         }
         @DeleteMapping("/remove/{id}")
         public ResponseEntity<String> removeBook(@PathVariable long id) {
-            return adminBookDAO.removeBook(id);
+            return adminBookDAO.removeBookTemp(id);
         }
 
         @PostMapping("/update")
             public ResponseEntity<String> updateBook(@RequestBody Document changes) {
-                return adminBookDAO.updateBook(changes);
+                return adminBookDAO.updateBookTemp(changes);
             }
 
 }

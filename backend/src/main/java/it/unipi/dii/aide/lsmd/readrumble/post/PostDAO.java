@@ -64,7 +64,6 @@ public class PostDAO {
                       int new_pages_read = Integer.parseInt(value) + pagesRead;
                       System.out.println("after update " + new_pages_read);
                       jedis.set(compkey, String.valueOf(new_pages_read));
-                      i++;
                   }
 
           return ResponseEntity.ok("Post added: " + key);
