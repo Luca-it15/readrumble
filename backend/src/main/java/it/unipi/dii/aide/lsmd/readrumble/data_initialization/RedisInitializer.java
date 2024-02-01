@@ -1,6 +1,7 @@
 package it.unipi.dii.aide.lsmd.readrumble.data_initialization;
 
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
+import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
 
 import com.mongodb.client.MongoCollection;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import redis.clients.jedis.JedisCluster;
 
 @Component
 public class RedisInitializer {
@@ -27,10 +29,10 @@ public class RedisInitializer {
     public void loadWishlistsFromMongoToRedis() {
         logger.info("Loading wishlists from MongoDB to Redis...");
 
-        Jedis jedis = RedisConfig.getSession();
+        JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
         MongoCollection<Document> mongoWishlists = MongoConfig.getCollection("Wishlists");
 
-        if (jedis.keys("wishlist:*").isEmpty()) {
+        if (false /*jedis.keys("wishlist:*").isEmpty()*/) {
             List<Document> documents = new ArrayList<>();
             mongoWishlists.find().into(documents);
 
