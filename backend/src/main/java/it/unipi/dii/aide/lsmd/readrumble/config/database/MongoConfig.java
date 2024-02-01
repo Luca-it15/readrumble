@@ -12,12 +12,6 @@ public final class MongoConfig {
     private static MongoClient conn = null;
 
     /**
-     * Private constructor to avoid instantiation
-     */
-    private MongoConfig() {
-    }
-
-    /**
      * Function to create Mongo connection
      */
     private static void makeConnection() {
