@@ -20,6 +20,8 @@ export default function BookAdmin() {
     const [last, setLast] = useState(true); 
     const navigate = useNavigate(); 
 
+   
+
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
         padding: '10px',
@@ -82,7 +84,7 @@ export default function BookAdmin() {
             <Paper sx={PaperStyle}>
                 {last? (
                 <>    
-                <Typography variant='h3'>Last Books</Typography>
+                <Typography variant='h3'>trending Books</Typography>
                 <Grid iterm xs={4}>
                         <BookListQuery query={"trending"}/>
                     </Grid>

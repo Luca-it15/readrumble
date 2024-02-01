@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { TextField, Button, Typography } from '@mui/material';
+import { TextField, Button, Typography, FormControlLabel, Checkbox, ListItem, List } from '@mui/material';
 import {Paper, Grid} from '@mui/material'; 
 import {Alert} from '@mui/material';
 import {blue} from '@mui/material/colors'; 
+import {Form} from 'react-bootstrap'; 
 
 
 import GoBack from '../../components/GoBack';
@@ -22,6 +23,8 @@ function AddBook() {
     title: '',
     tags: []
   });
+
+  const [selectedTags, setSelectedTags] = useState([]);
    
   function timeout_text() {
     setTimeout(function () {
@@ -45,13 +48,16 @@ const [loginStatus, setLoginStatus] = useState({
 });
 
 const [validationError, setValidationError] = useState('');
+const [validationSuccess, setValidationSuccess] = useState('');
   function handleChange(event) {
     const { name, value } = event.target;
     let new_value = 0; 
     if(name === "num_pages" || name === "published_year")
      new_value = parseInt(value); 
-    else if(name === "authors" || name === "tags" )
+    else if(name === "authors")
      new_value = value.split(","); 
+    else if(name === "tags")
+     tags = selectedTags; 
     else  
      new_value = value; 
     setBook(prevBook => {
@@ -62,6 +68,13 @@ const [validationError, setValidationError] = useState('');
     });
   }
 
+   const tags = [
+    "mystery", "fantasy", "non-fiction", "romance", "young-adult", "children", "comics", "fiction", "poetry",
+    "history", "crime", "paranormal", "biography", "thriller", "historical-fiction", "graphic"
+   ]
+
+  const SortedTags = tags.sort();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -70,18 +83,24 @@ const [validationError, setValidationError] = useState('');
         setValidationError('All fields must be filled !');
         //timeout_text()
         return;
+    } else if(selectedTags.length < 3) {
+      setValidationError('choose at least 3 type of tags!');
+        //timeout_text()
+        return;
     }
+
+
 
     try {
         // Invia i dati al server usando Axios
         const response = await axios.post('http://localhost:8080/api/admin/book/add', book);
-        setLoginStatus({message: response.data, variant: 'success'});
+        setValidationSuccess({message: response.data, variant: 'success'});
         timeout_text()
         // Esegui altre azioni dopo la submit se necessario
         console.log('Recensione inviata con successo!');
     } catch (error) {
         console.error('Errore durante l\'invio della recensione:', error);
-        setLoginStatus({message: error.response ? JSON.stringify(error.response.data) : error.message, variant: 'danger'});
+        setValidationSuccess({message: error.response ? JSON.stringify(error.response.data) : error.message, variant: 'danger'});
         timeout_text_error()
     }
 };
@@ -96,6 +115,19 @@ const [validationError, setValidationError] = useState('');
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
+  }
+
+  const TagStyle = {
+    backgroundColor: 'FFFFFF',
+    padding: '10px',
+    margin: '10px',
+    borderRadius: 5,
+    width: '90%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: '3pt solid' + blue[300]
   }
 
   const searchBar = {
@@ -118,53 +150,85 @@ const [validationError, setValidationError] = useState('');
         }
     }
 
+    
+        const handleTagChange = (event) => {
+            if (event.target.checked) {
+                setSelectedTags([...selectedTags, event.target.name]);
+            } else {
+                setSelectedTags(selectedTags.filter(tag => tag !== event.target.name));
+            }
+        };
+    
 
-  return (
-    <Paper sx={PaperStyle} >  
-   <GoBack></GoBack>
-     <Typography variant='h3' sx={{margin: '30px'}}>Add Book</Typography>
-     
-    <Grid container direction="row" alignItems="center" justifyContent="center" xs={12}>
-   
-     <form onSubmit={handleSubmit}>
-      <TextField label="ISBN" name="isbn" value={book.isbn} onChange={handleChange} sx={searchBar}/>
-      <br />
-      <TextField label="Description" name="description" value={book.description} onChange={handleChange}  sx={searchBar}/>
-      <br />
-      <TextField label="Link" name="link" value={book.link} onChange={handleChange}  sx={searchBar}/>
-      <br />
-      <TextField label="Authors" name="authors" value={book.authors} onChange={handleChange}  sx={searchBar}/>
-      <br />
-      <TextField label="Publisher" name="publisher" value={book.publisher} onChange={handleChange} sx={searchBar} />
-      <br />
-      <TextField label="Number of pages" name="num_pages" value={book.pageCount} onChange={handleChange}  sx={searchBar}/>
-      <br />
-      <TextField label="publication_year" name="publication_year" value={book.publishedDate} onChange={handleChange}  sx={searchBar}/>
-      <br />
-      <TextField label="Book Url" name="url" value={book.bookUrl} onChange={handleChange}  sx={searchBar}/>
-      <br />
-      <TextField label="Image Url" name="image_url" value={book.imageUrl} onChange={handleChange} sx={searchBar} />
-      <br />
-      <TextField label="Title" name="title" value={book.title} onChange={handleChange} sx={searchBar} />
-      <br />
-      <TextField label="Tags" name="tags" value={book.tags} onChange={handleChange} sx={searchBar} />
-      <br />
-      <Button variant="contained" type="submit" sx={searchButton}>Submit</Button>
-     </form>
-     </Grid>
-     {validationError && (
-                                <Alert variant="danger">
-                                    {validationError}
-                                </Alert>
-                            )}
-
-                            {loginStatus.message && (
-                                <Alert variant={loginStatus.variant}>
-                                    {loginStatus.message}
-                                </Alert>
-                            )}
-    </Paper> 
-  );
-}
+        return (
+            <Paper sx={PaperStyle}>
+                <GoBack></GoBack>
+                <Typography variant='h3' sx={{ margin: '30px' }}>Add Book</Typography>
+    
+                <Grid container direction="row" alignItems="center" justifyContent="center" xs={12}>
+    
+                    <Form onSubmit={handleSubmit}>
+                        <TextField label="ISBN" name="isbn" value={book.isbn} onChange={handleChange} sx={searchBar} />
+                        <br />
+                        <TextField label="Description" name="description" value={book.description} onChange={handleChange} sx={searchBar} />
+                        <br />
+                        <TextField label="Link" name="link" value={book.link} onChange={handleChange} sx={searchBar} />
+                        <br />
+                        <TextField label="Authors" name="authors" value={book.authors} onChange={handleChange} sx={searchBar} />
+                        <br />
+                        <TextField label="Publisher" name="publisher" value={book.publisher} onChange={handleChange} sx={searchBar} />
+                        <br />
+                        <TextField label="Number of pages" name="num_pages" value={book.pageCount} onChange={handleChange} sx={searchBar} />
+                        <br />
+                        <TextField label="publication_year" name="publication_year" value={book.publishedDate} onChange={handleChange} sx={searchBar} />
+                        <br />
+                        <TextField label="Book Url" name="url" value={book.bookUrl} onChange={handleChange} sx={searchBar} />
+                        <br />
+                        <TextField label="Image Url" name="image_url" value={book.imageUrl} onChange={handleChange} sx={searchBar} />
+                        <br />
+                        <TextField label="Title" name="title" value={book.title} onChange={handleChange} sx={searchBar} />
+                        <br />
+                        <Paper sx={TagStyle}>
+                          <Typography variant='h4'>choose at least 3 type of tags</Typography>
+                        <List>
+                        {SortedTags.map((tag) => (
+                          <ListItem>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={selectedTags.includes(tag)}
+                                        onChange={handleTagChange}
+                                        name={tag}
+                                    />
+                                }
+                                label={tag}
+                            />
+                            </ListItem>
+                        ))}
+                        </List>
+                        </Paper>
+                        <br />
+                        <Button variant="contained" type="submit" sx={searchButton}>Submit</Button>
+                    </Form>
+                </Grid>
+                {(validationError && 
+                <Alert variant="filled" severity="error">
+                {validationError}
+               </Alert> )} 
+                {(validationSuccess) && 
+                  (<Alert variant="filled" severity="success">
+                  {validationSuccess}
+                 </Alert>
+                  )}
+    
+                {loginStatus.message && (
+                    <Alert variant={loginStatus.variant}>
+                        {loginStatus.message}
+                    </Alert>
+                )}
+            </Paper>
+        );
+    }
+    
 
 export default AddBook;

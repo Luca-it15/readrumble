@@ -31,6 +31,7 @@ public class PostDAO {
 
                  JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
 
+
                  String input = post.getString("date_added");
                  DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.ENGLISH);
                  ZonedDateTime zonedDateTime = ZonedDateTime.parse(input, inputFormatter);
