@@ -6,7 +6,7 @@ import it.unipi.dii.aide.lsmd.readrumble.utils.SemaphoreRR;
 import it.unipi.dii.aide.lsmd.readrumble.utils.Status;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
-
+import static it.unipi.dii.aide.lsmd.readrumble.utils.PatternKeyRedis.KeysTwo;
 import org.springframework.data.mongodb.core.aggregation.AggregationOptions;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.params.ScanParams;
 import redis.clients.jedis.resps.ScanResult;
-
+import static it.unipi.dii.aide.lsmd.readrumble.utils.PatternKeyRedis.KeysTwo;
 import java.util.Arrays;
 
 @Component
@@ -56,6 +56,7 @@ public class RedisToMongo {
 
         try {
             jedis = RedisConfig.getSession();
+            //JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
             mongoCollection = MongoConfig.getCollection("Wishlists");
 
             mongoCollection.deleteMany(new Document());
@@ -65,6 +66,8 @@ public class RedisToMongo {
             transaction.exec();
 
             Set<String> keys = keysResponse.get();
+
+            //Set<String> keys = KeysTwo(jedis,"wishlist:*")
 
             // Create a map to store the wishlists of each user
             userWishlists = new HashMap<>();
@@ -150,31 +153,8 @@ public class RedisToMongo {
         ArrayList<Document> Competitions_to_change = new ArrayList<>();
         logger.info("Starting to create documents");
         String pattern = "competition:*";
-        ScanParams scanParams = new ScanParams().match(pattern);
-
-        String cursor = "0";
-        do {
-            ScanResult<String> scanResult = jedis.scan(cursor, scanParams);
-            for (String key : scanResult.getResult()) {
-                String competition_name = key.split(":")[1];
-                String username = key.split(":")[2];
-                Integer tot_pages = Integer.parseInt(jedis.get(key));
-                Document doc = new Document()
-                        .append("competition_name", competition_name)
-                        .append("username", username)
-                        .append("tot_pages", tot_pages);
-                Competitions_to_change.add(doc);
-            }
-
-            // Ottieni il nuovo cursore
-            cursor = scanResult.getCursor();
-        } while (!cursor.equals("0"));
-        /*
-        Set<String> keys = jedis.keys("competition:*");
+        Set<String> keys = KeysTwo(jedis,pattern);
         // Create a list to store all the competition, user and total page read
-
-
-
         for (String key : keys) {
             //competition:competition_name:username:tag->value
             String competition_name = key.split(":")[1];
@@ -185,7 +165,7 @@ public class RedisToMongo {
                     .append("username", username)
                     .append("tot_pages", tot_pages);
             Competitions_to_change.add(doc);
-        }*/
+        }
         // Map to keep track of documents for every value of competition_name
         Map<String, List<Document>> mapByCompetitionName = new HashMap<>();
         logger.info("Filling the Map");
@@ -221,6 +201,10 @@ public class RedisToMongo {
         logger.info("MongoDB competitions updated!");
         semaphore.release();
     }
+    /*
+        The next function is commented beacuse it's only purpose is to fill the redis dbs with active
+        competitions key-value pairs of January 2024, we decided to leave it here commented to have a ready to use
+        function to re-fill the dbs for debugging purposes in case of errors
 
     @Scheduled(fixedRate = 36000000, initialDelay = 36000000)
     public void InsertIntoRedisCompetitionsCreated() {
@@ -306,6 +290,7 @@ public class RedisToMongo {
             }
         }
     }
+    */
 
     /**
      * This method is scheduled to run every 24 hours.
@@ -334,19 +319,12 @@ public class RedisToMongo {
                 Document comp_found = cursor.next();
                 System.out.println(comp_found.get("name"));
                 String keyFromMongo = "competition:" + comp_found.get("name") + ":*";
+                Set<String> keys = KeysTwo(jedis,keyFromMongo);
                 ScanParams scanParams = new ScanParams().match(keyFromMongo);
                 String redisCursor = "0";
-                do {
-                    ScanResult<String> scanResult = jedis.scan(redisCursor, scanParams);
-                    for (String key : scanResult.getResult()) {
-                        jedis.del(key);
-                    }
-                    redisCursor = scanResult.getCursor();
-                } while (!redisCursor.equals("0"));
-                /*Set<String> keys = jedis.keys(keyFromMongo);
                 for (String key : keys) {
                     jedis.del(key);
-                }*/
+                }
             }
         } catch (Exception e) {
             System.out.println("Catched Exception: " + e.getMessage());
@@ -366,14 +344,15 @@ public class RedisToMongo {
             e.printStackTrace();
         }
         System.out.println("#---------------- START UPDATE POST IN MONGO ---------------------------#");
-        Jedis jedis = RedisConfig.getSession();
+        JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
+        //Jedis jedis = RedisConfig.getSession();
         isoFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         try {
             MongoCollection<Document> collection1 = MongoConfig.getCollection("Posts");
             MongoCollection<Document> collection2 = MongoConfig.getCollection("ActiveBooks");
 
 
-            Set<String> keys = jedis.keys("post:*");
+            Set<String> keys = KeysTwo(jedis,"post:*");
             List<Document> posts = new ArrayList<>();
 
             for (String key : keys) {

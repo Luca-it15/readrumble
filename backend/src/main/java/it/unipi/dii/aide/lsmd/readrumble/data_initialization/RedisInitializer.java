@@ -3,17 +3,15 @@ package it.unipi.dii.aide.lsmd.readrumble.data_initialization;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
-
+import static it.unipi.dii.aide.lsmd.readrumble.utils.PatternKeyRedis.KeysTwo;
 import com.mongodb.client.MongoCollection;
 import jakarta.annotation.PostConstruct;
 import org.bson.Document;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.JedisCluster;
@@ -31,8 +29,8 @@ public class RedisInitializer {
 
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
         MongoCollection<Document> mongoWishlists = MongoConfig.getCollection("Wishlists");
-
-        if (false /*jedis.keys("wishlist:*").isEmpty()*/) {
+        Set<String> keys = KeysTwo(jedis,"wishlist:*");
+        if (keys.isEmpty()) {
             List<Document> documents = new ArrayList<>();
             mongoWishlists.find().into(documents);
 
