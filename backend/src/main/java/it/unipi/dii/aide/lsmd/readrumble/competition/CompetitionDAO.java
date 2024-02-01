@@ -20,6 +20,8 @@ import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.params.ScanParams;
 import redis.clients.jedis.resps.ScanResult;
 
+import static it.unipi.dii.aide.lsmd.readrumble.utils.PatternKeyRedis.KeysTwo;
+
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,13 +30,12 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class CompetitionDAO {
 
-    public List<Document> getAllCompetition()
-    {
+    public List<Document> getAllCompetition() {
 
         LocalDate date_of_today = LocalDate.now();
         Bson end_dateFilter = Filters.gte("end_date", date_of_today);
         Bson start_dateFilter = Filters.lte("start_date", date_of_today);
-        Bson dateFilter = Filters.and(start_dateFilter,end_dateFilter);
+        Bson dateFilter = Filters.and(start_dateFilter, end_dateFilter);
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         List<Document> competitions = collection.find(dateFilter)
                 .sort(Sorts.descending("end_date"))
@@ -42,117 +43,86 @@ public class CompetitionDAO {
         System.out.println(competitions);
         return competitions;
     }
-    public List<Document> getPopularCompetitions()
-    {
+
+    public List<Document> getPopularCompetitions() {
         Bson end_dateFilter = Filters.gt("end_date", LocalDate.now());
         Bson start_dateFilter = Filters.lte("start_date", LocalDate.now());
-        Bson dateFilter = Filters.and(start_dateFilter,end_dateFilter);
+        Bson dateFilter = Filters.and(start_dateFilter, end_dateFilter);
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         AggregateIterable<Document> aggregation = collection.aggregate(Arrays.asList(
-            Aggregates.match(dateFilter),
-            Aggregates.project(
-                Projections.fields(
-                    Projections.include("name", "tag", "rank"),
-                    Projections.computed("Total_Pages", new Document("$sum", "$rank.tot_pages"))
-                )
-            ),
-            Aggregates.sort(Sorts.descending("Total_Pages")),
-            Aggregates.limit(10)
+                Aggregates.match(dateFilter),
+                Aggregates.project(
+                        Projections.fields(
+                                Projections.include("name", "tag", "rank"),
+                                Projections.computed("Total_Pages", new Document("$sum", "$rank.tot_pages"))
+                        )
+                ),
+                Aggregates.sort(Sorts.descending("Total_Pages")),
+                Aggregates.limit(10)
         ));
         List<Document> competitions = new ArrayList<Document>();
         for (Document document : aggregation) {
             String name = document.getString("name");
             String tag = document.getString("tag");
-
             int Total_Pages = document.getInteger("Total_Pages");
             competitions.add(document);
         }
         return competitions;
     }
-    public List<Document> getPersonalCompetition(String _id)
-    {
+
+    public List<Document> getPersonalCompetition(String _id) {
         try {
             //Jedis jedis = RedisConfig.getSession();
             JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
-            try{
-                String pattern = "*:"+_id;
-                ScanParams scanParams = new ScanParams().match(pattern);
-                String redisCursor = "0";
-                List<Document> result = new ArrayList<Document>();
-                do {
-                    ScanResult<String> scanResult = jedis.scan(redisCursor, scanParams);
-                    for (String key : scanResult.getResult()) {
-                        try {
-                            String value = jedis.get(key);
-                            Document doc = new Document();
-                            doc.append("CompName", key);
-                            doc.append("Pages_read", value);
-                            result.add(doc);
-                        } catch(Exception e)
-                        {
-                            System.out.println("Catched error in appending documents and keys: " + e.getMessage());
-                        }
-                    }
-                    redisCursor = scanResult.getCursor();
-                } while (!redisCursor.equals("0"));
-                /*Set<String> matchingKeys = jedis.keys("*:"+_id);
-
-                for (String key : matchingKeys) {
-                    String value = jedis.get(key);
-                    Document doc = new Document();
-                    doc.append("CompName", key);
-                    doc.append("Pages_read", value);
-                    result.add(doc);
-                }*/
-
-                return result;
+            Set<String> matchingKeys = KeysTwo(jedis, "*:" + _id);
+            List<Document> result = new ArrayList<>();
+            for (String key : matchingKeys) {
+                String value = jedis.get(key);
+                Document doc = new Document();
+                doc.append("CompName", key);
+                doc.append("Pages_read", value);
+                result.add(doc);
             }
-            catch(Exception e)
-            {
-                System.out.println("Catched error in matchingKeys: " + e.getMessage());
-            }
+
+            return result;
+        } catch (Exception e) {
+            System.out.println("Catched error in matchingKeys: " + e.getMessage());
         }
-        catch(Exception e)
-        {
-            System.out.println("Catched error in getSession: " + e.getMessage());
-        }
+
         List<Document> result = new ArrayList<Document>();
         Document t = new Document();
-        t.append("empty","empty");
+        t.append("empty", "empty");
         result.add(t);
         return result;
     }
-    public Document goCompetitionInformation(Document docx)
-    {
+
+    public Document goCompetitionInformation(Document docx) {
         String competitionTitle = (String) docx.get("CompetitionTitle");
         String username = (String) docx.get("Username");
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
-        ArrayList<Document> result = collection.find(eq("name",competitionTitle)).into(new ArrayList<>());
+        ArrayList<Document> result = collection.find(eq("name", competitionTitle)).into(new ArrayList<>());
         Document doc = result.getFirst();
         System.out.println(doc);
         return doc;
     }
-    public ResponseEntity<String> userJoinsOrLeavesCompetition(Document userDoc)
-    {
+
+    public ResponseEntity<String> userJoinsOrLeavesCompetition(Document userDoc) {
         //Jedis jedis = RedisConfig.getSession();
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
         String username = (String) userDoc.get("username");
         String competitionTitle = (String) userDoc.get("competitionTitle");
         String competitionTag = (String) userDoc.get("competitionTag");
         try {
-            String key = "competition:"+competitionTitle + ":" + competitionTag + ":" + username;
+            String key = "competition:" + competitionTitle + ":" + competitionTag + ":" + username;
             System.out.println("the key is = " + key);
-            if(jedis.get(key)==null)
-            {
+            if (jedis.get(key) == null) {
                 //If there is not the key-value couple for that user and that competition
                 //then it means that the user wants to join the competition
                 //so we create it's key-value couple and put into the redis database
                 jedis.set(key, "0");
                 System.out.println(jedis.get(key));
-                return ResponseEntity.ok(username +" You joined the " + competitionTitle + " Competititon !");
-            }
-            else
-            {
+                return ResponseEntity.ok(username + " You joined the " + competitionTitle + " Competititon !");
+            } else {
                 //if there is the key-value couple in the database then it means that
                 //the user wants to leave the competition so we delete the key-value couple
                 //from the database
