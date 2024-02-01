@@ -255,7 +255,7 @@ public class RedisToMongo {
                                 .append("tot_pages", "$tot_pages")),
                 new Document("$sort",
                         new Document("tot_pages", -1L))
-        ))/*.allowDiskUse(true)*/;
+        )).allowDiskUse(true);
         mongoCollection = MongoConfig.getCollection("Competitions");
         logger.info("After Aggregation and Before inserting");
         for (Document doc : result) {
