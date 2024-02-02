@@ -124,6 +124,7 @@ public class RedisToMongo {
      */
     @Scheduled(fixedRate = 36000000, initialDelay = 36000000) // 10 hours in milliseconds
     public void updateMongoCompetitions() {
+        logger.info("Updating MongoDB competitions...");
         SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
         try {
             semaphore.acquire();
@@ -131,7 +132,6 @@ public class RedisToMongo {
             e.printStackTrace();
         }
         logger.info("Updating MongoDB competitions...");
-        //jedis = RedisConfig.getSession();
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
 
         mongoCollection = MongoConfig.getCollection("Competitions");
@@ -208,12 +208,14 @@ public class RedisToMongo {
 
     @Scheduled(fixedRate = 36000000, initialDelay = 36000000)
     public void InsertIntoRedisCompetitionsCreated() {
+        logger.info("Acquiring token...");
         SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
         try {
             semaphore.acquire();
         }catch (InterruptedException e) {
             e.printStackTrace();
         }
+        logger.info("Token acquired...");
         logger.info("Inserting things into redis");
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
         mongoCollection = MongoConfig.getCollection("ActiveBooks");
@@ -256,7 +258,7 @@ public class RedisToMongo {
         mongoCollection = MongoConfig.getCollection("Competitions");
         logger.info("After Aggregation and Before inserting");
         for (Document doc : result) {
-            logger.info("Inside doc : result");
+            logger.info("Inserting");
             String username = (String) doc.get("username");
             String tag = (String) doc.get("tag");
             String TagTag = tag.substring(0, 1).toUpperCase() + tag.substring(1);
@@ -278,7 +280,7 @@ public class RedisToMongo {
                 if (Comp != null) {
                     String CompName = (String) Comp.get("name");
                     if (!CompName.isEmpty()) {
-                        String key = "competition:" + CompName + ":" + username + ":" + TagTag;
+                        String key = "competition:" + CompName + ":" + TagTag + ":" + username;
                         jedis.set(key, pages_read.toString());
                     }
                 }
@@ -286,11 +288,11 @@ public class RedisToMongo {
                 e.printStackTrace();
             } finally {
                 logger.info("After inserting");
-                semaphore.release();
+                //semaphore.release();
             }
         }
     }
-    */
+*/
 
     /**
      * This method is scheduled to run every 24 hours.
