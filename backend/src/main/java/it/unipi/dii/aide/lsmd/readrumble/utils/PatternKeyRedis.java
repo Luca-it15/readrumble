@@ -20,7 +20,6 @@ public class PatternKeyRedis {
             do {
                 ScanResult<String> scanResult = jedisNode.scan(cursor, scanParams);
                 result = scanResult.getResult();
-                System.out.print(" ");
                 cursor = scanResult.getCursor();
             } while (!cursor.equals(ScanParams.SCAN_POINTER_START));
         }
