@@ -1,6 +1,7 @@
 package it.unipi.dii.aide.lsmd.readrumble.data_migration;
 
 import com.mongodb.client.AggregateIterable;
+import it.unipi.dii.aide.lsmd.readrumble.admin.AdminCompetitionDAO;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 import it.unipi.dii.aide.lsmd.readrumble.utils.SemaphoreRR;
 import it.unipi.dii.aide.lsmd.readrumble.utils.Status;
@@ -34,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.params.ScanParams;
 import redis.clients.jedis.resps.ScanResult;
-import static it.unipi.dii.aide.lsmd.readrumble.utils.PatternKeyRedis.KeysTwo;
 import java.util.Arrays;
 
 @Component
@@ -43,6 +43,10 @@ public class RedisToMongo {
     private Jedis jedis;
     private MongoCollection<Document> mongoCollection;
     private DateTimeFormatter isoFormat;
+    private AdminCompetitionDAO adminCompetitionDAO;
+    public RedisToMongo() {
+        adminCompetitionDAO = new AdminCompetitionDAO();
+    }
 
     /**
      * This method is scheduled to run every 2 hours.
@@ -125,12 +129,12 @@ public class RedisToMongo {
     @Scheduled(fixedRate = 36000000, initialDelay = 36000000) // 10 hours in milliseconds
     public void updateMongoCompetitions() {
         logger.info("Updating MongoDB competitions 1...");
-        /*SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
+        SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
         try {
             semaphore.acquire();
         }catch (InterruptedException e) {
             e.printStackTrace();
-        }*/
+        }
         logger.info("Updating MongoDB competitions 2...");
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
 
@@ -199,7 +203,7 @@ public class RedisToMongo {
             mongoCollection.updateOne(filter, Updates.push("rank", competition));
         }
         logger.info("MongoDB competitions updated!");
-        //semaphore.release();
+        semaphore.release();
     }
     /*
         The next function is commented beacuse it's only purpose is to fill the redis dbs with active
@@ -293,7 +297,17 @@ public class RedisToMongo {
         }
     }
 */
-
+    @Scheduled(fixedRate = 86400000, initialDelay = 36000000) // 24 hours in milliseconds
+    public void eliminateAdminMongoCompetitions() {
+        SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
+        try {
+            semaphore.acquire();
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        adminCompetitionDAO.eliminateCompetitions();
+        semaphore.release();
+    }
     /**
      * This method is scheduled to run every 24 hours.
      * It eliminates the old competitions from Redis and MongoDB.

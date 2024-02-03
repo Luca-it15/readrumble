@@ -15,8 +15,14 @@ public class AdminCompetitionController {
         adminCompetitionDAO = new AdminCompetitionDAO();
     }
     @PostMapping("/delete")
-    public ResponseEntity<String> deleteCompetition(@RequestBody Document params) {
-        return adminCompetitionDAO.adminDeleteCompetition(params);
+    public ResponseEntity<String> deleteCompetitionInFuture(@RequestBody Document params) {
+        String competition_name = (String) params.get("name");
+        if(competition_name!=null)
+        {
+            adminCompetitionDAO.saveInMemoryCompetitionsToDelete(competition_name);
+            return ResponseEntity.ok("The competition will be deleted in the next 24 hours");
+        }
+        return ResponseEntity.ok("the field 'name' is empty");
     }
 
     @PostMapping("/add")
