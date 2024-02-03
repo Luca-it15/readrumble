@@ -74,7 +74,7 @@ public class CompetitionDAO {
         try {
             //Jedis jedis = RedisConfig.getSession();
             JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
-            Set<String> matchingKeys = KeysTwo(jedis, "*:" + _id);
+            List<String> matchingKeys = KeysTwo(jedis, "*:" + _id);
             List<Document> result = new ArrayList<>();
             for (String key : matchingKeys) {
                 String value = jedis.get(key);

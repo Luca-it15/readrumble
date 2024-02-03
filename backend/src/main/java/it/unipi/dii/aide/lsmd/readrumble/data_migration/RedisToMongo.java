@@ -65,7 +65,7 @@ public class RedisToMongo {
 
             mongoCollection.deleteMany(new Document());
 
-            Set<String> keys = KeysTwo(jedis,"wishlist:*");
+            List<String> keys = KeysTwo(jedis,"wishlist:*");
 
             // Create a map to store the wishlists of each user
             userWishlists = new HashMap<>();
@@ -148,7 +148,7 @@ public class RedisToMongo {
         ArrayList<Document> Competitions_to_change = new ArrayList<>();
         logger.info("Starting to create documents");
         String pattern = "competition:*";
-        Set<String> keys = KeysTwo(jedis,pattern);
+        List<String> keys = KeysTwo(jedis,pattern);
         // Create a list to store all the competition, user and total page read
         for (String key : keys) {
             //competition:competition_name:tag:username->value
@@ -326,7 +326,7 @@ public class RedisToMongo {
                 Document comp_found = cursor.next();
                 System.out.println(comp_found.get("name"));
                 String keyFromMongo = "competition:" + comp_found.get("name") + ":*";
-                Set<String> keys = KeysTwo(jedis,keyFromMongo);
+                List<String> keys = KeysTwo(jedis,keyFromMongo);
                 ScanParams scanParams = new ScanParams().match(keyFromMongo);
                 String redisCursor = "0";
                 for (String key : keys) {
@@ -359,7 +359,7 @@ public class RedisToMongo {
             MongoCollection<Document> collection2 = MongoConfig.getCollection("ActiveBooks");
 
 
-            Set<String> keys = KeysTwo(jedis,"post:*");
+            List<String> keys = KeysTwo(jedis,"post:*");
             List<Document> posts = new ArrayList<>();
 
             for (String key : keys) {

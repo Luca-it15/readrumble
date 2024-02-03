@@ -93,7 +93,7 @@ public class AdminCompetitionDAO {
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         //competition:competition_name:tag:username->10
         try {
-            Set<String> keys = KeysTwo(jedis,"competition:" + competition_name + ":*");
+            List<String> keys = KeysTwo(jedis,"competition:" + competition_name + ":*");
             for(String key : keys)
             {
                 jedis.del(key);
