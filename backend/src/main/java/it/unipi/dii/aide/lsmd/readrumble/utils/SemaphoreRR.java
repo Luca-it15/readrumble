@@ -1,14 +1,16 @@
 package it.unipi.dii.aide.lsmd.readrumble.utils;
 
+import java.util.concurrent.Semaphore;
+
 /**
  * pattern Singleton for Semaphore class
  */
 public class SemaphoreRR {
     private static SemaphoreRR instance = null;
-    private SemaphoreRR semaphoreRR;
+    private Semaphore semaphoreRR;
 
     private SemaphoreRR(int permits) {
-        this.semaphoreRR = new SemaphoreRR(permits);
+        this.semaphoreRR = new Semaphore(permits);
     }
 
     public static synchronized SemaphoreRR getInstance(int permits) {

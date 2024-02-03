@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="explore finish">
+    <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="semaphore application">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/data_initialization/RedisInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/data_initialization/RedisInitializer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/readrumble" beforeDir="false" afterPath="$PROJECT_DIR$/readrumble" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/data_migration/RedisToMongo.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/data_migration/RedisToMongo.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -378,7 +379,8 @@
     <MESSAGE value="update book finish" />
     <MESSAGE value="explore finish" />
     <MESSAGE value="Cluster mongo e redis" />
-    <option name="LAST_COMMIT_MESSAGE" value="Cluster mongo e redis" />
+    <MESSAGE value="semaphore application" />
+    <option name="LAST_COMMIT_MESSAGE" value="semaphore application" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
