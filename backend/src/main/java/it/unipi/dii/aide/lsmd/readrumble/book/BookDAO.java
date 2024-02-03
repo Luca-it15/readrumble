@@ -7,6 +7,8 @@ import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
 import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.checkBookExist;
 import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.checkUserExist;
 
+import static it.unipi.dii.aide.lsmd.readrumble.book.BookController.setResult;
+
 import com.mongodb.client.MongoCollection;
 
 import org.bson.Document;
@@ -74,20 +76,6 @@ public class BookDAO {
     }
 
     /**
-     * This method turns a list of books' documents into a list of books
-     *
-     * @param bookDocuments the list of books
-     * @return list of books
-     */
-    private List<LightBookDTO> setResult(List<Document> bookDocuments) {
-        List<LightBookDTO> books = new ArrayList<>();
-        for (Document doc : bookDocuments) {
-            books.add(new LightBookDTO(doc.getLong("id"), doc.getString("title")));
-        }
-        return books;
-    }
-
-    /**
      * This method returns the wishlist of a user
      *
      * @param username of the user
@@ -125,7 +113,6 @@ public class BookDAO {
         }
 
         Map<String, String> bookMap = new HashMap<>();
-        bookMap.put("book_id", String.valueOf(book.getBook_id()));
         bookMap.put("book_title", book.getBook_title());
         bookMap.put("num_pages", String.valueOf(book.getNum_pages()));
         bookMap.put("tags", String.join(",", book.getTags()));

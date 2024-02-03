@@ -1,20 +1,21 @@
 package it.unipi.dii.aide.lsmd.readrumble.data_migration;
 
-import com.mongodb.client.AggregateIterable;
 import it.unipi.dii.aide.lsmd.readrumble.admin.AdminCompetitionDAO;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
+import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.utils.SemaphoreRR;
 import it.unipi.dii.aide.lsmd.readrumble.utils.Status;
-import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
-import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
+
 import static it.unipi.dii.aide.lsmd.readrumble.utils.PatternKeyRedis.KeysTwo;
-import org.springframework.data.mongodb.core.aggregation.AggregationOptions;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
 import org.bson.conversions.Bson;
 import org.bson.Document;
 
-import redis.clients.jedis.*;
+import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.params.ScanParams;
 
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCursor;
@@ -22,25 +23,25 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.MongoCollection;
 
-
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.*;
+
+import java.util.List;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
+import java.util.Comparator;
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.params.ScanParams;
-import redis.clients.jedis.resps.ScanResult;
-import java.util.Arrays;
 
 @Component
 public class RedisToMongo {
     private static Logger logger = LoggerFactory.getLogger(RedisToMongo.class);
-    private Jedis jedis;
     private MongoCollection<Document> mongoCollection;
     private DateTimeFormatter isoFormat;
     private AdminCompetitionDAO adminCompetitionDAO;
@@ -59,38 +60,28 @@ public class RedisToMongo {
         Map<String, List<Document>> userWishlists;
 
         try {
-            jedis = RedisConfig.getSession();
-            //JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
+            JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
             mongoCollection = MongoConfig.getCollection("Wishlists");
 
             mongoCollection.deleteMany(new Document());
 
-            Transaction transaction = jedis.multi();
-            Response<Set<String>> keysResponse = transaction.keys("wishlist:*");
-            transaction.exec();
-
-            Set<String> keys = keysResponse.get();
-
-            //Set<String> keys = KeysTwo(jedis,"wishlist:*")
+            Set<String> keys = KeysTwo(jedis,"wishlist:*");
 
             // Create a map to store the wishlists of each user
             userWishlists = new HashMap<>();
 
             for (String key : keys) {
                 String username = key.split(":")[1];
+                Long book_id = Long.parseLong(key.split(":")[2]);
 
-                Transaction transactionForHGetAll = jedis.multi();
-                Response<Map<String, String>> fieldsResponse = transactionForHGetAll.hgetAll(key);
-                transactionForHGetAll.exec();
-
-                Map<String, String> fields = fieldsResponse.get();
+                Map<String, String> fields = jedis.hgetAll(key);
 
                 // Convert the tags string into an array of strings (the tags are separated by commas)
                 String tagsField = fields.get("tags");
                 List<String> tags = tagsField != null ? Arrays.asList(tagsField.split(",")) : new ArrayList<>();
 
                 Document doc = new Document()
-                        .append("book_id", Long.parseLong(fields.get("book_id")))
+                        .append("book_id", Long.parseLong(String.valueOf(book_id)))
                         .append("book_title", fields.get("book_title"))
                         .append("num_pages", Integer.parseInt(fields.get("num_pages")))
                         .append("tags", tags);
