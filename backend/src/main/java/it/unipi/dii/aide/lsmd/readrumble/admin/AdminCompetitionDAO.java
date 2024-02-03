@@ -4,10 +4,12 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
+import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
+import redis.clients.jedis.*;
 import org.bson.Document;
 import org.springframework.http.ResponseEntity;
 import redis.clients.jedis.Jedis;
-
+import static it.unipi.dii.aide.lsmd.readrumble.utils.PatternKeyRedis.KeysTwo;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -19,7 +21,7 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class AdminCompetitionDAO {
     static List<Document> inMemoryCompetitions = new ArrayList<>();
-
+    static List<String> toDeleteCompetitions = new ArrayList<>();
     public void saveInMemoryCompetitions() {
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
 
@@ -27,6 +29,21 @@ public class AdminCompetitionDAO {
             collection.insertMany(inMemoryCompetitions);
 
             inMemoryCompetitions.clear();
+        }
+    }
+    public void saveInMemoryCompetitionsToDelete(String competition_name) {
+        toDeleteCompetitions.add(competition_name);
+    }
+
+    public void eliminateCompetitions() {
+        MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
+
+        if (!toDeleteCompetitions.isEmpty()) {
+            for(String comp : toDeleteCompetitions)
+            {
+                adminDeleteCompetition(comp);
+            }
+            toDeleteCompetitions.clear();
         }
     }
 
@@ -69,31 +86,32 @@ public class AdminCompetitionDAO {
         }
     }
 
-    public ResponseEntity<String> adminDeleteCompetition(Document params) {
-        Jedis jedis = RedisConfig.getSession();
+    public void adminDeleteCompetition(String competition_name) {
 
-        String CompName = (String) params.get("CompName");
+        JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
 
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
-
+        //competition:competition_name:tag:username->10
         try {
-            String key = "competition:" + CompName + ":*";
-
-            jedis.del(key);
-        } catch (Exception e) {
-            return ResponseEntity.ok("Exception: " + e.getMessage());
-        }
-
-        try (MongoCursor<Document> competitions = collection.find(eq("name", CompName)).cursor()) {
-            if (competitions.hasNext()) {
-                collection.deleteOne(eq("name", CompName));
-
-                return ResponseEntity.ok("Competition deleted!");
-            } else {
-                return ResponseEntity.ok("Competition does not exist!");
+            Set<String> keys = KeysTwo(jedis,"competition:" + competition_name + ":*");
+            for(String key : keys)
+            {
+                jedis.del(key);
             }
         } catch (Exception e) {
-            return ResponseEntity.ok("Exception: " + e.getMessage());
+            System.out.println("Exception: " + e.getMessage());
+        }
+
+        try (MongoCursor<Document> competitions = collection.find(eq("name", competition_name)).cursor()) {
+            if (competitions.hasNext()) {
+                collection.deleteOne(eq("name", competition_name));
+
+                System.out.println("Competition deleted!");
+            } else {
+                System.out.println("Competition does not exist!");
+            }
+        } catch (Exception e) {
+            System.out.println("Exception: " + e.getMessage());
         }
     }
 

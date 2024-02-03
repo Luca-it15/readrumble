@@ -53,8 +53,7 @@ public class ActiveBooksMonthlyInitializer {
                                 .append("num_pages", "$$book.books.num_pages")
                                 .append("bookmark", "$$book.books.bookmark")
                                 .append("pages_read", 0)
-                                .append("tags", "$$book.books.tags")
-                                .append("state", "$$book.books.state"))))));
+                                .append("tags", "$$book.books.tags"))))));
         pipeline.add(new Document("$unset", "_id"));
         pipeline.add(new Document("$merge", "ActiveBooks"));
 
@@ -64,7 +63,7 @@ public class ActiveBooksMonthlyInitializer {
     // Every first day of the month at 00:00
     @Scheduled(cron = "0 0 0 1 * *")
     public void monthlyInitializer() {
-        logger.info("Monthly update of ActiveBooks started");
+        logger.info("Monthly update of ActiveBooks started. Initializing docs for the new month (" + LocalDate.now().getMonth() + ")");
 
         MongoCollection<Document> collectionActiveBooks = MongoConfig.getCollection("ActiveBooks");
 
