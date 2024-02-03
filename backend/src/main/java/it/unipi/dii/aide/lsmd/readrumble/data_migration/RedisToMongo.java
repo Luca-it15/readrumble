@@ -124,14 +124,14 @@ public class RedisToMongo {
      */
     @Scheduled(fixedRate = 36000000, initialDelay = 36000000) // 10 hours in milliseconds
     public void updateMongoCompetitions() {
-        logger.info("Updating MongoDB competitions...");
-        SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
+        logger.info("Updating MongoDB competitions 1...");
+        /*SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
         try {
             semaphore.acquire();
         }catch (InterruptedException e) {
             e.printStackTrace();
-        }
-        logger.info("Updating MongoDB competitions...");
+        }*/
+        logger.info("Updating MongoDB competitions 2...");
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
 
         mongoCollection = MongoConfig.getCollection("Competitions");
@@ -156,9 +156,9 @@ public class RedisToMongo {
         Set<String> keys = KeysTwo(jedis,pattern);
         // Create a list to store all the competition, user and total page read
         for (String key : keys) {
-            //competition:competition_name:username:tag->value
+            //competition:competition_name:tag:username->value
             String competition_name = key.split(":")[1];
-            String username = key.split(":")[2];
+            String username = key.split(":")[3];
             Integer tot_pages = Integer.parseInt(jedis.get(key));
             Document doc = new Document()
                     .append("competition_name", competition_name)
@@ -199,7 +199,7 @@ public class RedisToMongo {
             mongoCollection.updateOne(filter, Updates.push("rank", competition));
         }
         logger.info("MongoDB competitions updated!");
-        semaphore.release();
+        //semaphore.release();
     }
     /*
         The next function is commented beacuse it's only purpose is to fill the redis dbs with active
