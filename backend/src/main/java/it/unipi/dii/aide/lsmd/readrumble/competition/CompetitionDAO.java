@@ -30,18 +30,22 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class CompetitionDAO {
 
-    public List<Document> getAllCompetition() {
+    public List<CompetitionDTO> getAllCompetition() {
 
         LocalDate date_of_today = LocalDate.now();
         Bson end_dateFilter = Filters.gte("end_date", date_of_today);
         Bson start_dateFilter = Filters.lte("start_date", date_of_today);
         Bson dateFilter = Filters.and(start_dateFilter, end_dateFilter);
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
-        List<Document> competitions = collection.find(dateFilter)
-                .sort(Sorts.descending("end_date"))
-                .into(new ArrayList<>());
-        System.out.println(competitions);
-        return competitions;
+        ArrayList<Document> competitions = collection.find(dateFilter).sort(Sorts.descending("end_date")).into(new ArrayList<>());
+        List<CompetitionDTO> competitionDTOS = new ArrayList<>();
+        for(Document competition :competitions)
+        {
+            CompetitionDTO comp = new CompetitionDTO(competition);
+            competitionDTOS.add(comp);
+        }
+
+        return competitionDTOS;
     }
 
     public List<Document> getPopularCompetitions() {
@@ -74,7 +78,7 @@ public class CompetitionDAO {
         try {
             //Jedis jedis = RedisConfig.getSession();
             JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
-            List<String> matchingKeys = KeysTwo(jedis, "*:" + _id);
+            List<String> matchingKeys = KeysTwo(jedis, "competition:*:*:" + _id);
             List<Document> result = new ArrayList<>();
             for (String key : matchingKeys) {
                 String value = jedis.get(key);
@@ -96,14 +100,13 @@ public class CompetitionDAO {
         return result;
     }
 
-    public Document goCompetitionInformation(Document docx) {
+    public CompetitionDTO goCompetitionInformation(Document docx) {
         String competitionTitle = (String) docx.get("CompetitionTitle");
-        String username = (String) docx.get("Username");
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         ArrayList<Document> result = collection.find(eq("name", competitionTitle)).into(new ArrayList<>());
-        Document doc = result.getFirst();
-        System.out.println(doc);
-        return doc;
+        CompetitionDTO competition = new CompetitionDTO(result.getFirst());
+        System.out.println(competition);
+        return competition;
     }
 
     public ResponseEntity<String> userJoinsOrLeavesCompetition(Document userDoc) {

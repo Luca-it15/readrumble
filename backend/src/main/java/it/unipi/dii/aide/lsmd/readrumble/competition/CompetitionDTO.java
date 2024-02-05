@@ -4,27 +4,29 @@ import org.bson.conversions.Bson;
 import org.springframework.data.annotation.Id;
 import org.bson.Document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class CompetitionDTO {
 
     private String name;
     private String tag;
-    private Document rank;
-    private String isJoin;
+    private ArrayList rank;
 
-    // Costruttore senza parametri
     public CompetitionDTO() {
     }
 
-    // Costruttore con parametri
-    public CompetitionDTO(String name, String tag, Document rank, String isJoin) {
+    public CompetitionDTO(String name, String tag, ArrayList rank) {
         this.name = name;
         this.tag = tag;
         this.rank = rank;
-        this.isJoin = isJoin;
     }
-
-    // Metodi getter e setter per il campo 'name'
+    public CompetitionDTO(Document doc) {
+        this.name = doc.get("name").toString();
+        this.tag = doc.get("tag").toString();
+        this.rank = (ArrayList) doc.get("rank");
+    }
     public String getName() {
         return name;
     }
@@ -33,7 +35,6 @@ public class CompetitionDTO {
         this.name = name;
     }
 
-    // Metodi getter e setter per il campo 'tag'
     public String getTag() {
         return tag;
     }
@@ -42,21 +43,13 @@ public class CompetitionDTO {
         this.tag = tag;
     }
 
-    // Metodi getter e setter per il campo 'rank'
-    public Document getRank() {
+    public ArrayList getRank() {
         return rank;
     }
 
-    public void setRank(Document rank) {
+    public void setRank(ArrayList rank) {
         this.rank = rank;
     }
 
-    // Metodi getter e setter per il campo 'isJoin'
-    public String getIsJoin() {
-        return isJoin;
-    }
 
-    public void setIsJoin(String isJoin) {
-        this.isJoin = isJoin;
-    }
 }

@@ -28,7 +28,7 @@ public class CompetitionController {
     }
 
     @GetMapping("/retrieve/all")
-    public List<Document> retrieveAllCompetitions()
+    public List<CompetitionDTO> retrieveAllCompetitions()
     {
         return competitionDAO.getAllCompetition();
     }
@@ -43,7 +43,7 @@ public class CompetitionController {
         return competitionDAO.getPopularCompetitions();
     }
     @PostMapping("/getcompinfo")
-    public Document getCompetitionInfo(@RequestBody Document docx)
+    public CompetitionDTO getCompetitionInfo(@RequestBody Document docx)
     {
         return competitionDAO.goCompetitionInformation(docx);
     }
