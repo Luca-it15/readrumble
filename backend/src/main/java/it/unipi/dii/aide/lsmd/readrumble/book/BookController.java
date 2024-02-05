@@ -20,7 +20,7 @@ public class BookController {
      * @param bookDocuments the list of books
      * @return list of books
      */
-    private List<LightBookDTO> setResult(List<Document> bookDocuments) {
+    public static List<LightBookDTO> setResult(List<Document> bookDocuments) {
         List<LightBookDTO> books = new ArrayList<>();
         for (Document doc : bookDocuments) {
             books.add(new LightBookDTO(doc.getLong("id"), doc.getString("title")));
@@ -70,7 +70,7 @@ public class BookController {
         List<Document> BookDocuments = ActiveBooksCollection.aggregate(List.of(
                 new Document("$match", new Document("username", username)),
                 new Document("$sort", new Document("year", -1).append("month", -1)),
-                new Document("$project", new Document("books", new Document("$filter", new Document("input", "$books").append("as", "book").append("cond", new Document("$eq", List.of("$$book.state", 1)))))),
+                new Document("$project", new Document("books", new Document("$filter", new Document("input", "$books").append("as", "book").append("cond", new Document("$eq", List.of("$$book.bookmark", "$$book.num_pages")))))),
                 new Document("$unwind", "$books"),
                 new Document("$project", new Document("id", "$books.book_id").append("title", "$books.book_title")),
                 new Document("$limit", 10)
@@ -97,7 +97,7 @@ public class BookController {
                 new Document("$match", new Document("username", username)),
                 new Document("$sort", new Document("year", -1).append("month", -1)),
                 new Document("$limit", 1),
-                new Document("$project", new Document("books", new Document("$filter", new Document("input", "$books").append("as", "book").append("cond", new Document("$eq", List.of("$$book.state", 0)))))),
+                new Document("$project", new Document("books", new Document("$filter", new Document("input", "$books").append("as", "book").append("cond", new Document("$ne", List.of("$$book.bookmark", "$$book.num_pages")))))),
                 new Document("$unwind", "$books"),
                 new Document("$project", new Document("id", "$books.book_id").append("title", "$books.book_title").append("tags", "$books.tags").append("bookmark", "$books.bookmark").append("num_pages", "$books.num_pages"))
         )).into(new ArrayList<>());

@@ -18,8 +18,8 @@ const NavApp = () => {
 
     const handleLogout = () => {
         localStorage.clear();
-        navigate("/");
         window.location.reload();
+        navigate("/");
     }
 
     return (

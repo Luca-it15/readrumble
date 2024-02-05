@@ -3,6 +3,7 @@ package it.unipi.dii.aide.lsmd.readrumble.competition;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
 import org.bson.Document;
+import org.slf4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import redis.clients.jedis.*;
@@ -56,9 +57,16 @@ public class CompetitionController {
 
     @GetMapping("/joinedBy/{id}")
     public List<Map<String, String>> getJoinedCompetitions(@PathVariable String id) {
+        Logger logger = org.slf4j.LoggerFactory.getLogger(CompetitionController.class);
+
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
         String pattern = "competition:*:*:"+id;
-        Set<String> keys = KeysTwo(jedis,pattern);
+
+        logger.info("Fetching competitions for user: " + id);
+
+        List<String> keys = KeysTwo(jedis, pattern);
+
+        logger.info("Keys found");
 
         if (keys.isEmpty()) {
             return new ArrayList<>();

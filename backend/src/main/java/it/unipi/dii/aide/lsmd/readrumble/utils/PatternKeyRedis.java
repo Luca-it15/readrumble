@@ -11,31 +11,17 @@ import java.util.List;
 import java.util.Set;
 
 public class PatternKeyRedis {
-    public static Set<String> scanNode(Jedis node, String pattern) {
-        Set<String> result = new HashSet<>();
-        ScanParams scanParams = new ScanParams().match(pattern);
-        String cursor = ScanParams.SCAN_POINTER_START;
-        do {
-            ScanResult<String> scanResult = node.scan(cursor, scanParams);
-            List<String> keys = scanResult.getResult();
-            if(!keys.isEmpty())
-            {
-                for(String key : keys)
-                {
-                    result.add(key);
-                }
-
-            }
-            cursor = scanResult.getCursor();
-        } while (!cursor.equals(ScanParams.SCAN_POINTER_START));
-        return result;
-    }
-    public static Set<String> KeysTwo(JedisCluster cluster, String pattern) {
-        Set<String> result = new HashSet<>();
+    public static List<String> KeysTwo(JedisCluster cluster, String pattern) {
+        List<String> result = null;
         for (ConnectionPool node : cluster.getClusterNodes().values()) {
-            try (Jedis j = new Jedis(node.getResource())) {
-                result.addAll(scanNode(j,pattern)); // Single node scan from earlier example
-            }
+            Jedis jedisNode = new Jedis(node.getResource());
+            ScanParams scanParams = new ScanParams().match(pattern).count(2000);
+            String cursor = ScanParams.SCAN_POINTER_START;
+            do {
+                ScanResult<String> scanResult = jedisNode.scan(cursor, scanParams);
+                result = scanResult.getResult();
+                cursor = scanResult.getCursor();
+            } while (!cursor.equals(ScanParams.SCAN_POINTER_START));
         }
         return result;
     }

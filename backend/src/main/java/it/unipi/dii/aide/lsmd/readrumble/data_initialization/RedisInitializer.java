@@ -8,6 +8,7 @@ import com.mongodb.client.MongoCollection;
 import jakarta.annotation.PostConstruct;
 import org.bson.Document;
 import org.springframework.stereotype.Component;
+import redis.clients.jedis.ConnectionPool;
 import redis.clients.jedis.Jedis;
 
 import java.util.*;
@@ -15,6 +16,9 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.params.ScanParams;
+import redis.clients.jedis.resps.ScanResult;
 
 @Component
 public class RedisInitializer {
@@ -29,7 +33,10 @@ public class RedisInitializer {
 
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
         MongoCollection<Document> mongoWishlists = MongoConfig.getCollection("Wishlists");
-        Set<String> keys = KeysTwo(jedis,"wishlist:*");
+
+        // Search in the cluster if the keys are already present using the scan method
+        List<String> keys = KeysTwo(jedis, "wishlist:*");
+
         if (keys.isEmpty()) {
             List<Document> documents = new ArrayList<>();
             mongoWishlists.find().into(documents);

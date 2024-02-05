@@ -4,10 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="semaphore application">
+    <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="neo4j virtual machine">
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_02_02_2024_18_39__Changes_.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_27_01_2024_14_31_[Changes]/shelved.patch" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_27_01_2024_14_31__Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/config/database/Neo4jConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/config/database/Neo4jConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/user/UserDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/user/UserDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/readrumble" beforeDir="false" afterPath="$PROJECT_DIR$/readrumble" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,7 +29,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/readrumble" />
     <option name="ROOT_SYNC" value="SYNC" />
   </component>
   <component name="MarkdownSettingsMigration">
@@ -44,26 +48,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;test&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/roman.LAPTOP-AP4SF555/Documents/PROGETTO_LARGE_SCALE/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/admin&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "Merging test",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/roman.LAPTOP-AP4SF555/Documents/PROGETTO_LARGE_SCALE/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/admin",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\roman.LAPTOP-AP4SF555\Documents\PROGETTO_LARGE_SCALE\backend\src\main\java\it\unipi\dii\aide\lsmd\readrumble\admin" />
@@ -382,7 +386,8 @@
     <MESSAGE value="explore finish" />
     <MESSAGE value="Cluster mongo e redis" />
     <MESSAGE value="semaphore application" />
-    <option name="LAST_COMMIT_MESSAGE" value="semaphore application" />
+    <MESSAGE value="neo4j virtual machine" />
+    <option name="LAST_COMMIT_MESSAGE" value="neo4j virtual machine" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

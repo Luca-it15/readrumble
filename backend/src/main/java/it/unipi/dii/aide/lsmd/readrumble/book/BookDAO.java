@@ -2,10 +2,13 @@ package it.unipi.dii.aide.lsmd.readrumble.book;
 
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
+import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
 
 import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.checkBookExist;
 import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.checkUserExist;
+
+import static it.unipi.dii.aide.lsmd.readrumble.book.BookController.setResult;
 
 import com.mongodb.client.MongoCollection;
 
@@ -21,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCluster;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -74,20 +78,6 @@ public class BookDAO {
     }
 
     /**
-     * This method turns a list of books' documents into a list of books
-     *
-     * @param bookDocuments the list of books
-     * @return list of books
-     */
-    private List<LightBookDTO> setResult(List<Document> bookDocuments) {
-        List<LightBookDTO> books = new ArrayList<>();
-        for (Document doc : bookDocuments) {
-            books.add(new LightBookDTO(doc.getLong("id"), doc.getString("title")));
-        }
-        return books;
-    }
-
-    /**
      * This method returns the wishlist of a user
      *
      * @param username of the user
@@ -117,7 +107,7 @@ public class BookDAO {
      * @return response
      */
     public ResponseEntity<String> addToWishlist(String username, Long bookId, WishlistBookDTO book) {
-        Jedis jedis = RedisConfig.getSession();
+        JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
 
         // See if the book is already in the wishlist
         if (jedis.exists("wishlist:" + username + ":" + bookId)) {
@@ -125,7 +115,6 @@ public class BookDAO {
         }
 
         Map<String, String> bookMap = new HashMap<>();
-        bookMap.put("book_id", String.valueOf(book.getBook_id()));
         bookMap.put("book_title", book.getBook_title());
         bookMap.put("num_pages", String.valueOf(book.getNum_pages()));
         bookMap.put("tags", String.join(",", book.getTags()));
@@ -142,7 +131,7 @@ public class BookDAO {
      * @return response
      */
     public ResponseEntity<String> removeFromWishlist(String username, Long bookId) {
-        Jedis jedis = RedisConfig.getSession();
+        JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
 
         if (!jedis.exists("wishlist:" + username + ":" + bookId)) {
             return ResponseEntity.badRequest().body("Book not in wishlist");
@@ -217,7 +206,7 @@ public class BookDAO {
                 new Document("$match", new Document("username", new Document("$in", usernameList))),
                 new Document("$sort", new Document("year", -1).append("month", -1)),
                 new Document("$limit", usernames.length()),
-                new Document("$project", new Document("books", new Document("$filter", new Document("input", "$books").append("as", "book").append("cond", new Document("$eq", List.of("$$book.state", 1)))))),
+                new Document("$project", new Document("books", new Document("$filter", new Document("input", "$books").append("as", "book").append("cond", new Document("$eq", List.of("$$book.bookmark", "$$book.num_pages")))))),
                 new Document("$unwind", "$books"),
                 new Document("$project", new Document("id", "$books.book_id").append("title", "$books.book_title")),
                 new Document("$limit", 20)
