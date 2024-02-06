@@ -32,6 +32,7 @@ function CompetitionSpec() {
     const [data, setData] = useState([]);
     const [rank, setRank] = useState([])
     const [isJoin, setJoin] = useState(false);
+    const [isEnded, setIsEnded] = useState(false);
     const [points, setPoints] = useState(null);
     const username = JSON.parse(localStorage.getItem('logged_user'));
     var usernameToAdd = username["_id"];
@@ -72,7 +73,9 @@ function CompetitionSpec() {
         axios.post('http://localhost:8080/api/competition/getcompinfo', {
             CompetitionTitle: name
         }).then(response => {
+            console.log(response.data["isEnded"]);
             setData(response.data);
+            setIsEnded(response.data["isEnded"]);
             searchForUser(response.data);
         }).catch(error => console.error('Errore nella richiesta POST:', error));
     }
@@ -245,7 +248,11 @@ function CompetitionSpec() {
                     </React.Fragment>
                 ) : (
                     <React.Fragment>
-                        {points != null ? (
+                        {isEnded ? (
+                            <Grid>
+                                <Typography variant="h5" sx={{marginTop: '15px'}}>The Competition is finished</Typography>
+                            </Grid>
+                        ) : (points != null ? (
                             <Grid>
                                 <Typography variant="h5" sx={{marginTop: '15px'}}>Your pages read: {points}</Typography>
                             </Grid>
@@ -253,10 +260,14 @@ function CompetitionSpec() {
                             <Grid>
                                 <Typography variant="h5" sx={{marginTop: '15px'}}>You are not attending this competition</Typography>
                             </Grid>
-                        )}
+                        ))}
 
                         <Grid>
-                            {points != null ? (
+                            {isEnded  ? (
+                                <Grid>
+                                    <Typography variant="h6" sx={{marginTop: '15px'}}>You cannot join the competition because it is closed</Typography>
+                                </Grid>
+                            ) : (points != null ? (
                                 <Button variant="filledTonal" sx={{
                                     backgroundColor: red[200],
                                     margin: '10px', '&:hover': {backgroundColor: red[100]}
@@ -274,7 +285,7 @@ function CompetitionSpec() {
                                 }}>
                                     <Typography>Join competition</Typography>
                                 </Button>
-                            )}
+                            ))}
                         </Grid>
                         <Grid>
                             {joinStatus.message && (
