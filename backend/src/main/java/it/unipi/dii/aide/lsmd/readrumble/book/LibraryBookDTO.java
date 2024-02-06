@@ -1,4 +1,4 @@
-package it.unipi.dii.aide.lsmd.readrumble.library;
+package it.unipi.dii.aide.lsmd.readrumble.book;
 
 import java.util.ArrayList;
 import java.util.List;

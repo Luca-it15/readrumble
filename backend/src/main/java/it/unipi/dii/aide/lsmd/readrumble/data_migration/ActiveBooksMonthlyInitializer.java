@@ -17,6 +17,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
+
 @Component
 public class ActiveBooksMonthlyInitializer {
     private Logger logger = LoggerFactory.getLogger(ActiveBooksMonthlyInitializer.class);
@@ -61,7 +63,7 @@ public class ActiveBooksMonthlyInitializer {
     }
 
     // Every first day of the month at 00:00
-    @Scheduled(cron = "0 0 0 1 * *")
+   @Scheduled(cron = "0 0 0 1 * *")
     public void monthlyInitializer() {
         logger.info("Monthly update of ActiveBooks started. Initializing docs for the new month (" + LocalDate.now().getMonth() + ")");
 
