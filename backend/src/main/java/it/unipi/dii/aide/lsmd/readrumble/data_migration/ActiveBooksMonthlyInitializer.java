@@ -64,7 +64,7 @@ public class ActiveBooksMonthlyInitializer {
 
     // Every first day of the month at 00:00
    @Scheduled(cron = "0 0 0 1 * *")
-    public void ActiveBooksMonthlyInitializer() {
+    public void monthlyInitializer() {
         logger.info("Monthly update of ActiveBooks started. Initializing docs for the new month (" + LocalDate.now().getMonth() + ")");
 
         MongoCollection<Document> collectionActiveBooks = MongoConfig.getCollection("ActiveBooks");

@@ -27,7 +27,6 @@ public class LibraryBookDAO {
                         .append("year", year).append("month", formattedMonth);
         Document userDocument = collection.find(query).first();
         List<LibraryBookDTO> libraryBooks = new ArrayList<>();
-        /*
         if (userDocument != null) {
             List<Document> books = (List<Document>) userDocument.get("books");
             for (Document book : books) {
@@ -45,7 +44,7 @@ public class LibraryBookDAO {
         } else {
             System.out.println("the user not read nothing in this moment");
         }
-*/
+
         return libraryBooks;
     }
 
