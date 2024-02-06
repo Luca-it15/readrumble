@@ -33,15 +33,17 @@ public class CompetitionDAO {
     public List<CompetitionDTO> getAllCompetition() {
 
         LocalDate date_of_today = LocalDate.now();
-        Bson end_dateFilter = Filters.gte("end_date", date_of_today);
+        LocalDate date_5_days_before = date_of_today.minusDays(5);
+        Bson end_dateFilter = Filters.gte("end_date", date_5_days_before);
         Bson start_dateFilter = Filters.lte("start_date", date_of_today);
         Bson dateFilter = Filters.and(start_dateFilter, end_dateFilter);
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         ArrayList<Document> competitions = collection.find(dateFilter).sort(Sorts.descending("end_date")).into(new ArrayList<>());
         List<CompetitionDTO> competitionDTOS = new ArrayList<>();
-        for(Document competition :competitions)
+        for(Document competition : competitions)
         {
             CompetitionDTO comp = new CompetitionDTO(competition);
+            System.out.println(comp);
             competitionDTOS.add(comp);
         }
 
