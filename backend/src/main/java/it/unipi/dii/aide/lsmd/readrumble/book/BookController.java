@@ -13,6 +13,7 @@ import java.util.*;
 @CrossOrigin(origins = "http://localhost:3000")
 public class BookController {
     private final BookDAO bookDAO = new BookDAO();
+    private static final LibraryBookDAO  abd = new LibraryBookDAO();
 
     /**
      * This method turns a list of books' documents into a list of books
@@ -241,5 +242,12 @@ public class BookController {
     @GetMapping("/analytics/pagesTrend/{username}")
     public List<Document> getPagesTrend(@PathVariable String username) {
         return bookDAO.getPagesTrend(username);
+    }
+
+
+    @GetMapping("/library/title/{username}")
+    public List<LibraryBookDTO> getBookTitlesByUsername(@PathVariable String username) {
+
+        return abd.getLibraryBooks(username);
     }
 }
