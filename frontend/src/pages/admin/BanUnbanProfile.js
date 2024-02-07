@@ -9,30 +9,46 @@ function BanUnbanProfile(){
             backgroundColor: '#f1f7fa',
             padding: '10px',
             margin: '20px 10px 0px 10px',
+            "width":"50%",
+            "position":"relative",
+            "left":"25%",
             borderRadius: 18,
-            width: '100%',
             textAlign: 'center'
         }
+    const PaperStyle1 = {
+                backgroundColor: '#f1f7fa',
+                padding: '10px',
+                width:'80%',
+                "position":"relative",
+                "left":"10%",
+                margin: '20px 10px 0px 10px',
+                borderRadius: 18,
+                textAlign: 'center'
+            }
     const PaperStyleBan = {
       backgroundColor: 'Firebrick',
       color: 'white',
       padding: '10px',
+      width:"50%",
+      "position":"relative",
+      "left":"25%",
       margin: '20px 10px 0px 10px',
       borderRadius: 18,
-      width: '100%',
       textAlign: 'center',
-      transition: 'background-color 0.3s ease',
+      transition: 'background-color 0.3s ease'
     };
 
     const PaperStyleBanHover = {
       backgroundColor: 'DarkRed',
       color: 'white',
       padding: '10px',
+      width:"50%",
+      "position":"relative",
+      "left":"25%",
       margin: '20px 10px 0px 10px',
       borderRadius: 18,
-      width: '100%',
       textAlign: 'center',
-      transition: 'background-color 0.3s ease',
+      transition: 'background-color 0.3s ease'
     };
 
     var isJoined = false;
@@ -100,30 +116,17 @@ function BanUnbanProfile(){
 
 
     return(
-    <Grid
-      container
-      direction="column"
-      justifyContent="space-evenly"
-      alignItems="center" >
-          <Grid item xs='auto'>
-            <Paper elevation={2} style={PaperStyle}>
+    <Container   alignItems="center">
+        <Paper elevation={2} style={PaperStyle1} >
               <Typography variant="h4">Ban/Unban the user {data.id}</Typography>
-            </Paper>
-          </Grid>
-          <Grid container xs='auto' direction="row" spacing={2}>
-              <Grid item xs='auto'>
-                <Paper elevation={2} style={PaperStyle}>
+                <Paper elevation={2} style={PaperStyle} xs={6}>
                   <Typography variant="h5">Name: {data.name}</Typography>
                 </Paper>
-              </Grid>
-              <Grid item xs='auto'>
-                <Paper elevation={2} style={PaperStyle}>
+                <Paper elevation={2} style={PaperStyle} xs={6}>
                   <Typography variant="h5">Surname: {data.surname}</Typography>
                 </Paper>
-              </Grid>
-          </Grid>
-          <Grid item xs='auto'>
             <Paper
+                xs={6} alignItems="center"
               elevation={2}
               style={ButtonPaperStyle}
               onClick={() => goBan()}
@@ -131,16 +134,14 @@ function BanUnbanProfile(){
               onMouseLeave={() => setButtonPaperStyle(PaperStyleBan)}
             >
               <Typography variant="h4">{isBanned ? "Unban User" : "Ban User"}</Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs='auto'>
+              </Paper>
             {banStatus.message && (
                 <Alert severity={banStatus.variant}>
                     {banStatus.message}
                 </Alert>
             )}
-          </Grid>
-        </Grid>
+          </Paper>
+    </Container>
     )
 }
 

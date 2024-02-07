@@ -43,7 +43,6 @@ public class CompetitionDAO {
         for(Document competition : competitions)
         {
             CompetitionDTO comp = new CompetitionDTO(competition);
-            System.out.println(comp);
             competitionDTOS.add(comp);
         }
 
@@ -83,7 +82,6 @@ public class CompetitionDAO {
             List<String> matchingKeys = KeysTwo(jedis, "competition:*:*:" + _id);
             List<Document> result = new ArrayList<>();
             for (String key : matchingKeys) {
-                System.out.println(key);
                 String value = jedis.get(key);
                 Document doc = new Document();
                 doc.append("CompName", key);
@@ -108,7 +106,6 @@ public class CompetitionDAO {
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         ArrayList<Document> result = collection.find(eq("name", competitionTitle)).into(new ArrayList<>());
         CompetitionDTO competition = new CompetitionDTO(result.getFirst());
-        System.out.println(competition);
         return competition;
     }
 
