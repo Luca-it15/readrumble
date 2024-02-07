@@ -17,7 +17,11 @@ const NavApp = () => {
     const handleClose = () => setOpen(false);
 
     const handleLogout = () => {
-        localStorage.clear();
+
+        localStorage.removeItem("logged_user");
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("isAdmin");
         window.location.reload();
         navigate("/");
     }
