@@ -126,9 +126,14 @@ public class UserDAO {
                     } else {
                         registered_user.append("isAdmin", false);
                     }
-
+                    if (registered_user.containsKey("isBanned")) {
+                        registered_user.append("isBanned", true);
+                    } else {
+                        registered_user.append("isBanned", false);
+                    }
                     return registered_user;
-                } else {
+                }
+                else {
                     return null;
                 }
             } else {

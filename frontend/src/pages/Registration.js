@@ -64,14 +64,21 @@ function RegistrationForm() {
             } else {
                 currentUser = JSON.parse(currentUser);
             }
-
             currentUser['_id'] = formData['_id'];
             currentUser['name'] = formData['name'];
             currentUser['surname'] = formData['surname'];
-
+            currentUser['password'] = formData['password'];
+            currentUser['competitions'] = [];
+            currentUser['favoriteBooks'] = [];
+            currentUser['recentlyReadBooks'] = [];
+            currentUser['wishlist'] = [];
+            currentUser['following'] = [];
+            currentUser['isAdmin'] = false;
+            currentUser['isBanned'] = false;
+            currentUser['password'] = false;
             localStorage.setItem('logged_user', JSON.stringify(currentUser));
-            localStorage.setItem('isLoggedIn', 'true');
-
+            localStorage.setItem('isLoggedIn', true);
+            localStorage.setItem('isAdmin', false);
             window.location.href = '/home';
         } catch (error) {
             setRegistrationStatus({message: error.response ? error.response.data : error.message, variant: 'danger'});

@@ -117,7 +117,6 @@ function LoginForm() {
         // Fetch competitions
         const fetchedCompetitions = await axios.get(`http://localhost:8080/api/competition/joinedBy/${id}`)
         const competitions = JSON.parse(JSON.stringify(fetchedCompetitions.data));
-
         if (competitions) {
             currentUser['competitions'] = competitions.map(competition => ({
                 name: competition.name.replace(/_/g, ' '),
@@ -152,22 +151,30 @@ function LoginForm() {
                 setLoginStatus({message: "Wrong username or password", variant: 'danger'});
                 setIsLoading(false);
             } else {
-                setLoginStatus({
-                    message: "Login successful!",
-                    variant: 'success'
-                });
-
-                const isLoggedIn = true;
-
                 setLoginStatus(true);
-
-                localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
                 localStorage.setItem('isAdmin', JSON.stringify(response.data.isAdmin == 1));
                 localStorage.setItem('logged_user', JSON.stringify(response.data));
-
                 if (response.data.isAdmin == 1) {
+                    const isLoggedIn = true;
+                    localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
                     window.location.href = "/home"
-                } else {
+                }
+                else if((response.data.isBanned == 1))
+                {
+                    setLoginStatus({
+                        message: "You are Banned from the service",
+                        variant: 'danger'
+                    });
+                    setIsLoading(false);
+                }
+                else
+                {
+                    setLoginStatus({
+                        message: "Login successful!",
+                        variant: 'success'
+                    });
+                    const isLoggedIn = true;
+                    localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
                     fetchAll(response.data._id);
                 }
             }

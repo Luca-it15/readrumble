@@ -43,7 +43,6 @@ public class CompetitionDAO {
         for(Document competition : competitions)
         {
             CompetitionDTO comp = new CompetitionDTO(competition);
-            System.out.println(comp);
             competitionDTOS.add(comp);
         }
 
@@ -107,7 +106,6 @@ public class CompetitionDAO {
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
         ArrayList<Document> result = collection.find(eq("name", competitionTitle)).into(new ArrayList<>());
         CompetitionDTO competition = new CompetitionDTO(result.getFirst());
-        System.out.println(competition);
         return competition;
     }
 
