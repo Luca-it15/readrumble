@@ -1,13 +1,12 @@
 package it.unipi.dii.aide.lsmd.readrumble.admin;
 
+import org.bson.Document;
 import org.springframework.data.annotation.Id;
 
 public class AdminUserDTO {
 
     private String _id;
-    private String name;
-    private String surname;
-
+    private Boolean isBanned;
 
 
     // Costruttori
@@ -16,10 +15,22 @@ public class AdminUserDTO {
         // Costruttore vuoto necessario per MongoDB
     }
 
-    public AdminUserDTO(String _id, String name, String surname) {
+    public AdminUserDTO(String _id, Boolean isBanned) {
         this._id = _id;
-        this.name = name;
-        this.surname = surname;
+        this.isBanned = isBanned;
+    }
+
+    public AdminUserDTO(Document document) {
+        this._id = (String) document.get("_id");
+        if(document.containsKey("isBanned"))
+        {
+            this.isBanned = true;
+        }
+        else
+        {
+            this.isBanned = false;
+        }
+
     }
 
     // Getter e Setter
@@ -31,22 +42,15 @@ public class AdminUserDTO {
     public void setId(String id) {
         this._id = id;
     }
-
-    public String getName() {
-        return name;
+    public Boolean getIsBanned() {
+        return isBanned;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setIsBanned(Boolean isBanned) {
+        this.isBanned = isBanned;
     }
 
-    public String getSurname() {
-        return surname;
-    }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
 
 
 
@@ -55,10 +59,10 @@ public class AdminUserDTO {
 
     @Override
     public String toString() {
-        return "Utente {" +
+        return "User {" +
                 "id='" + _id + '\'' +
-                ",  name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
+                "isBanned='" + isBanned + '\'' +
+
                 '}';
     }
 

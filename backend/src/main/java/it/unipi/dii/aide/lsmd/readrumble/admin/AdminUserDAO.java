@@ -21,14 +21,11 @@ public class AdminUserDAO {
         return collection.find(eq("isBanned", 1)).into(new ArrayList<>());
     }
 
-    public Document AdminSearchUser(String _id) {
+    public AdminUserDTO AdminSearchUser(String _id) {
         MongoCollection<Document> collection = MongoConfig.getCollection("Users");
         try (MongoCursor<Document> doc = collection.find(eq("_id", _id)).cursor()) {
             if (doc.hasNext()) {
-                Document user = doc.next();
-                if (!user.containsKey("isBanned")) {
-                    user.append("isBanned", 0);
-                }
+                AdminUserDTO user = new AdminUserDTO(doc.next());
                 return user;
             } else {
                 return null;
@@ -42,11 +39,10 @@ public class AdminUserDAO {
         MongoCollection<Document> collection = MongoConfig.getCollection("Users");
         try (MongoCursor<Document> doc = collection.find(eq("_id", _id)).cursor()) {
             if (doc.hasNext()) {
-                Document user = doc.next();
-                if (user.containsKey("isBanned")) {
+                AdminUserDTO user = new AdminUserDTO(doc.next());
+                if (user.getIsBanned()) {
                     return ResponseEntity.ok("User is already Banned");
                 } else {
-                    user.append("isBanned", 1);
                     collection.updateOne(eq("_id", _id), Updates.set("isBanned", 1));
                     return ResponseEntity.ok(_id + " user is now Banned");
                 }
@@ -62,11 +58,10 @@ public class AdminUserDAO {
         MongoCollection<Document> collection = MongoConfig.getCollection("Users");
         try (MongoCursor<Document> doc = collection.find(eq("_id", _id)).cursor()) {
             if (doc.hasNext()) {
-                Document user = doc.next();
-                if (!user.containsKey("isBanned")) {
+                AdminUserDTO user = new AdminUserDTO(doc.next());
+                if (!user.getIsBanned()) {
                     return ResponseEntity.ok("User is not banned");
                 } else {
-                    user.append("isBanned", 1);
                     collection.updateOne(eq("_id", _id), Updates.unset("isBanned"));
                     return ResponseEntity.ok(_id + " user is now Unbanned");
                 }

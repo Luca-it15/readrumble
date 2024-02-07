@@ -39,7 +39,7 @@ public class AdminUserController {
     }
 
     @PostMapping("/search_user")
-    public Document searchUser(@RequestBody String _id)
+    public AdminUserDTO searchUser(@RequestBody String _id)
     {
         return adminUserDAO.AdminSearchUser(_id);
     }

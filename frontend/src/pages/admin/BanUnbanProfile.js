@@ -5,7 +5,14 @@ import {useNavigate, useParams} from 'react-router-dom';
 import '../../App.css'
 
 function BanUnbanProfile(){
-
+    const PaperStyle = {
+            backgroundColor: '#f1f7fa',
+            padding: '10px',
+            margin: '20px 10px 0px 10px',
+            borderRadius: 18,
+            width: '100%',
+            textAlign: 'center'
+        }
     var isJoined = false;
     const { name } = useParams();
     const navigate = useNavigate();
@@ -71,7 +78,7 @@ function BanUnbanProfile(){
 
 
     return(
-    <Container className="CompCon">
+    <Container>
         <Row>
             <h1>Ban/Unban the user {data._id}</h1>
         </Row>
@@ -95,7 +102,6 @@ function BanUnbanProfile(){
             )}
         </Row>
     </Container>
-
     )
 }
 
