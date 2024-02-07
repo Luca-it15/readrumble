@@ -7,8 +7,7 @@ import GoBack from "../components/GoBack";
 
 const UserSettings = () => {
     const [selectedForm, setSelectedForm] = useState(null);
-    let currentUser = localStorage.getItem('logged_user');
-
+    let currentUser = JSON.parse(localStorage.getItem('logged_user'));
     let obj2 = {"name": "name", "_id": currentUser["_id"]};
     let obj3 = {"name": "surname", "_id": currentUser["_id"]};
     let obj4 = {"name": "password", "_id": currentUser["_id"]};

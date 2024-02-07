@@ -39,43 +39,22 @@ public class MemoryToMongo {
      * This method saves the users in memory to the document DB every hour
      */
     @Scheduled(fixedRate = 3600000, initialDelay =3600000 ) // 1 hour
-    public void saveInMemoryUsers() {
-
-        SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
-        try {
-            semaphore.acquire();
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public void saveInMemoryUsersAndUpdateChanges() {
         userDAO.saveInMemoryUsers();
-        semaphore.release();
+        userDAO.updateChanges();
     }
     @Scheduled(fixedRate =  86400000, initialDelay =3600000) // 24 hours in milliseconds
     public void insertNewCompetitionsIntoMongoDB() {
-        SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
-        try {
-            semaphore.acquire();
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         adminCompetitionDAO.saveInMemoryCompetitions();
-        semaphore.release();
     }
 
 
     public class HandlerBookAdmin implements Runnable {
         @Override
         public void run() {
-            SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
-            try {
-                semaphore.acquire();
-            }catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             adminBookDAO.addBook();
             adminBookDAO.updateBook();
             adminBookDAO.removeBook();
-            semaphore.release();
         }
     }
 

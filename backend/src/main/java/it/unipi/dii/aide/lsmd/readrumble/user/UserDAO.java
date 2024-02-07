@@ -28,6 +28,7 @@ import java.util.Map;
 
 public class UserDAO {
     private static List<Document> inMemoryUsers = new ArrayList<>();
+    private static List<Document> inMemoryChangesToUpdate = new ArrayList<>();
     private static List<Document> inMemoryFollowRelations = new ArrayList<>();
     private static List<Document> inMemoryFollowRelationsToBeDeleted = new ArrayList<>();
 
@@ -49,6 +50,7 @@ public class UserDAO {
             }
         }
         inMemoryUsers.clear();
+
     }
 
     /**
@@ -181,26 +183,29 @@ public class UserDAO {
             return null;
         }
     }
+    public void updateChanges()
+    {
+        for(Document changes : inMemoryChangesToUpdate)
+        {
+            String new_field = (String) changes.get("new_field");
+            String type_of_change_request = (String) changes.get("type_of_change_request");
+            String username_to_use = (String) changes.get("username_to_use");
 
-    public ResponseEntity<String> ChangeData(Document changes) {
-        String old_field = (String) changes.get("old_field");
-        String new_field = (String) changes.get("new_field");
-        String type_of_change_request = (String) changes.get("type_of_change_request");
-        String username_to_use = (String) changes.get("username_to_use");
+            MongoCollection<Document> collection = MongoConfig.getCollection("Users");
 
-        MongoCollection<Document> collection = MongoConfig.getCollection("Users");
-
-        try (MongoCursor<Document> cursor = collection.find(eq("_id", username_to_use)).cursor()) {
-            if (cursor.hasNext()) {
-                collection.updateOne(eq("_id", username_to_use), set(type_of_change_request, new_field));
-                String result = type_of_change_request + " Changed from " + old_field + " To " + new_field;
-                return ResponseEntity.ok(result);
-            } else {
-                return ResponseEntity.ok("NOT FOUND");
+            try (MongoCursor<Document> cursor = collection.find(eq("_id", username_to_use)).cursor()) {
+                if (cursor.hasNext()) {
+                    collection.updateOne(eq("_id", username_to_use), set(type_of_change_request, new_field));
+                }
+            } catch (Exception e) {
+                System.out.println("Catch Exception: " + e.getMessage());
             }
-        } catch (Exception e) {
-            return ResponseEntity.ok("EXCEPTION IN SERVER");
         }
+        inMemoryChangesToUpdate.clear();
+    }
+    public ResponseEntity<String> ChangeData(Document changes) {
+        inMemoryChangesToUpdate.add(changes);
+        return ResponseEntity.ok("Changes will be effective in the next hours");
     }
 
     /**
