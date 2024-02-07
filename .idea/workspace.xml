@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="neo4j virtual machine">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/admin/BanUnbanProfile.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/admin/BanUnbanProfile.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/readrumble" beforeDir="false" afterPath="$PROJECT_DIR$/readrumble" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,7 +71,7 @@
       <recent name="it.unipi.dii.aide.lsmd.readrumble.data_migration" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Spring Boot.ReadrumbleApplication">
     <configuration name="ReadrumbleApplication (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="backend_part (2)" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="it.unipi.dii.aide.lsmd.readrumble.ReadrumbleApplication" />
@@ -105,7 +105,7 @@
       <workItem from="1706019751830" duration="2478000" />
       <workItem from="1706689566960" duration="1553000" />
       <workItem from="1707133595982" duration="1342000" />
-      <workItem from="1707224889982" duration="708000" />
+      <workItem from="1707224889982" duration="2264000" />
     </task>
     <task id="LOCAL-00001" summary="post apposto per davvero deh?">
       <option name="closed" value="true" />
@@ -363,7 +363,31 @@
       <option name="project" value="LOCAL" />
       <updated>1707133617015</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="neo4j virtual machine">
+      <option name="closed" value="true" />
+      <created>1707227454547</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1707227454547</updated>
+    </task>
+    <task id="LOCAL-00034" summary="form post ok">
+      <option name="closed" value="true" />
+      <created>1707227611643</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1707227611643</updated>
+    </task>
+    <task id="LOCAL-00035" summary="logout change">
+      <option name="closed" value="true" />
+      <created>1707304074941</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1707304074941</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -400,7 +424,9 @@
     <MESSAGE value="Cluster mongo e redis" />
     <MESSAGE value="semaphore application" />
     <MESSAGE value="neo4j virtual machine" />
-    <option name="LAST_COMMIT_MESSAGE" value="neo4j virtual machine" />
+    <MESSAGE value="form post ok" />
+    <MESSAGE value="logout change" />
+    <option name="LAST_COMMIT_MESSAGE" value="logout change" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
