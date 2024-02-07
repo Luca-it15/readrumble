@@ -143,7 +143,7 @@ public class BookDAO {
     }
 
     /**
-     * This method returns the trending books of this month
+     * This method returns the trending books of the last 30 days
      *
      * @return id and title of the book
      */
