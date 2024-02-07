@@ -83,6 +83,7 @@ public class CompetitionDAO {
             List<String> matchingKeys = KeysTwo(jedis, "competition:*:*:" + _id);
             List<Document> result = new ArrayList<>();
             for (String key : matchingKeys) {
+                System.out.println(key);
                 String value = jedis.get(key);
                 Document doc = new Document();
                 doc.append("CompName", key);

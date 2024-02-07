@@ -65,13 +65,11 @@ public class CompetitionController {
         logger.info("Fetching competitions for user: " + id);
 
         List<String> keys = KeysTwo(jedis, pattern);
-
-        logger.info("Keys found");
-
         if (keys.isEmpty()) {
+            logger.info("Keys not found");
             return new ArrayList<>();
         }
-
+        logger.info("Keys found");
         List<Map<String, String>> competitions = new ArrayList<>();
 
         for (String key : keys) {

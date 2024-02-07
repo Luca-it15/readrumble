@@ -1,9 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, Form, Button, Container, Row, Col} from 'react-bootstrap';
+import { Alert, Row, Col, Form } from 'react-bootstrap';
+import {Container, Grid, Typography, Paper} from '@mui/material';
 import axios from 'axios';
 import '../../App.css';
 import {useNavigate} from 'react-router-dom';
 function UserAdmin() {
+    const PaperStyle = {
+            backgroundColor: '#f1f7fa',
+            padding: '10px',
+            margin: '20px 10px 0px 10px',
+            borderRadius: 18,
+            width: '100%',
+            textAlign: 'center'
+        }
+    const PaperStyleSearch = {
+            backgroundColor: 'cadetblue',
+            color: "white",
+            padding: '10px',
+            margin: '20px 10px 0px 10px',
+            borderRadius: 18,
+            width: '100%',
+            textAlign: 'center'
+        }
     const navigate = useNavigate();
     const[usernameId,setUsernameId] = useState([]);
     const[searchVal,setSearchVal] = useState({
@@ -51,39 +69,45 @@ function UserAdmin() {
     }
     useEffect(()=>{getBannedUser()},[])
     return (
-        <Container className="defCont">
+        <Container>
             <Row>
-            <h1>This is the admin page to ban and unban people</h1>
+                <Paper elevation={2} style={PaperStyle}>
+                    <Typography variant="h2">This is the admin page to ban and unban people</Typography>
+                </Paper>
             </Row>
             <Row>
-                <Form>
-                    <Form.Group className="mb-3" controlId="formBasicUsername">
-                        <Form.Label><h2>Search User</h2></Form.Label>
-                        <Form.Control type="text" name="_id" placeholder="Username" onChange={handleChange}/>
-                    </Form.Group>
-                </Form>
-            </Row>
-            <Row>
-                <Button onClick={()=>{goProfile(usernameId)}}>Search</Button>
+                <Paper elevation={2} style={PaperStyle}>
+                    <Form>
+                        <Form.Group className="mb-3" controlId="formBasicUsername">
+                            <Form.Label><Typography variant="h4">Enter the username of the user to search</Typography></Form.Label>
+                            <Form.Control type="text" name="_id" placeholder="Username" onChange={handleChange}/>
+                        </Form.Group>
+                    </Form>
+                    <Paper elevation={2} style={PaperStyleSearch} onClick={()=>{goProfile(usernameId)}}>
+                        <Typography variant="h4">Search user</Typography>
+                    </Paper>
+                </Paper>
             </Row>
             <Row>
                 {searchVal.message && (
-                                <Alert severity={searchVal.variant}>
-                                    {searchVal.message}
-                                </Alert>
-                            )}
+                    <Alert severity={searchVal.variant}>
+                        {searchVal.message}
+                    </Alert>
+                )}
             </Row>
             <Row>
-                <h2>List of Banned User</h2>
+                <Paper elevation={2} style={PaperStyle}>
+                    <Typography variant="h4">List of Banned User</Typography>
+                </Paper>
             </Row>
             <Row>
-
                 {listUser.map(item =>(
                     <Row>
-                        <Button className = "buttonBan" onClick={()=>{goProfile(item._id)}}>{item._id}</Button>
+                        <Paper elevation={2} style={PaperStyle} onClick={()=>{goProfile(item._id)}}>
+                            <Typography variant="h5">{item._id}</Typography>
+                        </Paper>
                     </Row>
                 ))}
-
             </Row>
         </Container>
     ); 

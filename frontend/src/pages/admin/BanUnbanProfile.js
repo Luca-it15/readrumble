@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, Button, Container, Row, Col } from 'react-bootstrap';
+import {Container, Grid, Typography, Paper, Alert} from '@mui/material';
 import axios from 'axios';
 import {useNavigate, useParams} from 'react-router-dom';
 import '../../App.css'
@@ -13,6 +13,28 @@ function BanUnbanProfile(){
             width: '100%',
             textAlign: 'center'
         }
+    const PaperStyleBan = {
+      backgroundColor: 'Firebrick',
+      color: 'white',
+      padding: '10px',
+      margin: '20px 10px 0px 10px',
+      borderRadius: 18,
+      width: '100%',
+      textAlign: 'center',
+      transition: 'background-color 0.3s ease',
+    };
+
+    const PaperStyleBanHover = {
+      backgroundColor: 'DarkRed',
+      color: 'white',
+      padding: '10px',
+      margin: '20px 10px 0px 10px',
+      borderRadius: 18,
+      width: '100%',
+      textAlign: 'center',
+      transition: 'background-color 0.3s ease',
+    };
+
     var isJoined = false;
     const { name } = useParams();
     const navigate = useNavigate();
@@ -23,6 +45,7 @@ function BanUnbanProfile(){
     const [data, setData] = useState([]);
     const user = JSON.parse(localStorage.getItem('logged_user'));
     const [isBanned, setIsBanned] = useState(false);
+    const [ButtonPaperStyle, setButtonPaperStyle] = useState(PaperStyleBan);
     function goBan()
     {
         var messager = '';
@@ -51,7 +74,6 @@ function BanUnbanProfile(){
     }
     function getUserState()
     {
-        //finire la richiesta per prendere i dati dell'utente
         axios.post("http://localhost:8080/api/admin/user/search_user",name)
         .then(response => {
 
@@ -78,30 +100,47 @@ function BanUnbanProfile(){
 
 
     return(
-    <Container>
-        <Row>
-            <h1>Ban/Unban the user {data._id}</h1>
-        </Row>
-        <Row>
-            <Col>
-                <h3>Name : {data.name}</h3>
-            </Col>
-            <Col>
-                <h3>Surname : {data.surname}</h3>
-            </Col>
-            <Col>
-                <Button onClick={()=>{goBan()}}>{isBanned ? "Unban User" : "Ban User"}</Button>
-            </Col>
-
-        </Row>
-        <Row>
+    <Grid
+      container
+      direction="column"
+      justifyContent="space-evenly"
+      alignItems="center" >
+          <Grid item xs='auto'>
+            <Paper elevation={2} style={PaperStyle}>
+              <Typography variant="h4">Ban/Unban the user {data.id}</Typography>
+            </Paper>
+          </Grid>
+          <Grid container xs='auto' direction="row" spacing={2}>
+              <Grid item xs='auto'>
+                <Paper elevation={2} style={PaperStyle}>
+                  <Typography variant="h5">Name: {data.name}</Typography>
+                </Paper>
+              </Grid>
+              <Grid item xs='auto'>
+                <Paper elevation={2} style={PaperStyle}>
+                  <Typography variant="h5">Surname: {data.surname}</Typography>
+                </Paper>
+              </Grid>
+          </Grid>
+          <Grid item xs='auto'>
+            <Paper
+              elevation={2}
+              style={ButtonPaperStyle}
+              onClick={() => goBan()}
+              onMouseEnter={() => setButtonPaperStyle(PaperStyleBanHover)}
+              onMouseLeave={() => setButtonPaperStyle(PaperStyleBan)}
+            >
+              <Typography variant="h4">{isBanned ? "Unban User" : "Ban User"}</Typography>
+            </Paper>
+          </Grid>
+          <Grid item xs='auto'>
             {banStatus.message && (
                 <Alert severity={banStatus.variant}>
                     {banStatus.message}
                 </Alert>
             )}
-        </Row>
-    </Container>
+          </Grid>
+        </Grid>
     )
 }
 
