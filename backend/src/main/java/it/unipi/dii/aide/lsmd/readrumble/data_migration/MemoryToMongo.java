@@ -2,14 +2,17 @@ package it.unipi.dii.aide.lsmd.readrumble.data_migration;
 
 import it.unipi.dii.aide.lsmd.readrumble.admin.AdminBookDAO;
 import it.unipi.dii.aide.lsmd.readrumble.admin.AdminCompetitionDAO;
+import it.unipi.dii.aide.lsmd.readrumble.competition.CompetitionDTO;
 import it.unipi.dii.aide.lsmd.readrumble.user.UserDAO;
 
+import org.bson.Document;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
+import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -41,7 +44,7 @@ public class MemoryToMongo {
         userDAO.saveInMemoryUsers();
         userDAO.updateChanges();
     }
-    
+
     @Scheduled(fixedRate = 86400000, initialDelay = 3600000) // 24 hours in milliseconds
     public void insertNewCompetitionsIntoMongoDB() {
         adminCompetitionDAO.saveInMemoryCompetitions();

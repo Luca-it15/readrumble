@@ -2,6 +2,7 @@ package it.unipi.dii.aide.lsmd.readrumble.admin;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import it.unipi.dii.aide.lsmd.readrumble.competition.CompetitionDTO;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
@@ -36,8 +37,6 @@ public class AdminCompetitionDAO {
     }
 
     public void eliminateCompetitions() {
-        MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
-
         if (!toDeleteCompetitions.isEmpty()) {
             for(String comp : toDeleteCompetitions)
             {
@@ -47,38 +46,14 @@ public class AdminCompetitionDAO {
         }
     }
 
-    public ResponseEntity<String> adminAddCompetition(Document params) {
-        String CompName = (String) params.get("name");
-        String CompTag = (String) params.get("tag");
-        String DATE_START = (String) params.get("start_date");
-        String DATE_END = (String) params.get("end_date");
-
+    public ResponseEntity<String> adminAddCompetition(Document comp){
+        CompetitionDTO competition = new CompetitionDTO(comp);
         MongoCollection<Document> collection = MongoConfig.getCollection("Competitions");
-
-        try (MongoCursor<Document> competitions = collection.find(eq("Name", CompName)).cursor()) {
+        try (MongoCursor<Document> competitions = collection.find(eq("Name", competition.getName())).cursor()) {
             if (competitions.hasNext()) {
                 return ResponseEntity.ok("Competition Already Exists !");
             } else {
-                try {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    Date start_date = sdf.parse(DATE_START);
-                    Date end_date = sdf.parse(DATE_END);
-
-                    ArrayList array = new ArrayList<>();
-
-                    Document Doc = new Document();
-
-                    Doc.append("name", CompName);
-                    Doc.append("tag", CompTag);
-                    Doc.append("start_date", start_date);
-                    Doc.append("end_date", end_date);
-                    Doc.append("rank", array);
-
-                    inMemoryCompetitions.add(Doc);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
+                inMemoryCompetitions.add(competition.toDocument());
                 return ResponseEntity.ok("Competition Created !");
             }
         } catch (Exception e) {

@@ -4,6 +4,8 @@ import org.bson.conversions.Bson;
 import org.springframework.data.annotation.Id;
 import org.bson.Document;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -48,11 +50,26 @@ public class CompetitionDTO {
     public CompetitionDTO(Document doc) {
         this.name = doc.get("name").toString();
         this.tag = doc.get("tag").toString();
-        this.start_date= convertToLocalDate((Date) doc.get("start_date"))  ;
-        LocalDate end_date = convertToLocalDate((Date) doc.get("end_date"));
-        this.end_date= end_date;
-        this.rank = (ArrayList) doc.get("rank");
-        if(end_date.isBefore(LocalDate.now()))
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date start_date = doc.get("start_date") instanceof String ? sdf.parse((String) doc.get("start_date")) : (Date) doc.get("start_date");
+            Date end_date = doc.get("end_date") instanceof String ? sdf.parse((String) doc.get("end_date")) : (Date) doc.get("end_date");
+            this.start_date= convertToLocalDate(start_date);
+            this.end_date= convertToLocalDate(end_date);
+        } catch (ParseException e) {
+            System.out.println("Catched exception in parsing: "+e.getMessage());
+            this.start_date = LocalDate.now();
+            this.end_date = LocalDate.now().plusDays(1);
+        }
+        if(doc.containsKey("rank"))
+        {
+            this.rank = (ArrayList) doc.get("rank");
+        }
+        else
+        {
+            this.rank = new ArrayList<>();
+        }
+        if(this.end_date.isBefore(LocalDate.now()))
         {
             this.isEnded=true;
         }
@@ -113,6 +130,15 @@ public class CompetitionDTO {
                 ", start_date='" + start_date + '\'' +
                 ", end_date='" + end_date + '\'' +
                 '}';
+    }
+    public Document toDocument(){
+        Document d = new Document();
+        d.append("name",this.name);
+        d.append("tag",this.tag);
+        d.append("start_date",this.start_date);
+        d.append("end_date",this.end_date);
+        d.append("rank",this.rank);
+        return d;
     }
 
 }

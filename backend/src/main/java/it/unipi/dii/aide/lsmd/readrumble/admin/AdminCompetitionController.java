@@ -4,6 +4,7 @@ import org.bson.Document;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.Map;
 
 @RestController
@@ -26,7 +27,7 @@ public class AdminCompetitionController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addCompetition(@RequestBody Document params) {
+    public ResponseEntity<String> addCompetition(@RequestBody Document params){
         return adminCompetitionDAO.adminAddCompetition(params);
     }
 
