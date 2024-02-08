@@ -117,7 +117,7 @@ function RecentlyReadBooks({user}) {
                 }}
                     variant="filledTonal"><Typography>Show more</Typography></Button>
             ) : (
-                recentlyReadBooks.length > 0 && (
+                recentlyReadBooks.length > displayCount && (
                     <Button onClick={loadLessBooks} sx={{
                         backgroundColor: red[100], marginTop: "10px", height: "30px",
                         '&:hover': {backgroundColor: red[100]}

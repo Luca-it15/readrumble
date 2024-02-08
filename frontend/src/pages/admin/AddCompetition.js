@@ -1,8 +1,12 @@
-import React, {useState, useEffect} from 'react';
-import {Form, Alert, Button, Container, Row} from 'react-bootstrap';
+import React, {useState} from 'react';
+import {Form, Alert} from 'react-bootstrap';
 import axios from 'axios';
 import '../../App.css';
 import {useNavigate} from 'react-router-dom';
+import {Paper} from "@mui/material";
+import Typography from "@mui/material/Typography";
+import {blue} from "@mui/material/colors";
+import Button from "@mui/material-next/Button";
 
 const AddCompetition = () => {
     const tags = [
@@ -60,18 +64,32 @@ const AddCompetition = () => {
 
     const navigate = useNavigate();
 
+    const PaperStyle = {
+        backgroundColor: '#f1f7fa',
+        padding: '10px',
+        margin: '10px',
+        borderRadius: 5,
+        width: '90%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+    }
+
     return (
-        <div className="LoginDiv">
-            <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3" controlId="CompName">
-                    <Form.Label>Name of the Competition</Form.Label>
-                    <Form.Control type="text" name="name" placeholder="Name of the competition"
+        <Paper sx={PaperStyle}>
+            <Typography variant="h5" sx={{marginBottom: '20px'}}>Add a new competition</Typography>
+            <Form onSubmit={handleSubmit} style={{width: '40%', display: 'flex', flexDirection: 'column'}}>
+                <Form.Group style={{marginBottom: '20px'}} controlId="CompName">
+                    <Form.Label><Typography> Name of the competition</Typography></Form.Label>
+                    <Form.Control style={{borderRadius: 100}} type="text" name="name"
+                                  placeholder="Name of the competition"
                                   onChange={handleChange}/>
                 </Form.Group>
-                <Form.Group className="mb-3" controlId="CompTag">
-                    <Form.Label>Name of the Tag</Form.Label>
-                    <Form.Select name="tag" onChange={handleChange}>
-                        <option value="">Select Tag</option>
+                <Form.Group style={{marginBottom: '20px'}} controlId="CompTag">
+                    <Form.Label><Typography> Tag</Typography></Form.Label>
+                    <Form.Select name="tag" onChange={handleChange} style={{borderRadius: 100}}>
+                        <option value="">Select tag</option>
                         {SortedTags.map(tag => (
                             <option key={tag} value={tag}>
                                 {tag}
@@ -79,31 +97,40 @@ const AddCompetition = () => {
                         ))}
                     </Form.Select>
                 </Form.Group>
-                <Form.Group className="mb-3" controlId="Start_DateId">
-                    <Form.Label>Select Date</Form.Label>
-                    <Form.Control
-                        type="date"
-                        name="start_date"
-                        onChange={handleChange}
+                <Form.Group style={{marginBottom: '20px'}} controlId="Start_DateId">
+                    <Form.Label><Typography> Start date</Typography></Form.Label>
+                    <Form.Control style={{borderRadius: 100}}
+                                  type="date"
+                                  name="start_date"
+                                  onChange={handleChange}
                     />
                 </Form.Group>
-                <Form.Group className="mb-3" controlId="End_DateId">
-                    <Form.Label>Select Date</Form.Label>
-                    <Form.Control
-                        type="date"
-                        name="end_date"
-                        //value={selectedDate}
-                        onChange={handleChange}
+                <Form.Group style={{marginBottom: '20px'}} controlId="End_DateId">
+                    <Form.Label><Typography> End date</Typography></Form.Label>
+                    <Form.Control style={{borderRadius: 100}}
+                                  type="date"
+                                  name="end_date"
+                                  onChange={handleChange}
                     />
                 </Form.Group>
-                <Button variant="primary" type="submit">
-                    Submit
+                <Button variant="filledTonal"
+                        sx={{backgroundColor: blue[300], color: '#ffffff', '&:hover': {backgroundColor: blue[200]}}}
+                        type="submit">
+                    <Typography>Add competition</Typography>
                 </Button>
             </Form>
-            <Button className="buttonlogreg" onClick={() => {
-                navigate("/admin_competition")
-            }}>
-                Back to Competitions
+
+            <Button variant="filledTonal"
+                    sx={{
+                        backgroundColor: blue[500],
+                        color: '#ffffff',
+                        marginTop: '30px',
+                        '&:hover': {backgroundColor: blue[200]}
+                    }}
+                    onClick={() => {
+                        navigate("/admin_competition")
+                    }}>
+                <Typography>Back to competitions</Typography>
             </Button>
 
             {validationError && (
@@ -117,7 +144,7 @@ const AddCompetition = () => {
                     {addStatus.message}
                 </Alert>
             )}
-        </div>
+        </Paper>
     )
 
 }

@@ -22,8 +22,7 @@ const DashboardAdmin = () => {
             console.log("Avg pages by tag: ", response.data);
             // Convert the object to an array of objects
             let data = Object.entries(response.data).map(([tag, pages]) => ({tag, pages}));
-            // Sort the data by pages
-            data.sort((a, b) => b.pages - a.pages);
+
             setAvgPagesByTagData(data);
         } catch (error) {
             console.log(error.response);
@@ -116,12 +115,11 @@ const DashboardAdmin = () => {
         <div style={{height: '330px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
         <Bar
             data={{
-                labels: avgPagesByTagData.map((data) => data.tag),
+                labels: avgPagesByTagData.map((data) => data.tag).sort((a, b) => a.localeCompare(b)),
                 datasets: [
                     {
                         label: 'Average pages read',
-                        data: avgPagesByTagData.map((data) => data.pages),
-                        backgroundColor: 'rgba(75,192,192,0.41)',
+                        data: avgPagesByTagData.sort((a, b) => a.tag.localeCompare(b.tag)).map((data) => data.pages),                        backgroundColor: 'rgba(75,192,192,0.41)',
                         borderColor: 'rgba(75, 192, 192, 1)',
                         borderWidth: 0,
                         borderRadius: 10,

@@ -4,7 +4,6 @@ import it.unipi.dii.aide.lsmd.readrumble.admin.AdminCompetitionDAO;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.utils.SemaphoreRR;
-import it.unipi.dii.aide.lsmd.readrumble.utils.Status;
 
 import static it.unipi.dii.aide.lsmd.readrumble.utils.PatternKeyRedis.KeysTwo;
 
@@ -15,7 +14,6 @@ import org.bson.conversions.Bson;
 import org.bson.Document;
 
 import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.params.ScanParams;
 
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCursor;
@@ -32,7 +30,6 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Set;
 import java.util.Comparator;
 import java.util.HashMap;
 
@@ -45,6 +42,7 @@ public class RedisToMongo {
     private MongoCollection<Document> mongoCollection;
     private DateTimeFormatter isoFormat;
     private AdminCompetitionDAO adminCompetitionDAO;
+
     public RedisToMongo() {
         adminCompetitionDAO = new AdminCompetitionDAO();
     }
@@ -65,7 +63,7 @@ public class RedisToMongo {
 
             mongoCollection.deleteMany(new Document());
 
-            List<String> keys = KeysTwo(jedis,"wishlist:*");
+            List<String> keys = KeysTwo(jedis, "wishlist:*");
 
             // Create a map to store the wishlists of each user
             userWishlists = new HashMap<>();
@@ -123,7 +121,7 @@ public class RedisToMongo {
         SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
         try {
             semaphore.acquire();
-        }catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         logger.info("Updating MongoDB competitions 2...");
@@ -148,7 +146,7 @@ public class RedisToMongo {
         ArrayList<Document> Competitions_to_change = new ArrayList<>();
         logger.info("Starting to create documents");
         String pattern = "competition:*";
-        List<String> keys = KeysTwo(jedis,pattern);
+        List<String> keys = KeysTwo(jedis, pattern);
         // Create a list to store all the competition, user and total page read
         for (String key : keys) {
             //competition:competition_name:tag:username->value
@@ -196,10 +194,11 @@ public class RedisToMongo {
         logger.info("MongoDB competitions updated!");
         semaphore.release();
     }
+
     /*
-        The next function is commented beacuse it's only purpose is to fill the redis dbs with active
-        competitions key-value pairs of January 2024, we decided to leave it here commented to have a ready to use
-        function to re-fill the dbs for debugging purposes in case of errors
+        The following function is commented because its only purpose is to fill the key-value DB with the active
+        competitions' key-value pairs of January 2024, we decided to leave it here as a comment to have a ready-to-use
+        function to re-fill the DB for debugging purposes.
 
     @Scheduled(fixedRate = 36000000, initialDelay = 36000000)
     public void InsertIntoRedisCompetitionsCreated() {
@@ -288,17 +287,23 @@ public class RedisToMongo {
         }
     }
 */
+
+    /**
+     * This method is scheduled to run every 24 hours.
+     * It eliminates the admin competitions from Redis and MongoDB.
+     */
     @Scheduled(fixedRate = 86400000, initialDelay = 36000000) // 24 hours in milliseconds
     public void eliminateAdminMongoCompetitions() {
         SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
         try {
             semaphore.acquire();
-        }catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         adminCompetitionDAO.eliminateCompetitions();
         semaphore.release();
     }
+
     /**
      * This method is scheduled to run every 24 hours.
      * It eliminates the old competitions from Redis and MongoDB.
@@ -306,17 +311,19 @@ public class RedisToMongo {
     @Scheduled(fixedRate = 86400000, initialDelay = 36000000) // 24 hours in milliseconds
     public void eliminateOldMongoCompetitions() {
         SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
-        try {
-            semaphore.acquire();
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
+        try { semaphore.acquire(); }
+        catch (InterruptedException e) { e.printStackTrace(); }
+
         logger.info("Eliminating old MongoDB competitions...");
+
         LocalDate today = LocalDate.now();
         LocalDate OneMonthAgo = today.minus(Period.ofMonths(1));
-        //jedis = RedisConfig.getSession();
+
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
+
         mongoCollection = MongoConfig.getCollection("Competitions");
+
         Bson dateFilter1 = Filters.gte("end_date", OneMonthAgo);
         Bson dateFilter2 = Filters.lt("end_date", today);
         Bson dateFilter = Filters.and(dateFilter1, dateFilter2);
@@ -324,50 +331,58 @@ public class RedisToMongo {
         try (MongoCursor<Document> cursor = mongoCollection.find(dateFilter).cursor()) {
             while (cursor.hasNext()) {
                 Document comp_found = cursor.next();
-                System.out.println(comp_found.get("name"));
+
                 String keyFromMongo = "competition:" + comp_found.get("name") + ":*";
-                List<String> keys = KeysTwo(jedis,keyFromMongo);
-                ScanParams scanParams = new ScanParams().match(keyFromMongo);
-                String redisCursor = "0";
+                List<String> keys = KeysTwo(jedis, keyFromMongo);
+
                 for (String key : keys) {
                     jedis.del(key);
                 }
             }
         } catch (Exception e) {
-            System.out.println("Catched Exception: " + e.getMessage());
+            logger.error("Catched Exception: " + e.getMessage());
         } finally {
             logger.info("Cleared the old competition");
             semaphore.release();
         }
-
     }
 
     @Scheduled(fixedRate = 900000, initialDelay = 36000000) // 15 minutes in milliseconds
     public void updateMongoPost() {
         SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
-        try {
-            semaphore.acquire();
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println("#---------------- START UPDATE POST IN MONGO ---------------------------#");
+
+        try { semaphore.acquire(); }
+        catch (InterruptedException e) { e.printStackTrace(); }
+
+        logger.info("Starting to update MongoDB Posts...");
+
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
-        //Jedis jedis = RedisConfig.getSession();
+
         isoFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
         try {
-            MongoCollection<Document> collection1 = MongoConfig.getCollection("Posts");
-            MongoCollection<Document> collection2 = MongoConfig.getCollection("ActiveBooks");
+            MongoCollection<Document> collectionPosts = MongoConfig.getCollection("Posts");
+            MongoCollection<Document> collectionActiveBooks = MongoConfig.getCollection("ActiveBooks");
 
-
-            List<String> keys = KeysTwo(jedis,"post:*");
+            List<String> PostKeys = KeysTwo(jedis, "post:*");
             List<Document> posts = new ArrayList<>();
 
-            for (String key : keys) {
+            for (String key : PostKeys) {
                 Map<String, String> postData = jedis.hgetAll(key);
                 String[] keySplit = key.split(":");
+
+                /*
+                    keySplit[1] = hour
+                    keySplit[2] = minute
+                    keySplit[3] = second
+                    keySplit[4] = username
+                    keySplit[5] = book_id
+                    keySplit[6] = rating
+                    keySplit[7] = bookmark
+                    keySplit[8] = pages_read
+                */
+
                 if (postData != null && !postData.isEmpty()) {
-
-
                     LocalDateTime now = LocalDateTime.now();
                     int postHour = Integer.parseInt(keySplit[1]);
                     int postMinute = Integer.parseInt(keySplit[2]);
@@ -380,7 +395,7 @@ public class RedisToMongo {
                     }
 
                     now = now.withHour(postHour).withMinute(postMinute).withSecond(postSecond);
-                    System.out.println("post key is: " + key);
+
                     Document new_doc = new Document("book_id", Long.parseLong(keySplit[5]))
                             .append("rating", keySplit[6])
                             .append("review_text", postData.get("review_text"))
@@ -390,53 +405,75 @@ public class RedisToMongo {
                             .append("tags", postData.get("tags"))
                             .append("bookmark", Integer.parseInt(keySplit[7]))
                             .append("pages_read", Integer.parseInt(keySplit[8]));
-                    //add the document into the post list
                     posts.add(new_doc);
 
-
-                    //current year and month
                     int year = now.getYear();
                     int month = now.getMonthValue();
-                    Document query = new Document("username", keySplit[4])
-                            .append("year", year).append("month", month);
-                    Document userDocument = collection2.find(query).first();
-                    Document lb = null;
-                    if (userDocument != null) {
-                        List<Document> books = (List<Document>) userDocument.get("books");
-                        int index = 0;
-                        for (Document book : books) {
-                            if (Long.parseLong(keySplit[5]) == book.getLong("book_id")) {
-                                lb = book;
-                                break;
-                            }
-                            index++;
-                        }
-                        int new_bookmark = Integer.parseInt(keySplit[7]);
-                        int new_pages_read = lb.getInteger("pages_read") + Integer.parseInt(keySplit[8]);
-                        lb.put("bookmark", new_bookmark);
-                        lb.put("pages_read", new_pages_read);
-                        //update che active book with the new bookmark
-                        //if the book is finish we need to update the status of the book
-                        //0: not finish yet, 1: finish
-                        if (new_bookmark == lb.getInteger("num_pages"))
-                            lb.put("state", Status.FINISHED);
 
-                        collection2.updateOne(query, new Document("$set", new Document("books." + index, lb)));
-                    } else {
-                        System.err.println("book not found in the user's library");
+                    Document query = new Document("username", keySplit[4]).append("year", year).append("month", month);
+                    Document userDocument = collectionActiveBooks.find(query).first();
+                    Document book_to_update = null;
+
+                    // If the user has started new books without making a post about them, we need to add them to ActiveBooks
+                    if (jedis.exists("started:" + keySplit[4] + ":" + keySplit[5])) {
+                        Map<String, String> startedBooks = jedis.hgetAll("started:" + keySplit[4] + ":" + keySplit[5]);
+
+                        Document new_book = new Document("book_id", Long.parseLong(keySplit[5]))
+                                .append("book_title", startedBooks.get("book_title"))
+                                .append("num_pages", Integer.parseInt(startedBooks.get("num_pages")))
+                                .append("tags", startedBooks.get("tags").split(","))
+                                .append("bookmark", 0)
+                                .append("pages_read", 0);
+
+                        if (userDocument != null) {
+                            List<Document> books = (List<Document>) userDocument.get("books");
+                            books.add(new_book);
+                            collectionActiveBooks.updateOne(query, new Document("$set", new Document("books", books)));
+                        } else {
+                            List<Document> books = new ArrayList<>();
+                            books.add(new_book);
+                            userDocument = new Document("username", keySplit[4])
+                                    .append("year", year)
+                                    .append("month", month)
+                                    .append("books", books);
+                            collectionActiveBooks.insertOne(userDocument);
+                        }
+
+                        jedis.del("started:" + keySplit[4] + ":" + keySplit[5]);
                     }
+
+                    List<Document> books = (List<Document>) userDocument.get("books");
+
+                    int index = 0;
+                    for (Document book : books) {
+                        if (Long.parseLong(keySplit[5]) == book.getLong("book_id")) {
+                            book_to_update = book;
+                            break;
+                        }
+
+                        index++;
+                    }
+
+                    int new_bookmark = Integer.parseInt(keySplit[7]);
+                    int new_pages_read = book_to_update.getInteger("pages_read") + Integer.parseInt(keySplit[8]);
+
+                    book_to_update.put("bookmark", new_bookmark);
+                    book_to_update.put("pages_read", new_pages_read);
+
+                    collectionActiveBooks.updateOne(query, new Document("$set", new Document("books." + index, book_to_update)));
                 }
-                //insert the posts into mongoDB
-                collection1.insertMany(posts);
-                //delete the redis key
+
+                // Insert the posts into mongoDB
+                collectionPosts.insertMany(posts);
+
+                // Delete the redis key
                 jedis.del(key);
             }
         } catch (MongoException e) {
             e.printStackTrace();
         } finally {
+            logger.info("MongoDB Posts and ActiveBooks updated");
             semaphore.release();
         }
-
     }
-
 }

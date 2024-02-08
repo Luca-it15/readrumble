@@ -1,9 +1,7 @@
 package it.unipi.dii.aide.lsmd.readrumble.book;
 
 import com.mongodb.client.MongoCollection;
-import it.unipi.dii.aide.lsmd.readrumble.book.LibraryBookDTO;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
-import it.unipi.dii.aide.lsmd.readrumble.utils.Status;
 import org.bson.Document;
 
 import java.text.DecimalFormat;

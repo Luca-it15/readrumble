@@ -3,7 +3,6 @@ package it.unipi.dii.aide.lsmd.readrumble.book;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
-import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
 
 import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.checkBookExist;
 import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.checkUserExist;
@@ -23,7 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
 
 import java.time.LocalDate;
@@ -206,9 +204,11 @@ public class BookDAO {
                 new Document("$match", new Document("username", new Document("$in", usernameList))),
                 new Document("$sort", new Document("year", -1).append("month", -1)),
                 new Document("$limit", usernames.length()),
-                new Document("$project", new Document("books", new Document("$filter", new Document("input", "$books").append("as", "book").append("cond", new Document("$eq", List.of("$$book.bookmark", "$$book.num_pages")))))),
+                new Document("$project", new Document("books", new Document("$filter", new Document("input", "$books")
+                        .append("as", "book")
+                        .append("cond", new Document("$eq", List.of("$$book.bookmark", "$$book.num_pages")))))),
                 new Document("$unwind", "$books"),
-                new Document("$project", new Document("id", "$books.book_id").append("title", "$books.book_title")),
+                new Document("$group", new Document("_id", "$books.book_id").append("title", new Document("$first", "$books.book_title"))),                new Document("$project", new Document("_id", 0).append("id", "$_id").append("title", "$title")),
                 new Document("$limit", 20)
         )).into(new ArrayList<>());
 
@@ -391,5 +391,34 @@ public class BookDAO {
         }
 
         return response;
+    }
+
+    /**
+     * This method adds a book to the list of active books of a user
+     *
+     * @param username of the user
+     * @param book     the book to be added
+     * @return a ResponseEntity with the result of the operation
+     */
+    public ResponseEntity<String> startReading(String username, Long bookId, ActiveBookDTO book) {
+        JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
+
+        if (jedis.exists("started:" + username + ":" + bookId)) {
+            return ResponseEntity.badRequest().body("Book already being read");
+        }
+
+        // If the book is in the wishlist, remove it
+        if (jedis.exists("wishlist:" + username + ":" + bookId)) {
+            jedis.del("wishlist:" + username + ":" + bookId);
+        }
+
+        Map<String, String> bookMap = new HashMap<>();
+        bookMap.put("book_title", book.getTitle());
+        bookMap.put("num_pages", String.valueOf(book.getNum_pages()));
+        bookMap.put("tags", String.join(",", book.getTags()));
+
+        jedis.hset("started:" + username + ":" + bookId, bookMap);
+
+        return ResponseEntity.ok("Book started reading");
     }
 }

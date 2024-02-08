@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import Typography from '@mui/material/Typography';
 import PostsList from '../../components/PostList';
-import {Grid, Paper} from '@mui/material';
+import {Paper} from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material-next/Button';
 import {SearchRounded} from '@mui/icons-material';
@@ -10,7 +10,6 @@ import {blue} from "@mui/material/colors";
 import '../../App.css';
 
 export default function PostAdmin() {
-    const [value, setValue] = useState(0);
     const [searchText, setSearchText] = useState('');
     const [last, setLast] = useState(true);
     const [find, setFind] = useState(false);
@@ -39,6 +38,7 @@ export default function PostAdmin() {
     const searchButton = {
         backgroundColor: blue[400],
         margin: '5px',
+        height: '40px',
         borderRadius: 10,
         textAlign: 'center',
         '&:hover': {
@@ -59,7 +59,7 @@ export default function PostAdmin() {
 
     return (
         <Paper sx={PaperStyle}>
-            <Typography variant="h4">Post Management</Typography>
+            <Typography variant="h5">Post Management</Typography>
             <Box component="form" sx={{display: 'flex', alignItems: 'center'}}>
                 <TextField type="text" placeholder="Search" variant="standard" sx={searchBar} value={searchText}
                            onChange={handleSearchTextChange}/>
