@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Button from '@mui/material-next/Button';
-import {Grid, Typography, Paper, Link, ListItem, List} from '@mui/material';
+import {Grid, Typography, Paper, Link, ListItem, List, Divider} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import '../App.css';
 import {blue} from "@mui/material/colors";
@@ -82,7 +82,8 @@ function CompetitionProfBlock({user}) {
             <Grid container direction="column" justifyContent="space-around">
                 <Grid item><Typography variant="h5">Competitions</Typography></Grid>
                 <List sx={ListStyle}>
-                    {competitions.length === 0 && (<Grid item>
+                    {competitions.length === 0 && (
+                        <Grid item>
                             <ListItem>
                                 <Typography>{currentUser['_id'] === user ? "You are " : user + " is "}
                                     not participating in any competition</Typography>
@@ -90,19 +91,24 @@ function CompetitionProfBlock({user}) {
                         </Grid>)}
                     {competitions.map(item => (
                         <Grid item>
-                            <ListItem>
-                                <Link onClick={() => {goSpecificComp(item.name)}}
-                                    sx={{color: '#000000', '&:hover': {cursor: 'pointer'}}}>
+                            <ListItem sx={{'&:hover':{backgroundColor: '#f1f7fa', borderRadius: '30px'}}}>
+                                <Link onClick={() => {
+                                    goSpecificComp(item.name)
+                                }}
+                                      sx={{color: '#000000', '&:hover': {cursor: 'pointer'}}}>
                                     <Typography>{item.name}</Typography>
                                 </Link>
                             </ListItem>
+                            <Divider variant="middle" component="li"/>
                         </Grid>
                     ))}
                 </List>
             </Grid>
 
-            <Button variant="filled" sx={{backgroundColor: blue[600], marginBottom: '10px',
-                '&:hover': {backgroundColor: blue[400]}}} onClick={goComp}>
+            <Button variant="filled" sx={{
+                backgroundColor: blue[600], marginBottom: '10px',
+                '&:hover': {backgroundColor: blue[400]}
+            }} onClick={goComp}>
                 <Typography>Find other competitions</Typography>
             </Button>
         </Paper>

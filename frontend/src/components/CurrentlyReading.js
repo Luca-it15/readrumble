@@ -85,7 +85,7 @@ function CurrentlyReading({user}) {
                         </Grid>
                     ) : (
                         currentlyReading.slice(0, displayCount).map((book) => (
-                            <Paper elevation={0} sx={{width: '32%', boxShadow: '0px 2px 5px 0px rgba(0,0,0,0.2)',
+                            <Paper elevation={0} sx={{width: '30%', boxShadow: '0px 2px 5px 0px rgba(0,0,0,0.2)',
                                     borderRadius: 4, padding: '8px', margin: '0px',
                                     '&:hover': {boxShadow: '0px 0px 2px 0px rgba(0,0,0,0.2)', cursor: 'pointer'}}}>
 

@@ -98,7 +98,7 @@ function RecentlyReadBooks({user}) {
                 ) : (
                     Array.isArray(recentlyReadBooks) && recentlyReadBooks.slice(0, displayCount).map((book, index) => (
                         <React.Fragment key={index}>
-                            <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
+                            <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa", borderRadius: '30px'}}}>
                                 <Link onClick={() => {
                                     seeDetails(book.id)
                                 }} sx={{color: "#000000"}}>

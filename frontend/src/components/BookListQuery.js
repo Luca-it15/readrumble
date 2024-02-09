@@ -115,7 +115,7 @@ function BookListQuery({query}) {
                         <List sx={ListStyle}>
                             {books.map((book, index) => (
                                 <React.Fragment key={index}>
-                                    <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
+                                    <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa", borderRadius: '30px'}}}>
                                         <Link onClick={() => {
                                             seeDetails(book.id)
                                         }} sx={{color: "#000000"}}>

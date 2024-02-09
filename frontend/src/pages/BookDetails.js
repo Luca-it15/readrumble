@@ -15,7 +15,7 @@ import StarTwoToneIcon from "@mui/icons-material/StarTwoTone";
 import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemoveTwoTone";
 import BookmarkAddIcon from "@mui/icons-material/BookmarkAddTwoTone";
 import {FavoriteTwoTone} from "@mui/icons-material";
-import UpdateIcon from '@mui/icons-material/UploadTwoTone';
+import UpdateIcon from '@mui/icons-material/EditTwoTone';
 import RemoveIcon from '@mui/icons-material/DeleteTwoTone';
 import GoBack from "../components/GoBack";
 import PostList from "../components/PostList";
@@ -179,27 +179,25 @@ function BookDetails() {
 
     const [open, setOpen] = useState(false);
     const [bookId, setBookId] = useState(null);
-  
+
     const handleClickOpen = (id) => {
-      setBookId(id);
-      setOpen(true);
+        setBookId(id);
+        setOpen(true);
     };
-  
+
     const handleClose = () => {
-      setOpen(false);
+        setOpen(false);
     };
 
     const removeBook = (id) => async () => {
         const response = axios.delete("http://localhost:8080/api/admin/book/remove/" + id)
             .then(response => {
-                setOpen(false); 
+                setOpen(false);
                 setTimeout(function () {
                     setDeleteStatus({message: "", variant: 'success'});
                     navigate(-1)
                 }, 4000)
-              
-            })
-       ;
+            });
     }
 
     const updateBook = (id) => async () => {
@@ -266,7 +264,7 @@ function BookDetails() {
                                     variant="filledTonal" startIcon={<UpdateIcon sx={{color: green[600]}}/>}>
                                 <Typography>Edit book data</Typography>
                             </Button>
-                            <Button  onClick={() => handleClickOpen(id)} sx={{
+                            <Button onClick={() => handleClickOpen(id)} sx={{
                                 backgroundColor: red[200],
                                 margin: "5px",
                                 '&:hover': {backgroundColor: red[100]}
@@ -274,18 +272,30 @@ function BookDetails() {
                                     variant="filledTonal" startIcon={<RemoveIcon sx={{color: '#bd3838'}}/>}>
                                 <Typography>Remove book</Typography>
                             </Button>
+
                             <Dialog open={open} onClose={handleClose}>
-                            <DialogTitle>Confirm</DialogTitle>
-                             <DialogContent>
-                             <DialogContentText>
-                                 are you sure?
-                             </DialogContentText>
-                             </DialogContent>
-                              <DialogActions>
-                              <Button onClick={handleClose}>no</Button>
-                              <Button onClick={removeBook(id)}>yes</Button>
+                                <DialogTitle>Delete the book: "{book['title']}"</DialogTitle>
+                                <DialogContent>
+                                    <DialogContentText>
+                                        <Typography>
+                                            Are you sure?
+                                        </Typography>
+                                    </DialogContentText>
+                                </DialogContent>
+                                <DialogActions>
+                                    <Button sx={{
+                                        color: '#ffffff',
+                                        backgroundColor: blue[400],
+                                        marginRight: '20%',
+                                        '&:hover': {backgroundColor: blue[300]}
+                                    }} onClick={handleClose}><Typography>No</Typography></Button>
+                                    <Button sx={{
+                                        color: blue[200],
+                                        marginRight: '22%',
+                                        '&:hover': {backgroundColor: red[300], color: '#ffffff'}
+                                    }} onClick={removeBook(id)}><Typography>Yes</Typography></Button>
                                 </DialogActions>
-                              </Dialog>  
+                            </Dialog>
                         </React.Fragment>
                     ) : (
                         <React.Fragment>
@@ -305,7 +315,8 @@ function BookDetails() {
                                         margin: "5px",
                                         '&:hover': {backgroundColor: blue[100]}
                                     }}
-                                            variant="filledTonal" startIcon={<FavoriteTwoTone sx={{color: '#dddddd'}}/>}>
+                                            variant="filledTonal"
+                                            startIcon={<FavoriteTwoTone sx={{color: '#dddddd'}}/>}>
                                         <Typography>Add to favorites</Typography>
                                     </Button>
                                 ) : (
