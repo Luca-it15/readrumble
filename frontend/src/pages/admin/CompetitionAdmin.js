@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from 'react';
-import {Row, Form, Col} from 'react-bootstrap';
 import {Container, Grid, Typography, Paper} from '@mui/material';
 import axios from 'axios';
 import '../../App.css';
@@ -101,8 +100,8 @@ function CompetitionAdmin() {
                     <TextField type="text" name="searchBar" placeholder="Search" variant="standard" sx={searchBar}
                                            onChange={handleChange}/>
                     <Button onClick={() => {navigate("/admin_competition/add_comp")}} variant="filledTonal"
-                            sx={{color: '#ffffff', backgroundColor: blue[400], height: "40px",
-                                '&:hover': {backgroundColor: blue[300]}}}>
+                            sx={{color: '#ffffff', backgroundColor: blue[600], height: "40px",
+                                '&:hover': {backgroundColor: blue[500]}}}>
                         <Typography>Add competition</Typography>
                     </Button>
                 </Grid>

@@ -121,6 +121,19 @@ public class BookController {
     }
 
     /**
+     * This method adds a book to the list of active books of a user
+     *
+     * @param username of the user
+     * @param book     the book to be added
+     *
+     * @return a ResponseEntity with the result of the operation
+     */
+    @PostMapping("/startReading/{username}/{book_id}")
+    public ResponseEntity<String> startReading(@PathVariable String username, @PathVariable Long book_id, @RequestBody ActiveBookDTO book) {
+        return bookDAO.startReading(username, book_id, book);
+    }
+
+    /**
      * This method returns the wishlist of a user
      *
      * @param username of the user
@@ -247,7 +260,6 @@ public class BookController {
 
     @GetMapping("/library/title/{username}")
     public List<LibraryBookDTO> getBookTitlesByUsername(@PathVariable String username) {
-
         return abd.getLibraryBooks(username);
     }
 }

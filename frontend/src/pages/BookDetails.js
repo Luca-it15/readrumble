@@ -15,10 +15,11 @@ import StarTwoToneIcon from "@mui/icons-material/StarTwoTone";
 import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemoveTwoTone";
 import BookmarkAddIcon from "@mui/icons-material/BookmarkAddTwoTone";
 import {FavoriteTwoTone} from "@mui/icons-material";
-import UpdateIcon from '@mui/icons-material/UploadTwoTone';
+import UpdateIcon from '@mui/icons-material/EditTwoTone';
 import RemoveIcon from '@mui/icons-material/DeleteTwoTone';
 import GoBack from "../components/GoBack";
 import PostList from "../components/PostList";
+import ReadIcon from '@mui/icons-material/AutoStoriesTwoTone';
 
 function BookDetails() {
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
@@ -29,6 +30,7 @@ function BookDetails() {
     let [tags, setTags] = useState([]);
     let [favorites, setFavorites] = useState(currentUser['favoriteBooks']);
     let [wishlist, setWishlist] = useState(currentUser['wishlist']);
+    let [isActiveBook, setIsActiveBook] = useState(false);
     let [hiddenReview, setHiddenReview] = useState(true);
     const [isAdmin, setIsAdmin] = useState(
         JSON.parse(localStorage.getItem('isAdmin')) || false
@@ -36,21 +38,29 @@ function BookDetails() {
 
     let favoriteBooksIds = [];
     let wishlistBooksIds = [];
+    let activeBooksIds = [];
     const [deleteStatus, setDeleteStatus] = useState({
         message: '',
         variant: 'success',
     });
 
+    id = parseInt(id)
+
     if (!isAdmin) {
         if (currentUser['favoriteBooks'].length > 0) {
             favoriteBooksIds = currentUser['favoriteBooks'].map(book => book.id);
         }
+
         if (currentUser['wishlist'].length > 0) {
             wishlistBooksIds = currentUser['wishlist'].map(book => book.id);
         }
-    }
 
-    id = parseInt(id)
+        if (currentUser['currentlyReading'].length > 0) {
+            activeBooksIds = currentUser['currentlyReading'].map(book => book.id);
+            activeBooksIds = activeBooksIds.concat(currentUser['recentlyReadBooks'].map(book => book.id));
+            isActiveBook = activeBooksIds.includes(id);
+        }
+    }
 
     const [isFavorite, setFavorite] = useState(currentUser &&
         favoriteBooksIds && favoriteBooksIds.includes(id));
@@ -90,11 +100,11 @@ function BookDetails() {
         fetchBook();
     }, [id]);
 
-    function handleSeeReview() {
+    function handleSeeReviews() {
         setHiddenReview(false);
     }
 
-    function handleHiddenReview() {
+    function handleHideReviews() {
         setHiddenReview(true);
     }
 
@@ -169,32 +179,59 @@ function BookDetails() {
 
     const [open, setOpen] = useState(false);
     const [bookId, setBookId] = useState(null);
-  
+
     const handleClickOpen = (id) => {
-      setBookId(id);
-      setOpen(true);
+        setBookId(id);
+        setOpen(true);
     };
-  
+
     const handleClose = () => {
-      setOpen(false);
+        setOpen(false);
     };
 
     const removeBook = (id) => async () => {
         const response = axios.delete("http://localhost:8080/api/admin/book/remove/" + id)
             .then(response => {
-                setOpen(false); 
+                setOpen(false);
                 setTimeout(function () {
                     setDeleteStatus({message: "", variant: 'success'});
                     navigate(-1)
                 }, 4000)
-              
-            })
-       ;
-        ;
+            });
     }
 
     const updateBook = (id) => async () => {
         navigate(`/updateBook/${id}`);
+    }
+
+    const startReading = () => async () => {
+        const bookInfo = {
+            id: id,
+            title: book['title'],
+            num_pages: book['num_pages'],
+            tags: book['tags']
+        }
+
+        await axios.post(`http://localhost:8080/api/book/startReading/${currentUser['_id']}/${id}`, bookInfo);
+
+        currentUser['currentlyReading'].unshift({
+            id: bookInfo['id'],
+            title: bookInfo['title'],
+            bookmark: 0,
+            num_pages: bookInfo['num_pages']
+        });
+
+        localStorage.setItem('logged_user', JSON.stringify(currentUser));
+
+        setIsActiveBook(true);
+
+        // Remove book from wishlist if it's there
+        if (currentUser['wishlist'].length > 0) {
+            const updatedWishlist = currentUser['wishlist'].filter(item => item.id !== id);
+            setWishlist(updatedWishlist);
+            currentUser['wishlist'] = updatedWishlist;
+            localStorage.setItem('logged_user', JSON.stringify(currentUser));
+        }
     }
 
     return (
@@ -214,6 +251,7 @@ function BookDetails() {
                     <Typography>ISBN: <i>{book['isbn']}</i></Typography>
                     <Typography>Pages: <i>{book['num_pages']}</i></Typography>
                 </Grid>
+
                 <Grid container item direction="column" alignItems="center" justifyContent="center" xs={3}>
                     {isAdmin ? (
                         <React.Fragment>
@@ -226,7 +264,7 @@ function BookDetails() {
                                     variant="filledTonal" startIcon={<UpdateIcon sx={{color: green[600]}}/>}>
                                 <Typography>Edit book data</Typography>
                             </Button>
-                            <Button  onClick={() => handleClickOpen(id)} sx={{
+                            <Button onClick={() => handleClickOpen(id)} sx={{
                                 backgroundColor: red[200],
                                 margin: "5px",
                                 '&:hover': {backgroundColor: red[100]}
@@ -234,18 +272,30 @@ function BookDetails() {
                                     variant="filledTonal" startIcon={<RemoveIcon sx={{color: '#bd3838'}}/>}>
                                 <Typography>Remove book</Typography>
                             </Button>
+
                             <Dialog open={open} onClose={handleClose}>
-                            <DialogTitle>Confirm</DialogTitle>
-                             <DialogContent>
-                             <DialogContentText>
-                                 are you sure?
-                             </DialogContentText>
-                             </DialogContent>
-                              <DialogActions>
-                              <Button onClick={handleClose}>no</Button>
-                              <Button onClick={removeBook(id)}>yes</Button>
+                                <DialogTitle>Delete the book: "{book['title']}"</DialogTitle>
+                                <DialogContent>
+                                    <DialogContentText>
+                                        <Typography>
+                                            Are you sure?
+                                        </Typography>
+                                    </DialogContentText>
+                                </DialogContent>
+                                <DialogActions>
+                                    <Button sx={{
+                                        color: '#ffffff',
+                                        backgroundColor: blue[400],
+                                        marginRight: '20%',
+                                        '&:hover': {backgroundColor: blue[300]}
+                                    }} onClick={handleClose}><Typography>No</Typography></Button>
+                                    <Button sx={{
+                                        color: blue[200],
+                                        marginRight: '22%',
+                                        '&:hover': {backgroundColor: red[300], color: '#ffffff'}
+                                    }} onClick={removeBook(id)}><Typography>Yes</Typography></Button>
                                 </DialogActions>
-                              </Dialog>  
+                            </Dialog>
                         </React.Fragment>
                     ) : (
                         <React.Fragment>
@@ -259,42 +309,55 @@ function BookDetails() {
                                     <Typography>Remove from favorites</Typography>
                                 </Button>
                             ) : (
-                                <Button onClick={toggleFavorite(id, isFavorite)} sx={{
-                                    backgroundColor: blue[200],
-                                    margin: "5px",
-                                    '&:hover': {backgroundColor: blue[100]}
-                                }}
-                                        variant="filledTonal" startIcon={<FavoriteTwoTone sx={{color: '#bbbbbb'}}/>}>
-                                    <Typography>Add to favorites</Typography>
-                                </Button>
+                                isActiveBook ? (
+                                    <Button onClick={toggleFavorite(id, isFavorite)} sx={{
+                                        backgroundColor: blue[200],
+                                        margin: "5px",
+                                        '&:hover': {backgroundColor: blue[100]}
+                                    }}
+                                            variant="filledTonal"
+                                            startIcon={<FavoriteTwoTone sx={{color: '#dddddd'}}/>}>
+                                        <Typography>Add to favorites</Typography>
+                                    </Button>
+                                ) : (
+                                    <Button onClick={startReading(id)} sx={{
+                                        backgroundColor: green[200],
+                                        margin: "5px",
+                                        '&:hover': {backgroundColor: green[100]}
+                                    }}
+                                            variant="filledTonal" startIcon={<ReadIcon sx={{color: green[700]}}/>}>
+                                        <Typography>Start reading</Typography>
+                                    </Button>
+                                )
                             )}
 
-                            {isInWishlist ? (
-                                <Button
-                                    onClick={toggleInWishlist(true, id, book['title'], book['num_pages'], book['tags'])}
-                                    sx={{
-                                        backgroundColor: blue[200],
-                                        margin: "5px",
-                                        '&:hover': {backgroundColor: blue[100]}
-                                    }}
-                                    variant="filledTonal" startIcon={<BookmarkRemoveIcon sx={{color: blue[700]}}/>}>
-                                    <Typography>Remove from wishlist</Typography>
-                                </Button>
-                            ) : (
-                                <Button
-                                    onClick={toggleInWishlist(false, id, book['title'], book['num_pages'], book['tags'])}
-                                    sx={{
-                                        backgroundColor: blue[200],
-                                        margin: "5px",
-                                        '&:hover': {backgroundColor: blue[100]}
-                                    }}
-                                    variant="filledTonal" startIcon={<BookmarkAddIcon sx={{color: blue[700]}}/>}>
-                                    <Typography>Add to wishlist</Typography>
-                                </Button>
-                            )}
+                            {!isActiveBook &&
+                                (isInWishlist ? (
+                                    <Button
+                                        onClick={toggleInWishlist(true, id, book['title'], book['num_pages'], book['tags'])}
+                                        sx={{
+                                            backgroundColor: blue[200],
+                                            margin: "5px",
+                                            '&:hover': {backgroundColor: blue[100]}
+                                        }}
+                                        variant="filledTonal" startIcon={<BookmarkRemoveIcon sx={{color: blue[700]}}/>}>
+                                        <Typography>Remove from wishlist</Typography>
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        onClick={toggleInWishlist(false, id, book['title'], book['num_pages'], book['tags'])}
+                                        sx={{
+                                            backgroundColor: blue[200],
+                                            margin: "5px",
+                                            '&:hover': {backgroundColor: blue[100]}
+                                        }}
+                                        variant="filledTonal" startIcon={<BookmarkAddIcon sx={{color: blue[700]}}/>}>
+                                        <Typography>Add to wishlist</Typography>
+                                    </Button>
+                                ))}
                         </React.Fragment>)}
                     {hiddenReview ? (
-                        <Button onClick={handleSeeReview}
+                        <Button onClick={handleSeeReviews}
                                 sx={{
                                     backgroundColor: blue[200],
                                     margin: "5px",
@@ -305,7 +368,7 @@ function BookDetails() {
                             <Typography>See reviews</Typography>
                         </Button>
                     ) : (
-                        <Button onClick={handleHiddenReview}
+                        <Button onClick={handleHideReviews}
                                 sx={{
                                     backgroundColor: blue[200],
                                     margin: "5px",

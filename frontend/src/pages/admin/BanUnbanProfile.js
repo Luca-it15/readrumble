@@ -1,147 +1,149 @@
-import React, { useState, useEffect } from 'react';
-import {Container, Grid, Typography, Paper, Alert} from '@mui/material';
+import React, {useState, useEffect} from 'react';
+import {Container, Typography, Paper, Alert} from '@mui/material';
 import axios from 'axios';
 import {useNavigate, useParams} from 'react-router-dom';
 import '../../App.css'
+import Button from "@mui/material-next/Button";
+import {red} from "@mui/material/colors";
+import GoBack from "../../components/GoBack";
 
-function BanUnbanProfile(){
+function BanUnbanProfile() {
     const PaperStyle = {
-            backgroundColor: '#f1f7fa',
-            padding: '10px',
-            margin: '20px 10px 0px 10px',
-            "width":"50%",
-            "position":"relative",
-            "left":"25%",
-            borderRadius: 18,
-            textAlign: 'center'
-        }
+        backgroundColor: '#f1f7fa',
+        padding: '10px',
+        margin: '20px 10px 0px 10px',
+        "width": "50%",
+        "position": "relative",
+        "left": "25%",
+        borderRadius: 18,
+        textAlign: 'center'
+    }
+
     const PaperStyle1 = {
-                backgroundColor: '#f1f7fa',
-                padding: '10px',
-                width:'80%',
-                "position":"relative",
-                "left":"10%",
-                margin: '20px 10px 0px 10px',
-                borderRadius: 18,
-                textAlign: 'center'
-            }
+        backgroundColor: '#f1f7fa',
+        padding: '10px',
+        width: '80%',
+        "position": "relative",
+        "left": "10%",
+        margin: '20px 10px 0px 10px',
+        borderRadius: 18,
+        textAlign: 'center'
+    }
+
     const PaperStyleBan = {
-      backgroundColor: 'Firebrick',
-      color: 'white',
-      padding: '10px',
-      width:"50%",
-      "position":"relative",
-      "left":"25%",
-      margin: '20px 10px 0px 10px',
-      borderRadius: 18,
-      textAlign: 'center',
-      transition: 'background-color 0.3s ease'
+        backgroundColor: 'Firebrick',
+        color: 'white',
+        padding: '10px',
+        width: "50%",
+        "position": "relative",
+        "left": "25%",
+        margin: '20px 10px 0px 10px',
+        borderRadius: 18,
+        textAlign: 'center',
+        transition: 'background-color 0.3s ease'
     };
 
     const PaperStyleBanHover = {
-      backgroundColor: 'DarkRed',
-      color: 'white',
-      padding: '10px',
-      width:"50%",
-      "position":"relative",
-      "left":"25%",
-      margin: '20px 10px 0px 10px',
-      borderRadius: 18,
-      textAlign: 'center',
-      transition: 'background-color 0.3s ease'
+        backgroundColor: 'DarkRed',
+        color: 'white',
+        padding: '10px',
+        width: "50%",
+        "position": "relative",
+        "left": "25%",
+        margin: '20px 10px 0px 10px',
+        borderRadius: 18,
+        textAlign: 'center',
+        transition: 'background-color 0.3s ease'
     };
 
     var isJoined = false;
-    const { name } = useParams();
+    const {name} = useParams();
     const navigate = useNavigate();
-    const [banStatus,setBanStatus]= useState({
-        message:'',
-        variant:'success'
+    const [banStatus, setBanStatus] = useState({
+        message: '',
+        variant: 'success'
     })
     const [data, setData] = useState([]);
     const user = JSON.parse(localStorage.getItem('logged_user'));
     const [isBanned, setIsBanned] = useState(false);
     const [ButtonPaperStyle, setButtonPaperStyle] = useState(PaperStyleBan);
-    function goBan()
-    {
+
+    function goBan() {
         var messager = '';
-        if(isBanned)
-        {
-            axios.post("http://localhost:8080/api/admin/user/unban",name)
-            .then(response =>{
-                messager = response.data;
-                setBanStatus({message:messager,variant:'success'});
-                setTimeout(()=>{setBanStatus({messagge:'',variant:'success'});},2000)
-                setIsBanned(!isBanned);
-            })
-        }
-        else
-        {
-            axios.post("http://localhost:8080/api/admin/user/ban",name)
-            .then(response =>{
-                messager = response.data;
-                setBanStatus({message:messager,variant:'success'});
-                setTimeout(()=>{setBanStatus({messagge:'',variant:'success'});},2000)
-                setIsBanned(!isBanned);
-            })
+        if (isBanned) {
+            axios.post("http://localhost:8080/api/admin/user/unban", name)
+                .then(response => {
+                    messager = response.data;
+                    setBanStatus({message: messager, variant: 'success'});
+                    setTimeout(() => {
+                        setBanStatus({messagge: '', variant: 'success'});
+                    }, 2000)
+                    setIsBanned(!isBanned);
+                })
+        } else {
+            axios.post("http://localhost:8080/api/admin/user/ban", name)
+                .then(response => {
+                    messager = response.data;
+                    setBanStatus({message: messager, variant: 'success'});
+                    setTimeout(() => {
+                        setBanStatus({messagge: '', variant: 'success'});
+                    }, 2000)
+                    setIsBanned(!isBanned);
+                })
         }
 
 
     }
-    function getUserState()
-    {
-        axios.post("http://localhost:8080/api/admin/user/search_user",name)
-        .then(response => {
 
-            const jsonData = JSON.parse(JSON.stringify(response.data));
-            if(jsonData == '')
-            {
-                localStorage.setItem("admin_search_response","NO")
-                navigate("/admin_user");
-            }
-            setData(jsonData);
-            if(jsonData.isBanned==0)
-            {
-                setIsBanned(false);
-            }
-            else
-            {
-                setIsBanned(true);
-            }
+    function getUserState() {
+        axios.post("http://localhost:8080/api/admin/user/search_user", name)
+            .then(response => {
 
-        }).catch(error => console.error('Errore nella richiesta GET:', error));
+                const jsonData = JSON.parse(JSON.stringify(response.data));
+                if (jsonData === '') {
+                    localStorage.setItem("admin_search_response", "NO")
+                    navigate("/admin_user");
+                }
+                setData(jsonData);
+                if (jsonData.isBanned == 0) {
+                    setIsBanned(false);
+                } else {
+                    setIsBanned(true);
+                }
+
+            }).catch(error => console.error(error));
     }
-    useEffect(() => { getUserState()
-        }, []);    // [] means "Execute this action just at the start of the page"
 
+    useEffect(() => {
+        getUserState()
+    }, []);
 
-    return(
-    <Container   alignItems="center">
-        <Paper elevation={2} style={PaperStyle1} >
-              <Typography variant="h4">Ban/Unban the user {data.id}</Typography>
+    return (
+        <Container alignItems="center">
+            <Paper elevation={2} style={PaperStyle1}>
+                <GoBack/>
+                <Typography variant="h5">Ban/Unban the user: {data.id}</Typography>
                 <Paper elevation={2} style={PaperStyle} xs={6}>
-                  <Typography variant="h5">Name: {data.name}</Typography>
+                    <Typography variant="h6">Name: <b>{data.name}</b></Typography>
                 </Paper>
                 <Paper elevation={2} style={PaperStyle} xs={6}>
-                  <Typography variant="h5">Surname: {data.surname}</Typography>
+                    <Typography variant="h6">Surname: <b>{data.surname}</b></Typography>
                 </Paper>
-            <Paper
-                xs={6} alignItems="center"
-              elevation={2}
-              style={ButtonPaperStyle}
-              onClick={() => goBan()}
-              onMouseEnter={() => setButtonPaperStyle(PaperStyleBanHover)}
-              onMouseLeave={() => setButtonPaperStyle(PaperStyleBan)}
-            >
-              <Typography variant="h4">{isBanned ? "Unban User" : "Ban User"}</Typography>
-              </Paper>
-            {banStatus.message && (
-                <Alert severity={banStatus.variant}>
-                    {banStatus.message}
-                </Alert>
-            )}
-          </Paper>
-    </Container>
+                <Button
+                    sx={{color: '#ffffff', backgroundColor: red[300], height: "40px", marginTop: '10px', '&:hover': {backgroundColor: red[200]}}}
+                    onClick={() => goBan()}
+                    onMouseEnter={() => setButtonPaperStyle(PaperStyleBanHover)}
+                    onMouseLeave={() => setButtonPaperStyle(PaperStyleBan)}
+                >
+                    <Typography>{isBanned ? "Unban User" : "Ban User"}</Typography>
+                </Button>
+                {banStatus.message && (
+                    <Alert severity={banStatus.variant}>
+                        {banStatus.message}
+                    </Alert>
+                )}
+            </Paper>
+        </Container>
     )
 }
 

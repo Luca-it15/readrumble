@@ -1,5 +1,6 @@
 package it.unipi.dii.aide.lsmd.readrumble.data_initialization;
 
+import it.unipi.dii.aide.lsmd.readrumble.competition.CompetitionDTO;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;

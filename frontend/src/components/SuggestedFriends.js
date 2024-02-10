@@ -68,7 +68,7 @@ function SuggestedFriends({user}) {
                 ) : (
                     Array.isArray(suggestFriends) && suggestFriends.slice(0, displayCount).map((book, index) => (
                         <React.Fragment key={index}>
-                            <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
+                            <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa", borderRadius: '30px'}}}>
                                 <Link onClick={() => {
                                     seeDetails(user.name)
                                 }} sx={{color: "#000000"}}>

@@ -99,26 +99,26 @@ const ProfilePage = () => {
             gap: '15px', marginTop: '10px'}}>
             <Paper elevation={2} style={PaperStyle}>
                 <Grid container direction="row" justifyContent="space-around">
-                    <Grid item xs={4}>
+                    <Grid item xs={5}>
                         <Profile {...currentUser} />
                     </Grid>
                     <Grid container xs={5} direction="row" alignItems="center">
                         <Grid item xs={4}>
-                            <Button sx={{backgroundColor: blue[200], '&:hover': {backgroundColor: blue[100]}}}
+                            <Button sx={{backgroundColor: blue[100], '&:hover': {backgroundColor: blue[100]}}}
                                     variant="filledTonal" onClick={setOpen}
                                     startIcon={<BookmarkTwoToneIcon sx={{color: blue[700]}}/>}>
                                 <Typography>Wishlist</Typography>
                             </Button>
                         </Grid>
                         <Grid item xs={4}>
-                            <Button sx={{backgroundColor: blue[200], '&:hover': {backgroundColor: blue[100]}}}
+                            <Button sx={{backgroundColor: blue[100], '&:hover': {backgroundColor: blue[100]}}}
                                     variant="filledTonal" onClick={goSettings}
                                     startIcon={<SettingsTwoToneIcon sx={{color: blue[700]}}/>}>
                                 <Typography>Settings</Typography>
                             </Button>
                         </Grid>
                         <Grid item xs={4}>
-                            <Button sx={{backgroundColor: blue[200], '&:hover': {backgroundColor: blue[100]}}}
+                            <Button sx={{backgroundColor: blue[100], '&:hover': {backgroundColor: blue[100]}}}
                                     variant="filledTonal" onClick={goDashboard}
                                     startIcon={<LeaderboardTwoToneIcon sx={{color: blue[700]}}/>}>
                                 <Typography>Dashboard</Typography>

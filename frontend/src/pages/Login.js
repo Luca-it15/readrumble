@@ -169,10 +169,6 @@ function LoginForm() {
                 }
                 else
                 {
-                    setLoginStatus({
-                        message: "Login successful!",
-                        variant: 'success'
-                    });
                     const isLoggedIn = true;
                     localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
                     fetchAll(response.data._id);

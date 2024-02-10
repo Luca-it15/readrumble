@@ -139,9 +139,13 @@ function OtherUserProfile() {
             <CurrentlyReading user={username}/>
 
             <Grid container spacing={3} textAlign="center">
-                <Grid item xs={3} md={3}>
-                    <FollowingList user={username}/>
-                    <CompetitionProfBlock user={username}/>
+                <Grid container item xs={3} md={3} direction="column" spacing={1} sx={{marginTop: '2px'}}>
+                    <Grid item>
+                        <FollowingList user={username}/>
+                    </Grid>
+                    <Grid item>
+                        <CompetitionProfBlock user={username}/>
+                    </Grid>
                 </Grid>
                 <Grid item xs={6}>
                     <Paper elevation={2} style={PaperStyle}>
@@ -149,14 +153,18 @@ function OtherUserProfile() {
                         <PostsList/>
                     </Paper>
                 </Grid>
-                <Grid item xs={3} md={3}>
-                    <FavoriteBookList user={username}/>
-                    <RecentlyReadBooks user={username}/>
+                <Grid container item xs={3} md={3} direction="column" spacing={1} sx={{marginTop: '2px'}}>
+                    <Grid item>
+                        <FavoriteBookList user={username}/>
+                    </Grid>
+                    <Grid item>
+                        <RecentlyReadBooks user={username}/>
+                    </Grid>
                 </Grid>
             </Grid>
 
             <Dialog open={open} fullWidth={true}>
-                <DialogTitle><Typography variant="h5" textAlign="center">Your wishlist</Typography></DialogTitle>
+                <DialogTitle><Typography variant="h5" textAlign="center">{username}'s wishlist</Typography></DialogTitle>
                 <DialogContent>
                     <List sx={ListStyle}>
                         {books.length === 0 ? (

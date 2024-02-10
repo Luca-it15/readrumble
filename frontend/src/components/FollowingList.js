@@ -100,7 +100,7 @@ function FollowingList({user}) {
                 ) : (
                     following.slice(0, displayCount).map((username, index) => (
                         <React.Fragment key={index}>
-                            <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}
+                            <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa", borderRadius: '30px'}}}
                                       secondaryAction={user === currentUser['_id'] && (
                                           <Tooltip title="Unfollow">
                                               <IconButton sx={{color: blue[500], '&:hover': {color: red[500]}}}

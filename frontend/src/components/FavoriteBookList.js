@@ -97,7 +97,7 @@ function FavoriteBookList({user}) {
                 ) : (
                     Array.isArray(books) && books.slice(0, displayCount).map((book, index) => (
                         <React.Fragment key={index}>
-                            <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}
+                            <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa", borderRadius: '30px'}}}
                                       secondaryAction={currentUser["_id"] === user && (
                                           <Tooltip title="Remove from favorites">
                                               <IconButton sx={{color: blue[500], '&:hover': {color: '#bbbbbb'}}}
