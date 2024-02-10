@@ -4,12 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="neo4j virtual machine">
+    <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="logout change">
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_31_01_2024_16_58_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_31_01_2024_16_58__Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/competition/CompetitionDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/competition/CompetitionDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Registration.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Registration.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/admin/BanUnbanProfile.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/admin/BanUnbanProfile.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/admin/UserAdmin.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/admin/UserAdmin.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/readrumble" beforeDir="false" afterPath="$PROJECT_DIR$/readrumble" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,6 +29,9 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="ROOT_SYNC" value="SYNC" />
   </component>
+  <component name="KubernetesApiProvider"><![CDATA[{
+  "isMigrated": true
+}]]></component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -74,7 +76,7 @@
       <recent name="it.unipi.dii.aide.lsmd.readrumble.data_migration" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Spring Boot.ReadrumbleApplication">
     <configuration name="ReadrumbleApplication (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="backend_part (2)" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="it.unipi.dii.aide.lsmd.readrumble.ReadrumbleApplication" />
@@ -84,11 +86,17 @@
     </configuration>
     <configuration name="ReadrumbleApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="backend_part" />
+      <projectPathOnTarget name="projectPathOnTarget" value="/root/readrumble" />
+      <target name="@@@LOCAL@@@" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="it.unipi.dii.aide.lsmd.readrumble.ReadrumbleApplication" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Spring Boot.ReadrumbleApplication" />
+      <item itemvalue="Spring Boot.ReadrumbleApplication (1)" />
+    </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -109,6 +117,7 @@
       <workItem from="1706689566960" duration="1553000" />
       <workItem from="1707133595982" duration="1342000" />
       <workItem from="1707224889982" duration="708000" />
+      <workItem from="1707407770754" duration="2517000" />
     </task>
     <task id="LOCAL-00001" summary="post apposto per davvero deh?">
       <option name="closed" value="true" />
