@@ -3,13 +3,14 @@ import Button from '@mui/material-next/Button';
 import {Grid, Typography, Paper, Link, ListItem, List, Divider} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import '../App.css';
-import {blue} from "@mui/material/colors";
+import {blue, red} from "@mui/material/colors";
 import axios from "axios";
 
 function CompetitionProfBlock({user}) {
     const currentUser = JSON.parse(localStorage.getItem('logged_user'));
     const [competitions, setCompetitions] = useState([]);
     const navigate = useNavigate();
+    const [displayCount, setDisplayCount] = useState(3);
 
     const goComp = () => {
         navigate("/competitions");
@@ -22,35 +23,20 @@ function CompetitionProfBlock({user}) {
 
     function drawComp() {
         if (currentUser['_id'] === user) {
-            let participated_competitions = currentUser["competitions"];
-            const competitions_to_store = [];
-            let i = 0;
-
-            if (participated_competitions == null) {
-                participated_competitions = []
-            }
-            while (participated_competitions[i] != null && i < 3) {
-                competitions_to_store[i] = participated_competitions[i];
-                i = i + 1;
-            }
-            setCompetitions(competitions_to_store)
+            setCompetitions(currentUser['competitions'])
         } else {
-            axios.post('http://localhost:8080/api/competition/retrieve/personal', user)
+            console.log("Fetching competitions for user: " + user);
+
+            axios.get(`http://localhost:8080/api/competition/joinedBy/${user}`)
                 .then(response => {
-                    let jsonData = response.data.map(document => JSON.parse(JSON.stringify(document)));
-                    const competitions_to_store = [];
-                    let i = 0;
+                    let competitions = response.data.map(
+                        competition => ({
+                                name: competition.name,
+                                pages: competition.pages
+                            }
+                        ));
 
-                    if (jsonData == null) {
-                        jsonData = []
-                    }
-
-                    while (jsonData[i] != null && i < 3) {
-                        competitions_to_store[i] = jsonData[i];
-                        i = i + 1;
-                    }
-
-                    setCompetitions(competitions_to_store)
+                    setCompetitions(competitions)
                 })
                 .catch(error => console.error('Error: ', error));
         }
@@ -58,7 +44,7 @@ function CompetitionProfBlock({user}) {
 
     useEffect(() => {
         drawComp();
-    }, []);
+    }, [user]);
 
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
@@ -89,13 +75,18 @@ function CompetitionProfBlock({user}) {
                                     not participating in any competition</Typography>
                             </ListItem>
                         </Grid>)}
-                    {competitions.map(item => (
+                    {competitions.slice(0, displayCount).map(item => (
                         <Grid item>
-                            <ListItem sx={{'&:hover':{backgroundColor: '#f1f7fa', borderRadius: '30px'}}}>
+                            <ListItem sx={{'&:hover': {backgroundColor: '#f1f7fa', borderRadius: '30px'}}}
+                                      secondaryAction={
+                                          <Typography sx={{color: '#888888', fontSize: '10pt', marginTop: '2px'}}>
+                                              pages: {item.pages}
+                                          </Typography>
+                                      }>
                                 <Link onClick={() => {
                                     goSpecificComp(item.name)
                                 }}
-                                      sx={{color: '#000000', '&:hover': {cursor: 'pointer'}}}>
+                                      sx={{color: '#000000', marginRight: '30px', '&:hover': {cursor: 'pointer'}}}>
                                     <Typography>{item.name}</Typography>
                                 </Link>
                             </ListItem>
@@ -105,8 +96,26 @@ function CompetitionProfBlock({user}) {
                 </List>
             </Grid>
 
-            <Button variant="filled" sx={{
-                backgroundColor: blue[600], marginBottom: '10px',
+            {competitions.length > displayCount && (
+                <Button variant="filledTonal" sx={{
+                    backgroundColor: blue[100], marginBottom: '10px', height: '30px',
+                    '&:hover': {backgroundColor: blue[100]}
+                }} onClick={() => setDisplayCount(displayCount + 3)}>
+                    <Typography>Show more</Typography>
+                </Button>
+            )}
+
+            {displayCount > 3 && (
+                <Button variant="filledTonal" sx={{
+                    backgroundColor: red[100], marginBottom: '10px', height: '30px',
+                    '&:hover': {backgroundColor: red[100]}
+                }} onClick={() => setDisplayCount(3)}>
+                    <Typography>Show less</Typography>
+                </Button>
+            )}
+
+            <Button variant="filledTonal" sx={{
+                backgroundColor: blue[600], marginBottom: '10px', color: '#ffffff',
                 '&:hover': {backgroundColor: blue[400]}
             }} onClick={goComp}>
                 <Typography>Find other competitions</Typography>
