@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material-next/Button';
-import {Container, Alert} from 'react-bootstrap';
+import {Alert, Container} from 'react-bootstrap';
 import RatingStars from '../components/RatingStars';
 import axios from 'axios';
 import BookSelector from '../components/BookSelector';
@@ -54,8 +54,8 @@ export default function PostForm() {
         rating: 0,
         review_text: '',
         date_added: ' ',
-        book_title: '', 
-        username: currentUser['_id'], 
+        book_title: '',
+        username: currentUser['_id'],
         tag: [],
         bookmark: 0,
         pages_read: 0,
@@ -65,13 +65,20 @@ export default function PostForm() {
 
     const handleChange = (e) => {
         const {name, value} = e.target;
-        let num_pages = 0;
+        let book = currentUser['currentlyReading'];
+
+        book = book.filter(book => book.title === selectedTitle);
+
+        let num_pages = book['bookmark'];
+
+        // TODO: if num_pages > value, the user has read less pages than the previous value
+
         if (name === 'bookmark') {
-            num_pages = value - parseInt(old_bookmark);
+            num_pages = parseInt(value) - parseInt(old_bookmark);
             setFormData({
                 ...formData,
                 ['pages_read']: num_pages,
-                ['bookmark']: parseInt(value), 
+                ['bookmark']: parseInt(value),
             });
         } else {
             setFormData({
@@ -85,7 +92,7 @@ export default function PostForm() {
         setSelectedTitle(selectedTitle);
         setBook_id(selectedBook_id);
         setOldBookmark(parseInt(selectedBookmark));
-        console.log(selectedTags); 
+        console.log(selectedTags);
         setTags(selectedTags);
         setFormData({
             ...formData,
@@ -105,7 +112,6 @@ export default function PostForm() {
         });
     };
 
-   
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -120,62 +126,63 @@ export default function PostForm() {
             let arrayPostJson = localStorage.getItem('last_posts');
             if (arrayPostJson != null) {
                 let arrayPost = JSON.parse(arrayPostJson);
-            
-                arrayPost.push(formData);
 
-             arrayPost.sort((a, b) => {
-                if (a.date_added < b.date_added) {
-                    return 1;
-                }
-                if (a.date_added > b.date_added) {
-                    return -1;
-                }
-                return 0;
-             });
+                arrayPost.unshift(formData);
 
-             let arrayPostUpdate = JSON.stringify(arrayPost);
-             localStorage.setItem('last_posts', arrayPostUpdate);
+                let arrayPostUpdate = JSON.stringify(arrayPost);
+                localStorage.setItem('last_posts', arrayPostUpdate);
             } else {
                 let arrayPost = [formData];
 
-               let arrayPostJson = JSON.stringify(arrayPost);
-               console.log(arrayPostJson);
+                let arrayPostJson = JSON.stringify(arrayPost);
+                console.log(arrayPostJson);
 
                 localStorage.setItem('last_posts', arrayPostJson);
             }
-           
-            let currentUser = JSON.parse(localStorage.getItem('logged_user'));
-            let competitions = currentUser['competitions']; 
 
-             console.log("le competitions sono :");  
-             if (competitions) {
-                
-                let competitions_name = Array(); 
-                let competitions_tag = Array(); 
+            let currentUser = JSON.parse(localStorage.getItem('logged_user'));
+            let competitions = currentUser['competitions'];
+
+            console.log("le competitions sono :");
+            if (competitions) {
+
+                let competitions_name = Array();
+                let competitions_tag = Array();
                 formData.tag.forEach(tag => {
-                    let i = 0; 
-                
-                    console.log("vado ad inserire le pagine"); 
-                    while(competitions[i] != null) {
-                     if(competitions[i].tag.toUpperCase() == tag.toUpperCase()) {
-                      competitions[i].pages += formData.pages_read;
-                      competitions_name.push(competitions[i].name);  
-                      competitions_tag.push(competitions[i].tag); 
-                     }
-                      console.log("we have add " + formData.pages_read + " new pages read a the competition of " + tag); 
-                     i++; 
+                    let i = 0;
+
+                    console.log("vado ad inserire le pagine");
+                    while (competitions[i] != null) {
+                        if (competitions[i].tag.toUpperCase() === tag.toUpperCase()) {
+                            competitions[i].pages = parseInt(competitions[i].pages) + parseInt(formData.pages_read);
+                            competitions_name.push(competitions[i].name);
+                            competitions_tag.push(competitions[i].tag);
+                        }
+                        console.log("we have add " + formData.pages_read + " new pages read a the competition of " + tag);
+                        i++;
                     }
                 });
 
-                formData.competitions_name = competitions_name; 
-                formData.competitions_tag = competitions_tag; 
-                currentUser['competitions'] = competitions; 
+                formData.competitions_name = competitions_name;
+                formData.competitions_tag = competitions_tag;
+                currentUser['competitions'] = competitions;
                 localStorage.setItem('logged_user', JSON.stringify(currentUser));
-             }
+            }
 
             const response = await axios.post('http://localhost:8080/api/post/submit', formData);
             setSubmitStatus({message: response.data, variant: 'success'});
             timeout_text()
+
+            // Update the user's currently reading book
+            let books = currentUser['currentlyReading'];
+
+            books.forEach(book => {
+                if (book.title === selectedTitle) {
+                    book.bookmark = formData.bookmark;
+                }
+            })
+            currentUser['currentlyReading'] = books;
+            localStorage.setItem('logged_user', JSON.stringify(currentUser));
 
             console.log('Post successfully uploaded!');
         } catch (error) {
@@ -201,7 +208,8 @@ export default function PostForm() {
             <Paper elevation={2} style={PaperStyle}>
                 <Grid container direction="column" justifyContent="center">
                     <Grid item xs={12}>
-                        <Typography variant="h4" textAlign="center" sx={{marginBottom: '30px'}}>Create a post</Typography>
+                        <Typography variant="h4" textAlign="center" sx={{marginBottom: '30px'}}>Create a
+                            post</Typography>
                         <form onSubmit={handleSubmit}>
                             <Grid container direction="column" alignItems="center" spacing={2}>
                                 <Grid item xs={12}>
@@ -209,15 +217,16 @@ export default function PostForm() {
                                     <BookSelector handleChangeBookTitle={handleChangeBookTitle}/>
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <Typography variant="h6" textAlign="center">Number of pages read</Typography>
+                                    <Typography variant="h6" textAlign="center">Bookmark</Typography>
                                     <TextField
                                         type="number"
                                         id="bookmark"
                                         name="bookmark"
-                                        inputProps={{ min: "0" }}
+                                        inputProps={{min: "0"}}
                                         required
                                         onChange={handleChange}
-                                        sx={{backgroundColor: '#fff', borderRadius: 18,
+                                        sx={{
+                                            backgroundColor: '#fff', borderRadius: 18,
                                             '& .MuiOutlinedInput-root': {
                                                 '& fieldset': {
                                                     borderRadius: 18,
@@ -237,7 +246,8 @@ export default function PostForm() {
                                         required
                                         onChange={handleChange}
                                         fullWidth
-                                        sx={{backgroundColor: '#fff', borderRadius: 6,
+                                        sx={{
+                                            backgroundColor: '#fff', borderRadius: 6,
                                             width: '800px',
                                             '& .MuiOutlinedInput-root': {
                                                 '& fieldset': {
@@ -249,7 +259,8 @@ export default function PostForm() {
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Typography variant="h6" textAlign="center">Rating</Typography>
-                                    <RatingStars onChange={handleChangeRating} readOnly={false} isStatic={false} stars={0}/>
+                                    <RatingStars onChange={handleChangeRating} readOnly={false} isStatic={false}
+                                                 stars={0}/>
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Button sx={{

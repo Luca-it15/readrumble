@@ -28,9 +28,7 @@ function PostDetails() {
     const [rating, setRating] = useState('');
     const [date, setDate] = useState('');
     const [postUser, setPostUser] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(
-        JSON.parse(localStorage.getItem('isAdmin')) || false
-    );
+    const isAdmin = JSON.parse(localStorage.getItem('isAdmin')) || false;
 
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
@@ -109,7 +107,7 @@ function PostDetails() {
             let postExists = arrayPost.some(post => post.date_added === dateToFind);
 
             if (postExists === true) {
-                let postFilter = arrayPost.filter(post => post.date_added != dateToFind);
+                let postFilter = arrayPost.filter(post => post.date_added !== dateToFind);
                 let postFilterJson = JSON.stringify(postFilter);
 
                 localStorage.removeItem('post_details');
@@ -164,7 +162,11 @@ function PostDetails() {
     }, [id]);
 
     function seeProfile(username) {
-        navigate(`/user/${username}/`);
+        if (isAdmin) {
+            navigate(`/admin/user/banunban/` + username);
+        } else {
+            navigate(`/user/${username}/`);
+        }
     }
 
     return (
@@ -174,7 +176,9 @@ function PostDetails() {
                     <GoBack/>
                 </Grid>
                 <Grid item xs={4}>
-                    <Link onClick={() => {seeProfile(post.username)}} sx={{color: '#000000', '&:hover': {cursor: 'pointer'}}}>
+                    <Link onClick={() => {
+                        seeProfile(post.username)
+                    }} sx={{color: '#000000', '&:hover': {cursor: 'pointer'}}}>
                         <Typography variant="h5" textAlign="right">{post.username}</Typography>
                     </Link>
                 </Grid>
@@ -195,18 +199,20 @@ function PostDetails() {
                 </Grid>
                 <Grid item xs={8}>
                     {post.rating !== 0 ? (
-                        <Paper elevation={0} sx={{padding: '10px', margin: '30px', borderRadius: 5, display: 'flex',
-                            flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
-                                <Typography variant="h5">Post content:</Typography>
-                                <RatingStars
-                                    onChange={rating}
-                                    readOnly={true}
-                                    isStatic={true}
-                                    star={rating}
-                                />
-                                <Typography textAlign="justify">{post.review_text}</Typography>
+                        <Paper elevation={0} sx={{
+                            padding: '10px', margin: '30px', borderRadius: 5, display: 'flex',
+                            flexDirection: "column", alignItems: "center", justifyContent: "center"
+                        }}>
+                            <Typography variant="h5">Post content:</Typography>
+                            <RatingStars
+                                onChange={rating}
+                                readOnly={true}
+                                isStatic={true}
+                                star={rating}
+                            />
+                            <Typography textAlign="justify">{post.review_text}</Typography>
                         </Paper>
-                    ) : ( null )}
+                    ) : null}
                 </Grid>
                 {(postUser || isAdmin) && (
                     <React.Fragment>

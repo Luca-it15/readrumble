@@ -32,9 +32,7 @@ function BookDetails() {
     let [wishlist, setWishlist] = useState(currentUser['wishlist']);
     let [isActiveBook, setIsActiveBook] = useState(false);
     let [hiddenReview, setHiddenReview] = useState(true);
-    const [isAdmin, setIsAdmin] = useState(
-        JSON.parse(localStorage.getItem('isAdmin')) || false
-    );
+    const isAdmin = JSON.parse(localStorage.getItem('isAdmin')) || false;
 
     let favoriteBooksIds = [];
     let wishlistBooksIds = [];
@@ -218,7 +216,8 @@ function BookDetails() {
             id: bookInfo['id'],
             title: bookInfo['title'],
             bookmark: 0,
-            num_pages: bookInfo['num_pages']
+            num_pages: bookInfo['num_pages'],
+            tags: bookInfo['tags']
         });
 
         localStorage.setItem('logged_user', JSON.stringify(currentUser));
@@ -395,7 +394,8 @@ function BookDetails() {
                             <Grid item xs={12} ClassName='choice'>
                                 <Typography variant="h5"
                                             sx={{textAlign: 'center', marginTop: '30px'}}>Reviews</Typography>
-                                <PostList user={false} book_id={id} username={currentUser['_id']} size={5} all={false}/>
+                                <PostList user={false} book_id={id} username={currentUser['_id']} size={5} all={false}
+                                          path={1}/>
                             </Grid>
                         </React.Fragment>
                     )}

@@ -1,21 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import axios from 'axios'; // Assicurati di aver installato axios con npm install axios
+import axios from 'axios';
 import {Grid, Typography} from '@mui/material';
 
-import PostRow from './PostRow'; // Assicurati che il percorso sia corretto
+import PostRow from './PostRow';
 import '../App.css';
-import {blue} from "@mui/material/colors";
 import CircularProgress from "@mui/material/CircularProgress";
 
-const PostsList = (user, username, book_id, size, all, path) => {
+const PostsList = (user) => {
     const [posts, setPosts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    let parameter2 = user.user;
+    let user_or_book = '';
 
-    let parameter1 = '';
-
-    parameter2 ? (parameter1 = user.username) : (parameter1 = user.book_id);
+    user.user ? (user_or_book = user.username) : (user_or_book = user.book_id);
 
     useEffect(() => {
         setIsLoading(true);
@@ -33,7 +30,7 @@ const PostsList = (user, username, book_id, size, all, path) => {
 
         } else if (user.path === 1) {
             //user post
-            axios.get(`http://localhost:8080/api/post/all/${parameter1}/${parameter2}`)
+            axios.get(`http://localhost:8080/api/post/all/${user_or_book}/${user.user}`)
                 .then(response => {
                     let postLocalStorageJson = localStorage.getItem('last_posts');
 
@@ -63,14 +60,14 @@ const PostsList = (user, username, book_id, size, all, path) => {
                         setIsLoading(false);
                     } else
                         setPosts(response.data);
-                        setIsLoading(false);
+                    setIsLoading(false);
                 })
                 .catch(error => {
                     console.error('There was an error!', error);
                 });
         } else {
             //search post
-            axios.get(`http://localhost:8080/api/search/posts/${parameter1}`)
+            axios.get(`http://localhost:8080/api/search/posts/${user_or_book}`)
                 .then(response => {
                     setPosts(response.data);
                     setIsLoading(false);

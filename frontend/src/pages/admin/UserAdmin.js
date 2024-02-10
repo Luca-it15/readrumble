@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Container, Grid, Typography, Paper, Alert, ListItem, List} from '@mui/material';
+import {Container, Grid, Typography, Paper, Alert, ListItem, List, Link} from '@mui/material';
 import axios from 'axios';
 import '../../App.css';
 import {useNavigate} from 'react-router-dom';
@@ -27,16 +27,6 @@ function UserAdmin() {
         margin: '20px 10px 0px 10px',
         borderRadius: 18,
         textAlign: 'center'
-    }
-
-    const PaperStyleSearch = {
-        backgroundColor: 'cornflowerblue',
-        color: "white",
-        padding: '10px',
-        margin: '20px 10px 0px 10px',
-        borderRadius: 18,
-        textAlign: 'center',
-        transition: 'background-color 0.3s ease'
     }
 
     const navigate = useNavigate();
@@ -124,7 +114,7 @@ function UserAdmin() {
                                    onChange={handleChange} sx={searchBar}/>
                     </Grid>
                     <Grid item>
-                        <Button sx={{backgroundColor: blue[400], borderRadius: 10, height: '35px',
+                        <Button sx={{backgroundColor: blue[400], borderRadius: 10, height: '35px', marginLeft: '60px',
                             width: '35px', textAlign: 'center', '&:hover': {backgroundColor: blue[300]}
                         }} onClick={() => {goProfile(usernameId)}}>
                             <SearchRounded sx={{color: '#ffffff'}}/>
@@ -148,7 +138,9 @@ function UserAdmin() {
                         ) : (
                             listUser.map(item => (
                                     <ListItem key={item._id} sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
-                                        <Typography>{item._id}</Typography>
+                                        <Link onClick={() => {goProfile(item._id)}} sx={{color: "#000000"}}>
+                                            <Typography>{item._id}</Typography>
+                                        </Link>
                                     </ListItem>
                             ))
                         )}

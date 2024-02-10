@@ -11,11 +11,11 @@ public class RedisClusterConfig {
     private JedisCluster jedisCluster;
 
     private RedisClusterConfig() {
-        Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
+        Set<HostAndPort> jedisClusterNodes = new HashSet<>();
         jedisClusterNodes.add(new HostAndPort("10.1.1.43", 7000));
         jedisClusterNodes.add(new HostAndPort("10.1.1.44", 7000));
         jedisClusterNodes.add(new HostAndPort("10.1.1.45", 7000));
-        jedisCluster = new JedisCluster(jedisClusterNodes);
+        jedisCluster = new JedisCluster(jedisClusterNodes, 0);
     }
 
     public static synchronized RedisClusterConfig getInstance() {

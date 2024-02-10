@@ -147,12 +147,14 @@ function OtherUserProfile() {
                         <CompetitionProfBlock user={username}/>
                     </Grid>
                 </Grid>
+
                 <Grid item xs={6}>
                     <Paper elevation={2} style={PaperStyle}>
                         <Typography variant="h5">Posts</Typography>
-                        <PostsList/>
+                        <PostsList user={true} username={username} size={12} all={false} path={1}/>
                     </Paper>
                 </Grid>
+
                 <Grid container item xs={3} md={3} direction="column" spacing={1} sx={{marginTop: '2px'}}>
                     <Grid item>
                         <FavoriteBookList user={username}/>

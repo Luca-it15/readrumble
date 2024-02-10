@@ -94,25 +94,30 @@ function CompetitionProfBlock({user}) {
                         </Grid>
                     ))}
                 </List>
+
+                <Grid item>
+                    {competitions.length > displayCount && (
+                        <Button variant="filledTonal" sx={{
+                            backgroundColor: blue[100], marginBottom: '10px', height: '30px',
+                            '&:hover': {backgroundColor: blue[100]}
+                        }} onClick={() => setDisplayCount(displayCount + 3)}>
+                            <Typography>Show more</Typography>
+                        </Button>
+                    )}
+                </Grid>
+
+                <Grid item>
+                    {displayCount > 3 && (
+                        <Button variant="filledTonal" sx={{
+                            backgroundColor: red[100], marginBottom: '10px', height: '30px',
+                            '&:hover': {backgroundColor: red[100]}
+                        }} onClick={() => setDisplayCount(3)}>
+                            <Typography>Show less</Typography>
+                        </Button>
+                    )}
+                </Grid>
             </Grid>
 
-            {competitions.length > displayCount && (
-                <Button variant="filledTonal" sx={{
-                    backgroundColor: blue[100], marginBottom: '10px', height: '30px',
-                    '&:hover': {backgroundColor: blue[100]}
-                }} onClick={() => setDisplayCount(displayCount + 3)}>
-                    <Typography>Show more</Typography>
-                </Button>
-            )}
-
-            {displayCount > 3 && (
-                <Button variant="filledTonal" sx={{
-                    backgroundColor: red[100], marginBottom: '10px', height: '30px',
-                    '&:hover': {backgroundColor: red[100]}
-                }} onClick={() => setDisplayCount(3)}>
-                    <Typography>Show less</Typography>
-                </Button>
-            )}
 
             <Button variant="filledTonal" sx={{
                 backgroundColor: blue[600], marginBottom: '10px', color: '#ffffff',

@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import {Alert, Button, Row, Col} from 'react-bootstrap';
-import {Container, Grid, Typography, Paper} from '@mui/material';
+import {Alert, Row, Col} from 'react-bootstrap';
+import {Container, Typography, Paper} from '@mui/material';
 import axios from 'axios';
 import {useNavigate, useParams} from 'react-router-dom';
 import '../../App.css'
@@ -15,13 +15,12 @@ function CompetitionSpecAdmin() {
         textAlign: 'center'
     }
     const [load, setLoad] = useState(false);
-    var isJoined = false;
     const {name} = useParams();
     const navigate = useNavigate();
     const [rank, setRank] = useState('');
     const [deleteStatus, setDeleteStatus] = useState({
         message: '',
-        variant: 'success', // o 'danger' in caso di errore
+        variant: 'success',
     });
     const [data, setData] = useState([]);
     const [isJoin, setJoin] = useState();
@@ -49,7 +48,7 @@ function CompetitionSpecAdmin() {
 
     useEffect(() => {
         call()
-    }, []);    // [] means "Execute this action just at the start of the page"
+    }, []);
 
     function deleteCompetition(Name) {
         const response = axios.post("http://localhost:8080/api/admin/competition/delete", {CompName: Name})

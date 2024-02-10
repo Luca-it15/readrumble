@@ -23,11 +23,6 @@ const AddCompetition = () => {
         end_date: '',
     });
 
-    const [addStatus, setAddStatus] = useState({
-        message: '',
-        variant: 'success',
-    });
-
     const [validationError, setValidationError] = useState('');
 
     const handleChange = (e) => {
@@ -54,11 +49,12 @@ const AddCompetition = () => {
         try {
             const response = await axios.post('http://localhost:8080/api/admin/competition/add', formData);
 
-            setAddStatus({message: response.data, variant: 'success'});
+            setValidationError(response.data);
 
-            setTimeout(setAddStatus({message: '', variant: 'success'}), 2000)
+            setTimeout(() => {setValidationError("")}, 2000)
         } catch (error) {
-            setAddStatus({message: error.response ? error.response.data : error.message, variant: 'danger'});
+            setValidationError(error.response);
+            setTimeout(() => {setValidationError("")}, 2000)
         }
     };
 
@@ -136,12 +132,6 @@ const AddCompetition = () => {
             {validationError && (
                 <Alert severity="error">
                     {validationError}
-                </Alert>
-            )}
-
-            {addStatus.message && (
-                <Alert severity={addStatus.variant}>
-                    {addStatus.message}
                 </Alert>
             )}
         </Paper>
