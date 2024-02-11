@@ -2,6 +2,7 @@ package it.unipi.dii.aide.lsmd.readrumble.book;
 
 import com.mongodb.client.MongoCollection;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
+import it.unipi.dii.aide.lsmd.readrumble.config.web.CrossOriginConfig;
 import org.bson.Document;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,10 +11,10 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/book")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = CrossOriginConfig.origin)
 public class BookController {
     private final BookDAO bookDAO = new BookDAO();
-    private static final LibraryBookDAO  abd = new LibraryBookDAO();
+
 
     /**
      * This method turns a list of books' documents into a list of books
@@ -258,8 +259,5 @@ public class BookController {
     }
 
 
-    @GetMapping("/library/title/{username}")
-    public List<LibraryBookDTO> getBookTitlesByUsername(@PathVariable String username) {
-        return abd.getLibraryBooks(username);
-    }
+
 }

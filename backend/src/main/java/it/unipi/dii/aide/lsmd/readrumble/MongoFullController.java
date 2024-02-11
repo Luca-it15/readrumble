@@ -4,6 +4,7 @@ import com.mongodb.client.*;
 import it.unipi.dii.aide.lsmd.readrumble.admin.AdminBookController;
 import it.unipi.dii.aide.lsmd.readrumble.competition.CompetitionController;
 import it.unipi.dii.aide.lsmd.readrumble.admin.AdminCompetitionController;
+import it.unipi.dii.aide.lsmd.readrumble.config.web.CrossOriginConfig;
 import it.unipi.dii.aide.lsmd.readrumble.post.PostController;
 import it.unipi.dii.aide.lsmd.readrumble.search.SearchController;
 import it.unipi.dii.aide.lsmd.readrumble.user.UserController;
@@ -18,7 +19,7 @@ import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = CrossOriginConfig.origin)
 public class MongoFullController {
     private final UserController userController;
     private final CompetitionController competitionController;

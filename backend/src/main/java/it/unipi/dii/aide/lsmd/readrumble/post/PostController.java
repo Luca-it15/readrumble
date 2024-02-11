@@ -1,6 +1,7 @@
 package it.unipi.dii.aide.lsmd.readrumble.post;
 
 
+import it.unipi.dii.aide.lsmd.readrumble.config.web.CrossOriginConfig;
 import it.unipi.dii.aide.lsmd.readrumble.user.UserDTO;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -11,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/post")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = CrossOriginConfig.origin)
 public class PostController {
     private PostDAO postDAO;
 

@@ -1,6 +1,7 @@
 package it.unipi.dii.aide.lsmd.readrumble;
 
 import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
+import it.unipi.dii.aide.lsmd.readrumble.config.web.CrossOriginConfig;
 import org.neo4j.driver.*;
 import org.neo4j.driver.Record;
 import org.springframework.http.HttpStatus;
@@ -11,7 +12,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = CrossOriginConfig.origin)
 public class Neo4jFullController {
     /**
      * This method checks if a user exists in the graph

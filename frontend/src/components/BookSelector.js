@@ -33,24 +33,24 @@ const BookSelector = ({ handleChangeBookTitle }) => {
 
         if(bookData === null || bookData.lenght === 0) {
         axios
-            .get(`http://localhost:8080/api/book/library/title/${user['_id']}`)
+            .get(`http://localhost:8080/api/book/currentlyReadingBooks/${user['_id']}`)
             .then((response) => {
                 const bookTitles = response.data.map((book) => ({
-                    value: book.book_title,
-                    label: book.book_title,
+                    value: book.title,
+                    label: book.title,
                 }));
                 const book_ids = response.data.map((book) => ({
-                    value: book.book_id,
-                    label: book.book_title,
+                    value: book.id,
+                    label: book.title,
                 }));
 
                  const bookTags = response.data.map((book) => ({
                 value: book.tags,
-                label: book.book_title,
+                label: book.title,
             }));
             const bookmark = response.data.map((book) => ({
                 value: book.bookmark,
-                label: book.book_title,
+                label: book.title,
             }));
 
             setOptions(bookTitles);

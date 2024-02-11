@@ -1,13 +1,14 @@
 package it.unipi.dii.aide.lsmd.readrumble.admin;
 
 import it.unipi.dii.aide.lsmd.readrumble.book.Book;
+import it.unipi.dii.aide.lsmd.readrumble.config.web.CrossOriginConfig;
 import org.bson.Document;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin/book")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = CrossOriginConfig.origin)
 public class AdminBookController {
 
         AdminBookDAO adminBookDAO;

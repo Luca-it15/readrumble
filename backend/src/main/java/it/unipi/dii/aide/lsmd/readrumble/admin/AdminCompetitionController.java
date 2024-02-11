@@ -1,5 +1,6 @@
 package it.unipi.dii.aide.lsmd.readrumble.admin;
 
+import it.unipi.dii.aide.lsmd.readrumble.config.web.CrossOriginConfig;
 import org.bson.Document;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +10,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/competition")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = CrossOriginConfig.origin)
 public class AdminCompetitionController {
     private AdminCompetitionDAO adminCompetitionDAO;
     public AdminCompetitionController() {

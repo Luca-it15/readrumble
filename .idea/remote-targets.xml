@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteTargetsManager">
+    <option name="projectDefaultTargetUuid" value="4b6b367d-dc49-49b0-a70b-791b7c24694e" />
+    <targets>
+      <target name="root@10.1.1.43:22" type="ssh/sftp" uuid="4b6b367d-dc49-49b0-a70b-791b7c24694e">
+        <config>
+          <option name="projectRootOnTarget" value="/root/readrumble" />
+          <option name="serverName" value="root@10.1.1.43:22 password" />
+        </config>
+        <ContributedStateBase type="JavaLanguageRuntime">
+          <config>
+            <option name="javaVersionString" value="21.0.1" />
+          </config>
+        </ContributedStateBase>
+        <ContributedStateBase type="MavenRuntime">
+          <config>
+            <option name="homePath" value="/root/.nvm" />
+          </config>
+        </ContributedStateBase>
+      </target>
+    </targets>
+  </component>
+</project>

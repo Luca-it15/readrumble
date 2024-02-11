@@ -2,6 +2,7 @@ package it.unipi.dii.aide.lsmd.readrumble.competition;
 
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
+import it.unipi.dii.aide.lsmd.readrumble.config.web.CrossOriginConfig;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/competition")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = CrossOriginConfig.origin)
 public class CompetitionController {
     private CompetitionDAO competitionDAO;
 

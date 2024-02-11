@@ -3,6 +3,7 @@ package it.unipi.dii.aide.lsmd.readrumble.admin;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
+import it.unipi.dii.aide.lsmd.readrumble.config.web.CrossOriginConfig;
 import org.bson.Document;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ import static com.mongodb.client.model.Updates.set;
 
 @RestController
 @RequestMapping("/api/admin/user")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = CrossOriginConfig.origin)
 public class AdminUserController {
 
     private AdminUserDAO adminUserDAO;

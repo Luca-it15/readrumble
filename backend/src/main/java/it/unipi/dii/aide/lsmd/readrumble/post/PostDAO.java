@@ -156,6 +156,13 @@ public class PostDAO {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * this aggregation will return a list of documents containing information about books reviewed by friends,
+     * including the book ID, rating, date added, book title,
+     * username of the review author, and text of the review.
+     * @param friends
+     * @return List<PostDTO>
+     */
     public List<PostDTO> getRecentFriendsPosts(List<String> friends) {
         List<PostDTO> postsTarget = new ArrayList<>();
 
