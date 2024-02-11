@@ -59,7 +59,7 @@ const Dashboard = () => {
         />
     );
 
-    const totalPages = readingStatsData.reduce((total, data) => total + data.pagesRead, 0);
+    const totalPages = readingProgressData.reduce((total, data) => total + data.pages, 0);
     const favoriteTag = readingStatsData.reduce((max, data) => max.pagesRead > data.pagesRead ? max : data, {
         pagesRead: 0,
         tag: ''

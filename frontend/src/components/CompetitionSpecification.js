@@ -153,17 +153,19 @@ function CompetitionSpec() {
         }
     }
 
-    function deleteCompetition(Name) {
-        const response = axios.post("http://localhost:8080/api/admin/competition/delete", {CompName: Name})
+    function deleteCompetition(name) {
+        const response = axios.post("http://localhost:8080/api/admin/competition/delete", {name: name})
             .then(response => {
                 setDeleteStatus({message: response.data, variant: 'success'});
             })
 
         setTimeout(function () {
             setDeleteStatus({message: "", variant: 'success'});
-        }, 1000);
 
-        navigate("/admin_competition")
+
+
+            navigate("/admin_competition")
+        }, 4000);
     }
 
     return (

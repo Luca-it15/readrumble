@@ -22,7 +22,6 @@ import DashboardAdmin from './pages/admin/DashboardAdmin';
 import BookAdmin from './pages/admin/BookAdmin';
 import CompetitionAdmin from './pages/admin/CompetitionAdmin';
 import AddCompetition from './pages/admin/AddCompetition';
-import CompetitionSpecAdmin from './pages/admin/CompetitionSpecAdmin';
 import UserAdmin from './pages/admin/UserAdmin';
 import PostAdmin from './pages/admin/PostAdmin';
 import OtherUserProfile from './pages/OtherUserProfile';
@@ -35,7 +34,7 @@ import UpdateBook from './pages/admin/UpdateBook';
 
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(JSON.parse(localStorage.getItem('isLoggedIn')) || false);
-    const [isAdmin, setIsAdmin] = useState(JSON.parse(localStorage.getItem('isAdmin')) || false);
+    const isAdmin = JSON.parse(localStorage.getItem('isAdmin')) || false;
 
     const handleLogin = () => {
         setIsLoggedIn(true);

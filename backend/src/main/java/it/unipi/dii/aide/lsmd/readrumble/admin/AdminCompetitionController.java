@@ -5,7 +5,6 @@ import org.bson.Document;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.ParseException;
 import java.util.Map;
 
 @RestController
@@ -13,22 +12,27 @@ import java.util.Map;
 @CrossOrigin(origins = CrossOriginConfig.origin)
 public class AdminCompetitionController {
     private AdminCompetitionDAO adminCompetitionDAO;
+
     public AdminCompetitionController() {
         adminCompetitionDAO = new AdminCompetitionDAO();
     }
+
     @PostMapping("/delete")
     public ResponseEntity<String> deleteCompetitionInFuture(@RequestBody Document params) {
         String competition_name = (String) params.get("name");
-        if(competition_name!=null)
-        {
+
+        System.out.println("Competition name: " + competition_name);
+
+        if (competition_name != null) {
             adminCompetitionDAO.saveInMemoryCompetitionsToDelete(competition_name);
             return ResponseEntity.ok("The competition will be deleted in the next 24 hours");
+        } else {
+            return ResponseEntity.ok("The field 'name' is empty");
         }
-        return ResponseEntity.ok("the field 'name' is empty");
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addCompetition(@RequestBody Document params){
+    public ResponseEntity<String> addCompetition(@RequestBody Document params) {
         return adminCompetitionDAO.adminAddCompetition(params);
     }
 

@@ -1,21 +1,23 @@
 package it.unipi.dii.aide.lsmd.readrumble.post;
 
-import com.google.gson.Gson;
-import com.mongodb.client.MongoCollection;
-
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
-import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
+
+import com.google.gson.Gson;
+
 import org.bson.Document;
 import org.bson.types.ObjectId;
+
 import org.springframework.http.ResponseEntity;
 
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.Locale;
-import java.time.*;
+import com.mongodb.client.MongoCollection;
 
-import redis.clients.jedis.Jedis;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.time.ZonedDateTime;
+
 import redis.clients.jedis.JedisCluster;
 
 public class PostDAO {
@@ -41,7 +43,7 @@ public class PostDAO {
         String key = "post:" + time + ":" + username + ":" + bookId + ":" + ranking + ":" + bookmark + ":" + pagesRead;
         Gson gson = new Gson();
         jedis.hset(key, "review_text", post.getString("review_text"));
-        jedis.hset(key, "tags", gson.toJson((List<String>) post.get("tag")));
+        jedis.hset(key, "tags", gson.toJson(post.get("tag")));
         jedis.hset(key, "book_title", post.getString("book_title"));
 
         List<String> competitions_names = (List<String>) post.get("competitions_name");
@@ -73,7 +75,7 @@ public class PostDAO {
         if (user)
             query = new Document("username", parametro);
         else {
-            int book_id = Integer.parseInt(parametro);
+            long book_id = Long.parseLong(parametro);
             query = new Document("book_id", book_id);
         }
         for (Document doc : collection.find(query).sort(new Document("date_added", -1)).limit(10)) {
@@ -131,7 +133,7 @@ public class PostDAO {
     }
 
     public ResponseEntity<String> removePostRedis(String key) {
-        Jedis jedis = RedisConfig.getSession();
+        JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
         String response = null;
 
         long res = jedis.del(key);

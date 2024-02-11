@@ -208,7 +208,7 @@ public class BookDAO {
                         .append("as", "book")
                         .append("cond", new Document("$eq", List.of("$$book.bookmark", "$$book.num_pages")))))),
                 new Document("$unwind", "$books"),
-                new Document("$group", new Document("_id", "$books.book_id").append("title", new Document("$first", "$books.book_title"))),                new Document("$project", new Document("_id", 0).append("id", "$_id").append("title", "$title")),
+                new Document("$group", new Document("_id", "$books.book_id").append("title", new Document("$first", "$books.book_title"))), new Document("$project", new Document("_id", 0).append("id", "$_id").append("title", "$title")),
                 new Document("$limit", 20)
         )).into(new ArrayList<>());
 

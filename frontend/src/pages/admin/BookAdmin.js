@@ -65,12 +65,8 @@ export default function BookAdmin() {
     }
 
     const handleSearchTextChange = (event) => {
-        if (event.target.value === "") {
-            setLast(false);
-            setSearchText(event.target.value);
-        } else {
-            setLast(true);
-        }
+        setLast(false);
+        setSearchText(event.target.value);
     };
 
     const handleSearchButtonClick = () => {

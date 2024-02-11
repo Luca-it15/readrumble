@@ -56,7 +56,6 @@ function BanUnbanProfile() {
         transition: 'background-color 0.3s ease'
     };
 
-    var isJoined = false;
     const {name} = useParams();
     const navigate = useNavigate();
     const [banStatus, setBanStatus] = useState({
@@ -64,7 +63,6 @@ function BanUnbanProfile() {
         variant: 'success'
     })
     const [data, setData] = useState([]);
-    const user = JSON.parse(localStorage.getItem('logged_user'));
     const [isBanned, setIsBanned] = useState(false);
     const [ButtonPaperStyle, setButtonPaperStyle] = useState(PaperStyleBan);
 
@@ -130,7 +128,13 @@ function BanUnbanProfile() {
                     <Typography variant="h6">Surname: <b>{data.surname}</b></Typography>
                 </Paper>
                 <Button
-                    sx={{color: '#ffffff', backgroundColor: red[300], height: "40px", marginTop: '10px', '&:hover': {backgroundColor: red[200]}}}
+                    sx={{
+                        color: '#ffffff',
+                        backgroundColor: red[300],
+                        height: "40px",
+                        marginTop: '10px',
+                        '&:hover': {backgroundColor: red[200]}
+                    }}
                     onClick={() => goBan()}
                     onMouseEnter={() => setButtonPaperStyle(PaperStyleBanHover)}
                     onMouseLeave={() => setButtonPaperStyle(PaperStyleBan)}
