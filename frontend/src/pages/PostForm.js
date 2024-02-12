@@ -6,40 +6,40 @@ import RatingStars from '../components/RatingStars';
 import axios from 'axios';
 import BookSelector from '../components/BookSelector';
 import IosShareTwoToneIcon from '@mui/icons-material/IosShareTwoTone';
-import {Grid, Paper, Typography} from '@mui/material';
+import {Grid, Paper, Typography, FormControlLabel, Checkbox} from '@mui/material';
 import {blue} from "@mui/material/colors";
+import { useNavigate } from 'react-router-dom';
+import GoBack from '../components/GoBack';
 
 export default function PostForm() {
 
+    const navigate = useNavigate(); 
+
     let currentUser = localStorage.getItem('logged_user');
-    // Verifica se il valore è presente
+   
     if (currentUser) {
-        // Il valore è presente, lo converte da stringa JSON a oggetto JavaScript
+      
         currentUser = JSON.parse(currentUser);
     } else {
-        // La chiave 'isLoggedIn' non è presente in localStorage
-        console.log('La chiave "logged_user" non è presente in localStorage.');
+        
+        console.log('logged_user key is not present in the localstorage');
     }
 
     function timeout_text() {
         setTimeout(function () {
-            // Azione da compiere dopo 1 secondo
-            setSubmitStatus({message: '', variant: 'success'});
-            return window.location.href = "http://localhost:3000/profile";
-        }, 12000)
+            navigate(-1);
+        }, 6000)
     }
 
     function timeout_text_error() {
         setTimeout(function () {
-            // Azione da compiere dopo 1 secondo
-            setSubmitStatus({message: '', variant: 'error'});
-            return window.location.href = "http://localhost:3000/profile";
-        }, 24000)
+            navigate(-1);
+        }, 6000)
     }
 
     const [submitStatus, setSubmitStatus] = useState({
         message: '',
-        variant: 'success', // o 'danger' in caso di errore
+        variant: 'success', 
     });
 
     const [validationError, setValidationError] = useState('');
@@ -47,6 +47,8 @@ export default function PostForm() {
     const [book_id, setBook_id] = useState([]);
     const [tags, setTags] = useState([]);
     const [old_bookmark, setOldBookmark] = useState(0);
+    const [checked, setChecked] = useState(false); 
+
 
     const [formData, setFormData] = useState({
         _id: 0,
@@ -70,9 +72,7 @@ export default function PostForm() {
         book = book.filter(book => book.title === selectedTitle);
 
         let num_pages = book['bookmark'];
-
-        // TODO: if num_pages > value, the user has read less pages than the previous value
-
+        
         if (name === 'bookmark') {
             num_pages = parseInt(value) - parseInt(old_bookmark);
             setFormData({
@@ -92,7 +92,7 @@ export default function PostForm() {
         setSelectedTitle(selectedTitle);
         setBook_id(selectedBook_id);
         setOldBookmark(parseInt(selectedBookmark));
-        console.log(selectedTags);
+       
         setTags(selectedTags);
         setFormData({
             ...formData,
@@ -112,15 +112,40 @@ export default function PostForm() {
         });
     };
 
+    const handleNotRating = (event) => {
+        const currentDate = new Date();
+        const isoString = currentDate.toISOString();
+        setChecked(event.target.checked);
+        setFormData({
+            ...formData,
+            rating: 0,
+            date_added: isoString,
+            review_text: " "
+        });
+      };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validazione: Verifica se almeno un campo è vuoto
+      
         if (Object.values(formData).some((value) => value === '')) {
-            setValidationError('All fields must be filled!');
-            return;
+            setSubmitStatus({
+                message: 'All fields must be filled!',
+                variant: 'danger'
+            });
+            return; 
+            
         }
+        
+        if(formData.pages_read < 0) {
+            setSubmitStatus({
+                message: 'New bookmark must be great than the previous bookmark',
+                variant: 'danger'
+            });
+            return
+        }
+
 
         try {
             let arrayPostJson = localStorage.getItem('last_posts');
@@ -143,7 +168,7 @@ export default function PostForm() {
             let currentUser = JSON.parse(localStorage.getItem('logged_user'));
             let competitions = currentUser['competitions'];
 
-            console.log("le competitions sono :");
+    
             if (competitions) {
 
                 let competitions_name = Array();
@@ -151,7 +176,6 @@ export default function PostForm() {
                 formData.tag.forEach(tag => {
                     let i = 0;
 
-                    console.log("vado ad inserire le pagine");
                     while (competitions[i] != null) {
                         if (competitions[i].tag.toUpperCase() === tag.toUpperCase()) {
                             competitions[i].pages = parseInt(competitions[i].pages) + parseInt(formData.pages_read);
@@ -170,8 +194,7 @@ export default function PostForm() {
             }
 
             const response = await axios.post('http://localhost:8080/api/post/submit', formData);
-            setSubmitStatus({message: response.data, variant: 'success'});
-            timeout_text()
+           
 
             // Update the user's currently reading book
             let books = currentUser['currentlyReading'];
@@ -185,13 +208,19 @@ export default function PostForm() {
             localStorage.setItem('logged_user', JSON.stringify(currentUser));
 
             console.log('Post successfully uploaded!');
+            setSubmitStatus({
+                message: JSON.stringify(response.data),
+                variant: 'success'
+            });
+            timeout_text(); 
+            
         } catch (error) {
             console.error('Error:', error);
             setSubmitStatus({
                 message: error.response ? JSON.stringify(error.response.data) : error.message,
                 variant: 'danger'
             });
-            timeout_text_error()
+            timeout_text_error(); 
         }
     };
 
@@ -208,6 +237,7 @@ export default function PostForm() {
             <Paper elevation={2} style={PaperStyle}>
                 <Grid container direction="column" justifyContent="center">
                     <Grid item xs={12}>
+                        <GoBack />
                         <Typography variant="h4" textAlign="center" sx={{marginBottom: '30px'}}>Create a
                             post</Typography>
                         <form onSubmit={handleSubmit}>
@@ -236,6 +266,20 @@ export default function PostForm() {
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={checked}
+                                            onChange={handleNotRating}
+                                            name={"updatePages"}
+                                        />
+                                    }
+                                    label={"I just want to update the number of pages "}
+                                />
+                                </Grid>
+                                {!checked && (
+                                 <>
+                                <Grid item xs={12}>
                                     <Typography variant="h6" textAlign="center">Your review</Typography>
                                     <TextField
                                         id="review_text"
@@ -260,8 +304,10 @@ export default function PostForm() {
                                 <Grid item xs={12}>
                                     <Typography variant="h6" textAlign="center">Rating</Typography>
                                     <RatingStars onChange={handleChangeRating} readOnly={false} isStatic={false}
-                                                 stars={0}/>
+                                                />
                                 </Grid>
+                                </>
+                                )}
                                 <Grid item xs={12}>
                                     <Button sx={{
                                         backgroundColor: blue[200],

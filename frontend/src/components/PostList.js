@@ -10,6 +10,16 @@ const PostsList = (user) => {
     const [posts, setPosts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    let currentUser = localStorage.getItem('logged_user');
+   
+    if (currentUser) {
+      
+        currentUser = JSON.parse(currentUser);
+    } else {
+        
+        console.log('logged_user key is not present in the localstorage');
+    }
+
     let user_or_book = '';
 
     user.user ? (user_or_book = user.username) : (user_or_book = user.book_id);
@@ -33,8 +43,8 @@ const PostsList = (user) => {
             axios.get(`http://localhost:8080/api/post/all/${user_or_book}/${user.user}`)
                 .then(response => {
                     let postLocalStorageJson = localStorage.getItem('last_posts');
-
-                    if (postLocalStorageJson != null) {
+                    
+                    if ((user.username === currentUser['_id']) && (postLocalStorageJson != null)) {
                         let posts = JSON.parse(postLocalStorageJson);
 
                         //remove the posts make 15 minutes ago o more
@@ -45,7 +55,7 @@ const PostsList = (user) => {
 
                             let differenceInMinutes = (now - postDate) / 1000 / 60;
 
-                            return differenceInMinutes <= 15;
+                            return differenceInMinutes <= 20;
                         });
 
                         localStorage.setItem('posts', JSON.stringify(posts));

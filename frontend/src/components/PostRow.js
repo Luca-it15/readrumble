@@ -55,7 +55,7 @@ export default function PostRow({id, book_id, title, username, rating, text, rea
         }}>
             <Grid container item direction="row" alignItems="center" justifyContent="center" xs={12}
                   sx={{width: '100%'}}>
-                {!user.user && (
+                {(all || !user.user) && (
                     <Grid item xs={6}>
                         <Link sx={{color: "#000000", textAlign: 'left'}}>
                             <Typography onClick={() => {
@@ -76,6 +76,7 @@ export default function PostRow({id, book_id, title, username, rating, text, rea
                 </Grid>
 
                 <Grid item xs={12}>
+                {(all || user.user) && (
                     <Link onClick={() => {
                         seeBookDetails(book_id)
                     }} sx={{color: "#000000", textAlign: 'center'}}>
@@ -83,6 +84,7 @@ export default function PostRow({id, book_id, title, username, rating, text, rea
                             {title}
                         </Typography>
                     </Link>
+                )}
                 </Grid>
 
                 {rating !== 0 ? (
