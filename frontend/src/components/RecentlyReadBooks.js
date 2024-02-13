@@ -89,7 +89,7 @@ function RecentlyReadBooks({user}) {
 
     return (
         <Paper sx={PaperStyle}>
-            <Typography variant="h5" sx={{marginBottom:'5px'}}>Recently read</Typography>
+            <Typography variant="h5" sx={{marginBottom:'5px'}}>Read in the last six months</Typography>
             <List sx={ListStyle}>
                 {recentlyReadBooks.length === 0 ? (
                     <ListItem>
