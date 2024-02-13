@@ -60,7 +60,7 @@ public class BookController {
     }
 
     /**
-     * This method returns the last 10 books read by a user
+     * This method returns the last 10 books read by a user in the last 6 months
      *
      * @param username of the user
      * @return details of the book
