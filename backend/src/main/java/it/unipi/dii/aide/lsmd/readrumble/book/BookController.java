@@ -60,7 +60,7 @@ public class BookController {
     }
 
     /**
-     * This method returns the last 10 books read by a user
+     * This method returns the last 10 books read by a user in the last 6 months
      *
      * @param username of the user
      * @return details of the book
@@ -72,6 +72,7 @@ public class BookController {
         List<Document> BookDocuments = ActiveBooksCollection.aggregate(List.of(
                 new Document("$match", new Document("username", username)),
                 new Document("$sort", new Document("year", -1).append("month", -1)),
+                new Document("$limit", 6),
                 new Document("$project", new Document("books", new Document("$filter", new Document("input", "$books").append("as", "book").append("cond", new Document("$eq", List.of("$$book.bookmark", "$$book.num_pages")))))),
                 new Document("$unwind", "$books"),
                 new Document("$project", new Document("id", "$books.book_id").append("title", "$books.book_title")),
