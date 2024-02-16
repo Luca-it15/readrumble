@@ -265,7 +265,15 @@ public class BookDAO {
                     books.add(book);
                 }
 
-                return (List<LightBookDTO>) books;
+                List<LightBookDTO> booksList = new ArrayList<>();
+
+                // If there are duplicate books, keep only one
+                for (LightBookDTO book : books) {
+                    if (!booksList.contains(book))
+                        booksList.add(book);
+                }
+
+                return booksList;
             } catch (Exception e) {
                 return null;
             }
