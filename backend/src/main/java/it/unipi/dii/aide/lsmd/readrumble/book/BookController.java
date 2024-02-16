@@ -4,6 +4,7 @@ import com.mongodb.client.MongoCollection;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.web.CrossOriginConfig;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -79,10 +80,13 @@ public class BookController {
                 new Document("$limit", 10)
         )).into(new ArrayList<>());
 
-        if (BookDocuments.isEmpty()) {
+        // Remove possible duplicates
+        Set<Document> BookDocumentsSet = new HashSet<>(BookDocuments);
+
+        if (BookDocumentsSet.isEmpty()) {
             return null;
         } else {
-            return setResult(BookDocuments);
+            return setResult((List<Document>) BookDocumentsSet);
         }
     }
 
