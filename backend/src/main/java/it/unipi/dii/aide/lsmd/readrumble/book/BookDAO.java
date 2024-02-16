@@ -258,14 +258,14 @@ public class BookDAO {
                 Result result = session.run("MATCH (u:User {name: $username})-[:FAVORS]->(b:Book) RETURN b.id AS id, b.title AS title",
                         Values.parameters("username", username));
 
-                List<LightBookDTO> books = new ArrayList<>();
+                Set<LightBookDTO> books = new HashSet<>();
                 while (result.hasNext()) {
                     Record record = result.next();
                     LightBookDTO book = new LightBookDTO(Long.parseLong(record.get("id").asString()), record.get("title").asString());
                     books.add(book);
                 }
 
-                return books;
+                return (List<LightBookDTO>) books;
             } catch (Exception e) {
                 return null;
             }
