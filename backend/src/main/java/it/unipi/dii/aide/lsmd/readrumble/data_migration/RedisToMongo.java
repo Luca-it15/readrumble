@@ -371,16 +371,6 @@ public class RedisToMongo {
                 Map<String, String> postData = jedis.hgetAll(key);
                 String[] keySplit = key.split(":");
 
-                /*
-                    keySplit[1] = hour
-                    keySplit[2] = minute
-                    keySplit[3] = second
-                    keySplit[4] = username
-                    keySplit[5] = book_id
-                    keySplit[6] = rating
-                    keySplit[7] = bookmark
-                    keySplit[8] = pages_read
-                */
 
                 if (postData != null && !postData.isEmpty()) {
                     LocalDateTime now = LocalDateTime.now();
