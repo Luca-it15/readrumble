@@ -1,21 +1,12 @@
 package it.unipi.dii.aide.lsmd.readrumble.competition;
 
-import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
-import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.web.CrossOriginConfig;
-import static it.unipi.dii.aide.lsmd.readrumble.utils.PatternKeyRedis.KeysTwo;
 
 import org.bson.Document;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import org.slf4j.Logger;
-
-import redis.clients.jedis.JedisCluster;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

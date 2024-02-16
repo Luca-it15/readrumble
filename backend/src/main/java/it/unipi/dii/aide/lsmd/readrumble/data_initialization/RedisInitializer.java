@@ -1,27 +1,9 @@
 package it.unipi.dii.aide.lsmd.readrumble.data_initialization;
 
-import it.unipi.dii.aide.lsmd.readrumble.competition.CompetitionDTO;
-import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
-import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
-import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisConfig;
-
-import static it.unipi.dii.aide.lsmd.readrumble.utils.PatternKeyRedis.KeysTwo;
-
-import com.mongodb.client.MongoCollection;
-import jakarta.annotation.PostConstruct;
-import org.bson.Document;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.ConnectionPool;
-import redis.clients.jedis.Jedis;
-
-import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.params.ScanParams;
-import redis.clients.jedis.resps.ScanResult;
 
 @Component
 public class RedisInitializer {
