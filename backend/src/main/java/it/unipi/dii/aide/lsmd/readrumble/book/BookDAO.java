@@ -258,22 +258,23 @@ public class BookDAO {
                 Result result = session.run("MATCH (u:User {name: $username})-[:FAVORS]->(b:Book) RETURN b.id AS id, b.title AS title",
                         Values.parameters("username", username));
 
-                Set<LightBookDTO> books = new HashSet<>();
+                List<LightBookDTO> books = new ArrayList<>();
+
+                List<Long> ids = new ArrayList<>();
+
                 while (result.hasNext()) {
                     Record record = result.next();
+
+                    if (ids.contains(Long.parseLong(record.get("id").asString()))) {
+                        continue;
+                    }
+
                     LightBookDTO book = new LightBookDTO(Long.parseLong(record.get("id").asString()), record.get("title").asString());
                     books.add(book);
+                    ids.add(book.getId());
                 }
 
-                List<LightBookDTO> booksList = new ArrayList<>();
-
-                // If there are duplicate books, keep only one
-                for (LightBookDTO book : books) {
-                    if (!booksList.contains(book))
-                        booksList.add(book);
-                }
-
-                return booksList;
+                return books;
             } catch (Exception e) {
                 return null;
             }
