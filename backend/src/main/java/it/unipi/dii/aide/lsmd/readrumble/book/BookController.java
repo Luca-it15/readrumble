@@ -69,7 +69,6 @@ public class BookController {
     @GetMapping("/recentlyReadBooks/{username}")
     List<LightBookDTO> getRecentlyReadBooks(@PathVariable String username) {
         MongoCollection<Document> ActiveBooksCollection = MongoConfig.getCollection("ActiveBooks");
-
         List<Document> BookDocuments = ActiveBooksCollection.aggregate(List.of(
                 new Document("$match", new Document("username", username)),
                 new Document("$sort", new Document("year", -1).append("month", -1)),
@@ -81,12 +80,13 @@ public class BookController {
         )).into(new ArrayList<>());
 
         // Remove possible duplicates
-        Set<Document> BookDocumentsSet = new HashSet<>(BookDocuments);
+        Set<Document> BookDocumentsSet = new HashSet<Document>(BookDocuments);
 
         if (BookDocumentsSet.isEmpty()) {
             return null;
         } else {
-            return setResult((List<Document>) BookDocumentsSet);
+            List<Document> booklist = new ArrayList<>(BookDocumentsSet);
+            return setResult(booklist);
         }
     }
 
