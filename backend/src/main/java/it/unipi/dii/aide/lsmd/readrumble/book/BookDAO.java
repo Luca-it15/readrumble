@@ -333,19 +333,28 @@ public class BookDAO {
             Result result = session.run(
                     "MATCH (u:User {name: $username})-[:FOLLOWS]->(:User)-[:FAVORS]->(b:Book) " +
                             "WITH u,b, count(*) AS friends_favoring_book " +
-                            "WHERE friends_favoring_book > 0.1 * COUNT{(u)-[:FOLLOWS]->(:User)} " +
+                            "WHERE friends_favoring_book > 0.5 * COUNT{(u)-[:FOLLOWS]->(:User)} " +
                             "AND NOT EXISTS((u)-[:FAVORS]->(b)) " +
                             "RETURN b. id AS id, b.title AS title",
                     Values.parameters("username", username)
             );
 
             List<LightBookDTO> books = new ArrayList<>();
+
+            List<Long> ids = new ArrayList<>();
+
             while (result.hasNext()) {
                 Record record = result.next();
+
+                if (ids.contains(Long.parseLong(record.get("id").asString()))) {
+                    continue;
+                }
+
                 long id = Long.parseLong(record.get("id").asString());
                 String title = record.get("title").asString();
                 LightBookDTO book = new LightBookDTO(id, title);
                 books.add(book);
+                ids.add(id);
             }
 
             return books;
