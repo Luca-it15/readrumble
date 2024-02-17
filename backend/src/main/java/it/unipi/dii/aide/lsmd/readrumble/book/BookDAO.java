@@ -291,13 +291,9 @@ public class BookDAO {
      * @return a ResponseEntity with the result of the operation
      */
     public ResponseEntity<String> addFavoriteBook(@PathVariable String username, @PathVariable String book) {
-        if (checkUserExist(username) && checkBookExist(book)) {
-            inMemoryFavoriteBooks.computeIfAbsent(username, k -> new ArrayList<>());
-            inMemoryFavoriteBooks.get(username).add(new LightBookDTO(Long.parseLong(book), ""));
-            return ResponseEntity.ok("Book added to favorites");
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User or book does not exist.");
-        }
+        inMemoryFavoriteBooks.computeIfAbsent(username, k -> new ArrayList<>());
+        inMemoryFavoriteBooks.get(username).add(new LightBookDTO(Long.parseLong(book), ""));
+        return ResponseEntity.ok("Book added to favorites");
     }
 
     /**
@@ -308,13 +304,9 @@ public class BookDAO {
      * @return a ResponseEntity with the result of the operation
      */
     public ResponseEntity<String> removeFavoriteBook(@PathVariable String username, @PathVariable String book) {
-        if (checkUserExist(username) && checkBookExist(book)) {
-            inMemoryFavoriteBooksToBeDeleted.computeIfAbsent(username, k -> new ArrayList<>());
-            inMemoryFavoriteBooksToBeDeleted.get(username).add(new LightBookDTO(Long.parseLong(book), ""));
-            return ResponseEntity.ok("Book removed from favorites");
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User or book does not exist.");
-        }
+        inMemoryFavoriteBooksToBeDeleted.computeIfAbsent(username, k -> new ArrayList<>());
+        inMemoryFavoriteBooksToBeDeleted.get(username).add(new LightBookDTO(Long.parseLong(book), ""));
+        return ResponseEntity.ok("Book removed from favorites");
     }
 
     /**
