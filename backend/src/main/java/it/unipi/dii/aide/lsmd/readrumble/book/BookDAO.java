@@ -148,7 +148,7 @@ public class BookDAO {
     public List<LightBookDTO> getTrending() {
         MongoCollection<Document> Posts = MongoConfig.getCollection("Posts");
 
-        Date thirtyDaysAgo = new Date(System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000);
+        Date thirtyDaysAgo = new Date(System.currentTimeMillis() - 60L * 24 * 60 * 60 * 1000);
 
         List<Document> result = Posts.aggregate(List.of(
                 new Document("$match", new Document("rating", new Document("$gte", 1)).append("date_added", new Document("$gte", thirtyDaysAgo))),
