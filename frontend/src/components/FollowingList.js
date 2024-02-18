@@ -48,15 +48,16 @@ function FollowingList({user}) {
     }
 
     // Works only if "user" is current user, because only on the personal profile we can unfollow users in the following list
-    async function unfollow() {
+    async function unfollow(username) {
         try {
-            await axios.delete(`http://localhost:8080/api/unfollow/${currentUser['_id']}/${user}`);
+            await axios.delete(`http://localhost:8080/api/unfollow/${currentUser['_id']}/${username}`);
 
             // Remove user from following list
-            let updatedFollowing = currentUser['following'].filter(followingUser => followingUser !== user);
+            let updatedFollowing = currentUser['following'].filter(followingUser => followingUser !== username);
             currentUser['following'] = updatedFollowing;
             localStorage.setItem('logged_user', JSON.stringify(currentUser));
             setFollowing(updatedFollowing);
+            console.log("Unfollowed " + user);
         } catch (error) {
             console.error(error);
         }
@@ -104,7 +105,7 @@ function FollowingList({user}) {
                                       secondaryAction={user === currentUser['_id'] && (
                                           <Tooltip title="Unfollow">
                                               <IconButton sx={{color: blue[500], '&:hover': {color: red[500]}}}
-                                                          onClick={() => unfollow()}>
+                                                          onClick={() => unfollow(username)}>
                                                   <PersonRemoveTwoToneIcon/>
                                               </IconButton>
                                           </Tooltip>

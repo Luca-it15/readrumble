@@ -148,7 +148,7 @@ public class BookDAO {
     public List<LightBookDTO> getTrending() {
         MongoCollection<Document> Posts = MongoConfig.getCollection("Posts");
 
-        Date thirtyDaysAgo = new Date(System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000);
+        Date thirtyDaysAgo = new Date(System.currentTimeMillis() - 60L * 24 * 60 * 60 * 1000);
 
         List<Document> result = Posts.aggregate(List.of(
                 new Document("$match", new Document("rating", new Document("$gte", 1)).append("date_added", new Document("$gte", thirtyDaysAgo))),
@@ -291,13 +291,9 @@ public class BookDAO {
      * @return a ResponseEntity with the result of the operation
      */
     public ResponseEntity<String> addFavoriteBook(@PathVariable String username, @PathVariable String book) {
-        if (checkUserExist(username) && checkBookExist(book)) {
-            inMemoryFavoriteBooks.computeIfAbsent(username, k -> new ArrayList<>());
-            inMemoryFavoriteBooks.get(username).add(new LightBookDTO(Long.parseLong(book), ""));
-            return ResponseEntity.ok("Book added to favorites");
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User or book does not exist.");
-        }
+        inMemoryFavoriteBooks.computeIfAbsent(username, k -> new ArrayList<>());
+        inMemoryFavoriteBooks.get(username).add(new LightBookDTO(Long.parseLong(book), ""));
+        return ResponseEntity.ok("Book added to favorites");
     }
 
     /**
@@ -308,13 +304,9 @@ public class BookDAO {
      * @return a ResponseEntity with the result of the operation
      */
     public ResponseEntity<String> removeFavoriteBook(@PathVariable String username, @PathVariable String book) {
-        if (checkUserExist(username) && checkBookExist(book)) {
-            inMemoryFavoriteBooksToBeDeleted.computeIfAbsent(username, k -> new ArrayList<>());
-            inMemoryFavoriteBooksToBeDeleted.get(username).add(new LightBookDTO(Long.parseLong(book), ""));
-            return ResponseEntity.ok("Book removed from favorites");
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User or book does not exist.");
-        }
+        inMemoryFavoriteBooksToBeDeleted.computeIfAbsent(username, k -> new ArrayList<>());
+        inMemoryFavoriteBooksToBeDeleted.get(username).add(new LightBookDTO(Long.parseLong(book), ""));
+        return ResponseEntity.ok("Book removed from favorites");
     }
 
     /**
@@ -333,19 +325,28 @@ public class BookDAO {
             Result result = session.run(
                     "MATCH (u:User {name: $username})-[:FOLLOWS]->(:User)-[:FAVORS]->(b:Book) " +
                             "WITH u,b, count(*) AS friends_favoring_book " +
-                            "WHERE friends_favoring_book > 0.1 * COUNT{(u)-[:FOLLOWS]->(:User)} " +
+                            "WHERE friends_favoring_book > 0.5 * COUNT{(u)-[:FOLLOWS]->(:User)} " +
                             "AND NOT EXISTS((u)-[:FAVORS]->(b)) " +
                             "RETURN b. id AS id, b.title AS title",
                     Values.parameters("username", username)
             );
 
             List<LightBookDTO> books = new ArrayList<>();
+
+            List<Long> ids = new ArrayList<>();
+
             while (result.hasNext()) {
                 Record record = result.next();
+
+                if (ids.contains(Long.parseLong(record.get("id").asString()))) {
+                    continue;
+                }
+
                 long id = Long.parseLong(record.get("id").asString());
                 String title = record.get("title").asString();
                 LightBookDTO book = new LightBookDTO(id, title);
                 books.add(book);
+                ids.add(id);
             }
 
             return books;
