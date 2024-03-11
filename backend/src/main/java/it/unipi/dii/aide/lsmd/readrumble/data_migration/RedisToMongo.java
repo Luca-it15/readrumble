@@ -1,5 +1,6 @@
 package it.unipi.dii.aide.lsmd.readrumble.data_migration;
 
+import com.mongodb.client.AggregateIterable;
 import it.unipi.dii.aide.lsmd.readrumble.admin.AdminCompetitionDAO;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
@@ -21,17 +22,13 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.MongoCollection;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
 import java.time.Period;
 
-import java.util.List;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +111,7 @@ public class RedisToMongo {
      this quoted function empties redis databases from the competition:* key-value pairs. It is used only for debugging purposes
      in order to empty and successively fill the databases with the correct pairs.
      */
-    /*
+/*
     @Scheduled(fixedRate = 36000000)
     public void EmptyCompetitionsFromRedis()
     {
@@ -128,35 +125,44 @@ public class RedisToMongo {
         }
         logger.info("Redis Competitions Emptied");
     }
-    */
-
+*/
     /**
      * This method is scheduled to run every 2 hours.
      * It updates the MongoDB competitions collection with the data from Redis.
      */
-    @Scheduled(fixedRate = 36000000, initialDelay = 36000000) // 10 hours in milliseconds
+    @Scheduled(fixedRate = 36000000/*, initialDelay = 36000000*/) // 10 hours in milliseconds
     public void updateMongoCompetitions() {
         logger.info("Updating MongoDB competitions 1...");
-        SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
+        /*SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
         try {
             semaphore.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
+        }*/
         logger.info("Updating MongoDB competitions 2...");
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
-
         mongoCollection = MongoConfig.getCollection("Competitions");
         Bson end_dateFilter = Filters.gte("end_date", LocalDate.now());
         Bson start_dateFilter = Filters.lte("start_date", LocalDate.now());
         Bson dateFilter = Filters.and(start_dateFilter, end_dateFilter);
         //This block empties the rank field of all the active competitions so that they can be filled with the new rank
-        try (MongoCursor<Document> cursor = mongoCollection.find(dateFilter).cursor()) {
+        try (MongoCursor<Document> cursor = mongoCollection.find(/*dateFilter*/).cursor()) {
             while (cursor.hasNext()) {
                 Document comp_found = cursor.next();
                 Bson filter = Filters.eq("name", comp_found.get("name").toString());
                 Document update = new Document("$set", new Document("rank", new ArrayList<>()));
                 mongoCollection.updateOne(filter, update);
+            }
+        } catch (Exception e) {
+            System.out.println("Catched Exception: " + e.getMessage());
+
+        }
+        try (MongoCursor<Document> cursor = mongoCollection.find().cursor()) {
+            while (cursor.hasNext()) {
+                Document user = cursor.next();
+                Bson filter2 = Filters.eq("_id", user.get("_id").toString());
+                Document update2 = new Document("$set", new Document("competitions", new ArrayList<>()));
+                MongoConfig.getCollection("Users").updateOne(filter2, update2);
             }
         } catch (Exception e) {
             System.out.println("Catched Exception: " + e.getMessage());
@@ -167,6 +173,7 @@ public class RedisToMongo {
         String pattern = "competition:*";
         List<String> keys = KeysTwo(jedis, pattern);
         // Create a list to store all the competition, user and total page read
+
         for (String key : keys) {
             //competition:competition_name:tag:username->value
             String competition_name = key.split(":")[1];
@@ -174,8 +181,14 @@ public class RedisToMongo {
             Integer tot_pages = Integer.parseInt(jedis.get(key));
             Document doc = new Document()
                     .append("competition_name", competition_name)
-                    .append("username", username)
                     .append("tot_pages", tot_pages);
+            Bson filter = Filters.eq("_id", username);
+            //this code inserts the competition into the 'competitions' field in the document user
+            // this code has a cool feature : since it uses Redis for the values, it is possible to store in the document
+            // all the competitions wanted, even the finished ones !
+            MongoConfig.getCollection("Users").updateOne(filter, Updates.push("competitions", doc));
+            //this other field is inserted to then proceed in the evaluation of the top ten
+            doc.append("username", username);
             Competitions_to_change.add(doc);
         }
         // Map to keep track of documents for every value of competition_name
@@ -211,101 +224,143 @@ public class RedisToMongo {
             mongoCollection.updateOne(filter, Updates.push("rank", competition));
         }
         logger.info("MongoDB competitions updated!");
-        semaphore.release();
+        //semaphore.release();
     }
 
-    /*
+    /**
         The following function is commented because its only purpose is to fill the key-value DB with the active
         competitions' key-value pairs of January 2024, we decided to leave it here as a comment to have a ready-to-use
         function to re-fill the DB for debugging purposes.
+    */
 
     @Scheduled(fixedRate = 36000000, initialDelay = 36000000)
     public void InsertIntoRedisCompetitionsCreated() {
-        logger.info("Acquiring token...");
-        SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
-        try {
-            semaphore.acquire();
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        logger.info("Token acquired...");
         logger.info("Inserting things into redis");
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
-        mongoCollection = MongoConfig.getCollection("ActiveBooks");
+        mongoCollection = MongoConfig.getCollection("ActiveBooks2");
         logger.info("Before Deleting keys from redis");
-        //Pipeline pipeline = jedis.pipelined();
-        //Response<Set<String>> keysResponse = pipeline.keys("competition:*");
-        //pipeline.sync();
-        //Set<String> keys = keysResponse.get();
-        //for(String key: keys)
-        //{
-        //jedis.del(key);
-        //}
-        //logger.info("After keys deletion");
-        AggregateIterable<Document> result = mongoCollection.aggregate(Arrays.asList(
-                new Document("$match",
-                        new Document("year", 2024L)
-                                .append("month", 1L)),
-                new Document("$unwind",
-                        new Document("path", "$books")),
-                new Document("$unwind",
-                        new Document("path", "$books.tags")),
-                new Document("$group",
-                        new Document("_id",
-                                new Document("username", "$username")
-                                        .append("year", "$year")
-                                        .append("month", "$month")
-                                        .append("tag", "$books.tags"))
-                                .append("tot_pages",
-                                        new Document("$sum", "$books.pages_read"))),
-                new Document("$project",
-                        new Document("_id", 0L)
-                                .append("username", "$_id.username")
-                                .append("year", "$_id.year")
-                                .append("month", "$_id.month")
-                                .append("tag", "$_id.tag")
-                                .append("tot_pages", "$tot_pages")),
-                new Document("$sort",
-                        new Document("tot_pages", -1L))
-        )).allowDiskUse(true);
-        mongoCollection = MongoConfig.getCollection("Competitions");
-        logger.info("After Aggregation and Before inserting");
-        for (Document doc : result) {
-            logger.info("Inserting");
-            String username = (String) doc.get("username");
-            String tag = (String) doc.get("tag");
-            String TagTag = tag.substring(0, 1).toUpperCase() + tag.substring(1);
-            Integer month = (Integer) doc.get("month");
-            Integer year = (Integer) doc.get("year");
-            Integer pages_read = (Integer) doc.get("tot_pages");
-            String dataString = year.toString() + "-" + month.toString() + "-" + "15"; // Data sotto forma di stringa
-            SimpleDateFormat formatoData = new SimpleDateFormat("yyyy-MM-dd");
+        // AggregateIterable<Document> result = mongoCollection.aggregate(Arrays.asList(
+//     new Document("$match",
+//             new Document("year", 2024L)
+//                     .append("month", 1L)),
+//     new Document("$unwind",
+//             new Document("path", "$books")),
+//     new Document("$unwind",
+//             new Document("path", "$books.tags")),
+//     new Document("$group",
+//             new Document("_id",
+//                     new Document("username", "$username")
+//                             .append("year", "$year")
+//                             .append("month", "$month")
+//                             .append("tag", "$books.tags"))
+//                     .append("tot_pages",
+//                             new Document("$sum", "$books.pages_read"))),
+//     new Document("$project",
+//             new Document("_id", 0L)
+//                     .append("username", "$_id.username")
+//                     .append("year", "$_id.year")
+//                     .append("month", "$_id.month")
+//                     .append("tag", "$_id.tag")
+//                     .append("tot_pages", "$tot_pages")),
+//     new Document("$sort",
+//             new Document("tot_pages", -1L))
+// )).allowDiskUse(true);
+// AggregateIterable<Document> result = mongoCollection.aggregate(Arrays.asList(
+//     new Document("$match",
+//             new Document("year", 2024L)
+//                     .append("month", 1L)),
+//     new Document("$unwind",
+//             new Document("path", "$books")),
+//     new Document("$unwind",
+//             new Document("path", "$books.tags")),
+//     new Document("$group",
+//             new Document("_id",
+//                     new Document("username", "$username")
+//                             .append("year", "$year")
+//                             .append("month", "$month")
+//                             .append("tag", "$books.tags"))
+//                     .append("tot_pages",
+//                             new Document("$sum", "$books.pages_read"))
+//                     .append("count",
+//                             new Document("$sum", 1))),
+//     new Document("$sort",
+//             new Document("tot_pages", -1L)),
+//     new Document("$project",
+//             new Document("_id", 0L)
+//                     .append("username", "$_id.username")
+//                     .append("year", "$_id.year")
+//                     .append("month", "$_id.month")
+//                     .append("tag", "$_id.tag")
+//                     .append("tot_pages", "$tot_pages")),
+//     new Document("$match",
+//             new Document("count", new Document("$lte", 30))),
+//     new Document("$project",
+//             new Document("username", 1)
+//                     .append("year", 1)
+//                     .append("month", 1)
+//                     .append("tag", 1)
+//                     .append("tot_pages", 1)
+//     )
+// )).allowDiskUse(true);
 
-            try {
-                // Analizza la stringa nella data
-                Date data = formatoData.parse(dataString);
-                Bson tagFilter = Filters.eq("tag", TagTag);
-                Bson startDateFilter = Filters.lte("start_date", data);
-                Bson endDateFilter = Filters.gte("end_date", data);
-                Bson dateFilter = Filters.and(startDateFilter, endDateFilter);
-                Bson filter = Filters.and(dateFilter, tagFilter);
-                Document Comp = mongoCollection.find(filter).first();
-                if (Comp != null) {
-                    String CompName = (String) Comp.get("name");
-                    if (!CompName.isEmpty()) {
-                        String key = "competition:" + CompName + ":" + TagTag + ":" + username;
-                        jedis.set(key, pages_read.toString());
+        int i = 0;
+        int c = 0;
+        try(MongoCursor cursor = MongoConfig.getCollection("UpdatingCompetitions").find().cursor())
+        {
+
+            mongoCollection = MongoConfig.getCollection("Competitions");
+            logger.info("After Aggregation and Before inserting");
+            while (cursor.hasNext()){
+                i = i+1;
+                Document doc = (Document) cursor.next();
+                //logger.info("Inserting");
+                String username = (String) doc.get("username");
+                String tag = (String) doc.get("tag");
+                String TagTag = tag.substring(0, 1).toUpperCase() + tag.substring(1);
+                Integer month = (Integer) doc.get("month");
+                Integer year = (Integer) doc.get("year");
+                Integer pages_read = (Integer) doc.get("tot_pages");
+                String dataString = year.toString() + "-" + month.toString() + "-" + "15"; // Data sotto forma di stringa
+                SimpleDateFormat formatoData = new SimpleDateFormat("yyyy-MM-dd");
+
+                try {
+                    // Analizza la stringa nella data
+                    Date data = formatoData.parse(dataString);
+                    Bson tagFilter = Filters.eq("tag", TagTag);
+                    Bson startDateFilter = Filters.lte("start_date", data);
+                    Bson endDateFilter = Filters.gte("end_date", data);
+                    Bson dateFilter = Filters.and(startDateFilter, endDateFilter);
+                    Bson filter = Filters.and(dateFilter, tagFilter);
+                    Document Comp = mongoCollection.find(filter).first();
+                    if (Comp != null) {
+                        String CompName = (String) Comp.get("name");
+                        if (!CompName.isEmpty()) {
+                            String key = "competition:" + CompName + ":" + TagTag + ":" + username;
+                            jedis.set(key, pages_read.toString());
+                        }
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    //logger.info("After inserting");
+                    //semaphore.release();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                logger.info("After inserting");
-                //semaphore.release();
+                if(i == 1000)
+                {
+                    c = c+1;
+                    i = 0;
+                    logger.info("Thousand :" + c);
+                }
             }
+
+
+        }
+        catch(Exception e)
+        {
+            System.out.println("Exception: "+e.getMessage());
         }
     }
-*/
+
 
     /**
      * This method is scheduled to run every 24 hours.
@@ -344,18 +399,18 @@ public class RedisToMongo {
         mongoCollection = MongoConfig.getCollection("Competitions");
 
         Bson dateFilter1 = Filters.gte("end_date", OneMonthAgo);
-        Bson dateFilter2 = Filters.lt("end_date", today);
+        Bson dateFilter2 = Filters.lt("end_date", today.minusDays(5));
         Bson dateFilter = Filters.and(dateFilter1, dateFilter2);
-
+        //if you want to deep clean, substitute .find(dateFilter) with .find(dateFilter2)
         try (MongoCursor<Document> cursor = mongoCollection.find(dateFilter).cursor()) {
             while (cursor.hasNext()) {
                 Document comp_found = cursor.next();
-
                 String keyFromMongo = "competition:" + comp_found.get("name") + ":*";
                 List<String> keys = KeysTwo(jedis, keyFromMongo);
-
                 for (String key : keys) {
                     jedis.del(key);
+                    //Since the competitions are updated in redis and all the fields of competitions in users are emptied
+                    //at each update, there is no need to eliminate old competitions from users
                 }
             }
         } catch (Exception e) {
