@@ -38,6 +38,13 @@ public class UserDAO {
     public void saveInMemoryUsers() {
         for (Document user : inMemoryUsers) {
             String username = (String) user.get("_id");
+            ArrayList<Document> Array = new ArrayList<>();
+            user.append("wishlist",Array);
+            user.append("recent_posts",Array);
+            user.append("recent_active_books",Array);
+            user.append("competitions",Array);
+            user.append("followers",0);
+            user.append("followees",0);
             MongoCollection<Document> collection = MongoConfig.getCollection("Users");
             collection.insertOne(user);
 

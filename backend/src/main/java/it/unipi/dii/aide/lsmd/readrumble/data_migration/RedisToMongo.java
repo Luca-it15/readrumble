@@ -110,6 +110,25 @@ public class RedisToMongo {
 
         logger.info("MongoDB wishlists updated!");
     }
+    /**
+     this quoted function empties redis databases from the competition:* key-value pairs. It is used only for debugging purposes
+     in order to empty and successively fill the databases with the correct pairs.
+     */
+    /*
+    @Scheduled(fixedRate = 36000000)
+    public void EmptyCompetitionsFromRedis()
+    {
+        logger.info("Empty Redis Competitions");
+        JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
+        String pattern = "competition:*";
+        List<String> keys = KeysTwo(jedis, pattern);
+        // Create a list to store all the competition, user and total page read
+        for (String key : keys) {
+            jedis.del(key);
+        }
+        logger.info("Redis Competitions Emptied");
+    }
+    */
 
     /**
      * This method is scheduled to run every 2 hours.
