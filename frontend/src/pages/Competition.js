@@ -26,7 +26,7 @@ function CompetitionPage() {
     }
 
     useEffect(() => {
-        axios.get('http://localhost:8080/api/competition/retrieve/all')
+        axios.get('http://localhost:8080/api/competition/retrieve/popular')
             .then(response => {
                 const jsonData = response.data.map(document => JSON.parse(JSON.stringify(document)));
                 setData(jsonData);
@@ -50,6 +50,7 @@ function CompetitionPage() {
                                 '&:hover': {boxShadow: '0px 0px 1px 0px rgba(0,0,0,0.2)'}
                             }} elevation={0}>
                                 <Typography variant="h6">{item.name}</Typography>
+                                <Typography variant="h7">{item.Total_Pages}</Typography>
                                 <Typography sx={{color: '#888888'}}>Tag: {item.tag}</Typography>
                                 <Button variant="filledTonal" sx={{
                                     marginTop: '10px', backgroundColor: blue[200], padding: '5px 15px',

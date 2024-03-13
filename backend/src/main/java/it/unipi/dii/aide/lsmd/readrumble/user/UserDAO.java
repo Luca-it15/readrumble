@@ -45,6 +45,7 @@ public class UserDAO {
             user.append("competitions",Array);
             user.append("followers",0);
             user.append("followees",0);
+            user.append("friends_posts",Array);
             MongoCollection<Document> collection = MongoConfig.getCollection("Users");
             collection.insertOne(user);
 

@@ -2,12 +2,16 @@ package it.unipi.dii.aide.lsmd.readrumble.data_migration;
 
 import com.mongodb.client.AggregateIterable;
 import it.unipi.dii.aide.lsmd.readrumble.admin.AdminCompetitionDAO;
+import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.utils.SemaphoreRR;
 
 import static it.unipi.dii.aide.lsmd.readrumble.utils.PatternKeyRedis.KeysTwo;
 
+import org.neo4j.driver.Result;
+import org.neo4j.driver.Session;
+import org.neo4j.driver.Values;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -130,7 +134,89 @@ public class RedisToMongo {
      * This method is scheduled to run every 2 hours.
      * It updates the MongoDB competitions collection with the data from Redis.
      */
-    @Scheduled(fixedRate = 36000000/*, initialDelay = 36000000*/) // 10 hours in milliseconds
+    @Scheduled(fixedRate = 36000000, initialDelay = 36000000) // 10 hours in milliseconds
+    public void updateFriendsPosts() {
+        logger.info("Updating MongoDB Friends Posts ");
+        //modify Users in Users
+        mongoCollection = MongoConfig.getCollection("Users");
+        int i = 0;
+        int c = 0;
+        try (MongoCursor<Document> cursor = mongoCollection.find().cursor()) {
+            String username;
+            while (cursor.hasNext()) {
+                username = cursor.next().get("_id").toString();
+                try (Session session = Neo4jConfig.getSession()) {
+                    Result result = session.run("MATCH (u:User {name: $username})-[:FOLLOWS]->(f:User) RETURN f.name AS following",
+                            Values.parameters("username", username));
+
+                    List<String> following = new ArrayList<>();
+
+                    while (result.hasNext()) {
+                        following.add(result.next().get("following").asString());
+                    }
+
+                    //now we have the list of friends for the user selected, we need to take the first post of each friend
+                    //sort them by the date added and take the first twenty
+                    //first, it is necessary to eliminate the previous posts
+                    Bson filter = Filters.eq("_id", username);
+                    Document update = new Document("$set", new Document("friends_posts", new ArrayList<>()));
+                    mongoCollection.updateOne(filter, update);
+                    //now the aggregation takes the twenty posts
+                    AggregateIterable<Document> result2 = mongoCollection.aggregate(Arrays.asList(
+                            new Document("$match", new Document("_id", new Document("$in", Arrays.asList(following)))),
+                            new Document("$sort",
+                                    new Document("recent_posts.date_added.0", -1L)),
+                            new Document("$unwind",
+                                    new Document("path", "$recent_posts")),
+                            new Document("$match",
+                                    new Document("recent_posts.rating",
+                                            new Document("$gte", 1L))),
+                            new Document("$group",
+                                    new Document("_id", "$_id")
+                                            .append("post",
+                                                    new Document("$first", "$recent_posts"))),
+                            new Document("$project",
+                                    new Document("_id", "$post._id")
+                                            .append("book_id", "$post.book_id")
+                                            .append("rating", "$post.rating")
+                                            .append("review_text", "$post.review_text")
+                                            .append("date_added", "$post.date_added")
+                                            .append("book_title", "$post.book_title")
+                                            .append("username", "$_id")
+                                            .append("tags", "$post.tags")
+                                            .append("bookmark", "$post.bookmark")
+                                            .append("pages_read", "$post.pages_read")),
+                            new Document("$limit", 20L))
+                    ).allowDiskUse(true);
+                    // a new arraylist is created to store the posts
+                    ArrayList<Document> new_friends_posts = new ArrayList<>();
+                    for(Document doc : result2)
+                    {
+                        new_friends_posts.add(doc);
+                    }
+                    //now the arraylist is stored in the proper field
+                    Bson filter2 = Filters.eq("_id", username);
+                    Document update2 = new Document("$set", new Document("friends_posts", new_friends_posts));
+                    mongoCollection.updateOne(filter2, update2);
+                    i=i+1;
+                    logger.info("Unit : "+i);
+                    if(i == 1000)
+                    {
+                        c=c+1;
+                        logger.info("Thousand : "+c);
+                    }
+                }
+                catch (Exception e) {
+                    System.out.println("Catched Exception: " + e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Catched Exception: " + e.getMessage());
+        }
+        logger.info("Finished Updating MongoDB Friends Posts !");
+
+    }
+    @Scheduled(fixedRate = 36000000, initialDelay = 36000000) // 10 hours in milliseconds
     public void updateMongoCompetitions() {
         logger.info("Updating MongoDB competitions 1...");
         /*SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
@@ -233,88 +319,57 @@ public class RedisToMongo {
         function to re-fill the DB for debugging purposes.
     */
 
-    @Scheduled(fixedRate = 36000000, initialDelay = 36000000)
+    @Scheduled(fixedRate = 36000000/*, initialDelay = 36000000*/)
     public void InsertIntoRedisCompetitionsCreated() {
         logger.info("Inserting things into redis");
-        JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
-        mongoCollection = MongoConfig.getCollection("ActiveBooks2");
-        logger.info("Before Deleting keys from redis");
-        // AggregateIterable<Document> result = mongoCollection.aggregate(Arrays.asList(
-//     new Document("$match",
-//             new Document("year", 2024L)
-//                     .append("month", 1L)),
-//     new Document("$unwind",
-//             new Document("path", "$books")),
-//     new Document("$unwind",
-//             new Document("path", "$books.tags")),
-//     new Document("$group",
-//             new Document("_id",
-//                     new Document("username", "$username")
-//                             .append("year", "$year")
-//                             .append("month", "$month")
-//                             .append("tag", "$books.tags"))
-//                     .append("tot_pages",
-//                             new Document("$sum", "$books.pages_read"))),
-//     new Document("$project",
-//             new Document("_id", 0L)
-//                     .append("username", "$_id.username")
-//                     .append("year", "$_id.year")
-//                     .append("month", "$_id.month")
-//                     .append("tag", "$_id.tag")
-//                     .append("tot_pages", "$tot_pages")),
-//     new Document("$sort",
-//             new Document("tot_pages", -1L))
-// )).allowDiskUse(true);
-// AggregateIterable<Document> result = mongoCollection.aggregate(Arrays.asList(
-//     new Document("$match",
-//             new Document("year", 2024L)
-//                     .append("month", 1L)),
-//     new Document("$unwind",
-//             new Document("path", "$books")),
-//     new Document("$unwind",
-//             new Document("path", "$books.tags")),
-//     new Document("$group",
-//             new Document("_id",
-//                     new Document("username", "$username")
-//                             .append("year", "$year")
-//                             .append("month", "$month")
-//                             .append("tag", "$books.tags"))
-//                     .append("tot_pages",
-//                             new Document("$sum", "$books.pages_read"))
-//                     .append("count",
-//                             new Document("$sum", 1))),
-//     new Document("$sort",
-//             new Document("tot_pages", -1L)),
-//     new Document("$project",
-//             new Document("_id", 0L)
-//                     .append("username", "$_id.username")
-//                     .append("year", "$_id.year")
-//                     .append("month", "$_id.month")
-//                     .append("tag", "$_id.tag")
-//                     .append("tot_pages", "$tot_pages")),
-//     new Document("$match",
-//             new Document("count", new Document("$lte", 30))),
-//     new Document("$project",
-//             new Document("username", 1)
-//                     .append("year", 1)
-//                     .append("month", 1)
-//                     .append("tag", 1)
-//                     .append("tot_pages", 1)
-//     )
-// )).allowDiskUse(true);
 
+        Integer year2 = LocalDate.now().getYear();
+        Integer month2 = LocalDate.now().getMonthValue();
+        JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
+        mongoCollection = MongoConfig.getCollection("ForInsertingThingsIntoRedis");
+        logger.info("Before Deleting keys from redis");
+        /*AggregateIterable<Document> result = mongoCollection.aggregate(Arrays.asList(new Document("$project",
+                        new Document("_id", "$_id")
+                                .append("active_books", "$recent_active_books")),
+                new Document("$unwind",
+                        new Document("path", "$active_books")),
+                new Document("$match",
+                        new Document("$and", Arrays.asList(new Document("active_books.month", month2),
+                                new Document("active_books.year", year2)))),
+                new Document("$unwind",
+                        new Document("path", "$active_books.books")),
+                new Document("$unwind",
+                        new Document("path", "$active_books.books.tags")),
+                new Document("$group",
+                        new Document("_id",
+                                new Document("year", "$active_books.year")
+                                        .append("month", "$active_books.month")
+                                        .append("_id", "$_id")
+                                        .append("tags", "$active_books.books.tags"))
+                                .append("tot_pages",
+                                        new Document("$sum", "$active_books.books.pages_read"))),
+                new Document("$project",
+                        new Document("_id", "$_id._id")
+                                .append("year", "$_id.year")
+                                .append("month", "$_id.month")
+                                .append("pages_read", "$_id.pages_read")
+                                .append("tag", "$_id.tags")
+                                .append("tot_pages", "$tot_pages")))
+        ).allowDiskUse(true);*/
+        //this aggregation returns for every user the pages read in this month and year and puts them into redis, this way
+        // the loading should be faster
+        logger.info("aggregation executed");
         int i = 0;
         int c = 0;
-        try(MongoCursor cursor = MongoConfig.getCollection("UpdatingCompetitions").find().cursor())
+        MongoCursor cursor = mongoCollection.find().cursor();
+        while(cursor.hasNext())
         {
-
+            Document doc = (Document) cursor.next();
             mongoCollection = MongoConfig.getCollection("Competitions");
             logger.info("After Aggregation and Before inserting");
-            while (cursor.hasNext()){
                 i = i+1;
-                Document doc = (Document) cursor.next();
                 //logger.info("Inserting");
-                String username = (String) doc.get("username");
+                String username = (String) doc.get("_id");
                 String tag = (String) doc.get("tag");
                 String TagTag = tag.substring(0, 1).toUpperCase() + tag.substring(1);
                 Integer month = (Integer) doc.get("month");
@@ -322,7 +377,6 @@ public class RedisToMongo {
                 Integer pages_read = (Integer) doc.get("tot_pages");
                 String dataString = year.toString() + "-" + month.toString() + "-" + "15"; // Data sotto forma di stringa
                 SimpleDateFormat formatoData = new SimpleDateFormat("yyyy-MM-dd");
-
                 try {
                     // Analizza la stringa nella data
                     Date data = formatoData.parse(dataString);
@@ -351,13 +405,9 @@ public class RedisToMongo {
                     i = 0;
                     logger.info("Thousand :" + c);
                 }
-            }
 
 
-        }
-        catch(Exception e)
-        {
-            System.out.println("Exception: "+e.getMessage());
+
         }
     }
 

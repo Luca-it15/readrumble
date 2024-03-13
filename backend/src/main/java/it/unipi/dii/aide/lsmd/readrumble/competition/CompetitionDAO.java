@@ -65,8 +65,7 @@ public class CompetitionDAO {
                                 Projections.computed("Total_Pages", new Document("$sum", "$rank.tot_pages"))
                         )
                 ),
-                Aggregates.sort(Sorts.descending("Total_Pages")),
-                Aggregates.limit(10)
+                Aggregates.sort(Sorts.descending("Total_Pages"))
         ));
 
         List<Document> competitions = new ArrayList<Document>();
