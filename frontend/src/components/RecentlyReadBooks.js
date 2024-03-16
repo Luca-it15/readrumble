@@ -76,20 +76,12 @@ function RecentlyReadBooks({user}) {
         navigate(`/bookdetails/${id}`);
     }
 
-    const PaperStyle = {
-        backgroundColor: '#f1f7fa',
-        padding: '10px',
-        borderRadius: 5,
-        width: '100%'
-    }
-
     function loadLessBooks() {
         setDisplayCount(6);
     }
 
     return (
-        <Paper sx={PaperStyle}>
-            <Typography variant="h5" sx={{marginBottom:'5px'}}>Read in the last six months</Typography>
+        <>
             <List sx={ListStyle}>
                 {recentlyReadBooks.length === 0 ? (
                     <ListItem>
@@ -118,14 +110,14 @@ function RecentlyReadBooks({user}) {
                     variant="filledTonal"><Typography>Show more</Typography></Button>
             ) : (
                 recentlyReadBooks.length > displayCount && (
-                    <Button onClick={loadLessBooks} sx={{
-                        backgroundColor: red[100], marginTop: "10px", height: "30px",
-                        '&:hover': {backgroundColor: red[100]}
-                    }}
-                            variant="filledTonal"><Typography>Show less</Typography></Button>
+                    <Button onClick={loadLessBooks} sx={{ backgroundColor: red[100], marginTop: "10px", height: "30px",
+                        '&:hover': {backgroundColor: red[100]} }}
+                        variant="filledTonal">
+                        <Typography>Show less</Typography>
+                    </Button>
                 )
             )}
-        </Paper>
+        </>
     );
 }
 

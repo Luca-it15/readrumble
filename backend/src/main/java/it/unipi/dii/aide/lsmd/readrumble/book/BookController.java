@@ -1,14 +1,19 @@
 package it.unipi.dii.aide.lsmd.readrumble.book;
 
-import com.mongodb.client.MongoCollection;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.web.CrossOriginConfig;
+
+import com.mongodb.client.MongoCollection;
+
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/book")
@@ -68,19 +73,22 @@ public class BookController {
      */
     @GetMapping("/recentlyReadBooks/{username}")
     List<LightBookDTO> getRecentlyReadBooks(@PathVariable String username) {
-        MongoCollection<Document> ActiveBooksCollection = MongoConfig.getCollection("ActiveBooks");
-        List<Document> BookDocuments = ActiveBooksCollection.aggregate(List.of(
-                new Document("$match", new Document("username", username)),
-                new Document("$sort", new Document("year", -1).append("month", -1)),
-                new Document("$limit", 6),
-                new Document("$project", new Document("books", new Document("$filter", new Document("input", "$books").append("as", "book").append("cond", new Document("$eq", List.of("$$book.bookmark", "$$book.num_pages")))))),
-                new Document("$unwind", "$books"),
-                new Document("$project", new Document("id", "$books.book_id").append("title", "$books.book_title")),
-                new Document("$limit", 10)
+        MongoCollection<Document> UsersCollection = MongoConfig.getCollection("Users");
+
+        List<Document> BookDocuments = UsersCollection.aggregate(List.of(
+                new Document("$match", new Document("_id", username)),
+                new Document("$unwind", "$recent_active_books"),
+                new Document("$sort", new Document("year", -1L).append("month", -1L)),
+                new Document("$project", new Document("finished_books", new Document("$filter",
+                        new Document("input", "$recent_active_books.books").append("as", "book")
+                                .append("cond", new Document("$eq", Arrays.asList("$$book.bookmark", "$$book.num_pages")))))),
+                new Document("$unwind", "$finished_books"),
+                new Document("$limit", 10L),
+                new Document("$project", new Document("id", "$finished_books.book_id").append("title", "$finished_books.book_title"))
         )).into(new ArrayList<>());
 
         // Remove possible duplicates
-        Set<Document> BookDocumentsSet = new HashSet<Document>(BookDocuments);
+        Set<Document> BookDocumentsSet = new HashSet<>(BookDocuments);
 
         if (BookDocumentsSet.isEmpty()) {
             return null;
@@ -98,15 +106,17 @@ public class BookController {
      */
     @GetMapping("/currentlyReadingBooks/{username}")
     public List<ActiveBookDTO> getCurrentlyReadingBooks(@PathVariable String username) {
-        MongoCollection<Document> ActiveBooksCollection = MongoConfig.getCollection("ActiveBooks");
+        MongoCollection<Document> ActiveBooksCollection = MongoConfig.getCollection("Users");
 
         List<Document> BookDocuments = ActiveBooksCollection.aggregate(List.of(
-                new Document("$match", new Document("username", username)),
-                new Document("$sort", new Document("year", -1).append("month", -1)),
-                new Document("$limit", 1),
-                new Document("$project", new Document("books", new Document("$filter", new Document("input", "$books").append("as", "book").append("cond", new Document("$ne", List.of("$$book.bookmark", "$$book.num_pages")))))),
-                new Document("$unwind", "$books"),
-                new Document("$project", new Document("id", "$books.book_id").append("title", "$books.book_title").append("tags", "$books.tags").append("bookmark", "$books.bookmark").append("num_pages", "$books.num_pages"))
+                new Document("$match", new Document("_id", username)),
+                new Document("$unwind", "$recent_active_books"),
+                new Document("$sort", new Document("year", -1L).append("month", -1L)),
+                new Document("$limit", 1L),
+                new Document("$project", new Document("bookmark_different_num_pages", new Document("$filter",
+                        new Document("input", "$recent_active_books.books").append("as", "book")
+                                .append("cond", new Document("$ne", Arrays.asList("$$book.bookmark", "$$book.num_pages")))))),
+                new Document("$unwind", "$bookmark_different_num_pages")
         )).into(new ArrayList<>());
 
         if (BookDocuments.isEmpty()) {
@@ -114,12 +124,23 @@ public class BookController {
         } else {
             List<ActiveBookDTO> books = new ArrayList<>();
             for (Document doc : BookDocuments) {
-                books.add(new ActiveBookDTO(
-                        doc.getLong("id"),
-                        doc.getString("title"),
-                        doc.getList("tags", String.class),
-                        doc.getInteger("bookmark"),
-                        doc.getInteger("num_pages")));
+                Document bookDoc = (Document) doc.get("bookmark_different_num_pages");
+                if (bookDoc != null) {
+                    Long id = bookDoc.getLong("book_id");
+                    String title = bookDoc.getString("book_title");
+                    List<String> tags = bookDoc.getList("tags", String.class);
+                    Integer bookmark = bookDoc.getInteger("bookmark");
+                    Integer num_pages = bookDoc.getInteger("num_pages");
+
+                    if (id != null && title != null && tags != null && bookmark != null && num_pages != null) {
+                        books.add(new ActiveBookDTO(
+                                id,
+                                title,
+                                tags,
+                                bookmark,
+                                num_pages));
+                    }
+                }
             }
 
             return books;
@@ -186,12 +207,12 @@ public class BookController {
     /**
      * This method returns the books recently read by the friends of a user
      *
-     * @param usernames of the friends
+     * @param username of the user
      * @return id and title of the book
      */
-    @GetMapping("/friendsRecentlyReadBooks")
-    List<LightBookDTO> getFriendsRecentlyReadBooks(@RequestParam String usernames) {
-        return bookDAO.getFriendsRecentlyReadBooks(usernames);
+    @GetMapping("/friendsRecentlyReadBooks/{username}")
+    List<LightBookDTO> getFriendsRecentlyReadBooks(@PathVariable String username) {
+        return bookDAO.getFriendsRecentlyReadBooks(username);
     }
 
     /**
@@ -262,7 +283,4 @@ public class BookController {
     public List<Document> getPagesTrend(@PathVariable String username) {
         return bookDAO.getPagesTrend(username);
     }
-
-
-
 }

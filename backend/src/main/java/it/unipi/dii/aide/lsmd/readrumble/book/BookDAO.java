@@ -4,7 +4,6 @@ import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 
-import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.checkBookExist;
 import static it.unipi.dii.aide.lsmd.readrumble.Neo4jFullController.checkUserExist;
 
 import static it.unipi.dii.aide.lsmd.readrumble.book.BookController.setResult;
@@ -18,13 +17,12 @@ import org.neo4j.driver.Result;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Values;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import redis.clients.jedis.JedisCluster;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.*;
 
 public class BookDAO {
@@ -82,12 +80,12 @@ public class BookDAO {
      * @return id and title of the book
      */
     public List<LightBookDTO> getWishlist(String username) {
-        MongoCollection<Document> WishlistCollection = MongoConfig.getCollection("Wishlists");
+        MongoCollection<Document> UsersCollection = MongoConfig.getCollection("Users");
 
-        List<Document> BookDocuments = WishlistCollection.aggregate(List.of(
+        List<Document> BookDocuments = UsersCollection.aggregate(List.of(
                 new Document("$match", new Document("_id", username)),
-                new Document("$unwind", "$books"),
-                new Document("$project", new Document("_id", 0).append("id", "$books.book_id").append("title", "$books.book_title"))
+                new Document("$unwind", "$wishlist"),
+                new Document("$project", new Document("_id", 0).append("id", "$wishlist.book_id").append("title", "$wishlist.book_title"))
         )).into(new ArrayList<>());
 
         if (BookDocuments.isEmpty()) {
@@ -146,30 +144,29 @@ public class BookDAO {
      * @return id and title of the book
      */
     public List<LightBookDTO> getTrending() {
-        MongoCollection<Document> Posts = MongoConfig.getCollection("Posts");
+        MongoCollection<Document> BooksCollection = MongoConfig.getCollection("Books");
+        Date currentDate = Date.from(Instant.now());
 
-        Date thirtyDaysAgo = new Date(System.currentTimeMillis() - 60L * 24 * 60 * 60 * 1000);
-
-        List<Document> result = Posts.aggregate(List.of(
-                new Document("$match", new Document("rating", new Document("$gte", 1)).append("date_added", new Document("$gte", thirtyDaysAgo))),
-                new Document("$group", new Document("_id", "$book_id")
-                        .append("book_title", new Document("$first", "$book_title"))
-                        .append("count", new Document("$sum", 1))
-                        .append("average_rating", new Document("$avg", "$rating"))),
-                new Document("$sort", new Document("count", -1))
+        List<Document> result = BooksCollection.aggregate(List.of(
+                new Document("$unwind", "$recent_posts"),
+                new Document("$match", new Document("recent_posts.rating", new Document("$gt", 0L))),
+                new Document("$group",
+                        new Document("_id", new Document("id", "$_id")
+                                .append("title", "$title"))
+                                .append("average_rating", new Document("$avg", "$recent_posts.rating"))
+                                .append("latest_post_date", new Document("$max", new Document("$toLong", new Document("$toDate", "$recent_posts.date_added"))))),
+                new Document("$project",
+                        new Document("_id", 0L)
+                                .append("id", "$_id.id")
+                                .append("title", "$_id.title")
+                                .append("average_rating", "$average_rating")
+                                .append("latest_post_date", new Document("$toDate", "$latest_post_date")))
         )).into(new ArrayList<>());
 
-        int maxCount = result.getFirst().getInteger("count");
-
         for (Document doc : result) {
-            int count = doc.getInteger("count");
-            double score = 0;
-            if (count != 0) {
-                double avgRating = doc.getDouble("average_rating");
-                double normalizedCount = (count - 1.0) / (maxCount - 1.0) * (5 - 1.0) + 1;
-                double x = (1.3 * avgRating) + (0.7 * normalizedCount);
-                score = 1.0 / (1 + Math.exp(-(x - 3)));
-            }
+            double posts_staleness = (double) ((currentDate.getTime() / (1000 * 60 * 60) - doc.getDate("latest_post_date").getTime() / (1000 * 60 * 60) ));
+            double score = doc.getDouble("average_rating") / (posts_staleness + 0.01);
+
             doc.append("score", score);
         }
 
@@ -179,7 +176,7 @@ public class BookDAO {
 
         List<LightBookDTO> trendingBooks = new ArrayList<>();
         for (Document doc : result) {
-            trendingBooks.add(new LightBookDTO(doc.getLong("_id"), doc.getString("book_title")));
+            trendingBooks.add(new LightBookDTO(doc.getLong("id"), doc.getString("title")));
         }
 
         return trendingBooks;
@@ -188,28 +185,21 @@ public class BookDAO {
     /**
      * This method returns the books recently read by the friends of a user
      *
-     * @param usernames of the friends
+     * @param username of the user
      * @return id and title of the book
      */
-    public List<LightBookDTO> getFriendsRecentlyReadBooks(String usernames) {
-        if (usernames.isEmpty()) {
-            return null;
-        }
+    public List<LightBookDTO> getFriendsRecentlyReadBooks(@PathVariable String username) {
+        MongoCollection<Document> UsersCollection = MongoConfig.getCollection("Users");
 
-        List<String> usernameList = Arrays.asList(usernames.split(","));
-
-        MongoCollection<Document> ActiveBooksCollection = MongoConfig.getCollection("ActiveBooks");
-
-        List<Document> BookDocuments = ActiveBooksCollection.aggregate(List.of(
-                new Document("$match", new Document("username", new Document("$in", usernameList))),
-                new Document("$sort", new Document("year", -1).append("month", -1)),
-                new Document("$limit", usernames.length()),
-                new Document("$project", new Document("books", new Document("$filter", new Document("input", "$books")
-                        .append("as", "book")
-                        .append("cond", new Document("$eq", List.of("$$book.bookmark", "$$book.num_pages")))))),
-                new Document("$unwind", "$books"),
-                new Document("$group", new Document("_id", "$books.book_id").append("title", new Document("$first", "$books.book_title"))), new Document("$project", new Document("_id", 0).append("id", "$_id").append("title", "$title")),
-                new Document("$limit", 20)
+        // Get the document relative to the given user, and get all the documents in the "recent_friends_posts" field, getting the id and title of the books of the posts
+        List<Document> BookDocuments = UsersCollection.aggregate(List.of(
+                new Document("$match", new Document("_id", username)),
+                new Document("$project", new Document("friends_posts", 1L)),
+                new Document("$unwind", new Document("path", "$friends_posts")),
+                new Document("$group", new Document("_id",
+                        new Document("id", "$friends_posts.book_id"))
+                            .append("id", new Document("$first", "$friends_posts.book_id"))
+                            .append("title", new Document("$first", "$friends_posts.book_title")))
         )).into(new ArrayList<>());
 
         if (BookDocuments.isEmpty()) {
@@ -226,17 +216,19 @@ public class BookDAO {
      * @return list of tag and pages
      */
     public List<Document> getPagesReadByTag(String username) {
-        MongoCollection<Document> ActiveBooksCollection = MongoConfig.getCollection("ActiveBooks");
+        MongoCollection<Document> UsersCollection = MongoConfig.getCollection("Users");
 
-        List<Document> BookDocuments = ActiveBooksCollection.aggregate(List.of(
-                new Document("$match", new Document("username", username)),
-                new Document("$sort", new Document("year", -1).append("month", -1)),
-                new Document("$limit", 6),
-                new Document("$unwind", "$books"),
-                new Document("$project", new Document("id", "$books.book_id").append("title", "$books.book_title").append("tags", "$books.tags").append("pages_read", "$books.pages_read")),
-                new Document("$unwind", "$tags"),
-                new Document("$group", new Document("_id", "$tags").append("pages_read", new Document("$sum", "$pages_read"))),
-                new Document("$sort", new Document("_id", 1))
+        List<Document> BookDocuments = UsersCollection.aggregate(List.of(
+                new Document("$match", new Document("_id", username)),
+                new Document("$project",
+                        new Document("recent_active_books", 1L)),
+                new Document("$unwind", "$recent_active_books"),
+                new Document("$unwind", "$recent_active_books.books"),
+                new Document("$unwind", "$recent_active_books.books.tags"),
+                new Document("$group",
+                        new Document("_id", new Document("tag", "$recent_active_books.books.tags"))
+                                .append("pages_read", new Document("$sum", "$recent_active_books.books.pages_read"))
+                                .append("tag", new Document("$first", "$recent_active_books.books.tags")))
         )).into(new ArrayList<>());
 
         if (BookDocuments.isEmpty()) {
@@ -360,47 +352,18 @@ public class BookDAO {
      * @return dates and pages read
      */
     public List<Document> getPagesTrend(@PathVariable String username) {
-        MongoCollection<Document> collection = MongoConfig.getCollection("ActiveBooks");
+        MongoCollection<Document> collection = MongoConfig.getCollection("Users");
 
-        // Initialize a map with all the months of the last six months to zero
-        Map<String, Integer> monthYearToPages = new LinkedHashMap<>();
-        LocalDate date = LocalDate.now().minusMonths(6);
-        for (int i = 0; i <= 6; i++) {
-            monthYearToPages.put(date.getMonthValue() + "/" + date.getYear(), 0);
-            date = date.plusMonths(1);
-        }
-
-        List<Document> results = collection.aggregate(List.of(
-                new Document("$match", new Document("username", username)),
-                new Document("$sort", new Document("year", -1).append("month", -1)),
-                new Document("$limit", 6),
-                new Document("$unwind", "$books"),
-                new Document("$group", new Document("_id", new Document("month", "$month").append("year", "$year"))
-                        .append("pages_read_sum", new Document("$sum", "$books.pages_read"))),
-                new Document("$project", new Document("_id", 0)
-                        .append("month", "$_id.month")
-                        .append("year", "$_id.year")
-                        .append("pages", "$pages_read_sum"))
+        return collection.aggregate(List.of(
+                new Document("$match", new Document("_id", username)),
+                new Document("$project", new Document("recent_active_books", 1L)),
+                new Document("$unwind", "$recent_active_books"),
+                new Document("$unwind", "$recent_active_books.books"),
+                new Document("$group", new Document("_id", new Document("month", "$recent_active_books.month"))
+                        .append("pages", new Document("$sum", "$recent_active_books.books.pages_read"))
+                        .append("month", new Document("$first", "$recent_active_books.month"))
+                        .append("year", new Document("$first", "$recent_active_books.year")))
         )).into(new ArrayList<>());
-
-        // Update the map with the number of pages read for each month
-        for (Document doc : results) {
-            String key = doc.getInteger("month") + "/" + doc.getInteger("year");
-            if (monthYearToPages.containsKey(key)) {
-                monthYearToPages.put(key, doc.getInteger("pages"));
-            }
-        }
-
-        // Convert the map to a list of documents
-        List<Document> response = new ArrayList<>();
-        for (Map.Entry<String, Integer> entry : monthYearToPages.entrySet()) {
-            String[] dateParts = entry.getKey().split("/");
-            response.add(new Document("month", Integer.parseInt(dateParts[0]))
-                    .append("year", Integer.parseInt(dateParts[1]))
-                    .append("pages", entry.getValue()));
-        }
-
-        return response;
     }
 
     /**

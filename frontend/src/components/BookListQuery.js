@@ -15,25 +15,22 @@ function BookListQuery({query}) {
         currentUser['following'] = [];
     }
 
-    const usernames = Array.isArray(currentUser['following']) ? currentUser['following'] : currentUser['following'].split(",");
     const [books, setBooks] = useState([]);
     const navigate = useNavigate();
 
     const fetchLastBooksOfFriends = async () => {
-        if (usernames.length === 0) {
-            setIsLoading(false)
-            return;
-        }
-
         try {
-            const usernamesString = usernames.join(",");
-            const response = await axios.get(`http://localhost:8080/api/book/friendsRecentlyReadBooks?usernames=${usernamesString}`);
+            const response = await axios.get(`http://localhost:8080/api/book/friendsRecentlyReadBooks/${currentUser['_id']}`);
 
-            // Returns book.id and book.title
-            setBooks(response.data.map(book => ({
-                id: book.id,
-                title: book.title.replace(/"/g, '')
-            })));
+            if (response.data.length === 0) {
+                setBooks([]);
+            } else {
+                // Returns book.id and book.title
+                setBooks(response.data.map(book => ({
+                    id: book.id,
+                    title: book.title.replace(/"/g, '')
+                })));
+            }
 
             setIsLoading(false);
         } catch (error) {
@@ -42,14 +39,32 @@ function BookListQuery({query}) {
     };
 
     const fetchTrendingBooks = async () => {
+        let trendingBooks = JSON.parse(localStorage.getItem('trendingBooks'));
+
+        if (trendingBooks && trendingBooks.length > 0) {
+            const booksData = trendingBooks.map(book => ({
+                id: book.id,
+                title: book.title
+            }));
+            setBooks(booksData);
+            setIsLoading(false);
+
+            return;
+        }
+
         try {
             const response = await axios.get(`http://localhost:8080/api/book/trending`);
 
-            // Returns book.id and book.title
-            setBooks(response.data.map(book => ({
-                id: book.id,
-                title: book.title.replace(/"/g, '')
-            })));
+            if (response.data.length === 0) {
+                setBooks([]);
+            } else {
+                const booksData = response.data.map(book => ({
+                    id: book.id,
+                    title: book.title.replace(/"/g, '')
+                }));
+                setBooks(booksData);
+                localStorage.setItem('trendingBooks', JSON.stringify(booksData));
+            }
 
             setIsLoading(false);
         } catch (error) {
@@ -105,10 +120,10 @@ function BookListQuery({query}) {
                 <CircularProgress sx={{marginY: '50px'}}/>
                 : (
                 <React.Fragment>
-                    {query === 'friends' && currentUser['following'].length === 0 ? (
+                    {books.length === 0 ? (
                         <List sx={ListStyle}>
                             <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
-                                <Typography sx={{textAlign: 'center'}}>You are not following anyone yet</Typography>
+                                <Typography sx={{textAlign: 'center'}}>No books to show</Typography>
                             </ListItem>
                         </List>
                     ) : (

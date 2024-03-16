@@ -1,19 +1,18 @@
 import React, {useState} from 'react';
 import Typography from '@mui/material/Typography';
-import {ToggleButton, ToggleButtonGroup} from '@mui/material';
+import { Switch, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import '../App.css';
 import PostsList from '../components/PostList';
-import {Grid, Paper} from '@mui/material';
+import { Grid, Paper } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material-next/Button';
-import {SearchRounded} from '@mui/icons-material';
+import { SearchRounded } from '@mui/icons-material';
 import TextField from '@mui/material/TextField';
 import SuggestedBooks from '../components/SuggestedBooks';
 import BookListQuery from "../components/BookListQuery";
-import {blue} from "@mui/material/colors";
+import { blue } from "@mui/material/colors";
 import SuggestedFriends from '../components/SuggestedFriends';
 import SearchChoice from '../components/SearchChoice';
-
 
 export default function Explore() {
 
@@ -23,6 +22,7 @@ export default function Explore() {
     const [toggle1, setToggle1] = useState(true);
     const [toggle2, setToggle2] = useState(false);
     const [toggle3, setToggle3] = useState(false);
+    const [toggleBooks, setToggleBooks] = useState('suggested');
     const [suggest, setSuggest] = useState(true);
     const [find, setFind] = useState(false);
     const [searchText, setSearchText] = useState('');
@@ -107,11 +107,27 @@ export default function Explore() {
         if (value === 0) {
             return (
                 <Grid container direction="row" sx={{marginTop: '10px'}} justifyContent="space-evenly">
-                    <Grid iterm xs={4}>
-                        <SuggestedBooks user={currentUser['_id']}/>
+                    <Grid container item xs={4} md={12} direction="row" justifyContent="center" alignItems="center">
+                        <Grid item>
+                            <Typography sx={ toggleBooks === 'trending' && { color: 'grey' }}>Suggested</Typography>
+                        </Grid>
+                        <Grid item>
+                            <Switch value={toggleBooks} checked={toggleBooks === 'trending'} onChange={() => {
+                                    setToggleBooks(toggleBooks === 'suggested' ? 'trending' : 'suggested');
+                                }}
+                                color="default"
+                            />
+                        </Grid>
+                        <Grid item>
+                            <Typography sx={ toggleBooks !== 'trending' && { color: 'grey' } }>Trending</Typography>
+                        </Grid>
                     </Grid>
                     <Grid iterm xs={4}>
-                        <BookListQuery query={"trending"}/>
+                        {toggleBooks === 'suggested' ? (
+                            <SuggestedBooks user={currentUser['_id']}/>
+                        ) : (
+                            <BookListQuery query={"trending"}/>
+                        )}
                     </Grid>
                 </Grid>
             );

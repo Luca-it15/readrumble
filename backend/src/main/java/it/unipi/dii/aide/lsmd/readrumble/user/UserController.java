@@ -68,6 +68,28 @@ public class UserController {
     }
 
     /**
+     * This method returns the amount of followers of a user
+     *
+     * @param username the username of the user
+     * @return the number of followers
+     */
+    @GetMapping("/followersCount/{username}")
+    public int getFollowersCount(@PathVariable String username) {
+        return userDAO.getFollowersCount(username);
+    }
+
+    /**
+     * This method returns the amount of followees of a user
+     *
+     * @param username the username of the user
+     * @return the number of followees
+     */
+    @GetMapping("/followeesCount/{username}")
+    public int getFolloweesCount(@PathVariable String username) {
+        return userDAO.getFolloweesCount(username);
+    }
+
+    /**
      * This method returns the followees of a user
      *
      * @param username the username of the user
@@ -76,6 +98,17 @@ public class UserController {
     @GetMapping("/following/{username}")
     public List<String> getFollowing(@PathVariable String username) {
         return userDAO.getFollowing(username);
+    }
+
+    /**
+     * This method returns the followers of a user
+     *
+     * @param username the username of the user
+     * @return the list of followers
+     */
+    @GetMapping("/followers/{username}")
+    public List<String> getFollowers(@PathVariable String username) {
+        return userDAO.getFollowers(username);
     }
 
     /**
