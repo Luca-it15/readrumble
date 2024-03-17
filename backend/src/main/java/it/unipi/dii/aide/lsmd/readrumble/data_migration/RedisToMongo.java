@@ -115,8 +115,7 @@ public class RedisToMongo {
      this quoted function empties redis databases from the competition:* key-value pairs. It is used only for debugging purposes
      in order to empty and successively fill the databases with the correct pairs.
      */
-/*
-    @Scheduled(fixedRate = 36000000)
+
     public void EmptyCompetitionsFromRedis()
     {
         logger.info("Empty Redis Competitions");
@@ -129,7 +128,6 @@ public class RedisToMongo {
         }
         logger.info("Redis Competitions Emptied");
     }
-*/
     /**
      * This method is scheduled to run every 2 hours.
      * It updates the MongoDB competitions collection with the data from Redis.
@@ -145,6 +143,7 @@ public class RedisToMongo {
             String username;
             while (cursor.hasNext()) {
                 username = cursor.next().get("_id").toString();
+                ArrayList<Document> friendsposts = new ArrayList<>();
                 try (Session session = Neo4jConfig.getSession()) {
                     Result result = session.run("MATCH (u:User {name: $username})-[:FOLLOWS]->(f:User) RETURN f.name AS following",
                             Values.parameters("username", username));
@@ -154,16 +153,21 @@ public class RedisToMongo {
                     while (result.hasNext()) {
                         following.add(result.next().get("following").asString());
                     }
-
+                    Collections.shuffle(following);
+                    int index = 10;
+                    if(following.size()<index)
+                    {
+                        index = following.size();
+                    }
+                    List<String> following2 = following.subList(0, index);
                     //now we have the list of friends for the user selected, we need to take the first post of each friend
                     //sort them by the date added and take the first twenty
                     //first, it is necessary to eliminate the previous posts
                     Bson filter = Filters.eq("_id", username);
                     Document update = new Document("$set", new Document("friends_posts", new ArrayList<>()));
                     mongoCollection.updateOne(filter, update);
-                    //now the aggregation takes the twenty posts
-                    AggregateIterable<Document> result2 = mongoCollection.aggregate(Arrays.asList(
-                            new Document("$match", new Document("_id", new Document("$in", Arrays.asList(following)))),
+
+                    AggregateIterable<Document> result2 = mongoCollection.aggregate(Arrays.asList(new Document("$match", new Document("_id", new Document("$in", following2))),
                             new Document("$sort",
                                     new Document("recent_posts.date_added.0", -1L)),
                             new Document("$unwind",
@@ -186,7 +190,7 @@ public class RedisToMongo {
                                             .append("tags", "$post.tags")
                                             .append("bookmark", "$post.bookmark")
                                             .append("pages_read", "$post.pages_read")),
-                            new Document("$limit", 20L))
+                            new Document("$limit", 10L))
                     ).allowDiskUse(true);
                     // a new arraylist is created to store the posts
                     ArrayList<Document> new_friends_posts = new ArrayList<>();
@@ -196,14 +200,14 @@ public class RedisToMongo {
                     }
                     //now the arraylist is stored in the proper field
                     Bson filter2 = Filters.eq("_id", username);
-                    Document update2 = new Document("$set", new Document("friends_posts", new_friends_posts));
+                    Document update2 = new Document("$set", new Document("friends_posts", friendsposts));
                     mongoCollection.updateOne(filter2, update2);
                     i=i+1;
-                    logger.info("Unit : "+i);
                     if(i == 1000)
                     {
                         c=c+1;
                         logger.info("Thousand : "+c);
+                        i = 0;
                     }
                 }
                 catch (Exception e) {
@@ -216,6 +220,7 @@ public class RedisToMongo {
         logger.info("Finished Updating MongoDB Friends Posts !");
 
     }
+
     @Scheduled(fixedRate = 36000000, initialDelay = 36000000) // 10 hours in milliseconds
     public void updateMongoCompetitions() {
         logger.info("Updating MongoDB competitions 1...");
@@ -319,7 +324,7 @@ public class RedisToMongo {
         function to re-fill the DB for debugging purposes.
     */
 
-    @Scheduled(fixedRate = 36000000/*, initialDelay = 36000000*/)
+    @Scheduled(fixedRate = 36000000, initialDelay = 36000000)
     public void InsertIntoRedisCompetitionsCreated() {
         logger.info("Inserting things into redis");
 
@@ -366,11 +371,10 @@ public class RedisToMongo {
         {
             Document doc = (Document) cursor.next();
             mongoCollection = MongoConfig.getCollection("Competitions");
-            logger.info("After Aggregation and Before inserting");
                 i = i+1;
                 //logger.info("Inserting");
-                String username = (String) doc.get("_id");
-                String tag = (String) doc.get("tag");
+            String username = doc.get("_id").toString();
+            String tag = (String) doc.get("tag").toString();
                 String TagTag = tag.substring(0, 1).toUpperCase() + tag.substring(1);
                 Integer month = (Integer) doc.get("month");
                 Integer year = (Integer) doc.get("year");
@@ -589,5 +593,26 @@ public class RedisToMongo {
             logger.info("MongoDB Posts and ActiveBooks updated");
             semaphore.release();
         }
+    }
+    //This is a debugging function that helps to try the code
+    @Scheduled(fixedRate = 90000000)
+    public void GoGoGo() {
+        //EmptyCompetitionsFromRedis();
+
+
+        updateFriendsPosts();
+
+
+        //the following function creates participants for the active competitions based
+        //on the active books of the month
+        //this means that it fills only the competitions of the current month
+        //InsertIntoRedisCompetitionsCreated();
+
+
+        //the following function takes all the keys from redis in order to update the competitions in mongo
+        updateMongoCompetitions();
+
+
+        //eliminateOldMongoCompetitions();
     }
 }
