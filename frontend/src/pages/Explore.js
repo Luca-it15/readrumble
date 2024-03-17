@@ -2,14 +2,13 @@ import React, {useState} from 'react';
 import Typography from '@mui/material/Typography';
 import { Switch, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import '../App.css';
-import PostsList from '../components/PostList';
 import { Grid, Paper } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material-next/Button';
 import { SearchRounded } from '@mui/icons-material';
 import TextField from '@mui/material/TextField';
 import SuggestedBooks from '../components/SuggestedBooks';
-import BookListQuery from "../components/BookListQuery";
+import TrendingBooks from "../components/TrendingBooks";
 import { blue } from "@mui/material/colors";
 import SuggestedFriends from '../components/SuggestedFriends';
 import SearchChoice from '../components/SearchChoice';
@@ -20,7 +19,6 @@ export default function Explore() {
 
     const [value, setValue] = useState(0);
     const [toggle1, setToggle1] = useState(true);
-    const [toggle2, setToggle2] = useState(false);
     const [toggle3, setToggle3] = useState(false);
     const [toggleBooks, setToggleBooks] = useState('suggested');
     const [suggest, setSuggest] = useState(true);
@@ -37,6 +35,11 @@ export default function Explore() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+    }
+
+    const suggestedFriendsPaperStyle = {
+        ...PaperStyle,
+        width: '50%',
     }
 
     const toggle = {
@@ -72,15 +75,6 @@ export default function Explore() {
         setValue(0);
         setSuggest(true);
         setToggle1(true);
-        setToggle2(false);
-        setToggle3(false);
-    }
-
-    function getPost() {
-        setValue(1);
-        setSuggest(true);
-        setToggle1(false);
-        setToggle2(true);
         setToggle3(false);
     }
 
@@ -88,7 +82,6 @@ export default function Explore() {
         setValue(2);
         setSuggest(true);
         setToggle1(false);
-        setToggle2(false);
         setToggle3(true);
     }
 
@@ -126,21 +119,14 @@ export default function Explore() {
                         {toggleBooks === 'suggested' ? (
                             <SuggestedBooks user={currentUser['_id']}/>
                         ) : (
-                            <BookListQuery query={"trending"}/>
+                            <TrendingBooks/>
                         )}
                     </Grid>
                 </Grid>
             );
-        } else if (value === 1) {
-            return (
-                <Paper sx={PaperStyle}>
-                    <Typography variant='h5'>Recent Posts</Typography>
-                    <PostsList all={true} size={12} path={0}/>
-                </Paper>
-            );
         } else {
             return (
-                <Paper sx={PaperStyle}>
+                <Paper sx={suggestedFriendsPaperStyle}>
                     <Typography variant='h5'>Suggested Friends</Typography>
                     <SuggestedFriends user={currentUser['_id']}/>
                 </Paper>
@@ -163,9 +149,6 @@ export default function Explore() {
                                    value="toggleGroup" color="primary">
                     <ToggleButton onClick={getBook} sx={toggle} value="Book" aria-label="Books" disabled={toggle1}>
                         <Typography>Books</Typography>
-                    </ToggleButton>
-                    <ToggleButton onClick={getPost} sx={toggle} value="Post" aria-label="Posts" disabled={toggle2}>
-                        <Typography>Posts</Typography>
                     </ToggleButton>
                     <ToggleButton onClick={getUser} sx={toggle} value="User" aria-label="Users" disabled={toggle3}>
                         <Typography>Users</Typography>
