@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import Button from '@mui/material-next/Button';
 import Typography from '@mui/material/Typography';
-import {Divider, Link, List, ListItem, Paper, Tooltip} from "@mui/material";
+import {Divider, Link, List, ListItem, Tooltip} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import {blue} from "@mui/material/colors";
 import {useNavigate} from "react-router-dom";
@@ -15,13 +15,6 @@ function FavoriteBookList({user}) {
     const [displayCount, setDisplayCount] = useState(10);
 
     const navigate = useNavigate();
-
-    const PaperStyle = {
-        backgroundColor: '#f1f7fa',
-        padding: '10px',
-        borderRadius: 5,
-        width: '100%'
-    }
 
     const ListStyle = {
         py: 0,
@@ -87,8 +80,7 @@ function FavoriteBookList({user}) {
     }
 
     return (
-        <Paper sx={PaperStyle}>
-            <Typography variant="h5" sx={{marginBottom:'5px'}}>Favorite books</Typography>
+        <>
             <List sx={ListStyle}>
                 {books.length === 0 ? (
                     <ListItem>
@@ -124,7 +116,7 @@ function FavoriteBookList({user}) {
                     <Typography>Show all</Typography>
                 </Button>
             )}
-        </Paper>
+        </>
     );
 }
 

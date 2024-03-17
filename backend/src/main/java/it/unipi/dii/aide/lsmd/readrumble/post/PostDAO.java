@@ -25,11 +25,9 @@ public class PostDAO {
 
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
 
-
         String input = post.getString("date_added");
         DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.ENGLISH);
         ZonedDateTime zonedDateTime = ZonedDateTime.parse(input, inputFormatter);
-
 
         DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         String time = zonedDateTime.format(outputFormatter);
@@ -48,45 +46,80 @@ public class PostDAO {
 
         List<String> competitions_names = (List<String>) post.get("competitions_name");
         List<String> competitions_tag = (List<String>) post.get("competitions_tag");
+
         //String key = "competition:"+competitionTitle + ":" + competitionTag + ":" + username;
+
         int i = 0;
         int j = 0;
         for (; !competitions_names.isEmpty() && i < competitions_names.size() && j < competitions_tag.size(); i++, j++) {
             String compkey = "competition:" + competitions_names.get(i) + ":" + competitions_tag.get(j) + ":" + username;
-
             String value = jedis.get(compkey);
-
             int new_pages_read = Integer.parseInt(value) + pagesRead;
 
             jedis.set(compkey, String.valueOf(new_pages_read));
         }
 
         return ResponseEntity.ok("Post added: " + key);
-
     }
 
+    public List<PostDTO> allPostsUser(String parameter, boolean user, boolean loadAll) {
+        MongoCollection<Document> collection;
+        Document query;
 
-    public List<PostDTO> allPostsUser(String parametro, boolean user) {
+        if (user) {
+            collection = MongoConfig.getCollection("Users");
+            query = new Document("_id", parameter);
+        } else {
+            long book_id = Long.parseLong(parameter);
+
+            collection = MongoConfig.getCollection("Books");
+            query = new Document("_id", book_id);
+        }
+
+        List<Document> pipeline = new ArrayList<>();
+        pipeline.add(new Document("$match", query));
+        pipeline.add(new Document("$unwind", "$recent_posts"));
+        pipeline.add(new Document("$addFields", new Document("recent_posts.date_added", new Document("$toDate", "$recent_posts.date_added"))));
+        pipeline.add(new Document("$sort", new Document("recent_posts.date_added", -1)));
+
+        if (loadAll)
+            pipeline.add(new Document("$skip", 10));
+
+        pipeline.add(new Document("$limit", 10));
+
         List<PostDTO> posts = new ArrayList<>();
 
-        MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
+        for (Document doc : collection.aggregate(pipeline)) {
+            Document postDoc = (Document) doc.get("recent_posts");
+            PostDTO post;
 
-        Document query;
-        if (user)
-            query = new Document("username", parametro);
-        else {
-            long book_id = Long.parseLong(parametro);
-            query = new Document("book_id", book_id);
-        }
-        for (Document doc : collection.find(query).sort(new Document("date_added", -1)).limit(10)) {
-            PostDTO post = new PostDTO(
-                    (doc.get("_id")).toString(),
-                    doc.getLong("book_id"),
-                    doc.getInteger("rating"),
-                    doc.getDate("date_added"),
-                    doc.getString("book_title"),
-                    doc.getString("username"),
-                    doc.getString("text"));
+            // If looking for posts of a specific user, get the username from the user document
+            if (user) {
+                String username = doc.getString("_id");
+
+                post = new PostDTO(
+                        postDoc.get("_id").toString(),
+                        postDoc.getLong("book_id"),
+                        postDoc.getInteger("rating"),
+                        postDoc.getDate("date_added"),
+                        postDoc.getString("book_title"),
+                        username,
+                        postDoc.getString("review_text"));
+            } else {
+                // If looking for posts of a specific book, get the book id and title from the book document
+                long book_id = doc.getLong("_id");
+                String book_title = doc.getString("title");
+
+                post = new PostDTO(
+                        postDoc.get("_id").toString(),
+                        book_id,
+                        postDoc.getInteger("rating"),
+                        postDoc.getDate("date_added"),
+                        book_title,
+                        postDoc.getString("username"),
+                        postDoc.getString("review_text"));
+            }
+
             posts.add(post);
         }
 
@@ -95,8 +128,13 @@ public class PostDAO {
 
     public Post postDetails(ObjectId id) {
         MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
+
         Document query = new Document("_id", id);
+
         Document doc = collection.find(query).first();
+
+        assert doc != null;
+
         List<String> tags = (List<String>) doc.get("tags");
         return new Post(
                 ((ObjectId) doc.get("_id")).toString(),

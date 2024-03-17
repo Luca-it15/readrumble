@@ -1,16 +1,21 @@
 import React, {useEffect, useState} from 'react';
-import {Typography, Paper, Grid} from '@mui/material';
-import {Bar, Line} from 'react-chartjs-2';
+import { Typography, Paper, Grid, Switch } from '@mui/material';
+import { Bar, Line } from 'react-chartjs-2';
 import axios from 'axios';
 import Chart from 'chart.js/auto';
 
 const Dashboard = () => {
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
+    const [toggle, setToggle] = useState('readingProgress');
     const [readingProgressData, setReadingProgressData] = useState([]);
     const [readingStatsData, setReadingStatsData] = useState([]);
 
     async function fetchPagesTrend() {
+        if (readingProgressData.length > 0) {
+            return;
+        }
+
         try {
             const response = await axios.get(`http://localhost:8080/api/book/analytics/pagesTrend/${currentUser['_id']}`);
             const data = response.data.map(doc => (
@@ -21,6 +26,14 @@ const Dashboard = () => {
                 }
             ));
 
+            // Sort by year and month
+            data.sort((a, b) => {
+                if (a.year === b.year) {
+                    return a.month - b.month;
+                }
+                return a.year - b.year;
+            });
+
             setReadingProgressData(data);
         } catch (error) {
             console.log(error.response);
@@ -28,9 +41,13 @@ const Dashboard = () => {
     }
 
     async function fetchReadingStats() {
+        if (readingStatsData.length > 0) {
+            return;
+        }
+
         try {
             const response = await axios.get(`http://localhost:8080/api/book/pagesReadByTag/${currentUser['_id']}`);
-            const data = response.data.map(doc => ({tag: doc._id, pagesRead: doc.pages_read}));
+            const data = response.data.map(doc => ({tag: doc.tag, pagesRead: doc.pages_read}));
 
             setReadingStatsData(data);
         } catch (error) {
@@ -40,7 +57,6 @@ const Dashboard = () => {
 
     useEffect(() => {
         fetchPagesTrend();
-        fetchReadingStats();
     }, [currentUser['_id']]);
 
     const readingProgressChart = (
@@ -112,26 +128,46 @@ const Dashboard = () => {
             <Typography variant="h5">
                 {currentUser['_id']}'s dashboard
             </Typography>
-            <Grid container direction="row" justifyContent="space-around" alignItems="center" spacing={1}>
+            <Grid container direction="column" justifyContent="space-around" alignItems="center" spacing={1}>
                 <Grid item xs={6}>
                     <Paper sx={{
                         textAlign: 'center',
                         borderRadius: 5,
                         backgroundColor: '#ffffff',
-                        width: '100%',
+                        width: '50vw',
                         padding: '20px'
                     }}>
-                        <Typography variant="h5">Reading progress of the last months</Typography>
-                        {readingProgressChart}
-                    </Paper>
-                </Grid>
-                <Grid item xs={6}>
-                    <Paper sx={{
-                        display: 'flex', flexDirection: 'column', textAlign: 'center', borderRadius: 5,
-                        backgroundColor: '#ffffff', width: '100%', padding: '20px'
-                    }}>
-                        <Typography variant="h5">Pages read by tag in the last six months</Typography>
-                        {readingStatsChart}
+                        <Typography variant="h5">Pages read in the last months</Typography>
+                        <Grid container direction='row' justifyContent='center' alignItems='center' sx={{ marginBottom: '20px' }}>
+                            <Grid item>
+                                <Typography sx={ toggle === 'readingProgress' && { color: 'grey' }}>By tag</Typography>
+                            </Grid>
+                            <Grid item>
+                                <Switch value={toggle} onChange={() => {
+                                        setToggle(toggle === 'readingProgress' ? 'readingStats' : 'readingProgress');
+                                        if (toggle === 'readingProgress') {
+                                            fetchPagesTrend();
+                                        } else {
+                                            fetchReadingStats();
+                                        }
+                                    }}
+                                    color="default"
+                                    defaultChecked
+                                />
+                            </Grid>
+                            <Grid item>
+                                <Typography sx={ toggle !== 'readingProgress' && { color: 'grey' }}>By month</Typography>
+                            </Grid>
+                        </Grid>
+                        {toggle === 'readingProgress' ? (
+                            <>
+                                {readingProgressChart}
+                            </>
+                        ) : (
+                            <>
+                                {readingStatsChart}
+                            </>
+                        )}
                     </Paper>
                 </Grid>
                 <Grid item xs={12} md={4}>

@@ -1,22 +1,24 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {Grid, Typography} from '@mui/material';
+import Button from '@mui/material-next/Button';
 
 import PostRow from './PostRow';
 import '../App.css';
 import CircularProgress from "@mui/material/CircularProgress";
+import {blue, red} from "@mui/material/colors";
 
 const PostsList = (user) => {
     const [posts, setPosts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    const [displayCount , setDisplayCount] = useState(10);
+
     let currentUser = localStorage.getItem('logged_user');
-   
+
     if (currentUser) {
-      
         currentUser = JSON.parse(currentUser);
     } else {
-        
         console.log('logged_user key is not present in the localstorage');
     }
 
@@ -43,7 +45,7 @@ const PostsList = (user) => {
             axios.get(`http://localhost:8080/api/post/all/${user_or_book}/${user.user}`)
                 .then(response => {
                     let postLocalStorageJson = localStorage.getItem('last_posts');
-                    
+
                     if ((user.username === currentUser['_id']) && (postLocalStorageJson != null)) {
                         let posts = JSON.parse(postLocalStorageJson);
 
@@ -73,8 +75,8 @@ const PostsList = (user) => {
                     setIsLoading(false);
                 })
                 .catch(error => {
-                    console.error('There was an error!', error);
-                });
+                        console.error('There was an error!', error);
+                    });
         } else {
             //search post
             axios.get(`http://localhost:8080/api/search/posts/${user_or_book}`)
@@ -89,11 +91,22 @@ const PostsList = (user) => {
 
     }, [user.username]);
 
+    function loadMorePosts() {
+        axios.get(`http://localhost:8080/api/post/morePosts/${user_or_book}/${user.user}`)
+            .then(response => {
+                setPosts([...posts, ...response.data]);
+            })
+            .catch(error => {
+                console.error('There was an error!', error);
+            });
+    }
+
     return (
-        <Grid container direction="row" justifyContent="center" alignItems="flex-start" sx={{gap: '10px'}}>
+        <>
+        <Grid container direction="row" justifyContent="center" alignItems="center" sx={{gap: '10px'}}>
             {!isLoading ? (
                 posts.length > 0 ? (
-                    posts.map((post, index) => (
+                    posts.slice(0, displayCount).map((post, index) => (
                         <Grid container item direction="coloumn" xs={user.size}
                               sx={{borderRadius: 6, textAlign: 'center'}}>
                             <PostRow
@@ -119,6 +132,38 @@ const PostsList = (user) => {
                 <CircularProgress size={50} sx={{marginY: '90px'}}/>
             )}
         </Grid>
+        <Grid container direction="column" justifyContent="center" alignItems="center" sx={{ width: '100%', marginTop: '20px' }}/>
+            {(displayCount === 10 && !user.user) && (
+                <Grid item>
+                    <Button
+                        onClick={() => {
+                            loadMorePosts();
+                            setDisplayCount(displayCount + 10)
+                        }}
+                        sx={{color: 'black', backgroundColor: blue[100], '&:hover': {backgroundColor: blue[100]}}}
+                    >
+                        <Typography>
+                            Load more
+                        </Typography>
+                    </Button>
+                </Grid>
+            )}
+            {(displayCount === 20 && !user.user) && (
+                <Grid item>
+                    <Button
+                        onClick={() => {
+                            setDisplayCount(10)
+                            setPosts(posts.slice(0, 10))
+                        }}
+                        sx={{color: 'black', backgroundColor: red[100], '&:hover': {backgroundColor: red[100]}}}
+                    >
+                        <Typography>
+                            Load less
+                        </Typography>
+                    </Button>
+                </Grid>
+            )}
+        </>
     );
 };
 
