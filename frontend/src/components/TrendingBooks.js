@@ -7,36 +7,11 @@ import {useNavigate} from "react-router-dom";
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import CircularProgress from '@mui/material/CircularProgress';
 
-function BookListQuery({query}) {
+function TrendingBooks() {
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
     const [isLoading, setIsLoading] = useState(true);
-
-    if (!currentUser['following']) {
-        currentUser['following'] = [];
-    }
-
     const [books, setBooks] = useState([]);
     const navigate = useNavigate();
-
-    const fetchLastBooksOfFriends = async () => {
-        try {
-            const response = await axios.get(`http://localhost:8080/api/book/friendsRecentlyReadBooks/${currentUser['_id']}`);
-
-            if (response.data.length === 0) {
-                setBooks([]);
-            } else {
-                // Returns book.id and book.title
-                setBooks(response.data.map(book => ({
-                    id: book.id,
-                    title: book.title.replace(/"/g, '')
-                })));
-            }
-
-            setIsLoading(false);
-        } catch (error) {
-            console.log(error.response)
-        }
-    };
 
     const fetchTrendingBooks = async () => {
         let trendingBooks = JSON.parse(localStorage.getItem('trendingBooks'));
@@ -73,14 +48,7 @@ function BookListQuery({query}) {
     };
 
     useEffect(() => {
-        switch (query) {
-            case 'trending':
-                fetchTrendingBooks();
-                break;
-            case 'friends':
-                fetchLastBooksOfFriends();
-                break;
-        }
+        fetchTrendingBooks();
     }, [currentUser['_id']]);
 
     function seeDetails(id) {
@@ -109,12 +77,8 @@ function BookListQuery({query}) {
 
     return (
         <Paper sx={PaperStyle}>
-            {query === 'trending' ? (
-                <Typography variant="h5" sx={{textAlign: 'center'}}>Trending books<TrendingUpIcon
-                    sx={{color: blue[400], marginLeft: '10px'}}/></Typography>
-            ) : (
-                <Typography variant="h5" sx={{textAlign: 'center'}}>Recently read by friends</Typography>
-            )}
+            <Typography variant="h5" sx={{textAlign: 'center'}}>Trending books<TrendingUpIcon
+                sx={{color: blue[400], marginLeft: '10px'}}/></Typography>
 
             {isLoading ?
                 <CircularProgress sx={{marginY: '50px'}}/>
@@ -135,7 +99,7 @@ function BookListQuery({query}) {
                                             seeDetails(book.id)
                                         }} sx={{color: "#000000"}}>
                                             <Typography>
-                                                {query === 'trending' && <strong>{(index + 1) + '. '}</strong>}
+                                                <strong>{(index + 1) + '. '}</strong>
                                                 {book.title}
                                             </Typography>
                                         </Link>
@@ -151,4 +115,4 @@ function BookListQuery({query}) {
     );
 }
 
-export default BookListQuery;
+export default TrendingBooks;

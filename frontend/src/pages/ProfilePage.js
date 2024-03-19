@@ -197,12 +197,14 @@ const ProfilePage = () => {
 
                 <Grid container item xs={3.5} direction="column" alignItems="center" justifyContent="center" spacing={1}>
                     <Grid item sx={{width: '100%'}}>
-                        <Accordion sx={AccordionStyle}>
+                        <Accordion sx={AccordionStyle} onChange={(event, isExpanded) => {
+                            if (isExpanded)
+                                fetchWishlist();
+                        }}>
                             <AccordionSummary
                                 expandIcon={<ExpandMoreIcon />}
                                 aria-controls="wishlist-content"
                                 id="wishlist-header"
-                                onClick={ () => { fetchWishlist() } }
                             >
                                 <BookmarkTwoToneIcon sx={{ color: blue[700], height: '30px'}}/>
                                 <Typography variant="h5" sx={{ width: '100%' }}>Wishlist</Typography>
