@@ -223,14 +223,13 @@ public class RedisToMongo {
 
     @Scheduled(fixedRate = 36000000, initialDelay = 36000000) // 10 hours in milliseconds
     public void updateMongoCompetitions() {
-        logger.info("Updating MongoDB competitions 1...");
+        logger.info("Updating MongoDB competitions");
         /*SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
         try {
             semaphore.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }*/
-        logger.info("Updating MongoDB competitions 2...");
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
         mongoCollection = MongoConfig.getCollection("Competitions");
         Bson end_dateFilter = Filters.gte("end_date", LocalDate.now());
@@ -248,23 +247,28 @@ public class RedisToMongo {
             System.out.println("Catched Exception: " + e.getMessage());
 
         }
+        logger.info("Cleared the rank field of the active competitions");
+
+        mongoCollection = MongoConfig.getCollection("Users");
+
         try (MongoCursor<Document> cursor = mongoCollection.find().cursor()) {
             while (cursor.hasNext()) {
                 Document user = cursor.next();
                 Bson filter2 = Filters.eq("_id", user.get("_id").toString());
                 Document update2 = new Document("$set", new Document("competitions", new ArrayList<>()));
-                MongoConfig.getCollection("Users").updateOne(filter2, update2);
+                mongoCollection.updateOne(filter2, update2);
             }
         } catch (Exception e) {
             System.out.println("Catched Exception: " + e.getMessage());
         }
-        logger.info("Cleared the rank field of the active competitions");
+        mongoCollection = MongoConfig.getCollection("Competitions");
+
+        logger.info("Cleared the competitions field of the users");
         ArrayList<Document> Competitions_to_change = new ArrayList<>();
         logger.info("Starting to create documents");
         String pattern = "competition:*";
         List<String> keys = KeysTwo(jedis, pattern);
         // Create a list to store all the competition, user and total page read
-
         for (String key : keys) {
             //competition:competition_name:tag:username->value
             String competition_name = key.split(":")[1];
@@ -280,6 +284,7 @@ public class RedisToMongo {
             MongoConfig.getCollection("Users").updateOne(filter, Updates.push("competitions", doc));
             //this other field is inserted to then proceed in the evaluation of the top ten
             doc.append("username", username);
+
             Competitions_to_change.add(doc);
         }
         // Map to keep track of documents for every value of competition_name
@@ -310,7 +315,6 @@ public class RedisToMongo {
             String comp_name = competition.get("competition_name").toString();
             competition.remove("competition_name");
             Bson filter = Filters.eq("name", comp_name);
-
             // Insert the user document into the MongoDB wishlists collection
             mongoCollection.updateOne(filter, Updates.push("rank", competition));
         }
@@ -331,9 +335,10 @@ public class RedisToMongo {
         Integer year2 = LocalDate.now().getYear();
         Integer month2 = LocalDate.now().getMonthValue();
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
-        mongoCollection = MongoConfig.getCollection("ForInsertingThingsIntoRedis");
-        logger.info("Before Deleting keys from redis");
-        /*AggregateIterable<Document> result = mongoCollection.aggregate(Arrays.asList(new Document("$project",
+        mongoCollection = MongoConfig.getCollection("Users");
+
+        AggregateIterable<Document> result = mongoCollection.aggregate(Arrays.asList(
+                new Document("$project",
                         new Document("_id", "$_id")
                                 .append("active_books", "$recent_active_books")),
                 new Document("$unwind",
@@ -360,16 +365,17 @@ public class RedisToMongo {
                                 .append("pages_read", "$_id.pages_read")
                                 .append("tag", "$_id.tags")
                                 .append("tot_pages", "$tot_pages")))
-        ).allowDiskUse(true);*/
+        ).allowDiskUse(true);
         //this aggregation returns for every user the pages read in this month and year and puts them into redis, this way
         // the loading should be faster
         logger.info("aggregation executed");
         int i = 0;
         int c = 0;
-        MongoCursor cursor = mongoCollection.find().cursor();
-        while(cursor.hasNext())
+        /*MongoCursor cursor = mongoCollection.find().cursor();
+        while(cursor.hasNext())*/
+        for(Document doc : result)
         {
-            Document doc = (Document) cursor.next();
+            //Document doc = (Document) cursor.next();
             mongoCollection = MongoConfig.getCollection("Competitions");
                 i = i+1;
                 //logger.info("Inserting");
@@ -411,8 +417,9 @@ public class RedisToMongo {
                 }
 
 
-
         }
+        logger.info("finished inserting things into redis");
+
     }
 
 
@@ -597,22 +604,10 @@ public class RedisToMongo {
     //This is a debugging function that helps to try the code
     @Scheduled(fixedRate = 90000000)
     public void GoGoGo() {
-        //EmptyCompetitionsFromRedis();
-
-
-        updateFriendsPosts();
-
-
-        //the following function creates participants for the active competitions based
-        //on the active books of the month
-        //this means that it fills only the competitions of the current month
-        //InsertIntoRedisCompetitionsCreated();
-
-
-        //the following function takes all the keys from redis in order to update the competitions in mongo
+        EmptyCompetitionsFromRedis();
+        InsertIntoRedisCompetitionsCreated();
         updateMongoCompetitions();
-
-
+        updateFriendsPosts();
         //eliminateOldMongoCompetitions();
     }
 }
