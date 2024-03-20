@@ -9,7 +9,7 @@ import TextField from '@mui/material/TextField';
 import {blue} from "@mui/material/colors";
 import '../../App.css';
 import BookListShow from '../../components/BookListShow';
-import BookListQuery from '../../components/BookListQuery';
+import TrendingBooks from '../../components/TrendingBooks';
 
 export default function BookAdmin() {
     const [searchText, setSearchText] = useState('');
@@ -88,7 +88,7 @@ export default function BookAdmin() {
             </Box>
             {last ? (
                 <Grid iterm xs={4}>
-                    <BookListQuery query={"trending"}/>
+                    <TrendingBooks/>
                 </Grid>
             ) : (
                 <Grid item xs={4} sx={{width: '70%'}}>

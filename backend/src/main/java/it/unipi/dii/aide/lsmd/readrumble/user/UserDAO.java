@@ -38,6 +38,14 @@ public class UserDAO {
     public void saveInMemoryUsers() {
         for (Document user : inMemoryUsers) {
             String username = (String) user.get("_id");
+            ArrayList<Document> Array = new ArrayList<>();
+            user.append("wishlist",Array);
+            user.append("recent_posts",Array);
+            user.append("recent_active_books",Array);
+            user.append("competitions",Array);
+            user.append("followers",0);
+            user.append("followees",0);
+            user.append("friends_posts",Array);
             MongoCollection<Document> collection = MongoConfig.getCollection("Users");
             collection.insertOne(user);
 
@@ -251,6 +259,21 @@ public class UserDAO {
         }
     }
 
+    public List<String> getFollowers(@PathVariable String username) {
+        try (Session session = Neo4jConfig.getSession()) {
+            Result result = session.run("MATCH (u:User {name: $username})<-[:FOLLOWS]-(f:User) RETURN f.name AS followers",
+                    Values.parameters("username", username));
+
+            List<String> followers = new ArrayList<>();
+
+            while (result.hasNext()) {
+                followers.add(result.next().get("followers").asString());
+            }
+
+            return followers;
+        }
+    }
+
     /**
      * This method creates the relation :FOLLOWS from follower to followee
      *
@@ -304,6 +327,30 @@ public class UserDAO {
             }
         } else {
             return null;
+        }
+    }
+
+    public int getFollowersCount(String username) {
+        MongoCollection<Document> collection = MongoConfig.getCollection("Users");
+
+        Document user = collection.find(eq("_id", username)).first();
+
+        if (user != null) {
+            return user.getInteger("followers");
+        } else {
+            return 0;
+        }
+    }
+
+    public int getFolloweesCount(String username) {
+        MongoCollection<Document> collection = MongoConfig.getCollection("Users");
+
+        Document user = collection.find(eq("_id", username)).first();
+
+        if (user != null) {
+            return user.getInteger("followees");
+        } else {
+            return 0;
         }
     }
 }

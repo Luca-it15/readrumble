@@ -7,12 +7,13 @@ import IconButton from "@mui/material/IconButton";
 import PersonRemoveTwoToneIcon from "@mui/icons-material/PersonRemoveTwoTone";
 import {blue, red} from "@mui/material/colors";
 import {useNavigate} from "react-router-dom";
+import Box from "@mui/material/Box";
 
-function FollowingList({user}) {
+function FollowingList({user, followers_or_followees}) {
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
     const [following, setFollowing] = useState([]);
-    const [displayCount, setDisplayCount] = useState(6);
+    const [followers, setFollowers] = useState([]);
 
     const navigate = useNavigate();
 
@@ -47,6 +48,20 @@ function FollowingList({user}) {
         }
     }
 
+    async function fetchFollwers() {
+        if (user === currentUser['_id'] && currentUser['followers'] && currentUser['followers'].length > 0) {
+            setFollowers(currentUser['followers'])
+            return;
+        }
+
+        try {
+            const response = await axios.get(`http://localhost:8080/api/followers/${user}`);
+            setFollowers(response.data);
+        } catch (error) {
+            console.log(error.response)
+        }
+    }
+
     // Works only if "user" is current user, because only on the personal profile we can unfollow users in the following list
     async function unfollow(username) {
         try {
@@ -57,24 +72,15 @@ function FollowingList({user}) {
             currentUser['following'] = updatedFollowing;
             localStorage.setItem('logged_user', JSON.stringify(currentUser));
             setFollowing(updatedFollowing);
-            console.log("Unfollowed " + user);
         } catch (error) {
             console.error(error);
         }
     }
 
     useEffect(() => {
-        if (user === currentUser['_id']) {
-            // If user is current user, then show currentUser['following']
-            setFollowing(currentUser['following']);
-        } else {
-            fetchFollowing();
-        }
+        fetchFollowing();
+        fetchFollwers();
     }, [user]);
-
-    const loadAllFollowings = () => {
-        setDisplayCount(following.length);
-    };
 
     function seeProfile(username) {
         if (username === currentUser['_id']) {
@@ -84,62 +90,66 @@ function FollowingList({user}) {
         }
     }
 
-    function loadLessFollowings() {
-        setDisplayCount(6);
-    }
-
     return (
-        <Paper sx={PaperStyle}>
-            <Typography variant="h5" sx={{marginBottom: '5px'}}>
-                {user === currentUser['_id'] ? "Users you follow" : user + " is following"}
-            </Typography>
-            <List sx={ListStyle}>
-                {following.length === 0 ? (
-                    <ListItem>
-                        <Typography>Not following anybody</Typography>
-                    </ListItem>
-                ) : (
-                    following.slice(0, displayCount).map((username, index) => (
-                        <React.Fragment key={index}>
-                            <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa", borderRadius: '30px'}}}
-                                      secondaryAction={user === currentUser['_id'] && (
-                                          <Tooltip title="Unfollow">
-                                              <IconButton sx={{color: blue[500], '&:hover': {color: red[500]}}}
-                                                          onClick={() => unfollow(username)}>
-                                                  <PersonRemoveTwoToneIcon/>
-                                              </IconButton>
-                                          </Tooltip>
-                                      )}>
-                                <Link onClick={() => {
-                                    seeProfile(username)
-                                }} sx={{color: "#000000", '&:hover': {cursor: 'pointer'}}}>
-                                    <Typography>{username}</Typography>
-                                </Link>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            { followers_or_followees === "followees" ? (
+                <>
+                    <Typography variant="h5" sx={{marginBottom: '5px'}}>
+                        {user === currentUser['_id'] ? "Users you follow" : user + " is following"}
+                    </Typography>
+                    <List sx={ListStyle}>
+                        {following.length === 0 ? (
+                            <ListItem>
+                                <Typography>Not following anybody</Typography>
                             </ListItem>
-                            <Divider variant="middle" component="li"/>
-                        </React.Fragment>
-                    )))}
-            </List>
-            {following.length > displayCount ? (
-                <Button sx={{
-                    backgroundColor: blue[100], marginTop: "10px", height: "30px",
-                    '&:hover': {backgroundColor: blue[100]}
-                }}
-                        variant="filledTonal" onClick={loadAllFollowings}>
-                    <Typography>Show all</Typography>
-                </Button>
+                        ) : (
+                            following.map((username, index) => (
+                                <React.Fragment key={index}>
+                                    <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa", borderRadius: '30px'}}}
+                                              secondaryAction={user === currentUser['_id'] && (
+                                                  <Tooltip title="Unfollow">
+                                                      <IconButton sx={{color: blue[500], '&:hover': {color: red[500]}}}
+                                                                  onClick={() => unfollow(username)}>
+                                                          <PersonRemoveTwoToneIcon/>
+                                                      </IconButton>
+                                                  </Tooltip>
+                                              )}>
+                                        <Link onClick={() => { seeProfile(username) }}
+                                              sx={{color: "#000000", '&:hover': {cursor: 'pointer'}}}>
+                                            <Typography>{username}</Typography>
+                                        </Link>
+                                    </ListItem>
+                                    <Divider variant="middle" component="li"/>
+                                </React.Fragment>
+                            )))}
+                    </List>
+                </>
             ) : (
-                following.length > 0 && (
-                    <Button sx={{
-                        backgroundColor: red[100], marginTop: "10px", height: "30px",
-                        '&:hover': {backgroundColor: red[100]}
-                    }}
-                            variant="filledTonal" onClick={loadLessFollowings}>
-                        <Typography>Show less</Typography>
-                    </Button>
-                )
+                <>
+                    <Typography variant="h5" sx={{marginBottom: '5px'}}>
+                        {user === currentUser['_id'] ? "Your followers" : user + "'s followers"}
+                    </Typography>
+                    <List sx={ListStyle}>
+                        {followers.length === 0 ? (
+                            <ListItem>
+                                <Typography>No followers yet</Typography>
+                            </ListItem>
+                        ) : (
+                            followers.map((username, index) => (
+                                <React.Fragment key={index}>
+                                    <ListItem>
+                                        <Link onClick={() => { seeProfile(username) }}
+                                              sx={{color: "#000000", '&:hover': {cursor: 'pointer'}}}>
+                                            <Typography>{username}</Typography>
+                                        </Link>
+                                    </ListItem>
+                                    <Divider variant="middle" component="li"/>
+                                </React.Fragment>
+                            )))}
+                    </List>
+                </>
             )}
-        </Paper>
+        </Box>
     );
 }
 

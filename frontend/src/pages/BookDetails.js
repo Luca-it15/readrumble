@@ -188,8 +188,8 @@ function BookDetails() {
     };
 
     const removeBook = (id) => async () => {
-        const response = axios.delete("http://localhost:8080/api/admin/book/remove/" + id)
-            .then(response => {
+        axios.delete("http://localhost:8080/api/admin/book/remove/" + id)
+            .then(() => {
                 setOpen(false);
                 setTimeout(function () {
                     setDeleteStatus({message: "", variant: 'success'});
@@ -384,20 +384,15 @@ function BookDetails() {
                         textAlign: 'center'
                     }}>Tags: <i>{tags}</i></Typography>
                     {hiddenReview ? (
-                        <React.Fragment>
-                            <Paper elevation={0} sx={DescriptionPaperStyle}>
-                                <Typography variant="h5">Description</Typography>
-                                <Typography>{book['description']}</Typography>
-                            </Paper>
-                        </React.Fragment>) : (
-                        <React.Fragment>
-                            <Grid item xs={12} ClassName='choice'>
-                                <Typography variant="h5"
-                                            sx={{textAlign: 'center', marginTop: '30px'}}>Reviews</Typography>
-                                <PostList user={false} book_id={id} username={currentUser['_id']} size={5} all={false}
-                                          path={1}/>
-                            </Grid>
-                        </React.Fragment>
+                        <Paper elevation={0} sx={DescriptionPaperStyle}>
+                            <Typography variant="h5">Description</Typography>
+                            <Typography>{book['description']}</Typography>
+                        </Paper>
+                    ) : (
+                        <Grid container item xs={12} direction="column" alignItems="center">
+                            <Typography variant="h5" sx={{textAlign: 'center', marginTop: '30px'}}>Reviews</Typography>
+                            <PostList user={false} book_id={id} username={currentUser['_id']} size={5} all={false} path={1}/>
+                        </Grid>
                     )}
                 </Grid>
             </Grid>

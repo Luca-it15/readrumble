@@ -6,8 +6,8 @@ import EditNoteTwoToneIcon from '@mui/icons-material/EditNoteTwoTone';
 import {blue} from "@mui/material/colors";
 
 import PopularCompetitionBlock from '../components/PopularCompetitionBlock';
-import BookListQuery from "../components/BookListQuery";
 import RecentFriendsPosts from '../components/RecentFriendsPosts';
+import RecentlyReadByFriends from "../components/RecentlyReadByFriends";
 
 const Home = () => {
     const currentUser = JSON.parse(localStorage.getItem('logged_user'));
@@ -34,10 +34,10 @@ const Home = () => {
 
             <Grid container spacing={2} textAlign="center" direction="row" alignItems="flex-start" justifyContent="space-around"
                 sx={{paddingTop: '10px'}}>
-                <Grid item xs={3}>
+                <Grid item xs={3.5}>
                     <PopularCompetitionBlock/>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={5}>
                     <Paper elevation={2} style={PaperStyle} sx={{marginBottom: '20px'}}>
                     <Button sx={{backgroundColor: blue[200], height: "40px", marginBottom: '10px',
                                 '&:hover': {backgroundColor: blue[100]}}}
@@ -49,8 +49,8 @@ const Home = () => {
                         <RecentFriendsPosts/>
                     </Paper>
                 </Grid>
-                <Grid item xs={3}>
-                    <BookListQuery query={"friends"}/>
+                <Grid item xs={3.5}>
+                    <RecentlyReadByFriends/>
                 </Grid>
             </Grid>
         </Container>
