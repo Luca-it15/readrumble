@@ -126,28 +126,67 @@ public class PostDAO {
         return posts;
     }
 
-    public Post postDetails(ObjectId id) {
-        MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
+    public Post postDetails(ObjectId id, String parameter, boolean user) {
 
-        Document query = new Document("_id", id);
+        MongoCollection<Document> collection;
+        Document query;
+        long book_id = 0;
+
+        if (user) {
+            collection = MongoConfig.getCollection("Users");
+            query = new Document("_id", parameter);
+        } else {
+            book_id = Long.parseLong(parameter);
+
+            collection = MongoConfig.getCollection("Books");
+            query = new Document("_id", book_id);
+        }
 
         Document doc = collection.find(query).first();
-
         assert doc != null;
 
-        List<String> tags = (List<String>) doc.get("tags");
-        return new Post(
-                ((ObjectId) doc.get("_id")).toString(),
-                doc.getLong("book_id"),
-                doc.getInteger("rating"),
-                doc.getString("review_text"),
-                doc.getDate("date_added"),
-                doc.getString("book_title"),
-                doc.getString("username"),
-                tags,
-                doc.getInteger("bookmark"),
-                doc.getInteger("pages_read")
-        );
+        List<Document> postDoc = (List<Document>) doc.get("recent_posts");
+        System.out.println("post doc vale " + postDoc);
+        Document postTarget = null;
+        for(Document post: postDoc) {
+            System.out.println("il post in considerazione è': " + post);
+            ObjectId targetID = post.getObjectId("_id");
+            if( targetID.equals(id)) {
+                postTarget = post;
+                break;
+            }
+        }
+
+        List<String> tags = (List<String>) postTarget.get("tags");
+        if(user) {
+            String username = doc.getString("_id");
+            return new Post(
+                    ((ObjectId) postTarget.get("_id")).toString(),
+                    postTarget.getLong("book_id"),
+                    postTarget.getInteger("rating"),
+                    postTarget.getString("review_text"),
+                    postTarget.getString("date_added"),
+                    postTarget.getString("book_title"),
+                    username,
+                    tags,
+                    postTarget.getInteger("bookmark"),
+                    postTarget.getInteger("pages_read")
+            );
+        } else {
+            String book_title = doc.getString("title");
+            return new Post(
+                    ((ObjectId) postTarget.get("_id")).toString(),
+                    book_id,
+                    postTarget.getInteger("rating"),
+                    postTarget.getString("review_text"),
+                    postTarget.getString("date_added"),
+                    book_title,
+                    postTarget.getString("username"),
+                    tags,
+                    postTarget.getInteger("bookmark"),
+                    postTarget.getInteger("pages_read")
+            );
+        }
     }
 
     public List<PostDTO> allPost() {

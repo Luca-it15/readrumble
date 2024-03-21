@@ -52,9 +52,9 @@ public class PostController {
         return postDAO.allPostsUser(parameter, user, true);
     }
 
-    @GetMapping("/details/{id}")
-    public Post getPostDetails(@PathVariable ObjectId id) {
-        return postDAO.postDetails(id);
+    @GetMapping("/details/{id}/{parameter}/{user}")
+    public Post getPostDetails(@PathVariable ObjectId id, @PathVariable String parameter,  @PathVariable boolean user) {
+        return postDAO.postDetails(id, parameter, user);
     }
 
     @GetMapping("/all")

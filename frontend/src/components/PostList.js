@@ -16,6 +16,9 @@ const PostsList = (user) => {
 
     let currentUser = localStorage.getItem('logged_user');
 
+    let isAdmin = localStorage.getItem('isAdmin') || false;
+
+
     if (currentUser) {
         currentUser = JSON.parse(currentUser);
     } else {
@@ -79,7 +82,7 @@ const PostsList = (user) => {
                     });
         } else {
             //search post
-            axios.get(`http://localhost:8080/api/search/posts/${user_or_book}`)
+            axios.get(`http://localhost:8080/api/search/posts/${user_or_book}/${isAdmin}`)
                 .then(response => {
                     setPosts(response.data);
                     setIsLoading(false);

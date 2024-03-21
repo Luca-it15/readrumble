@@ -18,9 +18,9 @@ public class SearchController {
     public SearchController() {
         searchDao = new SearchDAO();
     }
-    @GetMapping("/posts/{searchString}")
-    public List<PostDTO> searchPosts(@PathVariable String searchString) {
-        return searchDao.findByStringPosts(searchString);
+    @GetMapping("/posts/{searchString}/{isAdmin}")
+    public List<PostDTO> searchPosts(@PathVariable String searchString, @PathVariable boolean isAdmin) {
+        return searchDao.findByStringPosts(searchString, isAdmin);
     }
     @GetMapping("/users/{searchString}")
     public List<UserDTO> searchUsers(@PathVariable String searchString) {

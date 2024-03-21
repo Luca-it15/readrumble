@@ -32,7 +32,7 @@ function PostDetails() {
 
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
-    let {id} = useParams();
+    let {id, parameter, user} = useParams();
     let id_num = parseInt(id);
 
     const [deletionStatus, seeDeletionStatus] = useState({
@@ -63,7 +63,11 @@ function PostDetails() {
     const fetchPost = async () => {
         try {
             if (id_num != 0) {
-                const response = await axios.get('http://localhost:8080/api/post/details/' + id);
+                let paramToSend = parameter; 
+                if(!user) {
+                  paramToSend = parameter.toString(); 
+                }
+                const response = await axios.get('http://localhost:8080/api/post/details/' + id + '/' +  parameter + '/' + user);
 
                 setPost(response.data);
                 setTags(response.data.tags);

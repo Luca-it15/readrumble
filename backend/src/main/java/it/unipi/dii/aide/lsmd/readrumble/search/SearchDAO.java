@@ -14,14 +14,17 @@ import java.nio.charset.StandardCharsets;
 
 public class SearchDAO {
 
-    public List<PostDTO> findByStringPosts(String searchString) {
+    public List<PostDTO> findByStringPosts(String searchString, boolean isAdmin) {
         List<PostDTO> target = new ArrayList<>();
         MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
 
         String decodedString = URLDecoder.decode(searchString, StandardCharsets.UTF_8);
         String cleanedString = decodedString.substring(0, decodedString.length() - 1);
-
         Document query1 = new Document("book_title", new Document("$regex", cleanedString));
+        if(isAdmin) {
+            query1 = new Document("review_text", new Document("$regex", cleanedString));
+        }
+
         List<Document> results1 = collection.find(query1).limit(10).into(new ArrayList<>());
         //retrieve the first results of document that match the filter
         for (Document doc : results1) {

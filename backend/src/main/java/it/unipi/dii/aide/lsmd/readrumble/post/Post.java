@@ -21,7 +21,7 @@ public class Post {
     private long book_id;
     private int rating;
     private String review_text;
-    private Date date_added;
+    private String date_added;
     private String book_title;
     private String username;
     private List<String> tags;
@@ -30,7 +30,7 @@ public class Post {
 
 
 
-    public Post(String _id, long book_id, int rating, String review_text, Date date, String book_title, String username, List<String> tags, int bookmark, int pages_read) {
+    public Post(String _id, long book_id, int rating, String review_text, String date, String book_title, String username, List<String> tags, int bookmark, int pages_read) {
         this._id = _id;
         this.book_id = book_id;
         this.rating = rating;
@@ -75,11 +75,11 @@ public class Post {
         this.review_text = review_text;
     }
 
-    public Date getDate_added() {
+    public String getDate_added() {
         return date_added;
     }
 
-    public void setDate_added(Date date_added) {
+    public void setDate_added(String date_added) {
         this.date_added = date_added;
     }
 

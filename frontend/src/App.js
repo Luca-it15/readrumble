@@ -153,7 +153,7 @@ const App = () => {
                                     element={<BookDetails/>}
                                 />
                                 <Route
-                                    path="/posts/:id"
+                                    path="/posts/:id/:parameter/:user"
                                     element={<PostDetails/>}
                                 />
                                 <Route
