@@ -87,14 +87,10 @@ public class BookController {
                 new Document("$project", new Document("id", "$finished_books.book_id").append("title", "$finished_books.book_title"))
         )).into(new ArrayList<>());
 
-        // Remove possible duplicates
-        Set<Document> BookDocumentsSet = new HashSet<>(BookDocuments);
-
-        if (BookDocumentsSet.isEmpty()) {
+        if (BookDocuments.isEmpty()) {
             return null;
         } else {
-            List<Document> booklist = new ArrayList<>(BookDocumentsSet);
-            return setResult(booklist);
+            return setResult(BookDocuments);
         }
     }
 

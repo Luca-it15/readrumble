@@ -14,6 +14,8 @@ export default function PostAdmin() {
     const [last, setLast] = useState(true);
     const [find, setFind] = useState(false);
 
+    // TODO: creare una funzione che vada a cercare SOLO i post segnalati dal documento dell'admin in Users
+
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
         padding: '10px 10%',

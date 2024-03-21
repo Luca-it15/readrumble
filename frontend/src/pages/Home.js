@@ -33,11 +33,8 @@ const Home = () => {
             </Paper>
 
             <Grid container spacing={2} textAlign="center" direction="row" alignItems="flex-start" justifyContent="space-around"
-                sx={{paddingTop: '10px'}}>
-                <Grid item xs={3.5}>
-                    <PopularCompetitionBlock/>
-                </Grid>
-                <Grid item xs={5}>
+                sx={{ paddingTop: '10px' }}>
+                <Grid item xs={8}>
                     <Paper elevation={2} style={PaperStyle} sx={{marginBottom: '20px'}}>
                     <Button sx={{backgroundColor: blue[200], height: "40px", marginBottom: '10px',
                                 '&:hover': {backgroundColor: blue[100]}}}
@@ -49,7 +46,7 @@ const Home = () => {
                         <RecentFriendsPosts/>
                     </Paper>
                 </Grid>
-                <Grid item xs={3.5}>
+                <Grid item xs={4}>
                     <RecentlyReadByFriends/>
                 </Grid>
             </Grid>

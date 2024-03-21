@@ -196,8 +196,10 @@ public class BookDAO {
                 new Document("$match", new Document("_id", username)),
                 new Document("$project", new Document("friends_posts", 1L)),
                 new Document("$unwind", new Document("path", "$friends_posts")),
+
+                // TODO: sistemare il group per adattarsi bene alla setResult
                 new Document("$group", new Document("_id",
-                        new Document("id", "$friends_posts.book_id"))
+                        new Document("_id", "$friends_posts.book_id"))
                             .append("id", new Document("$first", "$friends_posts.book_id"))
                             .append("title", new Document("$first", "$friends_posts.book_title")))
         )).into(new ArrayList<>());

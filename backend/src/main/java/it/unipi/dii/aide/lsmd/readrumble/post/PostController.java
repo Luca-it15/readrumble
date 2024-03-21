@@ -38,28 +38,23 @@ public class PostController {
      *
      * @param parameter the username of the user that calls this method if the param user is true
      *                  or the book_id if the value of user is false
-     * @param user      that is true if the method was called to retrieve the posts of the user or false
+     * @param user_or_book that is true if the method was called to retrieve the posts of the user or false
      *                  if it was called to retrieve a book's posts
      * @return List<Review> includes the first 10 reviews
      */
-    @GetMapping("/all/{parameter}/{user}")
-    public List<PostDTO> getAllPostUsers(@PathVariable String parameter, @PathVariable boolean user) {
-        return postDAO.allPostsUser(parameter, user, false);
+    @GetMapping("/all/{parameter}/{user_or_book}")
+    public List<PostDTO> getAllPost(@PathVariable String parameter, @PathVariable boolean user_or_book) {
+        return postDAO.allPosts(parameter, user_or_book, false);
     }
 
-    @GetMapping("/morePosts/{parameter}/{user}")
-    public List<PostDTO> getMorePosts(@PathVariable String parameter, @PathVariable boolean user) {
-        return postDAO.allPostsUser(parameter, user, true);
+    @GetMapping("/morePosts/{parameter}/{user_or_book}")
+    public List<PostDTO> getMorePosts(@PathVariable String parameter, @PathVariable boolean user_or_book) {
+        return postDAO.allPosts(parameter, user_or_book, true);
     }
 
     @GetMapping("/details/{id}/{parameter}/{user}")
     public Post getPostDetails(@PathVariable ObjectId id, @PathVariable String parameter,  @PathVariable boolean user) {
         return postDAO.postDetails(id, parameter, user);
-    }
-
-    @GetMapping("/all")
-    public List<PostDTO> getAllReviews() {
-        return postDAO.allPost();
     }
 
     @DeleteMapping("/removeredis/{key}")
@@ -72,8 +67,8 @@ public class PostController {
         return postDAO.removePostMongo(id);
     }
 
-    @PostMapping("/friends")
-    public List<PostDTO> recentFriendsPosts(@RequestBody List<String> friends) {
-        return postDAO.getRecentFriendsPosts(friends);
+    @PostMapping("/friends/{username}")
+    public List<PostDTO> recentFriendsPosts(@PathVariable String username) {
+        return postDAO.getRecentFriendsPosts(username);
     }
 }

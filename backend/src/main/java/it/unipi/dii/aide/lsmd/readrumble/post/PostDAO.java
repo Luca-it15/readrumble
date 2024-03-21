@@ -22,10 +22,10 @@ import redis.clients.jedis.JedisCluster;
 
 public class PostDAO {
     public ResponseEntity<String> addPostsRedis(Document post) {
-
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
 
         String input = post.getString("date_added");
+
         DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.ENGLISH);
         ZonedDateTime zonedDateTime = ZonedDateTime.parse(input, inputFormatter);
 
@@ -40,6 +40,7 @@ public class PostDAO {
 
         String key = "post:" + time + ":" + username + ":" + bookId + ":" + ranking + ":" + bookmark + ":" + pagesRead;
         Gson gson = new Gson();
+
         jedis.hset(key, "review_text", post.getString("review_text"));
         jedis.hset(key, "tags", gson.toJson(post.get("tag")));
         jedis.hset(key, "book_title", post.getString("book_title"));
@@ -47,26 +48,24 @@ public class PostDAO {
         List<String> competitions_names = (List<String>) post.get("competitions_name");
         List<String> competitions_tag = (List<String>) post.get("competitions_tag");
 
-        //String key = "competition:"+competitionTitle + ":" + competitionTag + ":" + username;
-
         int i = 0;
         int j = 0;
         for (; !competitions_names.isEmpty() && i < competitions_names.size() && j < competitions_tag.size(); i++, j++) {
-            String compkey = "competition:" + competitions_names.get(i) + ":" + competitions_tag.get(j) + ":" + username;
-            String value = jedis.get(compkey);
+            String competitionKey = "competition:" + competitions_names.get(i) + ":" + competitions_tag.get(j) + ":" + username;
+            String value = jedis.get(competitionKey);
             int new_pages_read = Integer.parseInt(value) + pagesRead;
 
-            jedis.set(compkey, String.valueOf(new_pages_read));
+            jedis.set(competitionKey, String.valueOf(new_pages_read));
         }
 
         return ResponseEntity.ok("Post added: " + key);
     }
 
-    public List<PostDTO> allPostsUser(String parameter, boolean user, boolean loadAll) {
+    public List<PostDTO> allPosts(String parameter, boolean user_or_book, boolean loadAll) {
         MongoCollection<Document> collection;
         Document query;
 
-        if (user) {
+        if (user_or_book) {
             collection = MongoConfig.getCollection("Users");
             query = new Document("_id", parameter);
         } else {
@@ -94,7 +93,7 @@ public class PostDAO {
             PostDTO post;
 
             // If looking for posts of a specific user, get the username from the user document
-            if (user) {
+            if (user_or_book) {
                 String username = doc.getString("_id");
 
                 post = new PostDTO(
@@ -189,26 +188,6 @@ public class PostDAO {
         }
     }
 
-    public List<PostDTO> allPost() {
-        List<PostDTO> reviews = new ArrayList<>();
-
-        MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
-
-        for (Document doc : collection.find().sort(new Document("date_added", -1)).limit(10)) {
-            PostDTO review = new PostDTO(
-                    ((ObjectId) doc.get("_id")).toString(),
-                    doc.getLong("book_id"),
-                    doc.getInteger("rating"),
-                    doc.getDate("date_added"),
-                    doc.getString("book_title"),
-                    doc.getString("username"),
-                    doc.getString("text"));
-            reviews.add(review);
-        }
-
-        return reviews;
-    }
-
     public ResponseEntity<String> removePostRedis(String key) {
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
         String response = null;
@@ -222,6 +201,7 @@ public class PostDAO {
         return ResponseEntity.ok(response);
     }
 
+    // TODO: cambiare, non può basarsi solo sull'_id del post. Deve usare l'username e la data di aggiunta
     public ResponseEntity<String> removePostMongo(ObjectId id) {
         MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
         Document query = new Document("_id", id);
@@ -236,33 +216,35 @@ public class PostDAO {
     }
 
     /**
-     * this aggregation will return a list of documents containing information about books reviewed by friends,
-     * including the book ID, rating, date added, book title,
-     * username of the review author, and text of the review.
-     * @param friends
+     * This method retrieves some posts of the user's friends
+     *
+     * @param username the username of the user
      * @return List<PostDTO>
      */
-    public List<PostDTO> getRecentFriendsPosts(List<String> friends) {
+    public List<PostDTO> getRecentFriendsPosts(String username) {
         List<PostDTO> postsTarget = new ArrayList<>();
 
-        MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
+        MongoCollection<Document> collection = MongoConfig.getCollection("Users");
 
         List<Document> posts = collection.aggregate(List.of(
-                new Document("$match", new Document("username", new Document("$in", friends))),
-                new Document("$sort", new Document("date_added", -1)),
-                new Document("$limit", 20),
-                new Document("$project", new Document("id", "$_id")
-                        .append("book_id", "$book_id")
-                        .append("rating", "$rating")
-                        .append("date_added", "$date_added")
-                        .append("book_title", "$book_title")
-                        .append("username", "$username")
-                        .append("text", "$review_text"))
+                new Document("$match", new Document("_id", username)),
+                new Document("$unwind", "$friends_posts"),
+                new Document("$sort", new Document("friends_posts.date_added", -1)),
+                new Document("$project", new Document("id", "$friends_posts._id")
+                        .append("book_id", "$friends_posts.book_id")
+                        .append("rating", "$friends_posts.rating")
+                        .append("date_added", "$friends_posts.date_added")
+                        .append("book_title", "$friends_posts.book_title")
+                        .append("username", "$friends_posts.username")
+                        .append("text", "$friends_posts.review_text"))
         )).into(new ArrayList<>());
+
+        if (posts.isEmpty())
+            return new ArrayList<>(0);
 
         for (Document doc : posts) {
             PostDTO post = new PostDTO(
-                    ((ObjectId) doc.get("id")).toString(),
+                    doc.get("id").toString(),
                     doc.getLong("book_id"),
                     doc.getInteger("rating"),
                     doc.getDate("date_added"),
@@ -270,6 +252,7 @@ public class PostDAO {
                     doc.getString("username"),
                     doc.getString("text")
             );
+
             postsTarget.add(post);
         }
 
