@@ -200,7 +200,7 @@ public class RedisToMongo {
                     }
                     //now the arraylist is stored in the proper field
                     Bson filter2 = Filters.eq("_id", username);
-                    Document update2 = new Document("$set", new Document("friends_posts", friendsposts));
+                    Document update2 = new Document("$set", new Document("friends_posts", new_friends_posts));
                     mongoCollection.updateOne(filter2, update2);
                     i=i+1;
                     if(i == 1000)
@@ -604,10 +604,11 @@ public class RedisToMongo {
     //This is a debugging function that helps to try the code
     @Scheduled(fixedRate = 90000000)
     public void GoGoGo() {
+        updateFriendsPosts();
+
         EmptyCompetitionsFromRedis();
         InsertIntoRedisCompetitionsCreated();
         updateMongoCompetitions();
-        updateFriendsPosts();
         //eliminateOldMongoCompetitions();
     }
 }
