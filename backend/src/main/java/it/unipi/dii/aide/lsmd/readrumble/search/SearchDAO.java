@@ -28,7 +28,7 @@ public class SearchDAO {
         List<Document> results1 = collection.find(query1).limit(10).into(new ArrayList<>());
         //retrieve the first results of document that match the filter
         for (Document doc : results1) {
-            PostDTO post = new PostDTO((doc.get("_id")).toString(), doc.getLong("book_id"), doc.getInteger("rating"), doc.getDate("date_added"), doc.getString("book_title"), doc.getString("username"), doc.getString("text"));
+            PostDTO post = new PostDTO(doc.getLong("book_id"), doc.getInteger("rating"), doc.getDate("date_added"), doc.getString("book_title"), doc.getString("username"), doc.getString("text"));
             target.add(post);
         }
 

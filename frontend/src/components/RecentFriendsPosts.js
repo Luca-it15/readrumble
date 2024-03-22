@@ -19,6 +19,12 @@ const RecentFriendsPosts = () => {
         try {
             const response = await axios.post(`http://localhost:8080/api/post/friends/${currentUser['_id']}`);
 
+            if (response.data === null) {
+                setPosts([]);
+                setIsLoading(false);
+                return;
+            }
+
             setPosts(response.data);
 
             setIsLoading(false);

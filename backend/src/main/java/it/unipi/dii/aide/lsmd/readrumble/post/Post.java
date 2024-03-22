@@ -30,8 +30,7 @@ public class Post {
 
 
 
-    public Post(String _id, long book_id, int rating, String review_text, String date, String book_title, String username, List<String> tags, int bookmark, int pages_read) {
-        this._id = _id;
+    public Post(long book_id, int rating, String review_text, String date, String book_title, String username, List<String> tags, int bookmark, int pages_read) {
         this.book_id = book_id;
         this.rating = rating;
         this.review_text = review_text;
@@ -41,14 +40,6 @@ public class Post {
         this.tags = tags;
         this.bookmark = bookmark;
         this.pages_read = pages_read;
-    }
-
-    public String get_id() {
-        return _id;
-    }
-
-    public void set_id(String _id) {
-        this._id = _id;
     }
 
     public long getBook_id() {

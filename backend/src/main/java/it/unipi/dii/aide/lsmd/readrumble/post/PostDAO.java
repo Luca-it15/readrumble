@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import com.mongodb.client.MongoCollection;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -97,7 +98,6 @@ public class PostDAO {
                 String username = doc.getString("_id");
 
                 post = new PostDTO(
-                        postDoc.get("_id").toString(),
                         postDoc.getLong("book_id"),
                         postDoc.getInteger("rating"),
                         postDoc.getDate("date_added"),
@@ -110,7 +110,6 @@ public class PostDAO {
                 String book_title = doc.getString("title");
 
                 post = new PostDTO(
-                        postDoc.get("_id").toString(),
                         book_id,
                         postDoc.getInteger("rating"),
                         postDoc.getDate("date_added"),
@@ -160,7 +159,6 @@ public class PostDAO {
         if(user) {
             String username = doc.getString("_id");
             return new Post(
-                    ((ObjectId) postTarget.get("_id")).toString(),
                     postTarget.getLong("book_id"),
                     postTarget.getInteger("rating"),
                     postTarget.getString("review_text"),
@@ -174,7 +172,6 @@ public class PostDAO {
         } else {
             String book_title = doc.getString("title");
             return new Post(
-                    ((ObjectId) postTarget.get("_id")).toString(),
                     book_id,
                     postTarget.getInteger("rating"),
                     postTarget.getString("review_text"),
@@ -228,34 +225,39 @@ public class PostDAO {
 
         List<Document> posts = collection.aggregate(List.of(
                 new Document("$match", new Document("_id", username)),
-                new Document("$unwind", "$friends_posts"),
-                new Document("$sort", new Document("friends_posts.date_added", -1)),
-                new Document("$project", new Document("id", "$friends_posts._id")
-                        .append("book_id", "$friends_posts.book_id")
-                        .append("rating", "$friends_posts.rating")
-                        .append("date_added", "$friends_posts.date_added")
-                        .append("book_title", "$friends_posts.book_title")
-                        .append("username", "$friends_posts.username")
-                        .append("text", "$friends_posts.review_text"))
+                new Document("$unwind", new Document("path", "$friends_posts")),
+                new Document("$sort", new Document("friends_posts.date_added", -1L)),
+                new Document("$project",
+                        new Document("_id", 0)
+                                .append("book_id", "$friends_posts.book_id")
+                                .append("rating", "$friends_posts.rating")
+                                .append("review_text", "$friends_posts.review_text")
+                                .append("date_added", "$friends_posts.date_added")
+                                .append("book_title", "$friends_posts.book_title")
+                                .append("username", "$friends_posts.username")
+                                .append("tags", "$friends_posts.tags")
+                                .append("bookmark", "$friends_posts.bookmark"))
         )).into(new ArrayList<>());
 
-        if (posts.isEmpty())
+        System.out.println("posts: " + posts);
+
+        if (posts.isEmpty()) {
             return new ArrayList<>(0);
+        } else {
+            for (Document doc : posts) {
+                PostDTO post = new PostDTO(
+                        doc.getLong("book_id"),
+                        doc.getInteger("rating"),
+                        doc.getDate("date_added"),
+                        doc.getString("book_title"),
+                        doc.getString("username"),
+                        doc.getString("review_text")
+                );
 
-        for (Document doc : posts) {
-            PostDTO post = new PostDTO(
-                    doc.get("id").toString(),
-                    doc.getLong("book_id"),
-                    doc.getInteger("rating"),
-                    doc.getDate("date_added"),
-                    doc.getString("book_title"),
-                    doc.getString("username"),
-                    doc.getString("text")
-            );
+                postsTarget.add(post);
+            }
 
-            postsTarget.add(post);
+            return postsTarget;
         }
-
-        return postsTarget;
     }
 }

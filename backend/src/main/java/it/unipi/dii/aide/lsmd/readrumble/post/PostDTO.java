@@ -10,8 +10,6 @@ import java.util.Date;
 
 
 public class PostDTO {
-
-    private String _id;
     private long book_id;
     private int rating;
     private Date date_added;
@@ -19,23 +17,13 @@ public class PostDTO {
     private String username;
     private String text;
 
-
-    public PostDTO(String _id, long book_id, int rating, Date date, String book_title, String username, String text) {
-        this._id = _id;
+    public PostDTO(long book_id, int rating, Date date, String book_title, String username, String text) {
         this.book_id = book_id;
         this.rating = rating;
         this.date_added = date;
         this.book_title = book_title;
         this.username = username;
         this.text = text;
-    }
-
-    public String get_id() {
-        return _id;
-    }
-
-    public void set_id(String _id) {
-        this._id = _id;
     }
 
     public long getBook_id() {

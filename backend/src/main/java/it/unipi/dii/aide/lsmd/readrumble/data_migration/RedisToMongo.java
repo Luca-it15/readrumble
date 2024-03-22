@@ -180,7 +180,7 @@ public class RedisToMongo {
                                             .append("post",
                                                     new Document("$first", "$recent_posts"))),
                             new Document("$project",
-                                    new Document("_id", "$post._id")
+                                    new Document("_id", 0)
                                             .append("book_id", "$post.book_id")
                                             .append("rating", "$post.rating")
                                             .append("review_text", "$post.review_text")
@@ -604,6 +604,7 @@ public class RedisToMongo {
     //This is a debugging function that helps to try the code
     @Scheduled(fixedRate = 90000000)
     public void GoGoGo() {
+
         updateFriendsPosts();
 
         EmptyCompetitionsFromRedis();
