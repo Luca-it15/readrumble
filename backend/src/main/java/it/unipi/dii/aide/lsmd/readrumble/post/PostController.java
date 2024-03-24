@@ -8,6 +8,7 @@ import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -52,9 +53,9 @@ public class PostController {
         return postDAO.allPosts(parameter, user_or_book, true);
     }
 
-    @GetMapping("/details/{id}/{parameter}/{user}")
-    public Post getPostDetails(@PathVariable ObjectId id, @PathVariable String parameter,  @PathVariable boolean user) {
-        return postDAO.postDetails(id, parameter, user);
+    @GetMapping("/details/{dateTarget}/{parameter}/{user}")
+    public Post getPostDetails(@PathVariable String dateTarget, @PathVariable String parameter, @PathVariable boolean user) {
+        return postDAO.postDetails(dateTarget, parameter, user);
     }
 
     @DeleteMapping("/removeredis/{key}")

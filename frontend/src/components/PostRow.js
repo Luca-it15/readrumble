@@ -19,31 +19,40 @@ export default function PostRow({id, book_id, title, username, rating, text, rea
         text = text.substring(0, 150) + "...";
     }
 
-    function seeDetails(id, username, book_id, user) {
+    function seeDetails(username, book_id, user) {
         let parameter; 
-        if (id === 0) {
             let arrayPostJson = localStorage.getItem('last_posts');
-            let arrayPost = JSON.parse(arrayPostJson);
+            if(arrayPostJson) {
+             let arrayPost = JSON.parse(arrayPostJson);
 
-            let dateToFind = date
-            let postFilter = arrayPost.filter(post => post.date_added === dateToFind);
+             let dateToFind = date
+             let postFilter = arrayPost.filter(post => post.date_added === dateToFind);
+             if(postFilter) {
 
-            let postFilterJson = JSON.stringify(postFilter);
+              let postFilterJson = JSON.stringify(postFilter);
 
-            localStorage.removeItem('post_details');
-            localStorage.setItem('post_details', postFilterJson);
-            console.log(user); 
-            if(user) 
-             parameter = username 
-            else 
-             parameter = book_id
-            navigate(`/posts/${id}/${parameter}/${user}`);
-        } else
-           if(user) 
-            parameter = username 
-           else 
-            parameter = book_id
-       navigate(`/posts/${id}/${parameter}/${user}`);
+              localStorage.removeItem('post_details');
+              localStorage.setItem('post_details', postFilterJson);
+              console.log(user); 
+              if(user) 
+               parameter = username 
+              else 
+               parameter = book_id
+              navigate(`/posts/0/${date}/${parameter}/${user}`);
+              } else {
+                if(user) 
+                 parameter = username 
+                else 
+                 parameter = book_id
+                navigate(`/posts/1/${date}/${parameter}/${user}`);
+               }
+             }else {
+             if(user) 
+              parameter = username 
+             else 
+              parameter = book_id
+             navigate(`/posts/1/${date}/${parameter}/${user}`);
+            }
     }
 
     function seeBookDetails(book_id) {
@@ -116,7 +125,7 @@ export default function PostRow({id, book_id, title, username, rating, text, rea
 
                         <Grid item xs={12}>
                             <Button onClick={() => {
-                                seeDetails(id, username, book_id, user.user)
+                                seeDetails(username, book_id, user.user)
                             }} sx={{
                                 backgroundColor: blue[100], marginY: "10px",
                                 height: "30px", '&:hover': {backgroundColor: blue[100]}

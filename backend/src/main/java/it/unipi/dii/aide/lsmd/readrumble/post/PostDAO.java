@@ -12,11 +12,9 @@ import org.springframework.http.ResponseEntity;
 
 import com.mongodb.client.MongoCollection;
 
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Locale;
+import java.util.*;
 import java.time.ZonedDateTime;
 
 import redis.clients.jedis.JedisCluster;
@@ -124,7 +122,7 @@ public class PostDAO {
         return posts;
     }
 
-    public Post postDetails(ObjectId id, String parameter, boolean user) {
+    public Post postDetails(String dataTarget, String parameter, boolean user) {
 
         MongoCollection<Document> collection;
         Document query;
@@ -146,14 +144,22 @@ public class PostDAO {
         List<Document> postDoc = (List<Document>) doc.get("recent_posts");
         System.out.println("post doc vale " + postDoc);
         Document postTarget = null;
-        for(Document post: postDoc) {
-            System.out.println("il post in considerazione è': " + post);
-            ObjectId targetID = post.getObjectId("_id");
-            if( targetID.equals(id)) {
-                postTarget = post;
-                break;
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date date = formatter.parse(dataTarget);
+
+          for(Document post: postDoc) {
+              Date datePost = post.getDate("date_added");
+              if (datePost == date) {
+                  postTarget = post;
+                  break;
+              }
             }
-        }
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+
 
         List<String> tags = (List<String>) postTarget.get("tags");
         if(user) {

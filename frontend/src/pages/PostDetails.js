@@ -32,8 +32,7 @@ function PostDetails() {
 
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
-    let {id, parameter, user} = useParams();
-    let id_num = parseInt(id);
+    let {storage, datePost, parameter, user} = useParams();
 
     const [deletionStatus, seeDeletionStatus] = useState({
         message: '',
@@ -58,16 +57,20 @@ function PostDetails() {
             handleGoBack();
         }, 6000)
     }
-
+    
+    let username = currentUser['_id']; 
 
     const fetchPost = async () => {
         try {
-            if (id_num != 0) {
+
+            let storageNum = parseInt(storage); 
+
+            if (storageNum === 1) {
                 let paramToSend = parameter; 
                 if(!user) {
                   paramToSend = parameter.toString(); 
                 }
-                const response = await axios.get('http://localhost:8080/api/post/details/' + id + '/' +  parameter + '/' + user);
+                const response = await axios.get('http://localhost:8080/api/post/details/' + datePost + '/' +  paramToSend + '/' + user);
 
                 setPost(response.data);
                 setTags(response.data.tags);
@@ -92,7 +95,7 @@ function PostDetails() {
             console.log(error.response)
         }
     }
-    const removePost = (id) => async () => {
+    const removePost = (username, datePost) => async () => {
         try {
             let dateTime = new Date(date);
             let hours = dateTime.getHours();
@@ -128,7 +131,7 @@ function PostDetails() {
 
                 timeout_text("success");
             } else {
-                const response = await axios.delete('http://localhost:8080/api/post/removemongo/' + id);
+                const response = await axios.delete('http://localhost:8080/api/post/removemongo/' + username + '/' + datePost);
 
                 seeDeletionStatus({message: response.data, variant: 'success'});
 
@@ -163,7 +166,7 @@ function PostDetails() {
 
     useEffect(() => {
         fetchPost();
-    }, [id]);
+    }, [datePost]);
 
     function seeProfile(username) {
         if (isAdmin) {
@@ -241,7 +244,7 @@ function PostDetails() {
                                 <Button onClick={handleClose}>
                                     <Typography>No</Typography>
                                 </Button>
-                                <Button onClick={removePost(id)}>
+                                <Button onClick={removePost(datePost, username)}>
                                     <Typography>Yes</Typography>
                                 </Button>
                             </DialogActions>
