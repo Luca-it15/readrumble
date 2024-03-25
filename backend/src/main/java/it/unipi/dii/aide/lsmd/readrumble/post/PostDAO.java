@@ -1,5 +1,8 @@
 package it.unipi.dii.aide.lsmd.readrumble.post;
 
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
+import com.mongodb.internal.bulk.DeleteRequest;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 
@@ -18,6 +21,8 @@ import java.util.*;
 import java.time.ZonedDateTime;
 
 import redis.clients.jedis.JedisCluster;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class PostDAO {
     public ResponseEntity<String> addPostsRedis(Document post) {
@@ -122,6 +127,13 @@ public class PostDAO {
         return posts;
     }
 
+    /**
+     * This function allow us to retrieve all information about a specific post
+     * @param dataTarget
+     * @param parameter
+     * @param user
+     * @return Post object
+     */
     public Post postDetails(String dataTarget, String parameter, boolean user) {
 
         MongoCollection<Document> collection;
@@ -142,16 +154,17 @@ public class PostDAO {
         assert doc != null;
 
         List<Document> postDoc = (List<Document>) doc.get("recent_posts");
-        System.out.println("post doc vale " + postDoc);
+
         Document postTarget = null;
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
             formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date date = formatter.parse(dataTarget);
 
+
           for(Document post: postDoc) {
               Date datePost = post.getDate("date_added");
-              if (datePost == date) {
+              if (datePost.compareTo(date) == 0) {
                   postTarget = post;
                   break;
               }
@@ -168,7 +181,7 @@ public class PostDAO {
                     postTarget.getLong("book_id"),
                     postTarget.getInteger("rating"),
                     postTarget.getString("review_text"),
-                    postTarget.getString("date_added"),
+                    postTarget.getDate("date_added"),
                     postTarget.getString("book_title"),
                     username,
                     tags,
@@ -181,7 +194,7 @@ public class PostDAO {
                     book_id,
                     postTarget.getInteger("rating"),
                     postTarget.getString("review_text"),
-                    postTarget.getString("date_added"),
+                    postTarget.getDate("date_added"),
                     book_title,
                     postTarget.getString("username"),
                     tags,
@@ -205,17 +218,48 @@ public class PostDAO {
     }
 
     // TODO: cambiare, non può basarsi solo sull'_id del post. Deve usare l'username e la data di aggiunta
-    public ResponseEntity<String> removePostMongo(ObjectId id) {
-        MongoCollection<Document> collection = MongoConfig.getCollection("Posts");
-        Document query = new Document("_id", id);
-        Document target = collection.find(query).first();
+    public ResponseEntity<String> removePostMongo(String dataTarget, String parameter, boolean user) {
+
+        MongoCollection<Document> collection;
+        Document query;
         String response;
-        if (target != null) {
-            collection.deleteOne(target);
-            response = "post successful remove";
-        } else
-            response = "failed to remove the post";
-        return ResponseEntity.ok(response);
+
+        if (user) {
+            collection = MongoConfig.getCollection("Users");
+            query = new Document("_id", parameter);
+        } else {
+            long book_id = Long.parseLong(parameter);
+
+            collection = MongoConfig.getCollection("Books");
+            query = new Document("_id", book_id);
+        }
+
+        Document doc = collection.find(query).first();
+        assert doc != null;
+
+        List<Document> postDoc = (List<Document>) doc.get("recent_posts");
+
+        Document postTarget = null;
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date date = formatter.parse(dataTarget);
+
+            Document postToDelete = new Document("date_added", date);
+            Document update = new Document("$pull", new Document("recent_posts", postToDelete));
+
+            UpdateResult result = collection.updateOne(eq("_id", parameter), update);
+
+
+            if (result.wasAcknowledged())
+                response = "post successful remove";
+            else
+                response = "failed to remove the post";
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(null);
     }
 
     /**
@@ -267,3 +311,34 @@ public class PostDAO {
         }
     }
 }
+
+/*
+ * import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
+import java.util.Date;
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
+
+public class DeletePost {
+    public static void main(String[] args) {
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoDatabase database = mongoClient.getDatabase("yourDatabaseName");
+        MongoCollection<Document> collection = database.getCollection("user");
+
+        String username = "usernameToSearch";
+        Date date = new Date(); // Set this to the date of the post you want to delete
+
+        Document postToDelete = new Document("date_added", date);
+        Document update = new Document("$pull", new Document("recent_posts", postToDelete));
+
+        collection.updateOne(eq("username", username), update);
+    }
+}
+
+ * 
+ * 
+ * 
+ */

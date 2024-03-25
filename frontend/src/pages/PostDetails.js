@@ -95,7 +95,7 @@ function PostDetails() {
             console.log(error.response)
         }
     }
-    const removePost = (username, datePost) => async () => {
+    const removePost = (book_id) => async () => {
         try {
             let dateTime = new Date(date);
             let hours = dateTime.getHours();
@@ -110,10 +110,12 @@ function PostDetails() {
 
             let arrayPost = JSON.parse(localStorage.getItem('last_posts'));
 
-            let dateToFind = date;
-            let postExists = arrayPost.some(post => post.date_added === dateToFind);
+            if(arrayPost) {
 
-            if (postExists === true) {
+             let dateToFind = date;
+             let postExists = arrayPost.some(post => post.date_added === dateToFind);
+
+             if (postExists === true) {
                 let postFilter = arrayPost.filter(post => post.date_added !== dateToFind);
                 let postFilterJson = JSON.stringify(postFilter);
 
@@ -130,8 +132,29 @@ function PostDetails() {
                 handleClose();
 
                 timeout_text("success");
+             } else {
+                let paramToSend; 
+                if(user) {
+                    paramToSend = username; 
+                } else {
+                    paramToSend = parameter.toString(); 
+                }
+                const response = await axios.delete('http://localhost:8080/api/post/removemongo/' + datePost + '/' + paramToSend + '/'+ user);
+
+                seeDeletionStatus({message: response.data, variant: 'success'});
+
+                handleClose();
+
+                timeout_text("success");
+             }
             } else {
-                const response = await axios.delete('http://localhost:8080/api/post/removemongo/' + username + '/' + datePost);
+                let paramToSend; 
+                if(user) {
+                    paramToSend = username; 
+                } else {
+                    paramToSend = parameter.toString(); 
+                }
+                const response = await axios.delete('http://localhost:8080/api/post/removemongo/' + datePost + '/' + paramToSend + '/'+ user);
 
                 seeDeletionStatus({message: response.data, variant: 'success'});
 
@@ -244,7 +267,7 @@ function PostDetails() {
                                 <Button onClick={handleClose}>
                                     <Typography>No</Typography>
                                 </Button>
-                                <Button onClick={removePost(datePost, username)}>
+                                <Button onClick={removePost(post.book_id)}>
                                     <Typography>Yes</Typography>
                                 </Button>
                             </DialogActions>

@@ -605,11 +605,11 @@ public class RedisToMongo {
     @Scheduled(fixedRate = 90000000)
     public void GoGoGo() {
 
-        updateFriendsPosts();
+        //updateFriendsPosts();
 
-        EmptyCompetitionsFromRedis();
-        InsertIntoRedisCompetitionsCreated();
-        updateMongoCompetitions();
+        //EmptyCompetitionsFromRedis();
+       // InsertIntoRedisCompetitionsCreated();
+       // updateMongoCompetitions();
         //eliminateOldMongoCompetitions();
     }
 }

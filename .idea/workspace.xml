@@ -4,14 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="logout change">
+    <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="post details">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/data_migration/RedisToMongo.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/data_migration/RedisToMongo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/post/Post.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/post/Post.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/post/PostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/post/PostController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/post/PostDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/post/PostDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/PostRow.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/PostRow.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/PostDetails.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PostDetails.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/readrumble" beforeDir="false" afterPath="$PROJECT_DIR$/readrumble" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -121,6 +120,7 @@
       <workItem from="1711052926382" duration="355000" />
       <workItem from="1711104241558" duration="619000" />
       <workItem from="1711212799676" duration="729000" />
+      <workItem from="1711298682532" duration="650000" />
     </task>
     <task id="LOCAL-00001" summary="post apposto per davvero deh?">
       <option name="closed" value="true" />
@@ -378,7 +378,15 @@
       <option name="project" value="LOCAL" />
       <updated>1707133617015</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="post details">
+      <option name="closed" value="true" />
+      <created>1711298722313</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1711298722313</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -398,7 +406,6 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Added Things" />
     <MESSAGE value="post apposto per davvero deh?" />
-    <MESSAGE value="post details" />
     <MESSAGE value="explore post fixed" />
     <MESSAGE value="stars around the world" />
     <MESSAGE value="pagina dei post bellissima" />
@@ -415,7 +422,8 @@
     <MESSAGE value="Cluster mongo e redis" />
     <MESSAGE value="semaphore application" />
     <MESSAGE value="neo4j virtual machine" />
-    <option name="LAST_COMMIT_MESSAGE" value="neo4j virtual machine" />
+    <MESSAGE value="post details" />
+    <option name="LAST_COMMIT_MESSAGE" value="post details" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
