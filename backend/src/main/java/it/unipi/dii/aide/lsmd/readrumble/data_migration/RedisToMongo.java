@@ -5,6 +5,7 @@ import it.unipi.dii.aide.lsmd.readrumble.admin.AdminCompetitionDAO;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
+import it.unipi.dii.aide.lsmd.readrumble.post.PostDAO;
 import it.unipi.dii.aide.lsmd.readrumble.utils.SemaphoreRR;
 
 import static it.unipi.dii.aide.lsmd.readrumble.utils.PatternKeyRedis.KeysTwo;
@@ -43,9 +44,11 @@ public class RedisToMongo {
     private MongoCollection<Document> mongoCollection;
     private DateTimeFormatter isoFormat;
     private AdminCompetitionDAO adminCompetitionDAO;
+    private PostDAO postDAO;
 
     public RedisToMongo() {
         adminCompetitionDAO = new AdminCompetitionDAO();
+        postDAO = new PostDAO();
     }
 
     /**
@@ -594,6 +597,8 @@ public class RedisToMongo {
                 // Delete the redis key
                 jedis.del(key);
             }
+          //in the end, delete the post
+          postDAO.removePostMongo();
         } catch (MongoException e) {
             e.printStackTrace();
         } finally {

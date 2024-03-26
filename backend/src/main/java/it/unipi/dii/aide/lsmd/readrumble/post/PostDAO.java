@@ -1,5 +1,6 @@
 package it.unipi.dii.aide.lsmd.readrumble.post;
 
+import com.mongodb.MongoException;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import com.mongodb.internal.bulk.DeleteRequest;
@@ -8,6 +9,7 @@ import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 
 import com.google.gson.Gson;
 
+import it.unipi.dii.aide.lsmd.readrumble.utils.SemaphoreRR;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import com.mongodb.client.MongoCollection;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.time.ZonedDateTime;
@@ -23,8 +26,10 @@ import java.time.ZonedDateTime;
 import redis.clients.jedis.JedisCluster;
 
 import static com.mongodb.client.model.Filters.eq;
+import static it.unipi.dii.aide.lsmd.readrumble.utils.PatternKeyRedis.KeysTwo;
 
 public class PostDAO {
+
     public ResponseEntity<String> addPostsRedis(Document post) {
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
 
@@ -65,6 +70,8 @@ public class PostDAO {
         return ResponseEntity.ok("Post added: " + key);
     }
 
+
+
     public List<PostDTO> allPosts(String parameter, boolean user_or_book, boolean loadAll) {
         MongoCollection<Document> collection;
         Document query;
@@ -91,14 +98,26 @@ public class PostDAO {
         pipeline.add(new Document("$limit", 10));
 
         List<PostDTO> posts = new ArrayList<>();
-
+        List<PostToRemove> ptr = PostToRemove.getPostToRemove();
+        boolean avoid;
         for (Document doc : collection.aggregate(pipeline)) {
             Document postDoc = (Document) doc.get("recent_posts");
             PostDTO post;
+            avoid = false;
 
             // If looking for posts of a specific user, get the username from the user document
             if (user_or_book) {
+
+
                 String username = doc.getString("_id");
+                PostToRemove postRemove = new PostToRemove(username, postDoc.getDate("date_added"), true);
+                if(ptr != null) {
+                   for(PostToRemove pr : ptr) {
+                       if(pr.equals(postRemove))
+                           avoid = true;
+                   }
+                }
+
 
                 post = new PostDTO(
                         postDoc.getLong("book_id"),
@@ -111,6 +130,13 @@ public class PostDAO {
                 // If looking for posts of a specific book, get the book id and title from the book document
                 long book_id = doc.getLong("_id");
                 String book_title = doc.getString("title");
+                PostToRemove postRemove = new PostToRemove(Long.toString(book_id), postDoc.getDate("date_added"), true);
+                if(ptr != null) {
+                    for(PostToRemove pr : ptr) {
+                        if(pr.equals(postRemove))
+                            avoid = true;
+                    }
+                }
 
                 post = new PostDTO(
                         book_id,
@@ -121,6 +147,7 @@ public class PostDAO {
                         postDoc.getString("review_text"));
             }
 
+            if(!avoid)
             posts.add(post);
         }
 
@@ -216,50 +243,75 @@ public class PostDAO {
             response = "post not delete: " + key;
         return ResponseEntity.ok(response);
     }
-
-    // TODO: cambiare, non può basarsi solo sull'_id del post. Deve usare l'username e la data di aggiunta
-    public ResponseEntity<String> removePostMongo(String dataTarget, String parameter, boolean user) {
-
-        MongoCollection<Document> collection;
-        Document query;
-        String response;
-
-        if (user) {
-            collection = MongoConfig.getCollection("Users");
-            query = new Document("_id", parameter);
-        } else {
-            long book_id = Long.parseLong(parameter);
-
-            collection = MongoConfig.getCollection("Books");
-            query = new Document("_id", book_id);
-        }
-
-        Document doc = collection.find(query).first();
-        assert doc != null;
-
-        List<Document> postDoc = (List<Document>) doc.get("recent_posts");
-
-        Document postTarget = null;
+        public ResponseEntity<String> postRemoveToMongo(String dataTarget, String parameter, boolean user) {
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
             formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date date = formatter.parse(dataTarget);
+            PostToRemove ptr = new PostToRemove(parameter, date, user);
+            PostToRemove.addPostToRemove(ptr);
 
-            Document postToDelete = new Document("date_added", date);
-            Document update = new Document("$pull", new Document("recent_posts", postToDelete));
-
-            UpdateResult result = collection.updateOne(eq("_id", parameter), update);
-
-
-            if (result.wasAcknowledged())
-                response = "post successful remove";
-            else
-                response = "failed to remove the post";
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            e.printStackTrace();
+            return ResponseEntity.ok("the post will be delete");
+         } catch (Exception e) {
+           e.printStackTrace();
+           return  ResponseEntity.ok("Error during delete the cancellation");
+         }
         }
-        return ResponseEntity.ok(null);
+
+    /**
+     * this method allow us to delete post in user and if the post is present
+     * also in the book collection. this method is call by the deamon every 15 minutes
+     */
+    public void removePostMongo() {
+
+        MongoCollection<Document> collection;
+        Document query;
+        String response = null;
+
+        List<PostToRemove> ptr = PostToRemove.getPostToRemove();
+
+        if(ptr == null)
+            return;
+
+        for(PostToRemove post : ptr) {
+
+            if (post.isUser()) {
+                collection = MongoConfig.getCollection("Users");
+                query = new Document("_id", post.getParameter());
+            } else {
+                long book_id = Long.parseLong(post.getParameter());
+
+                collection = MongoConfig.getCollection("Books");
+                query = new Document("_id", post.getParameter());
+            }
+
+            Document doc = collection.find(query).first();
+            assert doc != null;
+
+                List<Document> postDoc = (List<Document>) doc.get("recent_posts");
+                Document postTarget = null;
+                Date date = post.getDate_added();
+                for(Document currentPost: postDoc) {
+                    Date datePost = currentPost.getDate("date_added");
+                    if (datePost.compareTo(date) == 0) {
+                        postTarget = currentPost;
+                        break;
+                    }
+                }
+
+                long book_id = postTarget.getLong("book_id");
+
+                Document postToDelete = new Document("date_added", date);
+                Document updateUser = new Document("$pull", new Document("recent_posts", postToDelete));
+
+                UpdateResult resultUser = collection.updateOne(eq("_id", post.getParameter()), updateUser);
+                UpdateResult resultBook = collection.updateOne(eq("_id", book_id), updateUser);
+
+                if (!resultUser.wasAcknowledged())
+                   System.err.println("failed to remove the post");
+
+        }
+        ptr.clear();
     }
 
     /**
@@ -294,7 +346,22 @@ public class PostDAO {
         if (posts.isEmpty()) {
             return new ArrayList<>(0);
         } else {
+            boolean avoid;
+            List<PostToRemove> ptr = PostToRemove.getPostToRemove();
             for (Document doc : posts) {
+                avoid = false;
+                if(doc.getDate("date_added") == null)
+                {
+                    continue;
+                }
+
+                PostToRemove postRemove = new PostToRemove(username, doc.getDate("date_added"), true);
+                if(ptr != null) {
+                    for(PostToRemove pr : ptr) {
+                        if(pr.equals(postRemove))
+                            avoid = true;
+                    }
+                }
                 PostDTO post = new PostDTO(
                         doc.getLong("book_id"),
                         doc.getInteger("rating"),
@@ -303,7 +370,7 @@ public class PostDAO {
                         doc.getString("username"),
                         doc.getString("review_text")
                 );
-
+                if(!avoid)
                 postsTarget.add(post);
             }
 
@@ -312,33 +379,3 @@ public class PostDAO {
     }
 }
 
-/*
- * import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import org.bson.Document;
-import java.util.Date;
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.eq;
-
-public class DeletePost {
-    public static void main(String[] args) {
-        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-        MongoDatabase database = mongoClient.getDatabase("yourDatabaseName");
-        MongoCollection<Document> collection = database.getCollection("user");
-
-        String username = "usernameToSearch";
-        Date date = new Date(); // Set this to the date of the post you want to delete
-
-        Document postToDelete = new Document("date_added", date);
-        Document update = new Document("$pull", new Document("recent_posts", postToDelete));
-
-        collection.updateOne(eq("username", username), update);
-    }
-}
-
- * 
- * 
- * 
- */

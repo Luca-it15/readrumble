@@ -5,12 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b82c6d8a-0daa-449a-966d-db7b39decc35" name="Changes" comment="post details">
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/post/PostToRemove.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/data_migration/RedisToMongo.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/data_migration/RedisToMongo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/post/Post.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/post/Post.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/post/PostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/post/PostController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/post/PostDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/it/unipi/dii/aide/lsmd/readrumble/post/PostDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PostDetails.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PostDetails.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -121,6 +118,8 @@
       <workItem from="1711104241558" duration="619000" />
       <workItem from="1711212799676" duration="729000" />
       <workItem from="1711298682532" duration="650000" />
+      <workItem from="1711379457471" duration="617000" />
+      <workItem from="1711463466323" duration="249000" />
     </task>
     <task id="LOCAL-00001" summary="post apposto per davvero deh?">
       <option name="closed" value="true" />
