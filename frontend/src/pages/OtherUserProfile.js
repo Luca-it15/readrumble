@@ -2,7 +2,20 @@ import React, {useEffect, useState} from 'react';
 import Profile from '../components/Profile';
 import FavoriteBookList from '../components/FavoriteBookList';
 import FollowingList from '../components/FollowingList';
-import {Container, Grid, Typography, Paper, DialogTitle, DialogContent, List, ListItem, Link, Divider, DialogActions, Dialog} from '@mui/material';
+import {
+    Container,
+    Grid,
+    Typography,
+    Paper,
+    DialogTitle,
+    DialogContent,
+    List,
+    ListItem,
+    Link,
+    Divider,
+    Dialog,
+    Accordion, AccordionSummary, AccordionDetails
+} from '@mui/material';
 import Button from '@mui/material-next/Button';
 import PostsList from '../components/PostList';
 import axios from "axios";
@@ -15,22 +28,30 @@ import RecentlyReadBooks from "../components/RecentlyReadBooks";
 import CurrentlyReading from "../components/CurrentlyReading";
 import GoBack from '../components/GoBack';
 import BookmarkTwoToneIcon from "@mui/icons-material/BookmarkTwoTone";
+import PeopleIcon from "@mui/icons-material/PeopleAltTwoTone";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import MenuBookTwoToneIcon from "@mui/icons-material/MenuBookTwoTone";
+import {FavoriteTwoTone} from "@mui/icons-material";
+import ClearIcon from "@mui/icons-material/Clear";
 
 function OtherUserProfile() {
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
     const {username} = useParams();
-    const [open, setOpen] = useState(false);
     const [isFollowing, setIsFollowing] = useState(currentUser['following'].includes(username));
     const [userInfo, setUserInfo] = useState([]);
     const [books, setBooks] = useState([]);
+    const [wishlistOpen, setWishlistOpen] = useState(false);
+    const [followersOpen, setFollowersOpen] = useState(false);
+    const [followeesOpen, setFolloweesOpen] = useState(false);
+    const [followers, setFollowers] = useState(0);
+    const [followees, setFollowees] = useState(0);
 
     const navigate = useNavigate();
 
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
         padding: '10px',
-        margin: '10px',
         borderRadius: 18,
         width: '100%'
     }
@@ -70,11 +91,6 @@ function OtherUserProfile() {
         }
     }
 
-    useEffect(() => {
-        fetchUserInformation();
-        fetchWishlist();
-    }, [username]);
-
     // Toggle following status
     const toggleFollowing = async () => {
         try {
@@ -101,20 +117,61 @@ function OtherUserProfile() {
         navigate(`/bookdetails/${id}`)
     }
 
+    const getFollowers = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/followersCount/${username}`);
+            setFollowers(response.data);
+        } catch (error) {
+            console.log(error.response);
+        }
+    }
+
+    const getFollowees = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/followeesCount/${username}`);
+            setFollowees(response.data);
+        } catch (error) {
+            console.log(error.response);
+        }
+    }
+
+    useEffect(() => {
+        fetchUserInformation();
+        getFollowees();
+        getFollowers();
+    }, [username]);
+
+    const AccordionStyle = {
+        backgroundColor: '#f1f7fa',
+        borderRadius: '20px !important',
+    }
+
     return (
-        <Container maxWidth="xl">
+        <Container sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth: '100% !important',
+            gap: '15px', marginTop: '10px'}}>
             <Paper elevation={2} style={PaperStyle}>
-                <Grid container direction="row" justifyContent="space-around">
-                    <GoBack/>
-                    <Grid item xs={8} md={5}>
+                <Grid container direction="row" justifyContent="center" alignItems="center">
+                    <Grid item xs={0.5}>
+                        <GoBack/>
+                    </Grid>
+                    <Grid item xs={4}>
                         <Profile {...userInfo} />
                     </Grid>
-                    <Grid container xs={4} direction="row" alignItems="center" justifyContent="space-evenly">
-                        <Grid item xs={6} md={5}>
-                            <Button sx={{backgroundColor: blue[200], '&:hover': {backgroundColor: blue[100]}}}
-                                    variant="filledTonal" onClick={setOpen}
-                                    startIcon={<BookmarkTwoToneIcon sx={{color: blue[700]}}/>}>
-                                <Typography>Wishlist</Typography>
+                    <Grid container xs={7.5} direction="row" alignItems="center" justifyContent="space-evenly">
+                        <Grid item xs={3}>
+                            <Button sx={{backgroundColor: blue[100], '&:hover': {backgroundColor: blue[100]}}}
+                                    variant="filledTonal"
+                                    onClick={ () => { getFollowees(); setFolloweesOpen(true) }}
+                                    startIcon={<PeopleIcon sx={{color: blue[700]}}/>}>
+                                <Typography>Followees: {followees}</Typography>
+                            </Button>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <Button sx={{backgroundColor: blue[100], '&:hover': {backgroundColor: blue[100]}}}
+                                    variant="filledTonal"
+                                    onClick={ () => { getFollowers(); setFollowersOpen(true) }}
+                                    startIcon={<PeopleIcon sx={{color: blue[700]}}/>}>
+                                <Typography>Followers: {followers}</Typography>
                             </Button>
                         </Grid>
                         <Grid item xs={6} md={5}>
@@ -138,35 +195,94 @@ function OtherUserProfile() {
 
             <CurrentlyReading user={username}/>
 
-            <Grid container spacing={3} textAlign="center">
-                <Grid container item xs={3} md={3} direction="column" spacing={1} sx={{marginTop: '2px'}}>
-                    <Grid item>
-                        <FollowingList user={username}/>
-                    </Grid>
-                    <Grid item>
-                        <CompetitionProfBlock user={username}/>
-                    </Grid>
+            <Grid container textAlign="center" spacing={1} direction="row" alignItems="flex-start"
+                  justifyContent="space-betwwen">
+                <Grid item xs={3.5}>
+                    <CompetitionProfBlock user={username}/>
                 </Grid>
 
-                <Grid item xs={6}>
+                <Grid item xs={5}>
                     <Paper elevation={2} style={PaperStyle}>
                         <Typography variant="h5">Posts</Typography>
                         <PostsList user={true} username={username} size={12} all={false} path={1}/>
                     </Paper>
                 </Grid>
 
-                <Grid container item xs={3} md={3} direction="column" spacing={1} sx={{marginTop: '2px'}}>
-                    <Grid item>
-                        <FavoriteBookList user={username}/>
+                <Grid container item xs={3.5} direction="column" alignItems="center" justifyContent="center" spacing={1}>
+                    <Grid item sx={{width: '100%'}}>
+                        <Accordion sx={AccordionStyle} onChange={(event, isExpanded) => {
+                            if (isExpanded)
+                                fetchWishlist();
+                        }}>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="wishlist-content"
+                                id="wishlist-header"
+                            >
+                                <BookmarkTwoToneIcon sx={{ color: blue[700], height: '30px'}}/>
+                                <Typography variant="h5" sx={{ width: '100%' }}>Wishlist</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails sx={{ padding: '2%', marginTop: '-15px' }}>
+                                <List sx={ListStyle}>
+                                    {books.length === 0 ? (
+                                        <ListItem>
+                                            <Typography>No books to show</Typography>
+                                        </ListItem>
+                                    ) : (
+                                        books.map((book, index) => (
+                                            <React.Fragment key={index}>
+                                                <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
+                                                    <Link onClick={() => {
+                                                        seeDetails(book.id)
+                                                    }} sx={{color: "#000000"}}>
+                                                        <Typography>{book.title}</Typography>
+                                                    </Link>
+                                                </ListItem>
+                                                <Divider variant="middle" component="li"/>
+                                            </React.Fragment>
+                                        ))
+                                    )}
+                                </List>
+                            </AccordionDetails>
+                        </Accordion>
                     </Grid>
-                    <Grid item>
-                        <RecentlyReadBooks user={username}/>
+                    <Grid item sx={{width: '100%'}}>
+                        <Accordion sx={AccordionStyle}>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="recently-read-content"
+                                id="recently-read-header"
+                            >
+                                <MenuBookTwoToneIcon sx={{ color: blue[700], height: '30px'}}/>
+                                <Typography variant="h5" sx={{ width: '100%' }}>Recently read books</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails sx={{ padding: '2%', marginTop: '-15px' }}>
+                                <RecentlyReadBooks user={username}/>
+                            </AccordionDetails>
+                        </Accordion>
+                    </Grid>
+                    <Grid item sx={{width: '100%'}}>
+                        <Accordion sx={AccordionStyle}>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="favorites-content"
+                                id="favorites-header"
+                            >
+                                <FavoriteTwoTone sx={{ color: blue[700], height: '30px'}}/>
+                                <Typography variant="h5" sx={{ width: '100%' }}>Favorites</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails sx={{ padding: '2%', marginTop: '-15px' }}>
+                                <FavoriteBookList user={username}/>
+                            </AccordionDetails>
+                        </Accordion>
                     </Grid>
                 </Grid>
             </Grid>
 
-            <Dialog open={open} fullWidth={true}>
-                <DialogTitle><Typography variant="h5" textAlign="center">{username}'s wishlist</Typography></DialogTitle>
+            <Dialog open={wishlistOpen} fullWidth={true}>
+                <DialogTitle><Typography variant="h5" textAlign="center">Your wishlist</Typography></DialogTitle>
+                <ClearIcon onClick={() => setWishlistOpen(false)} sx={{position: 'absolute', right: '10px', top: '10px',
+                    color: 'grey', cursor: 'pointer'}}/>
                 <DialogContent>
                     <List sx={ListStyle}>
                         {books.length === 0 ? (
@@ -177,7 +293,9 @@ function OtherUserProfile() {
                             books.map((book, index) => (
                                 <React.Fragment key={index}>
                                     <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
-                                        <Link onClick={() => {seeDetails(book.id)}} sx={{color: "#000000"}}>
+                                        <Link onClick={() => {
+                                            seeDetails(book.id)
+                                        }} sx={{color: "#000000"}}>
                                             <Typography>{book.title}</Typography>
                                         </Link>
                                     </ListItem>
@@ -187,14 +305,24 @@ function OtherUserProfile() {
                         )}
                     </List>
                 </DialogContent>
-                <DialogActions sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                    <Button
-                        sx={{color: '#ffffff', backgroundColor: blue[500], '&:hover': {backgroundColor: blue[300]}}}
-                        onClick={() => {setOpen(false)}} variant="filledTonal">
-                        <Typography>Close</Typography>
-                    </Button>
-                </DialogActions>
             </Dialog>
+
+            <Dialog open={followersOpen} fullWidth={true}>
+                <ClearIcon onClick={() => setFollowersOpen(false)} sx={{position: 'absolute',
+                    right: '10px', top: '10px', color: 'grey', cursor: 'pointer'}}/>
+                <DialogContent>
+                    <FollowingList user={username} followers_or_followees={"followers"}/>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={followeesOpen} fullWidth={true}>
+                <ClearIcon onClick={() => setFolloweesOpen(false)} sx={{position: 'absolute',
+                    right: '10px', top: '10px', color: 'grey', cursor: 'pointer'}}/>
+                <DialogContent>
+                    <FollowingList user={username} followers_or_followees={"followees"}/>
+                </DialogContent>
+            </Dialog>
+
         </Container>
     );
 }

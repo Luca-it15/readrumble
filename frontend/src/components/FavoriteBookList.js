@@ -46,6 +46,10 @@ function FavoriteBookList({user}) {
                 title: book.title.replace(/"/g, '')
             })));
 
+            if (user !== currentUser['_id']) {
+                return;
+            }
+
             // Save all book ids in favoriteBooks
             currentUser['favoriteBooks'] = books;
 
