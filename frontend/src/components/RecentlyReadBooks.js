@@ -2,9 +2,9 @@ import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import Button from '@mui/material-next/Button';
 import Typography from '@mui/material/Typography';
-import {Divider, Link, List, ListItem, Paper} from "@mui/material";
-import {useNavigate} from "react-router-dom";
-import {blue, red} from "@mui/material/colors";
+import { Divider, Link, List, ListItem } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { blue, red } from "@mui/material/colors";
 
 function RecentlyReadBooks({user}) {
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
@@ -54,6 +54,10 @@ function RecentlyReadBooks({user}) {
                 id: book.id,
                 title: book.title.replace(/"/g, '')
             })));
+
+            if (user !== currentUser['_id']) {
+                return;
+            }
 
             // Save all book ids in favoriteBooks
             currentUser['recentlyReadBooks'] = response.data.map(book => book.id.replace(/"/g, ''));

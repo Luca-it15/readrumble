@@ -30,7 +30,6 @@ const ProfilePage = () => {
 
     const [books, setBooks] = useState([]);
     const [wishlistOpen, setWishlistOpen] = useState(false);
-    const [recentlyReadOpen, setRecentlyReadOpen] = useState(false);
     const [followersOpen, setFollowersOpen] = useState(false);
     const [followeesOpen, setFolloweesOpen] = useState(false);
     const [followers, setFollowers] = useState(0);
@@ -87,11 +86,6 @@ const ProfilePage = () => {
         }
     }
 
-    useEffect(() => {
-        getFollowers();
-        getFollowees();
-    }, [currentUser['_id']]);
-
     function seeDetails(id) {
         navigate(`/bookdetails/${id}`);
     }
@@ -107,6 +101,11 @@ const ProfilePage = () => {
     function goPost() {
        navigate("/post");
     }
+
+    useEffect(() => {
+        getFollowers();
+        getFollowees();
+    }, []);
 
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
@@ -141,7 +140,7 @@ const ProfilePage = () => {
                         <Grid item xs={3}>
                             <Button sx={{backgroundColor: blue[100], '&:hover': {backgroundColor: blue[100]}}}
                                     variant="filledTonal"
-                                    onClick={ () => { setFolloweesOpen(true) }}
+                                    onClick={ () => { getFollowees(); setFolloweesOpen(true) }}
                                     startIcon={<PeopleIcon sx={{color: blue[700]}}/>}>
                                 <Typography>Followees: {followees}</Typography>
                             </Button>
@@ -149,7 +148,7 @@ const ProfilePage = () => {
                         <Grid item xs={3}>
                             <Button sx={{backgroundColor: blue[100], '&:hover': {backgroundColor: blue[100]}}}
                                     variant="filledTonal"
-                                    onClick={ () => { setFollowersOpen(true) }}
+                                    onClick={ () => { getFollowers(); setFollowersOpen(true) }}
                                     startIcon={<PeopleIcon sx={{color: blue[700]}}/>}>
                                 <Typography>Followers: {followers}</Typography>
                             </Button>
@@ -329,13 +328,6 @@ const ProfilePage = () => {
                 </DialogContent>
             </Dialog>
 
-            <Dialog open={recentlyReadOpen} fullWidth={true}>
-                <ClearIcon onClick={() => setRecentlyReadOpen(false)} sx={{position: 'absolute',
-                    right: '10px', top: '10px', color: 'grey', cursor: 'pointer'}}/>
-                <DialogContent>
-                    <RecentlyReadBooks user={currentUser['_id']}/>
-                </DialogContent>
-            </Dialog>
         </Container>
     );
 }
