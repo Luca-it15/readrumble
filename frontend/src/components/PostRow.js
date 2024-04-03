@@ -22,13 +22,15 @@ export default function PostRow({id, book_id, title, username, rating, text, rea
     function seeDetails(username, book_id, user) {
         let parameter; 
             let arrayPostJson = localStorage.getItem('last_posts');
-            if(arrayPostJson) {
+            let currentUser = JSON.parse(localStorage.getItem('logged_user'));
+            let currentUsername = currentUser['_id']; 
+            if(currentUsername === username && arrayPostJson) {
              let arrayPost = JSON.parse(arrayPostJson);
 
-             let dateToFind = date
-             let postFilter = arrayPost.filter(post => post.date_added === dateToFind);
-             if(postFilter) {
-
+             let dateToFind = date; 
+             const isPostSaved = arrayPost.some((post) => post.date === dateToFind);
+             if(isPostSaved) {
+              let postFilter = arrayPost.filter(post => post.date_added === dateToFind);  
               let postFilterJson = JSON.stringify(postFilter);
 
               localStorage.removeItem('post_details');

@@ -62,25 +62,10 @@ export default function PostAdmin() {
     return (
         <Paper sx={PaperStyle}>
             <Typography variant="h5">Post Management</Typography>
-            <Box component="form" sx={{display: 'flex', alignItems: 'center'}}>
-                <TextField type="text" placeholder="Search" variant="standard" sx={searchBar} value={searchText}
-                           onChange={handleSearchTextChange}/>
-                <Button sx={searchButton} variant="filledTonal" onClick={handleSearchButtonClick}>
-                    <SearchRounded sx={{color: '#ffffff'}}/>
-                </Button>
-            </Box>
-
-            {last ? (
                 <React.Fragment>
-                    <Typography variant='h5'>Latest posts</Typography>
-                    <PostsList all={true} size={12} path={0}/>
+                    <Typography variant='h5'>Reported posts</Typography>
+                    <PostsList user={true} username={"admin"} size={12} all={true} path={1}/>
                 </React.Fragment>
-            ) : (
-                <React.Fragment>
-                    <Typography variant='h5'>Search results:</Typography>
-                    <PostsList all={true} size={12} username={searchText} path={2} user={true}/>
-                </React.Fragment>
-            )}
         </Paper>
     );
 }

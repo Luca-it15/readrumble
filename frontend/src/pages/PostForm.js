@@ -40,7 +40,8 @@ export default function PostForm() {
     const [submitStatus, setSubmitStatus] = useState({
         message: '',
         variant: 'success', 
-    });
+     });
+    
 
     const [validationError, setValidationError] = useState('');
     const [selectedTitle, setSelectedTitle] = useState('');
@@ -62,7 +63,8 @@ export default function PostForm() {
         bookmark: 0,
         pages_read: 0,
         competitions_name: [],
-        competitions_tag: []
+        competitions_tag: [], 
+        reported: false
     });
 
     const handleChange = (e) => {

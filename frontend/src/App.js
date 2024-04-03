@@ -87,7 +87,7 @@ const App = () => {
                                         <PostAdmin/>}
                                 />
                                 <Route
-                                    path="/posts/:id"
+                                    path="/posts/:storage/:datePost/:parameter/:user"
                                     element={<PostDetails/>}
                                 />
                                 <Route

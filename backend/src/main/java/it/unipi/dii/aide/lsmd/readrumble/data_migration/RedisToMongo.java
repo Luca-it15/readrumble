@@ -1,6 +1,9 @@
 package it.unipi.dii.aide.lsmd.readrumble.data_migration;
 
 import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.model.Sorts;
+import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.result.UpdateResult;
 import it.unipi.dii.aide.lsmd.readrumble.admin.AdminCompetitionDAO;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
@@ -485,7 +488,7 @@ public class RedisToMongo {
         }
     }
 
-    @Scheduled(fixedRate = 900000, initialDelay = 36000000) // 15 minutes in milliseconds
+    @Scheduled(fixedRate = 900000, initialDelay = 600000) // 15 minutes in milliseconds
     public void updateMongoPost() {
         SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
 
@@ -499,8 +502,10 @@ public class RedisToMongo {
         isoFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
         try {
-            MongoCollection<Document> collectionPosts = MongoConfig.getCollection("Posts");
-            MongoCollection<Document> collectionActiveBooks = MongoConfig.getCollection("ActiveBooks");
+            MongoCollection<Document> collectionUsers = MongoConfig.getCollection("Users");
+            MongoCollection<Document> collectionBooks = MongoConfig.getCollection("Books");
+
+            //1) we create a new post
 
             List<String> PostKeys = KeysTwo(jedis, "post:*");
             List<Document> posts = new ArrayList<>();
@@ -524,7 +529,7 @@ public class RedisToMongo {
 
                     now = now.withHour(postHour).withMinute(postMinute).withSecond(postSecond);
 
-                    Document new_doc = new Document("book_id", Long.parseLong(keySplit[5]))
+                    Document new_post = new Document("book_id", Long.parseLong(keySplit[5]))
                             .append("rating", keySplit[6])
                             .append("review_text", postData.get("review_text"))
                             .append("date_added", isoFormat.format(now))
@@ -533,13 +538,58 @@ public class RedisToMongo {
                             .append("tags", postData.get("tags"))
                             .append("bookmark", Integer.parseInt(keySplit[7]))
                             .append("pages_read", Integer.parseInt(keySplit[8]));
-                    posts.add(new_doc);
+                    posts.add(new_post);
 
                     int year = now.getYear();
                     int month = now.getMonthValue();
 
-                    Document query = new Document("username", keySplit[4]).append("year", year).append("month", month);
-                    Document userDocument = collectionActiveBooks.find(query).first();
+                    //2) we add the new post in mongo in users and in books and update activebooks
+                    //2.a) check if the post is a report or not, in the first case we add the post into the admin document
+                    boolean reported = keySplit[9].contains("true");
+                    String username = null;
+                    if (reported) {
+                        username = "admin";
+                    } else
+                        username = keySplit[4];
+                    //2.a) add post in users
+                    Bson filter = Filters.eq("_id", username);
+                    if (!reported) {
+                        Bson sort = Sorts.descending("recent_posts.date_added");
+                    }
+                    String arrayName = null;
+                    if (reported)
+                        arrayName = "reported_posts";
+                    else
+                        arrayName = "recent_posts";
+                    Document userDocument = collectionUsers.find(filter).first();
+                    if (userDocument != null) {
+
+                        List<Document> recentPosts = userDocument.getList(arrayName, Document.class);
+
+
+                        if (!reported && recentPosts.size() >= 10) {
+
+                            recentPosts.remove(recentPosts.size() - 1);
+                        }
+
+                        recentPosts.add(new_post);
+
+
+                        Bson update = new Document("$set", new Document(arrayName, recentPosts));
+                        UpdateOptions options = new UpdateOptions().upsert(true);
+                        collectionUsers.updateOne(filter, update, options);
+
+                        System.out.println("new post add in the user");
+                        if (reported)
+                            continue;
+                    } else {
+                        System.out.println("user not found");
+                    }
+
+                    Document userQuery = new Document("_id", username);
+                    Document mainQuery = new Document("mese", month)
+                            .append("anno", year);
+
                     Document book_to_update = null;
 
                     // If the user has started new books without making a post about them, we need to add them to ActiveBooks
@@ -553,10 +603,14 @@ public class RedisToMongo {
                                 .append("bookmark", 0)
                                 .append("pages_read", 0);
 
-                        if (userDocument != null) {
-                            List<Document> books = (List<Document>) userDocument.get("books");
+                        Document queryActive = new Document("$and", new Document[]{userQuery, mainQuery});
+                        Document active_books = collectionUsers.find(queryActive).first();
+                        if (active_books != null) {
+                            List<Document> books = (List<Document>) active_books.get("books");
+
                             books.add(new_book);
-                            collectionActiveBooks.updateOne(query, new Document("$set", new Document("books", books)));
+                            collectionUsers.updateOne(queryActive, new Document("$set", new Document("books", books)));
+
                         } else {
                             List<Document> books = new ArrayList<>();
                             books.add(new_book);
@@ -564,38 +618,47 @@ public class RedisToMongo {
                                     .append("year", year)
                                     .append("month", month)
                                     .append("books", books);
-                            collectionActiveBooks.insertOne(userDocument);
+                            collectionUsers.updateOne(userQuery, new Document("$push", new Document("recent_active_books", userDocument)));
                         }
 
                         jedis.del("started:" + keySplit[4] + ":" + keySplit[5]);
+                    } else {
+                        Document embeddedQuery = new Document("recent_active_books.$.book_id", Long.parseLong(keySplit[5]));
+
+                        Document query = new Document("$and", new Document[]{userQuery, mainQuery, embeddedQuery});
+
+                        Document update = new Document("$set", new Document("recent_active_books.$.bookmark", Integer.parseInt(keySplit[7]))
+                                .append("recent_active_books.$.pages_read", Integer.parseInt(keySplit[8])));
+
+                        collectionUsers.updateOne(query, update);
                     }
+                    //3) insert the post into the book collection
+                    Bson filterBook = Filters.eq("_id", Long.parseLong(keySplit[5]));
+                    Document bookDocument = collectionBooks.find(filterBook).first();
+                    if (bookDocument != null) {
 
-                    List<Document> books = (List<Document>) userDocument.get("books");
+                        List<Document> recentPosts = bookDocument.getList("recent_posts", Document.class);
 
-                    int index = 0;
-                    for (Document book : books) {
-                        if (Long.parseLong(keySplit[5]) == book.getLong("book_id")) {
-                            book_to_update = book;
-                            break;
+
+                        if (recentPosts.size() >= 20) {
+
+                            recentPosts.remove(recentPosts.size() - 1);
                         }
 
-                        index++;
+                        recentPosts.add(new_post);
+
+
+                        Bson update = new Document("$set", new Document("recent_posts", recentPosts));
+                        UpdateOptions options = new UpdateOptions().upsert(true);
+                        collectionBooks.updateOne(filter, update, options);
+                        System.out.println("new post add in the book");
+                    } else {
+                        System.out.println("book not found");
                     }
 
-                    int new_bookmark = Integer.parseInt(keySplit[7]);
-                    int new_pages_read = book_to_update.getInteger("pages_read") + Integer.parseInt(keySplit[8]);
-
-                    book_to_update.put("bookmark", new_bookmark);
-                    book_to_update.put("pages_read", new_pages_read);
-
-                    collectionActiveBooks.updateOne(query, new Document("$set", new Document("books." + index, book_to_update)));
+                    // Delete the redis key
+                    jedis.del(key);
                 }
-
-                // Insert the posts into mongoDB
-                collectionPosts.insertMany(posts);
-
-                // Delete the redis key
-                jedis.del(key);
             }
           //in the end, delete the post
           postDAO.removePostMongo();

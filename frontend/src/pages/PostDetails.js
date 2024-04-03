@@ -29,6 +29,21 @@ function PostDetails() {
     const [date, setDate] = useState('');
     const [postUser, setPostUser] = useState(false);
     const isAdmin = JSON.parse(localStorage.getItem('isAdmin')) || false;
+    const [postReported, setPostReported] = useState({
+        _id: 0,
+        book_id: '',
+        rating: 0,
+        review_text: '',
+        date_added: ' ',
+        book_title: '',
+        username: ' ',
+        tag: [],
+        bookmark: 0,
+        pages_read: 0,
+        competitions_name: [],
+        competitions_tag: [], 
+        reported: false
+    });
 
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
@@ -43,7 +58,31 @@ function PostDetails() {
 
 
     const [open, setOpen] = useState(false);
-    const handleClickOpen = () => setOpen(true);
+    const handleClickOpen = () => {
+        setPostReported({
+            _id: 0,
+            book_id: post.book_id,
+            rating: post.rating,
+            review_text: post.review_text,
+            date_added: post.date_added,
+            book_title: post.book_title,
+            username: post.username,
+            tag: post.tags,
+            bookmark: post.bookmark,
+            pages_read: post.pages_read,
+            competitions_name: [],
+            competitions_tag: [], 
+            reported: true
+            }); 
+        setOpen(true);
+    }
+     
+     const [submitStatus, setSubmitStatus] = useState({
+        message: '',
+        variant: 'success', 
+     });
+    
+
     const handleClose = () => setOpen(false);
 
     function handleGoBack() {
@@ -76,7 +115,7 @@ function PostDetails() {
                 setTags(response.data.tags);
                 setRating(response.data.rating);
                 setDate(response.data.date_added);
-
+        
                 if (currentUser['_id'] === response.data.username)
                     setPostUser(true);
             } else {
@@ -124,7 +163,9 @@ function PostDetails() {
                 if (postFilter != null)
                     localStorage.setItem('last_posts', postFilterJson);
 
-                const key = "post:" + time + ":" + post.username + ":" + post.book_id + ":" + post.rating + ":" + post.bookmark + ":" + post.pages_read;
+                let reported = (isAdmin ? true : false); 
+
+                const key = "post:" + time + ":" + post.username + ":" + post.book_id + ":" + post.rating + ":" + post.bookmark + ":" + post.pages_read + ":" + reported;
                 const response = await axios.delete('http://localhost:8080/api/post/removeredis/' + key);
 
                 seeDeletionStatus({message: response.data, variant: 'success'});
@@ -135,7 +176,7 @@ function PostDetails() {
              } else {
                 let paramToSend; 
                 if(user) {
-                    paramToSend = username; 
+                    paramToSend = post.username; 
                 } else {
                     paramToSend = parameter.toString(); 
                 }
@@ -150,7 +191,7 @@ function PostDetails() {
             } else {
                 let paramToSend; 
                 if(user) {
-                    paramToSend = username; 
+                    paramToSend = post.username; 
                 } else {
                     paramToSend = parameter.toString(); 
                 }
@@ -169,6 +210,26 @@ function PostDetails() {
             });
 
             timeout_text("error");
+        }
+    }
+
+    const reportPost = () => async() => {
+        try {
+            const response = await axios.post('http://localhost:8080/api/post/submit', postReported);
+            handleClose(); 
+            setSubmitStatus({
+                message: JSON.stringify(response.data),
+                variant: 'success'
+            });
+            timeout_text(response.message);
+           
+        } catch (error) {
+            console.error('Error:', error);
+            setSubmitStatus({
+                message: error.response ? JSON.stringify(error.response.data) : error.message,
+                variant: 'danger'
+            });
+            timeout_text("error"); 
         }
     }
 
@@ -257,7 +318,7 @@ function PostDetails() {
                             aria-labelledby="alert-dialog-title"
                             aria-describedby="alert-dialog-description"
                         >
-                            <DialogTitle id="alert-dialog-title">{"Conferma eliminazione"}</DialogTitle>
+                            <DialogTitle id="alert-dialog-title">{"confirm that you want to delete the post?"}</DialogTitle>
                             <DialogContent>
                                 <DialogContentText id="alert-dialog-description">
                                     are you sure?
@@ -274,6 +335,36 @@ function PostDetails() {
                         </Dialog>
                     </React.Fragment>
                 )}
+                {(!postUser && !isAdmin) && (
+                    <React.Fragment>
+                        <Button onClick={handleClickOpen}
+                                sx={{backgroundColor: red[300], margin: "5px", '&:hover': {backgroundColor: red[400]}}}
+                                variant="filledTonal">
+                            <Typography>Report</Typography>
+                        </Button>
+                        <Dialog
+                            open={open}
+                            onClose={handleClose}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <DialogTitle id="alert-dialog-title">{"Do you confirm that you want to mark the post?"}</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText id="alert-dialog-description">
+                                    are you sure?
+                                </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleClose}>
+                                    <Typography>No</Typography>
+                                </Button>
+                                <Button onClick={reportPost()}>
+                                    <Typography>Yes</Typography>
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
+                    </React.Fragment>
+                )}
                 {validationError && (
                     <Alert variant="danger">
                         {validationError}
@@ -284,6 +375,11 @@ function PostDetails() {
                     <Alert variant={deletionStatus.variant}>
                         {deletionStatus.message}
                     </Alert>
+                )}
+                {submitStatus.message && (
+                            <Alert variant={submitStatus.variant}>
+                                {submitStatus.message}
+                            </Alert>
                 )}
             </Grid>
         </Paper>

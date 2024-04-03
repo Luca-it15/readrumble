@@ -1,5 +1,6 @@
 package it.unipi.dii.aide.lsmd.readrumble.book;
 
+import it.unipi.dii.aide.lsmd.readrumble.admin.AdminBookDAO;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
@@ -176,6 +177,7 @@ public class BookDAO {
 
         List<LightBookDTO> trendingBooks = new ArrayList<>();
         for (Document doc : result) {
+            if(!AdminBookDAO.getBookToRemove().contains(doc.getLong("id")))
             trendingBooks.add(new LightBookDTO(doc.getLong("id"), doc.getString("title")));
         }
 

@@ -31,6 +31,10 @@ public class AdminBookDAO {
     private static List<Long> bookToRemove;
     private final MongoCollection<Document> collection = MongoConfig.getCollection("Books");
 
+    public static List<Long> getBookToRemove() {
+        return bookToRemove;
+    }
+
     public ResponseEntity<String> addBookTemp(Book book) {
         if(bookToAdd == null)
             bookToAdd = new ArrayList<>();

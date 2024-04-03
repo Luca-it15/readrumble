@@ -24,9 +24,11 @@ import java.util.*;
 import java.time.ZonedDateTime;
 
 import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.params.SetParams;
 
 import static com.mongodb.client.model.Filters.eq;
 import static it.unipi.dii.aide.lsmd.readrumble.utils.PatternKeyRedis.KeysTwo;
+
 
 public class PostDAO {
 
@@ -35,8 +37,8 @@ public class PostDAO {
 
         String input = post.getString("date_added");
 
-        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.ENGLISH);
-        ZonedDateTime zonedDateTime = ZonedDateTime.parse(input, inputFormatter);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(input, formatter);
 
         DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         String time = zonedDateTime.format(outputFormatter);
@@ -46,28 +48,33 @@ public class PostDAO {
         String ranking = "" + post.getInteger("rating");
         String bookmark = "" + post.getInteger("bookmark");
         int pagesRead = post.getInteger("pages_read");
+        boolean reported = post.getBoolean("reported");
 
-        String key = "post:" + time + ":" + username + ":" + bookId + ":" + ranking + ":" + bookmark + ":" + pagesRead;
-        Gson gson = new Gson();
+        String key = "post:" + time + ":" + username + ":" + bookId + ":" + ranking + ":" + bookmark + ":" + pagesRead + ":" + reported;
+        if(!jedis.exists(key)) {
+            Gson gson = new Gson();
+            jedis.hset(key, "review_text", post.getString("review_text"));
+            jedis.hset(key, "tags", gson.toJson(post.get("tag")));
+            jedis.hset(key, "book_title", post.getString("book_title"));
 
-        jedis.hset(key, "review_text", post.getString("review_text"));
-        jedis.hset(key, "tags", gson.toJson(post.get("tag")));
-        jedis.hset(key, "book_title", post.getString("book_title"));
+            List<String> competitions_names = (List<String>) post.get("competitions_name");
+            List<String> competitions_tag = (List<String>) post.get("competitions_tag");
 
-        List<String> competitions_names = (List<String>) post.get("competitions_name");
-        List<String> competitions_tag = (List<String>) post.get("competitions_tag");
+            int i = 0;
+            int j = 0;
+            for (; !competitions_names.isEmpty() && i < competitions_names.size() && j < competitions_tag.size(); i++, j++) {
+                String competitionKey = "competition:" + competitions_names.get(i) + ":" + competitions_tag.get(j) + ":" + username;
+                String value = jedis.get(competitionKey);
+                int new_pages_read = Integer.parseInt(value) + pagesRead;
 
-        int i = 0;
-        int j = 0;
-        for (; !competitions_names.isEmpty() && i < competitions_names.size() && j < competitions_tag.size(); i++, j++) {
-            String competitionKey = "competition:" + competitions_names.get(i) + ":" + competitions_tag.get(j) + ":" + username;
-            String value = jedis.get(competitionKey);
-            int new_pages_read = Integer.parseInt(value) + pagesRead;
-
-            jedis.set(competitionKey, String.valueOf(new_pages_read));
+                jedis.set(competitionKey, String.valueOf(new_pages_read));
+            }
         }
+        if (reported)
+            return ResponseEntity.ok("post reported");
+        else
+            return ResponseEntity.ok("post added " + key);
 
-        return ResponseEntity.ok("Post added: " + key);
     }
 
 
@@ -76,9 +83,12 @@ public class PostDAO {
         MongoCollection<Document> collection;
         Document query;
 
+        String post_type = "recent_posts";
         if (user_or_book) {
             collection = MongoConfig.getCollection("Users");
             query = new Document("_id", parameter);
+            if(parameter.equals("admin"))
+                post_type = "reported_posts";
         } else {
             long book_id = Long.parseLong(parameter);
 
@@ -88,9 +98,9 @@ public class PostDAO {
 
         List<Document> pipeline = new ArrayList<>();
         pipeline.add(new Document("$match", query));
-        pipeline.add(new Document("$unwind", "$recent_posts"));
-        pipeline.add(new Document("$addFields", new Document("recent_posts.date_added", new Document("$toDate", "$recent_posts.date_added"))));
-        pipeline.add(new Document("$sort", new Document("recent_posts.date_added", -1)));
+        pipeline.add(new Document("$unwind", "$" + post_type));
+        pipeline.add(new Document("$addFields", new Document(post_type + ".date_added", new Document("$toDate", "$" + post_type + ".date_added"))));
+        pipeline.add(new Document("$sort", new Document(post_type + ".date_added", -1)));
 
         if (loadAll)
             pipeline.add(new Document("$skip", 10));
@@ -101,15 +111,18 @@ public class PostDAO {
         List<PostToRemove> ptr = PostToRemove.getPostToRemove();
         boolean avoid;
         for (Document doc : collection.aggregate(pipeline)) {
-            Document postDoc = (Document) doc.get("recent_posts");
+            Document postDoc = (Document) doc.get(post_type);
             PostDTO post;
             avoid = false;
 
             // If looking for posts of a specific user, get the username from the user document
             if (user_or_book) {
 
-
-                String username = doc.getString("_id");
+               String username = null;
+               if(parameter.equals("admin"))
+                   username = postDoc.getString("username");
+               else
+                   username = doc.getString("_id");
                 PostToRemove postRemove = new PostToRemove(username, postDoc.getDate("date_added"), true);
                 if(ptr != null) {
                    for(PostToRemove pr : ptr) {
@@ -250,7 +263,7 @@ public class PostDAO {
             Date date = formatter.parse(dataTarget);
             PostToRemove ptr = new PostToRemove(parameter, date, user);
             PostToRemove.addPostToRemove(ptr);
-
+            System.out.println(ptr);
             return ResponseEntity.ok("the post will be delete");
          } catch (Exception e) {
            e.printStackTrace();

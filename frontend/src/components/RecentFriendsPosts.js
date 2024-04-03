@@ -12,7 +12,7 @@ const RecentFriendsPosts = () => {
 
     let currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
-    let user = currentUser['_id'];
+    let user = {'username': currentUser['_id'], 'user': true};
     let friends = currentUser['following'];
 
     const recentFriendsPosts = async () => {
@@ -35,7 +35,7 @@ const RecentFriendsPosts = () => {
 
     useEffect(() => {
         recentFriendsPosts();
-    }, [user]);
+    }, [user.user]);
 
     return (
         <Grid container direction="column" justifyContent="center" alignItems="center">
