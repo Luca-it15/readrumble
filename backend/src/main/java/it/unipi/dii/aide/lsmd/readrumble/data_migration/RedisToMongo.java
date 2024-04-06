@@ -580,8 +580,10 @@ public class RedisToMongo {
                         collectionUsers.updateOne(filter, update, options);
 
                         System.out.println("new post add in the user");
-                        if (reported)
-                            continue;
+                        if (reported) {
+                            // Delete the redis key
+                            jedis.del(key);
+                        }
                     } else {
                         System.out.println("user not found");
                     }
@@ -656,9 +658,10 @@ public class RedisToMongo {
                         System.out.println("book not found");
                     }
 
+                }
+                
                     // Delete the redis key
                     jedis.del(key);
-                }
             }
           //in the end, delete the post
           postDAO.removePostMongo();
