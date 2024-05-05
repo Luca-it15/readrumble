@@ -77,7 +77,8 @@ export default function PostRow({id, book_id, title, username, rating, text, rea
             <Grid container item direction="row" alignItems="center" justifyContent="center" xs={12}
                   sx={{width: '100%'}}>
                 {(all || !user.user) && (
-                    <Grid item xs={6}>
+                    /* TODO: fix username and date position */
+                    <Grid item xs={4}>
                         <Link sx={{color: "#000000", textAlign: 'left'}}>
                             <Typography onClick={() => {
                                 seeProfile(username)

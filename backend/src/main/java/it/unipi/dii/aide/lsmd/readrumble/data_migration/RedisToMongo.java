@@ -488,7 +488,7 @@ public class RedisToMongo {
         }
     }
 
-    @Scheduled(fixedRate = 900000, initialDelay = 600000) // 15 minutes in milliseconds
+    @Scheduled(fixedRate = 900000, initialDelay = 1200000) // 30 minutes in milliseconds
     public void updateMongoPost() {
         SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
 

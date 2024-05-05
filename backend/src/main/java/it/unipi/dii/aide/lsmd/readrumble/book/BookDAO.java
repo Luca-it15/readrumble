@@ -177,8 +177,10 @@ public class BookDAO {
 
         List<LightBookDTO> trendingBooks = new ArrayList<>();
         for (Document doc : result) {
-            if(!AdminBookDAO.getBookToRemove().contains(doc.getLong("id")))
-            trendingBooks.add(new LightBookDTO(doc.getLong("id"), doc.getString("title")));
+            if(AdminBookDAO.getBookToRemove() == null)
+                trendingBooks.add(new LightBookDTO(doc.getLong("id"), doc.getString("title")));
+            else if(!AdminBookDAO.getBookToRemove().contains(doc.getLong("id")))
+                trendingBooks.add(new LightBookDTO(doc.getLong("id"), doc.getString("title")));
         }
 
         return trendingBooks;

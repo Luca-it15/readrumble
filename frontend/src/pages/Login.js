@@ -40,6 +40,8 @@ function LoginForm() {
     async function fetchAll(id) {
         const currentUser = JSON.parse(localStorage.getItem('logged_user'));
 
+        // TODO: Fetch all data in a single request
+
         // Fetch currently reading books
         const fetchedCurrentlyReadingBooks = await axios.get(`http://localhost:8080/api/book/currentlyReadingBooks/${id}`)
         const currentlyReadingBooks = JSON.parse(JSON.stringify(fetchedCurrentlyReadingBooks.data));
