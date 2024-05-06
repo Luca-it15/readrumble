@@ -130,6 +130,7 @@ public class RedisToMongo {
         List<String> keys = KeysTwo(jedis, pattern);
         // Create a list to store all the competition, user and total page read
         for (String key : keys) {
+            System.out.println(key);
             jedis.del(key);
         }
         logger.info("Redis Competitions Emptied");
@@ -242,7 +243,7 @@ public class RedisToMongo {
         Bson start_dateFilter = Filters.lte("start_date", LocalDate.now());
         Bson dateFilter = Filters.and(start_dateFilter, end_dateFilter);
         //This block empties the rank field of all the active competitions so that they can be filled with the new rank
-        try (MongoCursor<Document> cursor = mongoCollection.find(/*dateFilter*/).cursor()) {
+        try (MongoCursor<Document> cursor = mongoCollection.find(dateFilter).cursor()) {
             while (cursor.hasNext()) {
                 Document comp_found = cursor.next();
                 Bson filter = Filters.eq("name", comp_found.get("name").toString());
@@ -329,20 +330,18 @@ public class RedisToMongo {
     }
 
     /**
-        The following function is commented because its only purpose is to fill the key-value DB with the active
-        competitions' key-value pairs of January 2024, we decided to leave it here as a comment to have a ready-to-use
-        function to re-fill the DB for debugging purposes.
+        The following function is not scheduled because its only purpose is to fill the key-value DB with the active
+        competitions' key-value pairs of January 2024, we decided to leave it here as is to have a ready-to-use
+        way to re-fill the DB for debugging purposes.
     */
 
-    @Scheduled(fixedRate = 36000000, initialDelay = 36000000)
+
     public void InsertIntoRedisCompetitionsCreated() {
         logger.info("Inserting things into redis");
-
         Integer year2 = LocalDate.now().getYear();
         Integer month2 = LocalDate.now().getMonthValue();
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
         mongoCollection = MongoConfig.getCollection("Users");
-
         AggregateIterable<Document> result = mongoCollection.aggregate(Arrays.asList(
                 new Document("$project",
                         new Document("_id", "$_id")
@@ -370,20 +369,20 @@ public class RedisToMongo {
                                 .append("month", "$_id.month")
                                 .append("pages_read", "$_id.pages_read")
                                 .append("tag", "$_id.tags")
-                                .append("tot_pages", "$tot_pages")))
+                                .append("tot_pages", "$tot_pages")),
+                new Document("$limit", 3000))
         ).allowDiskUse(true);
         //this aggregation returns for every user the pages read in this month and year and puts them into redis, this way
         // the loading should be faster
         logger.info("aggregation executed");
         int i = 0;
         int c = 0;
-        /*MongoCursor cursor = mongoCollection.find().cursor();
-        while(cursor.hasNext())*/
-        for(Document doc : result)
-        {
+            /*MongoCursor cursor = mongoCollection.find().cursor();
+            while(cursor.hasNext())*/
+        for (Document doc : result) {
             //Document doc = (Document) cursor.next();
             mongoCollection = MongoConfig.getCollection("Competitions");
-                i = i+1;
+            i = i + 1;
                 //logger.info("Inserting");
             String username = doc.get("_id").toString();
             String tag = (String) doc.get("tag").toString();
@@ -415,15 +414,14 @@ public class RedisToMongo {
                     //logger.info("After inserting");
                     //semaphore.release();
                 }
-                if(i == 1000)
-                {
-                    c = c+1;
+            if (i == 1000) {
+                c = c + 1;
                     i = 0;
                     logger.info("Thousand :" + c);
                 }
 
-
         }
+        logger.info("Month " + month2 + " Completed");
         logger.info("finished inserting things into redis");
 
     }
@@ -450,11 +448,11 @@ public class RedisToMongo {
      * It eliminates the old competitions from Redis and MongoDB.
      */
     @Scheduled(fixedRate = 86400000, initialDelay = 36000000) // 24 hours in milliseconds
-    public void eliminateOldMongoCompetitions() {
-        SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
+    public void eliminateOldMongoCompetitionsFromRedis() {
+        /*SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
 
         try { semaphore.acquire(); }
-        catch (InterruptedException e) { e.printStackTrace(); }
+        catch (InterruptedException e) { e.printStackTrace(); }*/
 
         logger.info("Eliminating old MongoDB competitions...");
 
@@ -475,16 +473,17 @@ public class RedisToMongo {
                 String keyFromMongo = "competition:" + comp_found.get("name") + ":*";
                 List<String> keys = KeysTwo(jedis, keyFromMongo);
                 for (String key : keys) {
-                    jedis.del(key);
                     //Since the competitions are updated in redis and all the fields of competitions in users are emptied
                     //at each update, there is no need to eliminate old competitions from users
+                    jedis.del(key);
                 }
+                logger.info(comp_found.get("name") + " Competition Eliminated");
             }
         } catch (Exception e) {
             logger.error("Catched Exception: " + e.getMessage());
         } finally {
             logger.info("Cleared the old competition");
-            semaphore.release();
+            //semaphore.release();
         }
     }
 
@@ -675,12 +674,10 @@ public class RedisToMongo {
     //This is a debugging function that helps to try the code
     @Scheduled(fixedRate = 90000000)
     public void GoGoGo() {
-
         //updateFriendsPosts();
-
         //EmptyCompetitionsFromRedis();
-       // InsertIntoRedisCompetitionsCreated();
-       // updateMongoCompetitions();
-        //eliminateOldMongoCompetitions();
+        //InsertIntoRedisCompetitionsCreated();
+        //updateMongoCompetitions();
+        //eliminateOldMongoCompetitionsFromRedis();
     }
 }
