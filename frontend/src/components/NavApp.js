@@ -53,9 +53,9 @@ const NavApp = () => {
                     <Typography>Profile</Typography>
                 </Button>
                 <Button sx={{
-                    color: "#ffffff", width: "70px", height: "25px", backgroundColor: 'transparent',
-                    marginLeft: '40px',
-                    '&:hover': {backgroundColor: red[500]}
+                    color: "#ffffff", backgroundColor: 'transparent',
+                    marginLeft: '10px', height: '5vh',
+                    '&:hover': {backgroundColor: "rgba(255, 0, 0, 0.65)"}
                 }} variant="filled" onClick={handleClickOpen}>
                     <Typography>Logout</Typography>
                 </Button>

@@ -37,110 +37,11 @@ function LoginForm() {
         }));
     };
 
-    async function fetchAll(id) {
-        const currentUser = JSON.parse(localStorage.getItem('logged_user'));
-
-        // TODO: Fetch all data in a single request
-
-        // Fetch currently reading books
-        const fetchedCurrentlyReadingBooks = await axios.get(`http://localhost:8080/api/book/currentlyReadingBooks/${id}`)
-        const currentlyReadingBooks = JSON.parse(JSON.stringify(fetchedCurrentlyReadingBooks.data));
-
-        if (currentlyReadingBooks) {
-            currentUser['currentlyReading'] = currentlyReadingBooks.map(book => ({
-                id: book.id,
-                title: book.title.replace(/"/g, ''),
-                bookmark: book.bookmark,
-                num_pages: book.num_pages,
-                tags: book.tags
-            }));
-        } else {
-            currentUser['currentlyReading'] = [];
-        }
-
-        console.log("Currently reading books fetched successfully!");
-
-        // Fetch recently read books
-        const fetchedRecentBooks = await axios.get(`http://localhost:8080/api/book/recentlyReadBooks/${id}`)
-        const recentlyReadBooks = JSON.parse(JSON.stringify(fetchedRecentBooks.data));
-
-        if (recentlyReadBooks) {
-            currentUser['recentlyReadBooks'] = recentlyReadBooks.map(book => ({
-                id: book.id,
-                title: book.title.replace(/"/g, '')
-            }));
-        } else {
-            currentUser['recentlyReadBooks'] = [];
-        }
-
-        console.log("Recently read books fetched successfully!");
-
-        // Fetch favorite books
-        const fetchedFavoriteBooks = await axios.get(`http://localhost:8080/api/book/favoriteBooks/${id}`)
-        const favoriteBooks = JSON.parse(JSON.stringify(fetchedFavoriteBooks.data));
-
-        if (favoriteBooks) {
-            currentUser['favoriteBooks'] = favoriteBooks.map(book => ({
-                id: book.id,
-                title: book.title.replace(/"/g, '')
-            }));
-        } else {
-            currentUser['favoriteBooks'] = [];
-        }
-
-        console.log("Favorite books fetched successfully!");
-
-        // Fetch following list
-        const fetchedFollowingList = await axios.get(`http://localhost:8080/api/following/${id}`)
-
-        if (fetchedFollowingList.data) {
-            currentUser['following'] = JSON.parse(JSON.stringify(fetchedFollowingList.data))
-        } else {
-            currentUser['following'] = [];
-        }
-
-        console.log("Following list fetched successfully!");
-
-        // Fetch wishlist
-        const fetchedWishlist = await axios.get(`http://localhost:8080/api/book/wishlist/${id}`)
-        const wishlist = JSON.parse(JSON.stringify(fetchedWishlist.data));
-
-        if (wishlist) {
-            currentUser['wishlist'] = wishlist.map(book => ({
-                id: book.id,
-                title: book.title.replace(/"/g, '')
-            }));
-        } else {
-            currentUser['wishlist'] = [];
-        }
-
-        console.log("Wishlist fetched successfully!");
-
-        // Fetch competitions
-        const fetchedCompetitions = await axios.get(`http://localhost:8080/api/competition/joinedBy/${id}`)
-        const competitions = JSON.parse(JSON.stringify(fetchedCompetitions.data));
-        if (competitions) {
-            currentUser['competitions'] = competitions.map(competition => ({
-                name: competition.name.replace(/_/g, ' '),
-                pages: competition.pages,
-                tag: competition.tag
-            }));
-        } else {
-            currentUser['competitions'] = [];
-        }
-
-        console.log("Competitions fetched successfully!");
-
-        localStorage.setItem('logged_user', JSON.stringify(currentUser));
-
-        window.location.href = "/home"
-    }
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (Object.values(formData).some((value) => value === '')) {
-            setValidationError('All fields must be filled !');
+            setValidationError('All fields must be filled!');
             return;
         }
 
@@ -149,32 +50,38 @@ function LoginForm() {
 
             const response = await axios.post('http://localhost:8080/api/login', formData);
 
-            if (response.data === '') {
-                setLoginStatus({message: "Wrong username or password", variant: 'danger'});
+            if (response.data === 'error') {
+                setLoginStatus({message: response.data, variant: 'danger'});
                 setIsLoading(false);
             } else {
                 setLoginStatus(true);
-                localStorage.setItem('isAdmin', JSON.stringify(response.data.isAdmin == 1));
-                localStorage.setItem('logged_user', JSON.stringify(response.data));
-                if (response.data.isAdmin == 1) {
-                    const isLoggedIn = true;
-                    localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
-                    window.location.href = "/home"
+
+                // Get only id, name and surname from the response
+                const currentUser = {
+                    _id: response.data._id,
+                    name: response.data.name,
+                    surname: response.data.surname
                 }
-                else if((response.data.isBanned == 1))
-                {
+
+                localStorage.setItem('logged_user', JSON.stringify(currentUser));
+
+                if (response.data.isAdmin == 1) {
+                    localStorage.setItem('isAdmin', JSON.stringify(response.data.isAdmin == 1));
+                    window.location.href = "/home"
+                } else if((response.data.isBanned == 1)) {
                     setLoginStatus({
                         message: "You are Banned from the service",
                         variant: 'danger'
                     });
+
                     setIsLoading(false);
+                    return;
                 }
-                else
-                {
-                    const isLoggedIn = true;
-                    localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
-                    fetchAll(response.data._id);
-                }
+
+                const isLoggedIn = true;
+                localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
+
+                window.location.href = "/home"
             }
         } catch (error) {
             setLoginStatus({message: error.response ? error.response.data : error.message, variant: 'danger'});

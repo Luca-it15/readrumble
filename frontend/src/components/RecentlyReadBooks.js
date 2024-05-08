@@ -35,11 +35,7 @@ function RecentlyReadBooks({user}) {
     };
 
     const fetchBooks = async () => {
-        if (currentUser['recentlyReadBooks'].length === 0) {
-            setRecentlyReadBooks([]);
-        }
-
-        if (user === currentUser['_id'] && currentUser['recentlyReadBooks']) {
+        if (user === currentUser['_id'] && currentUser['recentlyReadBooks'].length > 0) {
             setRecentlyReadBooks(currentUser['recentlyReadBooks']);
             return;
         }
@@ -59,8 +55,10 @@ function RecentlyReadBooks({user}) {
                 return;
             }
 
-            // Save all book ids in favoriteBooks
-            currentUser['recentlyReadBooks'] = response.data.map(book => book.id.replace(/"/g, ''));
+            currentUser['recentlyReadBooks'] = booksReceived.map(book => ({
+                id: book.id,
+                title: book.title.replace(/"/g, '')
+            }));
 
             localStorage.setItem('logged_user', JSON.stringify(currentUser));
         } catch (error) {

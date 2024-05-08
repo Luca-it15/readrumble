@@ -43,6 +43,10 @@ function FollowingList({user, followers_or_followees}) {
         try {
             const response = await axios.get(`http://localhost:8080/api/following/${user}`);
             setFollowing(response.data);
+
+            currentUser['following'] = response.data;
+
+            localStorage.setItem('logged_user', JSON.stringify(currentUser));
         } catch (error) {
             console.log(error.response)
         }
