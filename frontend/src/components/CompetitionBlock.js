@@ -78,14 +78,14 @@ function CompetitionProfBlock({user}) {
                             <ListItem sx={{'&:hover': {backgroundColor: '#f1f7fa', borderRadius: '30px'}}}
                                       secondaryAction={
                                           <Typography sx={{color: '#888888', fontSize: '10pt', marginTop: '2px'}}>
-                                              pages: {item.pages}
+                                              pages: {item.tot_pages}
                                           </Typography>
                                       }>
                                 <Link onClick={() => {
-                                    goSpecificComp(item.name)
+                                    goSpecificComp(item.competition_name)
                                 }}
                                       sx={{color: '#000000', marginRight: '30px', '&:hover': {cursor: 'pointer'}}}>
-                                    <Typography>{item.name}</Typography>
+                                    <Typography>{item.competition_name}</Typography>
                                 </Link>
                             </ListItem>
                             <Divider variant="middle" component="li"/>

@@ -23,6 +23,7 @@ import {useNavigate} from "react-router-dom";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MenuBookTwoToneIcon from '@mui/icons-material/MenuBookTwoTone';
 import FavoriteBookList from "../components/FavoriteBookList";
+import PostDisPlayer from "../components/PostDisPlayer";
 import {FavoriteTwoTone} from "@mui/icons-material";
 
 const ProfilePage = () => {
@@ -101,7 +102,8 @@ const ProfilePage = () => {
     function goPost() {
        navigate("/post");
     }
-
+    /*<PostsList user={true} username={currentUser['_id']} size={12} all={false} path={1}/>*/
+    //The previous line was at the place of <PostDisPlayer/>
     useEffect(() => {
         getFollowers();
         getFollowees();
@@ -190,7 +192,8 @@ const ProfilePage = () => {
                                 startIcon={<EditNoteTwoToneIcon sx={{color: blue[700]}}/>}>
                             <Typography>Make a post</Typography>
                         </Button>
-                        <PostsList user={true} username={currentUser['_id']} size={12} all={false} path={1}/>
+
+                        <PostDisPlayer/>
                     </Paper>
                 </Grid>
 

@@ -34,34 +34,18 @@ function CompetitionSpec() {
     const [isJoin, setJoin] = useState(false);
     const [isEnded, setIsEnded] = useState(false);
     const [points, setPoints] = useState(null);
+    const [ready, setReady] = useState(false);
     const username = JSON.parse(localStorage.getItem('logged_user'));
     var usernameToAdd = username["_id"];
 
     function searchForUser(value) {
         setRank(value.rank);
-
         const comp = username["competitions"];
-
         let i = 0;
-
         while (comp[i] != null) {
-            if (comp[i].name === value.name) {
+            if (comp[i].competition_name === value.name) {
                 setJoin(true);
-                setPoints(comp[i].pages);
-
-                const rankTwo = value.rank
-
-                let c = 0
-
-                while (c < 10) {
-                    if (rankTwo[c].tot_pages <= comp[i].pages) {
-                        rankTwo[c].tot_pages = comp[i].pages;
-                        rankTwo[c].username = usernameToAdd;
-                        setRank(rankTwo);
-                        return
-                    }
-                    c = c + 1;
-                }
+                setPoints(comp[i].tot_pages);
                 return;
             }
             i = i + 1;
@@ -73,7 +57,6 @@ function CompetitionSpec() {
         axios.post('http://localhost:8080/api/competition/getcompinfo', {
             CompetitionTitle: name
         }).then(response => {
-            console.log(response.data["isEnded"]);
             setData(response.data);
             setIsEnded(response.data["isEnded"]);
             searchForUser(response.data);
@@ -308,6 +291,7 @@ function CompetitionSpec() {
                         <Typography variant="h5">More competitions</Typography>
                     </Button>
                 </Grid>
+
             </Paper>
         </Container>
 
