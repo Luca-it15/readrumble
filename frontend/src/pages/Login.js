@@ -158,12 +158,10 @@ function LoginForm() {
                 setLoginStatus(true);
                 localStorage.setItem('isAdmin', JSON.stringify(response.data.isAdmin == 1));
                 localStorage.setItem('logged_user', JSON.stringify(response.data));
-                console.log("HELLOOOOOOOOOOO")
-                console.log(response.data)
-                //window.location.href = "/home";
                 if (response.data.isAdmin == 1) {
                     const isLoggedIn = true;
                     localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
+                    window.location.href = "/home";
                 }
                 else if((response.data.isBanned == 1))
                 {
@@ -178,7 +176,9 @@ function LoginForm() {
                     const isLoggedIn = true;
                     localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
                     //fetchAll(response.data._id);
+                    window.location.href = "/home";
                 }
+
             }
         } catch (error) {
             setLoginStatus({message: error.response ? error.response.data : error.message, variant: 'danger'});

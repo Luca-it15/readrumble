@@ -143,6 +143,7 @@ public class UserDAO {
                     } else {
                         registered_user.append("isBanned", false);
                     }
+                    registered_user.remove("wishlist");
                     return registered_user;
                 }
                 else {
