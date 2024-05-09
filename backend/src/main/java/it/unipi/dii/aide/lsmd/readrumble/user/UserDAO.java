@@ -126,18 +126,34 @@ public class UserDAO {
         String _id = user.getId();
         String password = user.getPassword();
 
-        MongoCollection<Document> collection = MongoConfig.getCollection("Users");
-        Document userDoc = collection.find(new Document("_id", _id).append("password", password)).first();
+        try (MongoCursor<Document> cursor = MongoConfig.getCollection("Users")
+                .find(eq("_id", _id)).iterator()) {
 
-        if (userDoc != null && password.equals(userDoc.get("password"))) {
-            if (userDoc.containsKey("isAdmin"))
-                return new Document("isAdmin", userDoc.get("isAdmin"));
-            else if (userDoc.containsKey("isBanned"))
-                return new Document("isBanned", userDoc.get("isBanned"));
-            else
-                return new Document("_id", userDoc.get("_id")).append("name", userDoc.get("name")).append("surname", userDoc.get("surname"));
-        } else {
-            return new Document("error", "error");
+            if (cursor.hasNext()) {
+                Document registered_user = cursor.next();
+
+                if (password.equals(registered_user.get("password"))) {
+                    if (registered_user.containsKey("isAdmin")) {
+                        registered_user.append("isAdmin", true);
+                    } else {
+                        registered_user.append("isAdmin", false);
+                    }
+                    if (registered_user.containsKey("isBanned")) {
+                        registered_user.append("isBanned", true);
+                    } else {
+                        registered_user.append("isBanned", false);
+                    }
+                    return registered_user;
+                }
+                else {
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
