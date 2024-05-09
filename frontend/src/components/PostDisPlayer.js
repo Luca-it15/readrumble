@@ -50,8 +50,8 @@ const PostDisPlayer = () => {
                         id={post._id}
                         book_id={post.book_id}
                         title={post.book_title}
-                        username={currentUser._id}
-                        text={post.text}
+                        username={false}
+                        text={post.review_text}
                         post={post.post}
                         rating={post.rating}
                         readOnly={true}

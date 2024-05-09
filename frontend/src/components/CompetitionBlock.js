@@ -25,12 +25,14 @@ function CompetitionProfBlock({user}) {
         if (currentUser['_id'] === user && currentUser['competitions'] !== undefined) {
             setCompetitions(currentUser['competitions'])
         } else {
+
             axios.get(`http://localhost:8080/api/competition/joinedBy/${user}`)
                 .then(response => {
+                    console.log(response.data)
                     let competitions = response.data.map(
                         competition => ({
-                                name: competition.name,
-                                pages: competition.pages
+                                competition_name: competition.name,
+                                tot_pages: competition.pages
                             }
                         ));
 
