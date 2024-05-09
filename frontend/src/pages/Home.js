@@ -5,7 +5,6 @@ import Button from '@mui/material-next/Button';
 import EditNoteTwoToneIcon from '@mui/icons-material/EditNoteTwoTone';
 import {blue} from "@mui/material/colors";
 
-import PopularCompetitionBlock from '../components/PopularCompetitionBlock';
 import RecentFriendsPosts from '../components/RecentFriendsPosts';
 import RecentlyReadByFriends from "../components/RecentlyReadByFriends";
 

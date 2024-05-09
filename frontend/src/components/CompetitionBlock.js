@@ -22,11 +22,9 @@ function CompetitionProfBlock({user}) {
     }
 
     function drawComp() {
-        if (currentUser['_id'] === user) {
+        if (currentUser['_id'] === user && currentUser['competitions'] !== undefined) {
             setCompetitions(currentUser['competitions'])
         } else {
-            console.log("Fetching competitions for user: " + user);
-
             axios.get(`http://localhost:8080/api/competition/joinedBy/${user}`)
                 .then(response => {
                     let competitions = response.data.map(
@@ -117,7 +115,6 @@ function CompetitionProfBlock({user}) {
                     )}
                 </Grid>
             </Grid>
-
 
             <Button variant="filledTonal" sx={{
                 backgroundColor: blue[600], marginBottom: '10px', color: '#ffffff',

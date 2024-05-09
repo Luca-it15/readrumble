@@ -51,7 +51,7 @@ public class PostDAO {
         boolean reported = post.getBoolean("reported");
 
         String key = "post:" + time + ":" + username + ":" + bookId + ":" + ranking + ":" + bookmark + ":" + pagesRead + ":" + reported;
-        if(!jedis.exists(key)) {
+        if (!jedis.exists(key)) {
             Gson gson = new Gson();
             jedis.hset(key, "review_text", post.getString("review_text"));
             jedis.hset(key, "tags", gson.toJson(post.get("tag")));
@@ -78,7 +78,6 @@ public class PostDAO {
     }
 
 
-
     public List<PostDTO> allPosts(String parameter, boolean user_or_book, boolean loadAll) {
         MongoCollection<Document> collection;
         Document query;
@@ -87,7 +86,7 @@ public class PostDAO {
         if (user_or_book) {
             collection = MongoConfig.getCollection("Users");
             query = new Document("_id", parameter);
-            if(parameter.equals("admin"))
+            if (parameter.equals("admin"))
                 post_type = "reported_posts";
         } else {
             long book_id = Long.parseLong(parameter);
@@ -118,17 +117,17 @@ public class PostDAO {
             // If looking for posts of a specific user, get the username from the user document
             if (user_or_book) {
 
-               String username = null;
-               if(parameter.equals("admin"))
-                   username = postDoc.getString("username");
-               else
-                   username = doc.getString("_id");
+                String username = null;
+                if (parameter.equals("admin"))
+                    username = postDoc.getString("username");
+                else
+                    username = doc.getString("_id");
                 PostToRemove postRemove = new PostToRemove(username, postDoc.getDate("date_added"), true);
-                if(ptr != null) {
-                   for(PostToRemove pr : ptr) {
-                       if(pr.equals(postRemove))
-                           avoid = true;
-                   }
+                if (ptr != null) {
+                    for (PostToRemove pr : ptr) {
+                        if (pr.equals(postRemove))
+                            avoid = true;
+                    }
                 }
 
 
@@ -144,9 +143,9 @@ public class PostDAO {
                 long book_id = doc.getLong("_id");
                 String book_title = doc.getString("title");
                 PostToRemove postRemove = new PostToRemove(Long.toString(book_id), postDoc.getDate("date_added"), true);
-                if(ptr != null) {
-                    for(PostToRemove pr : ptr) {
-                        if(pr.equals(postRemove))
+                if (ptr != null) {
+                    for (PostToRemove pr : ptr) {
+                        if (pr.equals(postRemove))
                             avoid = true;
                     }
                 }
@@ -160,8 +159,8 @@ public class PostDAO {
                         postDoc.getString("review_text"));
             }
 
-            if(!avoid)
-            posts.add(post);
+            if (!avoid)
+                posts.add(post);
         }
 
         return posts;
@@ -169,6 +168,7 @@ public class PostDAO {
 
     /**
      * This function allow us to retrieve all information about a specific post
+     *
      * @param dataTarget
      * @param parameter
      * @param user
@@ -202,20 +202,20 @@ public class PostDAO {
             Date date = formatter.parse(dataTarget);
 
 
-          for(Document post: postDoc) {
-              Date datePost = post.getDate("date_added");
-              if (datePost.compareTo(date) == 0) {
-                  postTarget = post;
-                  break;
-              }
+            for (Document post : postDoc) {
+                Date datePost = post.getDate("date_added");
+                if (datePost.compareTo(date) == 0) {
+                    postTarget = post;
+                    break;
+                }
             }
-          } catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-          }
+        }
 
 
         List<String> tags = (List<String>) postTarget.get("tags");
-        if(user) {
+        if (user) {
             String username = doc.getString("_id");
             return new Post(
                     postTarget.getLong("book_id"),
@@ -256,7 +256,8 @@ public class PostDAO {
             response = "post not delete: " + key;
         return ResponseEntity.ok(response);
     }
-        public ResponseEntity<String> postRemoveToMongo(String dataTarget, String parameter, boolean user) {
+
+    public ResponseEntity<String> postRemoveToMongo(String dataTarget, String parameter, boolean user) {
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
             formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -265,11 +266,11 @@ public class PostDAO {
             PostToRemove.addPostToRemove(ptr);
             System.out.println(ptr);
             return ResponseEntity.ok("the post will be delete");
-         } catch (Exception e) {
-           e.printStackTrace();
-           return  ResponseEntity.ok("Error during delete the cancellation");
-         }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.ok("Error during delete the cancellation");
         }
+    }
 
     /**
      * this method allow us to delete post in user and if the post is present
@@ -283,10 +284,10 @@ public class PostDAO {
 
         List<PostToRemove> ptr = PostToRemove.getPostToRemove();
 
-        if(ptr == null)
+        if (ptr == null)
             return;
 
-        for(PostToRemove post : ptr) {
+        for (PostToRemove post : ptr) {
 
             if (post.isUser()) {
                 collection = MongoConfig.getCollection("Users");
@@ -301,27 +302,27 @@ public class PostDAO {
             Document doc = collection.find(query).first();
             assert doc != null;
 
-                List<Document> postDoc = (List<Document>) doc.get("recent_posts");
-                Document postTarget = null;
-                Date date = post.getDate_added();
-                for(Document currentPost: postDoc) {
-                    Date datePost = currentPost.getDate("date_added");
-                    if (datePost.compareTo(date) == 0) {
-                        postTarget = currentPost;
-                        break;
-                    }
+            List<Document> postDoc = (List<Document>) doc.get("recent_posts");
+            Document postTarget = null;
+            Date date = post.getDate_added();
+            for (Document currentPost : postDoc) {
+                Date datePost = currentPost.getDate("date_added");
+                if (datePost.compareTo(date) == 0) {
+                    postTarget = currentPost;
+                    break;
                 }
+            }
 
-                long book_id = postTarget.getLong("book_id");
+            long book_id = postTarget.getLong("book_id");
 
-                Document postToDelete = new Document("date_added", date);
-                Document updateUser = new Document("$pull", new Document("recent_posts", postToDelete));
+            Document postToDelete = new Document("date_added", date);
+            Document updateUser = new Document("$pull", new Document("recent_posts", postToDelete));
 
-                UpdateResult resultUser = collection.updateOne(eq("_id", post.getParameter()), updateUser);
-                UpdateResult resultBook = collection.updateOne(eq("_id", book_id), updateUser);
+            UpdateResult resultUser = collection.updateOne(eq("_id", post.getParameter()), updateUser);
+            UpdateResult resultBook = collection.updateOne(eq("_id", book_id), updateUser);
 
-                if (!resultUser.wasAcknowledged())
-                   System.err.println("failed to remove the post");
+            if (!resultUser.wasAcknowledged())
+                System.err.println("failed to remove the post");
 
         }
         ptr.clear();
@@ -363,15 +364,14 @@ public class PostDAO {
             List<PostToRemove> ptr = PostToRemove.getPostToRemove();
             for (Document doc : posts) {
                 avoid = false;
-                if(doc.getDate("date_added") == null)
-                {
+                if (doc.getDate("date_added") == null) {
                     continue;
                 }
 
                 PostToRemove postRemove = new PostToRemove(username, doc.getDate("date_added"), true);
-                if(ptr != null) {
-                    for(PostToRemove pr : ptr) {
-                        if(pr.equals(postRemove))
+                if (ptr != null) {
+                    for (PostToRemove pr : ptr) {
+                        if (pr.equals(postRemove))
                             avoid = true;
                     }
                 }
@@ -383,8 +383,8 @@ public class PostDAO {
                         doc.getString("username"),
                         doc.getString("review_text")
                 );
-                if(!avoid)
-                postsTarget.add(post);
+                if (!avoid)
+                    postsTarget.add(post);
             }
 
             return postsTarget;

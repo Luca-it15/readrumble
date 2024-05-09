@@ -82,6 +82,7 @@ public class CompetitionDAO {
         return competitions;
     }
 
+    // TODO : use MongoDB instead of Redis
     public List<Map<String, String>> getJoinedBy(String id) {
         Logger logger = org.slf4j.LoggerFactory.getLogger(CompetitionController.class);
 

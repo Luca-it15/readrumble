@@ -34,6 +34,19 @@ function CurrentlyReading({user}) {
                 bookmark: book.bookmark,
                 num_pages: book.num_pages
             })));
+
+            // Set the currently reading books for the logged user
+            if (user === JSON.parse(localStorage.getItem('logged_user'))['_id']) {
+                const currentUser = JSON.parse(localStorage.getItem('logged_user'));
+                currentUser['currentlyReading'] = booksReceived.map(book => ({
+                    id: book.id,
+                    title: book.title.replace(/"/g, ''),
+                    bookmark: book.bookmark,
+                    num_pages: book.num_pages
+                }));
+
+                localStorage.setItem('logged_user', JSON.stringify(currentUser));
+            }
         } catch (error) {
             console.log(error.response)
         }

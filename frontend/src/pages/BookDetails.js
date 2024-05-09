@@ -45,15 +45,15 @@ function BookDetails() {
     id = parseInt(id)
 
     if (!isAdmin) {
-        if (currentUser['favoriteBooks'].length > 0) {
+        if (currentUser['favoriteBooks'] && currentUser['favoriteBooks'].length > 0) {
             favoriteBooksIds = currentUser['favoriteBooks'].map(book => book.id);
         }
 
-        if (currentUser['wishlist'].length > 0) {
+        if (currentUser['wishlist'] && currentUser['wishlist'].length > 0) {
             wishlistBooksIds = currentUser['wishlist'].map(book => book.id);
         }
 
-        if (currentUser['currentlyReading'].length > 0) {
+        if (currentUser['currentlyReading'] && currentUser['currentlyReading'].length > 0) {
             activeBooksIds = currentUser['currentlyReading'].map(book => book.id);
             activeBooksIds = activeBooksIds.concat(currentUser['recentlyReadBooks'].map(book => book.id));
             isActiveBook = activeBooksIds.includes(id);

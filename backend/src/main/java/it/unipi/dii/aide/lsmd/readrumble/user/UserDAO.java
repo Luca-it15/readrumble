@@ -1,5 +1,6 @@
 package it.unipi.dii.aide.lsmd.readrumble.user;
 
+import com.mongodb.client.AggregateIterable;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
 
@@ -23,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -39,13 +41,13 @@ public class UserDAO {
         for (Document user : inMemoryUsers) {
             String username = (String) user.get("_id");
             ArrayList<Document> Array = new ArrayList<>();
-            user.append("wishlist",Array);
-            user.append("recent_posts",Array);
-            user.append("recent_active_books",Array);
-            user.append("competitions",Array);
-            user.append("followers",0);
-            user.append("followees",0);
-            user.append("friends_posts",Array);
+            user.append("wishlist", Array);
+            user.append("recent_posts", Array);
+            user.append("recent_active_books", Array);
+            user.append("competitions", Array);
+            user.append("followers", 0);
+            user.append("followees", 0);
+            user.append("friends_posts", Array);
             MongoCollection<Document> collection = MongoConfig.getCollection("Users");
             collection.insertOne(user);
 
@@ -124,34 +126,18 @@ public class UserDAO {
         String _id = user.getId();
         String password = user.getPassword();
 
-        try (MongoCursor<Document> cursor = MongoConfig.getCollection("Users")
-                .find(eq("_id", _id)).iterator()) {
+        MongoCollection<Document> collection = MongoConfig.getCollection("Users");
+        Document userDoc = collection.find(new Document("_id", _id).append("password", password)).first();
 
-            if (cursor.hasNext()) {
-                Document registered_user = cursor.next();
-
-                if (password.equals(registered_user.get("password"))) {
-                    if (registered_user.containsKey("isAdmin")) {
-                        registered_user.append("isAdmin", true);
-                    } else {
-                        registered_user.append("isAdmin", false);
-                    }
-                    if (registered_user.containsKey("isBanned")) {
-                        registered_user.append("isBanned", true);
-                    } else {
-                        registered_user.append("isBanned", false);
-                    }
-                    return registered_user;
-                }
-                else {
-                    return null;
-                }
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        if (userDoc != null && password.equals(userDoc.get("password"))) {
+            if (userDoc.containsKey("isAdmin"))
+                return new Document("isAdmin", userDoc.get("isAdmin"));
+            else if (userDoc.containsKey("isBanned"))
+                return new Document("isBanned", userDoc.get("isBanned"));
+            else
+                return new Document("_id", userDoc.get("_id")).append("name", userDoc.get("name")).append("surname", userDoc.get("surname"));
+        } else {
+            return new Document("error", "error");
         }
     }
 
@@ -191,10 +177,9 @@ public class UserDAO {
             return null;
         }
     }
-    public void updateChanges()
-    {
-        for(Document changes : inMemoryChangesToUpdate)
-        {
+
+    public void updateChanges() {
+        for (Document changes : inMemoryChangesToUpdate) {
             String new_field = (String) changes.get("new_field");
             String type_of_change_request = (String) changes.get("type_of_change_request");
             String username_to_use = (String) changes.get("username_to_use");
@@ -211,6 +196,7 @@ public class UserDAO {
         }
         inMemoryChangesToUpdate.clear();
     }
+
     public ResponseEntity<String> ChangeData(Document changes) {
         inMemoryChangesToUpdate.add(changes);
         return ResponseEntity.ok("Changes will be effective in the next hours");

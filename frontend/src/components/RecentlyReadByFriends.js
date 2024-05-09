@@ -84,7 +84,7 @@ function BookListQuery() {
                                             <Link onClick={() => {
                                                 seeDetails(book.id)
                                             }} sx={{color: "#000000"}}>
-                                                <Typography>{book.title}</Typography>
+                                                <Typography sx={{ '&:hover': { cursor: 'pointer' } }}>{book.title}</Typography>
                                             </Link>
                                         </ListItem>
                                         <Divider variant="middle" component="li"/>

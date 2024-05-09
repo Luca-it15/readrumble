@@ -77,6 +77,7 @@ export default function PostRow({id, book_id, title, username, rating, text, rea
             <Grid container item direction="row" alignItems="center" justifyContent="center" xs={12}
                   sx={{width: '100%'}}>
                 {(all || !user.user) && (
+                    /* TODO: fix username and date position */
                     <Grid item xs={6}>
                         <Link sx={{color: "#000000", textAlign: 'left'}}>
                             <Typography onClick={() => {
@@ -89,7 +90,7 @@ export default function PostRow({id, book_id, title, username, rating, text, rea
                     </Grid>
                 )}
 
-                <Grid item xs={!user.user ? 6 : 12}>
+                <Grid item xs={6}>
                     <Typography textAlign="right" sx={{color: '#999999'}}>
                         <DateFormatter timestamp={date}/>
                         <DateIcon sx={{color: blue[400], margin: '0px 0px 5px 3px', height: '20px'}}/>
