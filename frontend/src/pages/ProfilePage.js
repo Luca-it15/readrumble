@@ -193,7 +193,7 @@ const ProfilePage = () => {
                             <Typography>Make a post</Typography>
                         </Button>
 
-                        <PostDisPlayer/>
+                        <PostsList user={true} username={currentUser['_id']} size={12} all={false} path={1}/>
                     </Paper>
                 </Grid>
 
