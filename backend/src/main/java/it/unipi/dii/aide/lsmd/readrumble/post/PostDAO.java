@@ -129,11 +129,15 @@ public class PostDAO {
                             avoid = true;
                     }
                 }
-
-
+                int rating;
+                try {
+                    rating = postDoc.getInteger("rating");
+                } catch (ClassCastException c) {
+                    rating = Integer.parseInt(postDoc.getString("rating"));
+                }
                 post = new PostDTO(
                         postDoc.getLong("book_id"),
-                        postDoc.getInteger("rating"),
+                        rating,
                         postDoc.getDate("date_added"),
                         postDoc.getString("book_title"),
                         username,
