@@ -77,7 +77,13 @@ public class PostDAO {
 
     }
 
-
+    /**
+     * This function allow us to retrieve all the posts of the user
+     * @param parameter
+     * @param user_or_book
+     * @param loadAll
+     * @return
+     */
     public List<PostDTO> allPosts(String parameter, boolean user_or_book, boolean loadAll) {
         MongoCollection<Document> collection;
         Document query;

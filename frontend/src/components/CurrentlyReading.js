@@ -44,13 +44,14 @@ function CurrentlyReading({user}) {
                     bookmark: book.bookmark,
                     num_pages: book.num_pages
                 }));
-
+                console.log(currentUser['currentlyReading']); 
                 localStorage.setItem('logged_user', JSON.stringify(currentUser));
             }
         } catch (error) {
             console.log(error.response)
         }
     };
+    
 
     useEffect(() => {
         fetchBooks();

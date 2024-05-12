@@ -69,9 +69,9 @@ export default function PostForm() {
 
     const handleChange = (e) => {
         const {name, value} = e.target;
-        let book = currentUser['currentlyReading'];
+        let book = currentUser['recent_active_books'][0]['books']; 
 
-        book = book.filter(book => book.title === selectedTitle);
+        book = book.filter(book => book.book_title === selectedTitle);
 
         let num_pages = book['bookmark'];
         
@@ -142,7 +142,7 @@ export default function PostForm() {
         
         if(formData.pages_read < 0) {
             setSubmitStatus({
-                message: 'New bookmark must be great than the previous bookmark',
+                message: 'New bookmark must be great than the previous bookmark ' + old_bookmark,
                 variant: 'danger'
             });
             return
@@ -171,7 +171,7 @@ export default function PostForm() {
             let competitions = currentUser['competitions'];
 
     
-            if (competitions) {
+            if (competitions != null) {
 
                 let competitions_name = Array();
                 let competitions_tag = Array();
@@ -199,14 +199,17 @@ export default function PostForm() {
            
 
             // Update the user's currently reading book
-            let books = currentUser['currentlyReading'];
-
+            let books = currentUser['recent_active_books'][0]['books']; 
+            console.log(books); 
             books.forEach(book => {
-                if (book.title === selectedTitle) {
+                if (book.book_title === selectedTitle) {
+                    console.log("sto aggiornando il bookmark"); 
+                    console.log(book.bookmark);
+                    console.log(formData.bookmark); 
                     book.bookmark = formData.bookmark;
                 }
             })
-            currentUser['currentlyReading'] = books;
+            currentUser['recent_active_books'][0]['books'] = books;
             localStorage.setItem('logged_user', JSON.stringify(currentUser));
 
             console.log('Post successfully uploaded!');

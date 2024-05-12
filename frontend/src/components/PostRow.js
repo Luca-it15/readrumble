@@ -28,12 +28,14 @@ export default function PostRow({id, book_id, title, username, rating, text, rea
              let arrayPost = JSON.parse(arrayPostJson);
 
              let dateToFind = date; 
-             const isPostSaved = arrayPost.some((post) => post.date === dateToFind);
+             const isPostSaved = arrayPost.some((post) => post.date_added === dateToFind);
              if(isPostSaved) {
               let postFilter = arrayPost.filter(post => post.date_added === dateToFind);  
               let postFilterJson = JSON.stringify(postFilter);
 
-              localStorage.removeItem('post_details');
+              let postDetails = localStorage.getItem('post_details');
+              if(postDetails)  
+               localStorage.removeItem('post_details');
               localStorage.setItem('post_details', postFilterJson);
               console.log(user); 
               if(user) 

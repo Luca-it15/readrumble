@@ -78,7 +78,7 @@ function AddBook() {
             return;
         } else if (selectedTags.length < 3) {
             setValidationError('choose at least 3 type of tags!');
-            console.log("ho selezionato :" + selectedTags.length + " tags");
+            console.log(selectedTags.length + " tags");
             return;
         }
 

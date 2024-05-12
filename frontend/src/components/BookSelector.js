@@ -27,30 +27,31 @@ const BookSelector = ({ handleChangeBookTitle }) => {
     useEffect(() => {
         // Ottieni i titoli dei libri dal server
         let currentUser = JSON.parse(localStorage.getItem('logged_user'));
-        let bookData = currentUser['currentlyReading']; 
+        let bookData = currentUser['recent_active_books'][0]['books']; 
 
-        console.log(bookData); 
+        console.log("ci sono questi libri in lettura: ");
+        console.log(bookData);  
 
         if(bookData === null || bookData.lenght === 0) {
         axios
             .get(`http://localhost:8080/api/book/currentlyReadingBooks/${user['_id']}`)
             .then((response) => {
                 const bookTitles = response.data.map((book) => ({
-                    value: book.title,
-                    label: book.title,
+                    value: book.book_title,
+                    label: book.book_title,
                 }));
                 const book_ids = response.data.map((book) => ({
-                    value: book.id,
-                    label: book.title,
+                    value: book.book_id,
+                    label: book.book_title,
                 }));
 
                  const bookTags = response.data.map((book) => ({
                 value: book.tags,
-                label: book.title,
+                label: book.book_title,
             }));
             const bookmark = response.data.map((book) => ({
                 value: book.bookmark,
-                label: book.title,
+                label: book.book_title,
             }));
 
             setOptions(bookTitles);
@@ -63,21 +64,21 @@ const BookSelector = ({ handleChangeBookTitle }) => {
             );
         } else {
             const bookTitles = bookData.map((book) => ({
-                value: book.title,
-                label: book.title,
+                value: book.book_title,
+                label: book.book_title,
             }));
             const book_ids = bookData.map((book) => ({
-                value: book.id,
-                label: book.title,
+                value: book.book_id,
+                label: book.book_title,
             }));
 
             const bookTags = bookData.map((book) => ({
                 value: book.tags,
-                label: book.title,
+                label: book.book_title,
             }));
             const bookmark = bookData.map((book) => ({
                 value: book.bookmark,
-                label: book.title,
+                label: book.book_title,
             }));
 
             setOptions(bookTitles);

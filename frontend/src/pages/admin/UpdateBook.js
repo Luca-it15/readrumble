@@ -10,7 +10,7 @@ import GoBack from "../../components/GoBack";
 const UpdateBook = () => {
     const [selectedForm, setSelectedForm] = useState(null);
     let {id} = useParams(); 
-    console.log("l'id del libro da cambiare e: " + id)
+    
     var obj2 = {"name": "isbn", "_id": id};
     var obj3 = {"name": "description", "_id": id};
     var obj4 = {"name": "link", "_id": id};

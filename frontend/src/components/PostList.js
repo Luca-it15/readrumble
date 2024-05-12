@@ -31,6 +31,13 @@ const PostsList = (user) => {
 
     useEffect(() => {
         setIsLoading(true);
+        
+        let postLocalStorageJson = currentUser['recent_posts']; 
+
+        if(postLocalStorageJson) {
+            
+        }
+
 
         if (user.path === 0) {
             //all post
@@ -63,7 +70,7 @@ const PostsList = (user) => {
                             return differenceInMinutes <= 20;
                         });
 
-                        localStorage.setItem('posts', JSON.stringify(posts));
+                        localStorage.setItem('last_posts', JSON.stringify(posts));
 
                         let postLocalStorage = posts;
 
