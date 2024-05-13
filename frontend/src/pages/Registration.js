@@ -64,15 +64,49 @@ function RegistrationForm() {
             } else {
                 currentUser = JSON.parse(currentUser);
             }
+            /*
+
+            :
+            19
+            friends_posts
+            :
+            [{book_id: 1706005301380, rating: 3,…}, {book_id: 1706005297296, rating: 2,…},…]
+            isAdmin
+            :
+            false
+            isBanned
+            :
+            false
+            name
+            :
+            "Patricia"
+            password
+            :
+            "@&3%XW&kh@"
+            recent_active_books
+            :
+            [{username: "PaSmit597", year: 2024, month: 6,…}, {username: "PaSmit597", year: 2024, month: 5,…},…]
+            recent_posts
+            :
+            [{book_id: 1706005231971, rating: 0, review_text: "", date_added: "2023-12-31T14:10:50.670+00:00",…},…]
+            surname
+            :
+            "Smith"
+            _id
+            :
+            "PaSmit597"
+            */
             currentUser['_id'] = formData['_id'];
             currentUser['name'] = formData['name'];
             currentUser['surname'] = formData['surname'];
             currentUser['password'] = formData['password'];
+            currentUser['followees'] = 0;
+            currentUser['followers'] = 0;
             currentUser['competitions'] = [];
+            currentUser['friends_posts'] = [];
             currentUser['favoriteBooks'] = [];
-            currentUser['recentlyReadBooks'] = [];
-            currentUser['wishlist'] = [];
-            currentUser['following'] = [];
+            currentUser['recent_active_books'] = [];
+            currentUser['recent_posts'] = [];
             currentUser['isAdmin'] = false;
             currentUser['isBanned'] = false;
             currentUser['password'] = false;

@@ -282,10 +282,12 @@ public class RedisToMongo {
         for (String key : keys) {
             //competition:competition_name:tag:username->value
             String competition_name = key.split(":")[1];
+            String competition_tag = key.split(":")[2];
             String username = key.split(":")[3];
             Integer tot_pages = Integer.parseInt(jedis.get(key));
             Document doc = new Document()
                     .append("competition_name", competition_name)
+                    .append("tag", competition_tag)
                     .append("tot_pages", tot_pages);
             Bson filter = Filters.eq("_id", username);
             //this code inserts the competition into the 'competitions' field in the document user

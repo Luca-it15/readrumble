@@ -91,9 +91,9 @@ function CompetitionSpec() {
             }
 
             var new_comp = {
-                name: Name,
+                competition_name: Name,
                 tag: Tag,
-                pages: 0
+                tot_pages: 0
             }
 
             username["competitions"].push(new_comp)
