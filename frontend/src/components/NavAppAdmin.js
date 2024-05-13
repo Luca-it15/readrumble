@@ -58,9 +58,10 @@ const NavAppAdmin = () => {
                 <Button sx={{color: '#ffffff'}} component={NavLink} to="/admin_book">
                     <Typography>Books</Typography>
                 </Button>
-                <Button sx={{color: '#ffffff', width: "70px", height: "25px", backgroundColor: 'transparent',
-                    marginLeft: '40px',
-                    '&:hover': {backgroundColor: red[500]}}} onClick={handleClickOpen}>
+                <Button sx={{color: '#ffffff', backgroundColor: 'transparent',
+                    marginLeft: '10px', height: '5vh',
+                    '&:hover': {backgroundColor: "rgba(255, 0, 0, 0.65)"}}}
+                        onClick={handleClickOpen}>
                     <Typography>Logout</Typography>
                 </Button>
 

@@ -41,13 +41,46 @@ const DashboardAdmin = () => {
             let data = Object.entries(response.data).map(([month, tags]) => ({month: Number(month), tags}));
 
             // Sort the data by month considering the circular nature of months
+            // Get the current month
             const date = new Date();
             const currentMonth = date.getMonth() + 1;
 
+            // Check if some month is 12
+            let isMonth12 = false;
+            data.forEach(item => {
+                if (item.month === 12) {
+                    isMonth12 = true;
+                }
+            });
+
+            // Adjust the months and sort
             data.sort((a, b) => {
-                const adjustedAMonth = a.month <= currentMonth ? a.month + 12 : a.month;
-                const adjustedBMonth = b.month <= currentMonth ? b.month + 12 : b.month;
+                if (!isMonth12) {
+                    return a.month - b.month;
+                }
+
+                let adjustedAMonth = a.month;
+                let adjustedBMonth = b.month;
+
+                // If the month is less than or equal to the current month, add 12
+                if (a.month <= currentMonth) {
+                    adjustedAMonth = a.month + 12;
+                }
+
+                if (b.month <= currentMonth) {
+                    adjustedBMonth = b.month + 12;
+                }
+
+                // Sort in ascending order
                 return adjustedAMonth - adjustedBMonth;
+            });
+
+            // After sorting, adjust the months back to their original values
+            data = data.map(item => {
+                if (item.month > 12) {
+                    item.month -= 12;
+                }
+                return item;
             });
 
             setAvgPagesByTagByMonthData(data);
@@ -81,15 +114,15 @@ const DashboardAdmin = () => {
         ));
 
     const avgPagesByTagRankpart2 = avgPagesByTagData
-    .sort((a, b) => a.pages - b.pages).slice(8, 17)
-    .map((data, index) => (
-        <React.Fragment>
-            <ListItem key={index} sx={{backGroundColor: '#ffffff', '&:hover': {backgroundColor: "#f1f7fa"}}}>
-                <strong>#{index + 9}</strong> {'. ' + data.tag}: {data.pages} pages
-            </ListItem>
-            <Divider variant="middle" component="li"/>
-        </React.Fragment>
-    ));
+        .sort((a, b) => a.pages - b.pages).slice(8, 17)
+        .map((data, index) => (
+            <React.Fragment>
+                <ListItem key={index} sx={{backGroundColor: '#ffffff', '&:hover': {backgroundColor: "#f1f7fa"}}}>
+                    <strong>#{index + 9}</strong> {'. ' + data.tag}: {data.pages} pages
+                </ListItem>
+                <Divider variant="middle" component="li"/>
+            </React.Fragment>
+        ));
 
     const tags = ["Non-fiction", "Graphic", "Romance", "History", "Paranormal", "Young-adult", "Thriller", "Crime", "Fantasy", "Biography", "Poetry", "Mystery", "Children", "Comics", "Fiction", "Historical fiction"];
 
@@ -130,28 +163,29 @@ const DashboardAdmin = () => {
     );
 
     const avgPagesByTagChart = (
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Bar
-            data={{
-                labels: avgPagesByTagData.map((data) => data.tag).sort((a, b) => a.localeCompare(b)),
-                datasets: [
-                    {
-                        label: 'Average pages read',
-                        data: avgPagesByTagData.sort((a, b) => a.tag.localeCompare(b.tag)).map((data) => data.pages),                        backgroundColor: 'rgba(75,192,192,0.41)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 0,
-                        borderRadius: 10,
-                    },
-                ],
-            }}
-            options={{
-                scales: {
-                    y: {
-                        beginAtZero: true
+        <div style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <Bar
+                data={{
+                    labels: avgPagesByTagData.map((data) => data.tag).sort((a, b) => a.localeCompare(b)),
+                    datasets: [
+                        {
+                            label: 'Average pages read',
+                            data: avgPagesByTagData.sort((a, b) => a.tag.localeCompare(b.tag)).map((data) => data.pages),
+                            backgroundColor: 'rgba(75,192,192,0.41)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 0,
+                            borderRadius: 10,
+                        },
+                    ],
+                }}
+                options={{
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
-                }
-            }}
-        />
+                }}
+            />
         </div>
     );
 
@@ -174,7 +208,8 @@ const DashboardAdmin = () => {
             </Grid>
 
             <Paper elevation={2} style={PaperStyle}>
-                <Grid container item xs={12} spacing={2} direction="row" justifyContent="space-around" alignItems="center">
+                <Grid container item xs={12} spacing={2} direction="row" justifyContent="space-around"
+                      alignItems="center">
                     <Grid item xs={12}>
                         <Typography variant="h5">Competitions</Typography>
                     </Grid>
@@ -207,7 +242,8 @@ const DashboardAdmin = () => {
                                 </Card>
                             </Grid>
                         ) : (
-                            <Grid container item direction="row" justifyContent="center" alignItems="center" spacing={2}>
+                            <Grid container item direction="row" justifyContent="center" alignItems="center"
+                                  spacing={2}>
                                 <Grid item xs={6.5}>
                                     <Card sx={{padding: '10px', borderRadius: 5}}>
                                         <>
@@ -216,9 +252,11 @@ const DashboardAdmin = () => {
                                     </Card>
                                 </Grid>
                                 <Grid item xs={5.5}>
-                                    <Card sx={{ padding: '10px', borderRadius: 5, backgroundColor: '#f1f7fa' }}>
-                                        <Typography variant="h5">Least participated and average top 10s points, last six months</Typography>
-                                        <Grid container item direction="row" justifyContent="center" alignItems="center" spacing={3}>
+                                    <Card sx={{padding: '10px', borderRadius: 5, backgroundColor: '#f1f7fa'}}>
+                                        <Typography variant="h5">Least participated and average top 10s points, last six
+                                            months</Typography>
+                                        <Grid container item direction="row" justifyContent="center" alignItems="center"
+                                              spacing={3}>
                                             <Grid item xs={6}>
                                                 <List sx={ListStyle}>{avgPagesByTagRankpart1}</List>
                                             </Grid>

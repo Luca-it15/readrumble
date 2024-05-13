@@ -23,10 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class UserDAO {
     private static List<Document> inMemoryUsers = new ArrayList<>();
@@ -132,18 +129,70 @@ public class UserDAO {
             if (cursor.hasNext()) {
                 Document registered_user = cursor.next();
 
+                boolean isBanned, isAdmin;
+
                 if (password.equals(registered_user.get("password"))) {
                     if (registered_user.containsKey("isAdmin")) {
                         registered_user.append("isAdmin", true);
+                        isAdmin = true;
                     } else {
                         registered_user.append("isAdmin", false);
+                        isAdmin = false;
                     }
                     if (registered_user.containsKey("isBanned")) {
                         registered_user.append("isBanned", true);
+                        isBanned = true;
                     } else {
                         registered_user.append("isBanned", false);
+                        isBanned = false;
                     }
-                    registered_user.remove("wishlist");
+
+                    if (!isBanned && !isAdmin) {
+                        // Return _id, name, surname, isAdmin, isBanned, followers, followees, wishlist, recent_posts,
+                        // recent_active_books, competitions, friends_posts
+                        registered_user.remove("password");
+
+                        // Get the currentlyReadingBooks
+                        List<Document> latestActiveBooks = (List<Document>) registered_user.get("recent_active_books");
+
+                        latestActiveBooks.sort((a, b) -> {
+                            int yearA = a.getInteger("year");
+                            int yearB = b.getInteger("year");
+                            int monthA = a.getInteger("month");
+                            int monthB = b.getInteger("month");
+
+                            if (yearA == yearB) {
+                                return monthA - monthB;
+                            } else {
+                                return yearA - yearB;
+                            }
+                        });
+
+                        Document latestActiveBooksDoc = latestActiveBooks.get(0);
+
+                        List<Document> currentlyReadingBooks = new ArrayList<>();
+                        for (Document book : (List<Document>) latestActiveBooksDoc.get("books")) {
+                            if (!Objects.equals(book.getInteger("bookmark"), book.getInteger("num_pages"))) {
+                                currentlyReadingBooks.add(book);
+                            }
+                        }
+
+                        registered_user.append("currently_reading_books", currentlyReadingBooks);
+
+                        List<Document> recentlyReadBooks = new ArrayList<>();
+
+                        for (Document monthDoc : latestActiveBooks) {
+                            List<Document> books = (List<Document>) monthDoc.get("books");
+                            for (Document book : books) {
+                                if (Objects.equals(book.getInteger("bookmark"), book.getInteger("num_pages"))) {
+                                    recentlyReadBooks.add(book);
+                                }
+                            }
+                        }
+
+                        registered_user.append("recently_read_books", recentlyReadBooks);
+                    }
+
                     return registered_user;
                 }
                 else {

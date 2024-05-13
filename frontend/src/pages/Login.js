@@ -156,11 +156,17 @@ function LoginForm() {
                 setIsLoading(false);
             } else {
                 setLoginStatus(true);
-                localStorage.setItem('isAdmin', JSON.stringify(response.data.isAdmin == 1));
-                localStorage.setItem('logged_user', JSON.stringify(response.data));
+
                 if (response.data.isAdmin == 1) {
                     const isLoggedIn = true;
                     localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
+
+                    let currentUser = {
+                        _id: response.data._id
+                    }
+
+                    localStorage.setItem('logged_user', JSON.stringify(currentUser));
+
                     window.location.href = "/home";
                 }
                 else if((response.data.isBanned == 1))
@@ -175,10 +181,53 @@ function LoginForm() {
                 {
                     const isLoggedIn = true;
                     localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
-                    //fetchAll(response.data._id);
+
+                    console.log(response.data)
+
+                    // Parse the response data into localStorage
+                    let currentUser = {
+                        _id: response.data._id,
+                        name: response.data.name,
+                        surname: response.data.surname,
+                        followees: response.data.followees,
+                        followers: response.data.followers,
+                        favoriteBooks: [],
+                        currentlyReading: response.data.currently_reading_books,
+                        wishlist: response.data.wishlist,
+                        recent_active_books: response.data.recent_active_books,
+                        recentlyReadBooks: response.data.recently_read_books,
+                        following: [],
+                        competitions: response.data.competitions,
+                        recent_posts: response.data.recent_posts,
+                        friends_posts: response.data.friends_posts,
+                    };
+
+                    console.log(currentUser)
+
+                    currentUser['wishlist'] = currentUser['wishlist'].map(book => ({
+                        id: book.book_id,
+                        title: book.book_title.replace(/"/g, '')
+                    }));
+
+                    currentUser['currentlyReading'] = currentUser['currentlyReading'].map(book => ({
+                        id: book.book_id,
+                        title: book.book_title.replace(/"/g, ''),
+                        bookmark: book.bookmark,
+                        num_pages: book.num_pages,
+                        tags: book.tags
+                    }));
+
+                    currentUser['recentlyReadBooks'] = currentUser['recentlyReadBooks'].map(book => ({
+                        id: book.book_id,
+                        title: book.book_title.replace(/"/g, '')
+                    }));
+
+                    localStorage.setItem('logged_user', JSON.stringify(currentUser));
+
                     window.location.href = "/home";
                 }
 
+                localStorage.setItem('isAdmin', JSON.stringify(response.data.isAdmin == 1));
             }
         } catch (error) {
             setLoginStatus({message: error.response ? error.response.data : error.message, variant: 'danger'});
