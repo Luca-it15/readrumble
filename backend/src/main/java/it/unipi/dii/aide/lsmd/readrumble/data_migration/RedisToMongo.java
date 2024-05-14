@@ -539,13 +539,21 @@ public class RedisToMongo {
                         now = now.minusDays(1);
                     }
 
+                    boolean reported = Objects.equals("true",keySplit[9]);
+                    LocalDateTime date_added;
                     now = now.withHour(postHour).withMinute(postMinute).withSecond(postSecond);
+                    if(reported) {
+                        DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+                        date_added = LocalDateTime.parse(jedis.hget(key, "date_added"), formatter);
+                    } else {
+                        date_added = now.withHour(postHour).withMinute(postMinute).withSecond(postSecond);
+                    }
 
                     Gson gson = new Gson();
                     Document new_post = new Document("book_id", bookId)
                             .append("rating", rating)
                             .append("review_text", postData.get("review_text"))
-                            .append("date_added", now)
+                            .append("date_added", date_added)
                             .append("book_title", postData.get("book_title"))
                             .append("username", keySplit[4])
                             .append("tags", gson.fromJson(jedis.hget(key, "tags"), new TypeToken<List<String>>() {
@@ -559,7 +567,6 @@ public class RedisToMongo {
 
                     //2) we add the new post in mongo in users and in books and update activebooks
                     //2.a) check if the post is a report or not, in the first case we add the post into the admin document
-                    boolean reported = keySplit[9].contains("true");
                     String username = null;
                     if (reported) {
                         username = "admin";

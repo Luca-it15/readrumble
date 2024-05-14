@@ -56,6 +56,9 @@ public class PostDAO {
             jedis.hset(key, "review_text", post.getString("review_text"));
             jedis.hset(key, "tags", gson.toJson(post.get("tag")));
             jedis.hset(key, "book_title", post.getString("book_title"));
+            if(reported) {
+                jedis.hset(key, "date_added", post.getString("date_added"));
+            }
 
             List<String> competitions_names = (List<String>) post.get("competitions_name");
             List<String> competitions_tag = (List<String>) post.get("competitions_tag");
