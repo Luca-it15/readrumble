@@ -26,13 +26,6 @@ function FollowingList({user, followers_or_followees}) {
         backgroundColor: 'background.paper',
     };
 
-    const PaperStyle = {
-        backgroundColor: '#f1f7fa',
-        padding: '10px',
-        borderRadius: 5,
-        width: '100%'
-    }
-
     // Works in both cases: if "user" is current user or another user, because we are on their profile, and have to show their following list
     async function fetchFollowing() {
         if (user === currentUser['_id'] && currentUser['following'] && currentUser['following'].length > 0) {

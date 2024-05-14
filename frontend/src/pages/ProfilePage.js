@@ -37,6 +37,9 @@ const ProfilePage = () => {
     const [followees, setFollowees] = useState(0);
     const navigate = useNavigate();
 
+    const [openRRB, setOpenRRB] = useState(false);
+    const [openFBL, setOpenFBL] = useState(false);
+
     const fetchWishlist = async () => {
         if (currentUser['wishlist'] && currentUser['wishlist'].length > 0) {
             setBooks(currentUser['wishlist']);
@@ -70,6 +73,11 @@ const ProfilePage = () => {
     }
 
     const getFollowers = async () => {
+        if (currentUser['followers']) {
+            setFollowers(currentUser['followers']);
+            return
+        }
+
         try {
             const response = await axios.get(`http://localhost:8080/api/followersCount/${currentUser['_id']}`);
             setFollowers(response.data);
@@ -79,6 +87,11 @@ const ProfilePage = () => {
     }
 
     const getFollowees = async () => {
+        if (currentUser['followees']) {
+            setFollowees(currentUser['followees']);
+            return
+        }
+
         try {
             const response = await axios.get(`http://localhost:8080/api/followeesCount/${currentUser['_id']}`);
             setFollowees(response.data);
@@ -246,23 +259,28 @@ const ProfilePage = () => {
                         </Accordion>
                     </Grid>
                     <Grid item sx={{width: '100%'}}>
-                        <Accordion sx={AccordionStyle}>
+                        <Accordion sx={AccordionStyle} onChange={(event, isExpanded) => {
+                            if (isExpanded)
+                            setOpenRRB(true);
+                        }}>
                             <AccordionSummary
                                 expandIcon={<ExpandMoreIcon />}
                                 aria-controls="recently-read-content"
                                 id="recently-read-header"
-                                onClick={ () => {  } }
                             >
                                 <MenuBookTwoToneIcon sx={{ color: blue[700], height: '30px'}}/>
                                 <Typography variant="h5" sx={{ width: '100%' }}>Recently read books</Typography>
                             </AccordionSummary>
                             <AccordionDetails sx={{ padding: '2%', marginTop: '-15px' }}>
-                                <RecentlyReadBooks user={currentUser['_id']}/>
+                                {openRRB && (<RecentlyReadBooks user={currentUser['_id']}/>)}
                             </AccordionDetails>
                         </Accordion>
                     </Grid>
                     <Grid item sx={{width: '100%'}}>
-                        <Accordion sx={AccordionStyle}>
+                        <Accordion sx={AccordionStyle} onChange={(event, isExpanded) => {
+                            if (isExpanded)
+                                setOpenFBL(true);
+                        }}>
                             <AccordionSummary
                                 expandIcon={<ExpandMoreIcon />}
                                 aria-controls="favorites-content"
@@ -272,48 +290,12 @@ const ProfilePage = () => {
                                 <Typography variant="h5" sx={{ width: '100%' }}>Favorites</Typography>
                             </AccordionSummary>
                             <AccordionDetails sx={{ padding: '2%', marginTop: '-15px' }}>
-                                <FavoriteBookList user={currentUser['_id']}/>
+                                {openFBL && (<FavoriteBookList user={currentUser['_id']}/>)}
                             </AccordionDetails>
                         </Accordion>
                     </Grid>
                 </Grid>
             </Grid>
-
-            <Dialog open={wishlistOpen} fullWidth={true}>
-                <DialogTitle><Typography variant="h5" textAlign="center">Your wishlist</Typography></DialogTitle>
-                <ClearIcon onClick={() => setWishlistOpen(false)} sx={{position: 'absolute', right: '10px', top: '10px',
-                    color: 'grey', cursor: 'pointer'}}/>
-                <DialogContent>
-                    <List sx={ListStyle}>
-                        {books.length === 0 ? (
-                            <ListItem>
-                                <Typography>No books to show</Typography>
-                            </ListItem>
-                        ) : (
-                            books.map((book, index) => (
-                                <React.Fragment key={index}>
-                                    <ListItem sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}
-                                              secondaryAction={
-                                                  <Tooltip title="Remove from wishlist">
-                                                      <IconButton sx={{color: blue[500], '&:hover': {color: red[500]}}}
-                                                                  onClick={() => removeFromWishlist(book)}>
-                                                          <ClearIcon/>
-                                                      </IconButton>
-                                                  </Tooltip>
-                                              }>
-                                        <Link onClick={() => {
-                                            seeDetails(book.id)
-                                        }} sx={{color: "#000000"}}>
-                                            <Typography>{book.title}</Typography>
-                                        </Link>
-                                    </ListItem>
-                                    <Divider variant="middle" component="li"/>
-                                </React.Fragment>
-                            ))
-                        )}
-                    </List>
-                </DialogContent>
-            </Dialog>
 
             <Dialog open={followersOpen} fullWidth={true}>
                 <ClearIcon onClick={() => setFollowersOpen(false)} sx={{position: 'absolute',

@@ -47,6 +47,9 @@ function OtherUserProfile() {
     const [followers, setFollowers] = useState(0);
     const [followees, setFollowees] = useState(0);
 
+    const [openRRB, setOpenRRB] = useState(false);
+    const [openFBL, setOpenFBL] = useState(false);
+
     const navigate = useNavigate();
 
     const PaperStyle = {
@@ -247,7 +250,10 @@ function OtherUserProfile() {
                         </Accordion>
                     </Grid>
                     <Grid item sx={{width: '100%'}}>
-                        <Accordion sx={AccordionStyle}>
+                        <Accordion sx={AccordionStyle} onChange={(event, isExpanded) => {
+                            if (isExpanded)
+                                setOpenRRB(true);
+                        }}>
                             <AccordionSummary
                                 expandIcon={<ExpandMoreIcon />}
                                 aria-controls="recently-read-content"
@@ -257,12 +263,15 @@ function OtherUserProfile() {
                                 <Typography variant="h5" sx={{ width: '100%' }}>Recently read books</Typography>
                             </AccordionSummary>
                             <AccordionDetails sx={{ padding: '2%', marginTop: '-15px' }}>
-                                <RecentlyReadBooks user={username}/>
+                                {openRRB && (<RecentlyReadBooks user={username}/>)}
                             </AccordionDetails>
                         </Accordion>
                     </Grid>
                     <Grid item sx={{width: '100%'}}>
-                        <Accordion sx={AccordionStyle}>
+                        <Accordion sx={AccordionStyle} onChange={(event, isExpanded) => {
+                            if (isExpanded)
+                                setOpenFBL(true);
+                        }}>
                             <AccordionSummary
                                 expandIcon={<ExpandMoreIcon />}
                                 aria-controls="favorites-content"
@@ -272,7 +281,7 @@ function OtherUserProfile() {
                                 <Typography variant="h5" sx={{ width: '100%' }}>Favorites</Typography>
                             </AccordionSummary>
                             <AccordionDetails sx={{ padding: '2%', marginTop: '-15px' }}>
-                                <FavoriteBookList user={username}/>
+                                {openFBL && (<FavoriteBookList user={username}/>)}
                             </AccordionDetails>
                         </Accordion>
                     </Grid>
