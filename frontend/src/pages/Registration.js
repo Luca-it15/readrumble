@@ -60,28 +60,27 @@ function RegistrationForm() {
             let currentUser = localStorage.getItem('logged_user');
 
             if (!currentUser) {
-                currentUser = {};
+                currentUser ={
+                                              _id: formData['_id'],
+                                              name: formData['name'],
+                                              surname: formData['surname'],
+                                              followees: 0,
+                                              followers: 0,
+                                              favoriteBooks: [],
+                                              currentlyReading: [],
+                                              wishlist: [],
+                                              recent_active_books: [],
+                                              recentlyReadBooks: [],
+                                              following: [],
+                                              competitions: [],
+                                              recent_posts: [],
+                                              friends_posts: [],
+                                          };
             } else {
                 currentUser = JSON.parse(currentUser);
             }
 
-            let currentUser = {
-                _id: formData['_id'],
-                name: formData['name'],
-                surname: formData['surname'];,
-                followees: 0,
-                followers: 0,
-                favoriteBooks: [],
-                currentlyReading: [],
-                wishlist: [],
-                recent_active_books: [],
-                recentlyReadBooks: [],
-                following: [],
-                competitions: [],
-                recent_posts: [],
-                friends_posts: [],
-            };
-            localStoragesetItem('logged_user', JSON.stringify(currentUser));
+            localStorage.setItem('logged_user', JSON.stringify(currentUser));
             localStorage.setItem('isLoggedIn', true);
             localStorage.setItem('isAdmin', false);
             window.location.href = '/home';
