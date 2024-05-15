@@ -20,43 +20,50 @@ export default function PostRow({id, book_id, title, username, rating, text, rea
     }
 
     function seeDetails(username, book_id, user) {
-        let parameter; 
-            let arrayPostJson = localStorage.getItem('last_posts');
-            let currentUser = JSON.parse(localStorage.getItem('logged_user'));
-            let currentUsername = currentUser['_id']; 
-            if(currentUsername === username && arrayPostJson) {
-             let arrayPost = JSON.parse(arrayPostJson);
+        let parameter;
+        let arrayPostJson = localStorage.getItem('last_posts');
+        let currentUser = JSON.parse(localStorage.getItem('logged_user'));
+        let currentUsername = currentUser['_id'];
 
-             let dateToFind = date; 
-             const isPostSaved = arrayPost.some((post) => post.date_added === dateToFind);
-             if(isPostSaved) {
-              let postFilter = arrayPost.filter(post => post.date_added === dateToFind);  
-              let postFilterJson = JSON.stringify(postFilter);
+        if (currentUsername === username && arrayPostJson) {
+            let arrayPost = JSON.parse(arrayPostJson);
+            let dateToFind = date;
+            const isPostSaved = arrayPost.some((post) => post.date_added === dateToFind);
 
-              let postDetails = localStorage.getItem('post_details');
-              if(postDetails)  
-               localStorage.removeItem('post_details');
-              localStorage.setItem('post_details', postFilterJson);
-              console.log(user); 
-              if(user) 
-               parameter = username 
-              else 
-               parameter = book_id
-              navigate(`/posts/0/${date}/${parameter}/${user}`);
-              } else {
-                if(user) 
-                 parameter = username 
-                else 
-                 parameter = book_id
+            if (isPostSaved) {
+                let postFilter = arrayPost.filter(post => post.date_added === dateToFind);
+                let postFilterJson = JSON.stringify(postFilter);
+                let postDetails = localStorage.getItem('post_details');
+
+                if (postDetails)
+                    localStorage.removeItem('post_details');
+
+                localStorage.setItem('post_details', postFilterJson);
+
+                console.log(user);
+
+                if (user)
+                    parameter = username
+                else
+                    parameter = book_id
+
+                navigate(`/posts/0/${date}/${parameter}/${user}`);
+            } else {
+                if (user)
+                    parameter = username
+                else
+                    parameter = book_id
+
                 navigate(`/posts/1/${date}/${parameter}/${user}`);
-               }
-             }else {
-             if(user) 
-              parameter = username 
-             else 
-              parameter = book_id
-             navigate(`/posts/1/${date}/${parameter}/${user}`);
             }
+        } else {
+            if (user)
+                parameter = username
+            else
+                parameter = book_id
+
+            navigate(`/posts/1/${date}/${parameter}/${user}`);
+        }
     }
 
     function seeBookDetails(book_id) {
@@ -79,7 +86,6 @@ export default function PostRow({id, book_id, title, username, rating, text, rea
             <Grid container item direction="row" alignItems="center" justifyContent="center" xs={12}
                   sx={{width: '100%'}}>
                 {(all || !user.user) && (
-                    /* TODO: fix username and date position */
                     <Grid item xs={6}>
                         <Link sx={{color: "#000000", textAlign: 'left'}}>
                             <Typography onClick={() => {

@@ -56,6 +56,9 @@ public class PostDAO {
             jedis.hset(key, "review_text", post.getString("review_text"));
             jedis.hset(key, "tags", gson.toJson(post.get("tag")));
             jedis.hset(key, "book_title", post.getString("book_title"));
+            if(reported) {
+                jedis.hset(key, "date_added", post.getString("date_added"));
+            }
 
             List<String> competitions_names = (List<String>) post.get("competitions_name");
             List<String> competitions_tag = (List<String>) post.get("competitions_tag");
@@ -122,25 +125,30 @@ public class PostDAO {
 
             // If looking for posts of a specific user, get the username from the user document
             if (user_or_book) {
-
                 String username = null;
+
                 if (parameter.equals("admin"))
                     username = postDoc.getString("username");
                 else
                     username = doc.getString("_id");
+
                 PostToRemove postRemove = new PostToRemove(username, postDoc.getDate("date_added"), true);
+
                 if (ptr != null) {
                     for (PostToRemove pr : ptr) {
                         if (pr.equals(postRemove))
                             avoid = true;
                     }
                 }
+
                 int rating;
+
                 try {
                     rating = postDoc.getInteger("rating");
                 } catch (ClassCastException c) {
                     rating = Integer.parseInt(postDoc.getString("rating"));
                 }
+
                 post = new PostDTO(
                         postDoc.getLong("book_id"),
                         rating,

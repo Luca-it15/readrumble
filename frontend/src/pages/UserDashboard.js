@@ -41,10 +41,6 @@ const Dashboard = () => {
     }
 
     async function fetchReadingStats() {
-        if (readingStatsData.length > 0) {
-            return;
-        }
-
         try {
             const response = await axios.get(`http://localhost:8080/api/book/pagesReadByTag/${currentUser['_id']}`);
             const data = response.data.map(doc => ({tag: doc.tag, pagesRead: doc.pages_read}));
@@ -146,9 +142,9 @@ const Dashboard = () => {
                                 <Switch value={toggle} onChange={() => {
                                         setToggle(toggle === 'readingProgress' ? 'readingStats' : 'readingProgress');
                                         if (toggle === 'readingProgress') {
-                                            fetchPagesTrend();
-                                        } else {
                                             fetchReadingStats();
+                                        } else {
+                                            fetchPagesTrend();
                                         }
                                     }}
                                     color="default"

@@ -377,12 +377,12 @@ function BookDetails() {
                             <Typography>Hide reviews</Typography>
                         </Button>)}
                 </Grid>
+
                 <Grid item xs={12} md={11}>
-                    <Typography sx={{
-                        marginLeft: '30px',
-                        marginRight: '30px',
-                        textAlign: 'center'
-                    }}>Tags: <i>{tags}</i></Typography>
+                    <Typography sx={{ marginLeft: '30px', marginRight: '30px', textAlign: 'center'}}>
+                        Tags: <i>{tags}</i>
+                    </Typography>
+
                     {hiddenReview ? (
                         <Paper elevation={0} sx={DescriptionPaperStyle}>
                             <Typography variant="h5">Description</Typography>

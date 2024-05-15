@@ -41,7 +41,7 @@ function PostDetails() {
         bookmark: 0,
         pages_read: 0,
         competitions_name: [],
-        competitions_tag: [], 
+        competitions_tag: [],
         reported: false
     });
 
@@ -71,17 +71,17 @@ function PostDetails() {
             bookmark: post.bookmark,
             pages_read: post.pages_read,
             competitions_name: [],
-            competitions_tag: [], 
+            competitions_tag: [],
             reported: true
-            }); 
+        });
+
         setOpen(true);
     }
-     
-     const [submitStatus, setSubmitStatus] = useState({
+
+    const [submitStatus, setSubmitStatus] = useState({
         message: '',
-        variant: 'success', 
-     });
-    
+        variant: 'success',
+    });
 
     const handleClose = () => setOpen(false);
 
@@ -91,35 +91,36 @@ function PostDetails() {
 
     function timeout_text(text) {
         let status = text;
+
         setTimeout(function () {
             seeDeletionStatus({message: '', variant: status});
             handleGoBack();
         }, 6000)
     }
-    
-    let username = currentUser['_id']; 
+
+    let username = currentUser['_id'];
 
     const fetchPost = async () => {
         try {
-
-            let storageNum = parseInt(storage); 
+            let storageNum = parseInt(storage);
 
             if (storageNum === 1) {
-                let paramToSend = parameter; 
-                if(!user) {
-                  paramToSend = parameter.toString(); 
+                let paramToSend = parameter;
+
+                if (!user) {
+                    paramToSend = parameter.toString();
                 }
-                const response = await axios.get('http://localhost:8080/api/post/details/' + datePost + '/' +  paramToSend + '/' + user);
+
+                const response = await axios.get('http://localhost:8080/api/post/details/' + datePost + '/' + paramToSend + '/' + user);
 
                 setPost(response.data);
                 setTags(response.data.tags);
                 setRating(response.data.rating);
                 setDate(response.data.date_added);
-        
+
                 if (currentUser['_id'] === response.data.username)
                     setPostUser(true);
             } else {
-
                 const actualPost = JSON.parse(localStorage.getItem('post_details'));
 
                 setPost(actualPost[0]);
@@ -146,56 +147,55 @@ function PostDetails() {
             if (seconds < 10) seconds = '0' + seconds;
 
             let time = hours + ":" + minutes + ":" + seconds;
-
             let arrayPost = JSON.parse(localStorage.getItem('last_posts'));
 
-            if(arrayPost) {
+            if (arrayPost) {
+                let dateToFind = date;
+                let postExists = arrayPost.some(post => post.date_added === dateToFind);
 
-             let dateToFind = date;
-             let postExists = arrayPost.some(post => post.date_added === dateToFind);
+                if (postExists === true) {
+                    let postFilter = arrayPost.filter(post => post.date_added !== dateToFind);
+                    let postFilterJson = JSON.stringify(postFilter);
 
-             if (postExists === true) {
-                let postFilter = arrayPost.filter(post => post.date_added !== dateToFind);
-                let postFilterJson = JSON.stringify(postFilter);
+                    localStorage.removeItem('post_details');
 
-                localStorage.removeItem('post_details');
+                    if (postFilter != null)
+                        localStorage.setItem('last_posts', postFilterJson);
 
-                if (postFilter != null)
-                    localStorage.setItem('last_posts', postFilterJson);
+                    let reported = (isAdmin ? true : false);
 
-                let reported = (isAdmin ? true : false); 
+                    const key = "post:" + time + ":" + post.username + ":" + post.book_id + ":" + post.rating + ":" + post.bookmark + ":" + post.pages_read + ":" + reported;
+                    const response = await axios.delete('http://localhost:8080/api/post/removeredis/' + key);
 
-                const key = "post:" + time + ":" + post.username + ":" + post.book_id + ":" + post.rating + ":" + post.bookmark + ":" + post.pages_read + ":" + reported;
-                const response = await axios.delete('http://localhost:8080/api/post/removeredis/' + key);
+                    seeDeletionStatus({message: response.data, variant: 'success'});
 
-                seeDeletionStatus({message: response.data, variant: 'success'});
+                    handleClose();
 
-                handleClose();
-
-                timeout_text("success");
-             } else {
-                let paramToSend; 
-                if(user) {
-                    paramToSend = post.username; 
+                    timeout_text("success");
                 } else {
-                    paramToSend = parameter.toString(); 
+                    let paramToSend;
+
+                    if (user) {
+                        paramToSend = post.username;
+                    } else {
+                        paramToSend = parameter.toString();
+                    }
+                    const response = await axios.delete('http://localhost:8080/api/post/removemongo/' + datePost + '/' + paramToSend + '/' + user);
+
+                    seeDeletionStatus({message: response.data, variant: 'success'});
+
+                    handleClose();
+
+                    timeout_text("success");
                 }
-                const response = await axios.delete('http://localhost:8080/api/post/removemongo/' + datePost + '/' + paramToSend + '/'+ user);
-
-                seeDeletionStatus({message: response.data, variant: 'success'});
-
-                handleClose();
-
-                timeout_text("success");
-             }
             } else {
-                let paramToSend; 
-                if(user) {
-                    paramToSend = post.username; 
+                let paramToSend;
+                if (user) {
+                    paramToSend = post.username;
                 } else {
-                    paramToSend = parameter.toString(); 
+                    paramToSend = parameter.toString();
                 }
-                const response = await axios.delete('http://localhost:8080/api/post/removemongo/' + datePost + '/' + paramToSend + '/'+ user);
+                const response = await axios.delete('http://localhost:8080/api/post/removemongo/' + datePost + '/' + paramToSend + '/' + user);
 
                 seeDeletionStatus({message: response.data, variant: 'success'});
 
@@ -213,23 +213,23 @@ function PostDetails() {
         }
     }
 
-    const reportPost = () => async() => {
+    const reportPost = () => async () => {
         try {
             const response = await axios.post('http://localhost:8080/api/post/submit', postReported);
-            handleClose(); 
+            handleClose();
             setSubmitStatus({
                 message: JSON.stringify(response.data),
                 variant: 'success'
             });
             timeout_text(response.message);
-           
+
         } catch (error) {
             console.error('Error:', error);
             setSubmitStatus({
                 message: error.response ? JSON.stringify(error.response.data) : error.message,
                 variant: 'danger'
             });
-            timeout_text("error"); 
+            timeout_text("error");
         }
     }
 
@@ -239,13 +239,6 @@ function PostDetails() {
         margin: '30px',
         width: '80%',
         borderRadius: 5
-    }
-
-    const DescriptionPaperStyle = {
-        backgroundColor: '#ffffff',
-        padding: '30px',
-        margin: '10px',
-        borderRadius: 5,
     }
 
     useEffect(() => {
@@ -263,20 +256,18 @@ function PostDetails() {
     return (
         <Paper sx={PaperStyle}>
             <Grid container direction="row" alignItems="center" justifyContent="center" spacing={1}>
-                <Grid item xs={2}>
+                <Grid item xs={3}>
                     <GoBack/>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item container xs={6} direction="column" alignItems="center" justifyContent="center">
                     <Link onClick={() => {
                         seeProfile(post.username)
                     }} sx={{color: '#000000', '&:hover': {cursor: 'pointer'}}}>
                         <Typography variant="h5" textAlign="right">{post.username}</Typography>
                     </Link>
-                </Grid>
-                <Grid item xs={4}>
                     <Typography variant="h5"> got to page {post.bookmark} of</Typography>
                 </Grid>
-                <Grid container item xs={2}>
+                <Grid container item xs={3}>
                     <Typography textAlign="right" sx={{width: '90%'}}>
                         <DateFormatter timestamp={date}/>
                         <DateIcon sx={{color: blue[400], margin: '0px 0px 5px 3px', height: '20px'}}/>
@@ -285,16 +276,16 @@ function PostDetails() {
                 <Grid item xs={12}>
                     <Typography variant="h4" textAlign="center" marginBottom="20px">{post.book_title}</Typography>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} md={10}>
                     <Tags tags={tags}/>
                 </Grid>
                 <Grid item xs={8}>
                     {post.rating !== 0 ? (
                         <Paper elevation={0} sx={{
-                            padding: '10px', margin: '30px', borderRadius: 5, display: 'flex',
+                            padding: '2.5% 5%', margin: '30px', borderRadius: 5, display: 'flex',
                             flexDirection: "column", alignItems: "center", justifyContent: "center"
                         }}>
-                            <Typography variant="h5">Post content:</Typography>
+                            <Typography variant="h6">Post content:</Typography>
                             <RatingStars
                                 onChange={rating}
                                 readOnly={true}
@@ -318,12 +309,9 @@ function PostDetails() {
                             aria-labelledby="alert-dialog-title"
                             aria-describedby="alert-dialog-description"
                         >
-                            <DialogTitle id="alert-dialog-title">{"confirm that you want to delete the post?"}</DialogTitle>
-                            <DialogContent>
-                                <DialogContentText id="alert-dialog-description">
-                                    are you sure?
-                                </DialogContentText>
-                            </DialogContent>
+                            <DialogTitle
+                                id="alert-dialog-title">{"Are you sure to delete the post?"}
+                            </DialogTitle>
                             <DialogActions>
                                 <Button onClick={handleClose}>
                                     <Typography>No</Typography>
@@ -348,7 +336,8 @@ function PostDetails() {
                             aria-labelledby="alert-dialog-title"
                             aria-describedby="alert-dialog-description"
                         >
-                            <DialogTitle id="alert-dialog-title">{"Do you confirm that you want to mark the post?"}</DialogTitle>
+                            <DialogTitle
+                                id="alert-dialog-title">{"Do you confirm that you want to mark the post?"}</DialogTitle>
                             <DialogContent>
                                 <DialogContentText id="alert-dialog-description">
                                     are you sure?
@@ -377,9 +366,9 @@ function PostDetails() {
                     </Alert>
                 )}
                 {submitStatus.message && (
-                            <Alert variant={submitStatus.variant}>
-                                {submitStatus.message}
-                            </Alert>
+                    <Alert variant={submitStatus.variant}>
+                        {submitStatus.message}
+                    </Alert>
                 )}
             </Grid>
         </Paper>

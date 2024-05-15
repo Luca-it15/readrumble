@@ -179,9 +179,9 @@ export default function PostForm() {
                     let i = 0;
 
                     while (competitions[i] != null) {
-                        if (competitions[i].tag.toUpperCase() === tag.toUpperCase()) {
+                        if (competitions[i].tag != null && (competitions[i].tag.toUpperCase() === tag.toUpperCase())) {
                             competitions[i].pages = parseInt(competitions[i].pages) + parseInt(formData.pages_read);
-                            competitions_name.push(competitions[i].name);
+                            competitions_name.push(competitions[i].competition_name);
                             competitions_tag.push(competitions[i].tag);
                         }
                         console.log("we have add " + formData.pages_read + " new pages read a the competition of " + tag);
@@ -199,17 +199,17 @@ export default function PostForm() {
            
 
             // Update the user's currently reading book
-            let books = currentUser['recent_active_books'][0]['books']; 
+            let books = currentUser['currentlyReading']; 
             console.log(books); 
             books.forEach(book => {
-                if (book.book_title === selectedTitle) {
+                if (book.title === selectedTitle) {
                     console.log("sto aggiornando il bookmark"); 
                     console.log(book.bookmark);
                     console.log(formData.bookmark); 
                     book.bookmark = formData.bookmark;
                 }
             })
-            currentUser['recent_active_books'][0]['books'] = books;
+            currentUser['currentlyReading'] = books;
             localStorage.setItem('logged_user', JSON.stringify(currentUser));
 
             console.log('Post successfully uploaded!');
