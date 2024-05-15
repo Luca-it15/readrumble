@@ -133,7 +133,7 @@ public class RedisToMongo {
         List<String> keys = KeysTwo(jedis, pattern);
         // Create a list to store all the competition, user and total page read
         for (String key : keys) {
-            System.out.println(key);
+            //System.out.println(key);
             jedis.del(key);
         }
         logger.info("Redis Competitions Emptied");
@@ -246,7 +246,7 @@ public class RedisToMongo {
         Bson start_dateFilter = Filters.lte("start_date", LocalDate.now());
         Bson dateFilter = Filters.and(start_dateFilter, end_dateFilter);
         //This block empties the rank field of all the active competitions so that they can be filled with the new rank
-        try (MongoCursor<Document> cursor = mongoCollection.find(dateFilter).cursor()) {
+        try (MongoCursor<Document> cursor = mongoCollection.find(/*dateFilter*/).cursor()) {
             while (cursor.hasNext()) {
                 Document comp_found = cursor.next();
                 Bson filter = Filters.eq("name", comp_found.get("name").toString());
@@ -258,7 +258,7 @@ public class RedisToMongo {
 
         }
         logger.info("Cleared the rank field of the active competitions");
-
+/*
         mongoCollection = MongoConfig.getCollection("Users");
 
         try (MongoCursor<Document> cursor = mongoCollection.find().cursor()) {
@@ -273,7 +273,7 @@ public class RedisToMongo {
         }
         mongoCollection = MongoConfig.getCollection("Competitions");
 
-        logger.info("Cleared the competitions field of the users");
+        logger.info("Cleared the competitions field of the users");*/
         ArrayList<Document> Competitions_to_change = new ArrayList<>();
         logger.info("Starting to create documents");
         String pattern = "competition:*";
@@ -287,7 +287,7 @@ public class RedisToMongo {
             Integer tot_pages = Integer.parseInt(jedis.get(key));
             Document doc = new Document()
                     .append("competition_name", competition_name)
-                    .append("tag", competition_tag)
+                    .append("tag",competition_tag)
                     .append("tot_pages", tot_pages);
             Bson filter = Filters.eq("_id", username);
             //this code inserts the competition into the 'competitions' field in the document user
@@ -296,7 +296,7 @@ public class RedisToMongo {
             MongoConfig.getCollection("Users").updateOne(filter, Updates.push("competitions", doc));
             //this other field is inserted to then proceed in the evaluation of the top ten
             doc.append("username", username);
-
+            doc.remove("tag");
             Competitions_to_change.add(doc);
         }
         // Map to keep track of documents for every value of competition_name
@@ -340,14 +340,39 @@ public class RedisToMongo {
         way to re-fill the DB for debugging purposes.
     */
 
+    public void OldCompetitionsFiller(Integer year,Integer month,Integer limitNumber)
+    {
+        logger.info("Inserting old things into redis for: " + year + " " + month + " " + limitNumber);
 
-    public void InsertIntoRedisCompetitionsCreated() {
-        logger.info("Inserting things into redis");
+        JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
+
+        mongoCollection = MongoConfig.getCollection("Users");
+
+        //do the query for the posts
+
+    }
+    public void InsertIntoRedisCompetitionsCreated(Integer year3,Integer month3,Integer limitNumber) {
         Integer year2 = LocalDate.now().getYear();
         Integer month2 = LocalDate.now().getMonthValue();
+        Integer limitNumber2 = 3000;
+        if(year3 != 0)
+        {
+            year2 = year3;
+        }
+        if(month3!=0)
+        {
+            month2 = month3;
+        }
+        if(limitNumber!=0)
+        {
+            limitNumber2 = limitNumber;
+        }
+        logger.info("Inserting things into redis for: " + year2 + " " + month2 + " " + limitNumber2);
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
         mongoCollection = MongoConfig.getCollection("Users");
         AggregateIterable<Document> result = mongoCollection.aggregate(Arrays.asList(
+                new Document("$sample",
+                        new Document("size", limitNumber2)),
                 new Document("$project",
                         new Document("_id", "$_id")
                                 .append("active_books", "$recent_active_books")),
@@ -375,7 +400,7 @@ public class RedisToMongo {
                                 .append("pages_read", "$_id.pages_read")
                                 .append("tag", "$_id.tags")
                                 .append("tot_pages", "$tot_pages")),
-                new Document("$limit", 3000))
+                new Document("$limit", limitNumber2))
         ).allowDiskUse(true);
         //this aggregation returns for every user the pages read in this month and year and puts them into redis, this way
         // the loading should be faster
@@ -712,9 +737,20 @@ public class RedisToMongo {
     @Scheduled(fixedRate = 90000000)
     public void GoGoGo() {
         //updateFriendsPosts();
-        //EmptyCompetitionsFromRedis();
-        //InsertIntoRedisCompetitionsCreated();
-        //updateMongoCompetitions();
+        EmptyCompetitionsFromRedis();
+        Integer month = 6;
+        while(month <=12)
+        {
+            InsertIntoRedisCompetitionsCreated(2023,month,300);
+            month=month+1;
+        }
+        month = 1;
+        while(month <=6)
+        {
+            InsertIntoRedisCompetitionsCreated(2024,month,300);
+            month=month+1;
+        }
+        updateMongoCompetitions();
         //eliminateOldMongoCompetitionsFromRedis();
     }
 }
