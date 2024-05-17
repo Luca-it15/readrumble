@@ -6,7 +6,7 @@ import {Grid, LinearProgress, Link, Paper} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {blue, red} from "@mui/material/colors";
 
-function CurrentlyReading({user}) {
+function CurrentlyReading(user, books) {
     const [currentlyReading, setCurrentlyReading] = useState([]);
     const [displayCount, setDisplayCount] = useState(3);
 
@@ -20,10 +20,19 @@ function CurrentlyReading({user}) {
                 setCurrentlyReading(currentUser['currentlyReading']);
                 return;
             }
+        } else if(user.books !== undefined) {
+            setCurrentlyReading(user.books.map(book => ({
+                id: book.book_id,
+                title: book.book_title.replace(/"/g, ''),
+                bookmark: book.bookmark,
+                num_pages: book.num_pages
+            })));
+            return; 
         }
 
         try {
-            const response = await axios.get(`http://localhost:8080/api/book/currentlyReadingBooks/${user}`);
+            let username = user.user; 
+            const response = await axios.get(`http://localhost:8080/api/book/currentlyReadingBooks/${username}`);
 
             const booksReceived = JSON.parse(JSON.stringify(response.data));
 
@@ -55,7 +64,7 @@ function CurrentlyReading({user}) {
 
     useEffect(() => {
         fetchBooks();
-    }, [user]);
+    }, [user.books]);
 
     const loadAllBooks = () => {
         setDisplayCount(displayCount + 6);

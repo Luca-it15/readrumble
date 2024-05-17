@@ -16,6 +16,12 @@ const RecentFriendsPosts = () => {
     let friends = currentUser['following'];
 
     const recentFriendsPosts = async () => {
+        
+        let friendPost = currentUser['friends_posts']; 
+        if(friendPost) {
+            setPosts(friendPost);
+            setIsLoading(false);
+        } else {  
         try {
             const response = await axios.post(`http://localhost:8080/api/post/friends/${currentUser['_id']}`);
 
@@ -31,6 +37,7 @@ const RecentFriendsPosts = () => {
         } catch (error) {
             console.log("error in retrieving your friends' posts")
         }
+     }
     }
 
     useEffect(() => {

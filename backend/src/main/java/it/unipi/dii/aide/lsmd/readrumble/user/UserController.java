@@ -51,6 +51,11 @@ public class UserController {
      *
      *
      */
+    @GetMapping("/user/allUserInfo/{username}")
+    public Document getAllUserInfo(@PathVariable String username) {
+        return userDAO.allUserInfo(username);
+    }
+
     @GetMapping("/user/all")
     public List<UserDTO> getAllReviews() {
         return userDAO.allUser();

@@ -496,7 +496,7 @@ public class RedisToMongo {
      * the function retrieve the post from redis and update the post in mongoDB
      * it will execute every 30 minutes
      */
-    @Scheduled(fixedRate = 900000, initialDelay = 60000) // 30 minutes in milliseconds
+    @Scheduled(fixedRate = 900000, initialDelay = 1800000) // 30 minutes in milliseconds
     public void updateMongoPost() {
         SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
 

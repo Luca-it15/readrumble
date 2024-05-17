@@ -207,6 +207,12 @@ public class UserDAO {
         }
     }
 
+    public Document allUserInfo(String username) {
+        MongoCollection<Document> collection = MongoConfig.getCollection("Users");
+        return collection.find(eq("_id", username)).first();
+
+    }
+
     public ResponseEntity<String> RegUser(Document user) {
         String username = (String) user.get("_id");
 
