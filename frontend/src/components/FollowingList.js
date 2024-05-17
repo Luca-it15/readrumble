@@ -75,8 +75,11 @@ function FollowingList({user, followers_or_followees}) {
     }
 
     useEffect(() => {
-        fetchFollowing();
-        fetchFollwers();
+        if (followers_or_followees === "followees") {
+            fetchFollowing();
+        } else {
+            fetchFollwers();
+        }
     }, [user]);
 
     function seeProfile(username) {

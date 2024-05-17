@@ -74,13 +74,22 @@ function OtherUserProfile() {
     async function fetchUserInformation() {
         try {
             const response = await axios.get(`http://localhost:8080/api/user/allUserInfo/${username}`);
-            setUserInfo(response.data);
+
+            console.log(response.data)
+
+            setUserInfo({
+                _id: response.data['_id'],
+                name: response.data['name'],
+                surname: response.data['surname'],
+            });
             setFollowees(response.data['followees']);
             setFollowers(response.data['followers']);
             setPosts(response.data['recent_posts']); 
             setCompetitions(response.data['competitions']); 
             console.log(response.data['recent_active_books'][0]['books']); 
-            setCurrentlyReading(response.data['recent_active_books'][0]['books']); 
+            setCurrentlyReading(response.data['recent_active_books'][0]['books']);
+
+            console.log({userInfo})
         } catch (error) {
             console.log(error.response)
         }

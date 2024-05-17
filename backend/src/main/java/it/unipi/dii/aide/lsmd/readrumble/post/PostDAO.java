@@ -1,37 +1,27 @@
 package it.unipi.dii.aide.lsmd.readrumble.post;
 
-import com.mongodb.MongoException;
-import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-import com.mongodb.internal.bulk.DeleteRequest;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 
 import com.google.gson.Gson;
 
-import it.unipi.dii.aide.lsmd.readrumble.utils.SemaphoreRR;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
 import org.springframework.http.ResponseEntity;
 
 import com.mongodb.client.MongoCollection;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.time.ZonedDateTime;
 
 import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.params.SetParams;
 
 import static com.mongodb.client.model.Filters.eq;
-import static it.unipi.dii.aide.lsmd.readrumble.utils.PatternKeyRedis.KeysTwo;
-
 
 public class PostDAO {
-
     public ResponseEntity<String> addPostsRedis(Document post) {
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
 

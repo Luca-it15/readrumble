@@ -23,14 +23,12 @@ const SearchChoice = ({value, searchText}) => {
     if (value === 0) {
         return (
             <Grid container direction="row" sx={{gap: '10%'}} justifyContent="center">
-                <Typography variant='h3'>Search Books</Typography>
                 <BookListShow title={searchText}/>
             </Grid>
         );
     } else if (value === 1) {
         return (
             <Paper sx={PaperStyle}>
-                <Typography variant='h3'>Search Posts</Typography>
                 <PostsList all={true} size={12} username={searchText} path={2} user={true}/>
             </Paper>
         );

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Container, Grid, Typography, Paper, Alert, ListItem, List, Link} from '@mui/material';
+import {Container, Grid, Typography, Paper, Alert, ListItem, List, Link, Divider} from '@mui/material';
 import axios from 'axios';
 import '../../App.css';
 import {useNavigate} from 'react-router-dom';
@@ -137,11 +137,14 @@ function UserAdmin() {
                             </ListItem>
                         ) : (
                             listUser.map(item => (
-                                    <ListItem key={item._id} sx={{'&:hover': {backgroundColor: "#f1f7fa"}}}>
+                                <React.Fragment>
+                                    <ListItem key={item._id} sx={{'&:hover': {backgroundColor: "#f1f7fa", borderRadius: '30px'}}}>
                                         <Link onClick={() => {goProfile(item._id)}} sx={{color: "#000000"}}>
                                             <Typography>{item._id}</Typography>
                                         </Link>
                                     </ListItem>
+                                    <Divider variant="middle" component="li"/>
+                                </React.Fragment>
                             ))
                         )}
                     </List>
