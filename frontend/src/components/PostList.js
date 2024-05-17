@@ -29,17 +29,50 @@ const PostsList = (user) => {
 
     user.user ? (user_or_book = user.username) : (user_or_book = user.book_id);
 
-    useEffect(() => {
+
+    function showPostList() {
         setIsLoading(true);
 
-        let postLocalStorageJson = currentUser['recent_posts'];
+        let recentPosts = currentUser['recent_posts'];
+        console.log(user.posts);
 
-        if (postLocalStorageJson) {
+        if (user.username === currentUser['_id'] && recentPosts != null) {
+            let postLocalStorageJson = localStorage.getItem('last_posts');
 
-        }
+            if (postLocalStorageJson != null) {
+                let posts = JSON.parse(postLocalStorageJson);
 
+                //remove the posts make 15 minutes ago o more
+                let now = new Date();
 
-        if (user.path === 0) {
+                posts = posts.filter(post => {
+                    let postDate = new Date(post.date_added);
+
+                    let differenceInMinutes = (now - postDate) / 1000 / 60;
+
+                    return differenceInMinutes <= 30;
+                });
+
+                localStorage.setItem('last_posts', JSON.stringify(posts));
+                postLocalStorageJson = localStorage.getItem('last_posts');
+                posts = JSON.parse(postLocalStorageJson);
+
+                let totalPost = [...posts, ...recentPosts];
+
+                setPosts(totalPost);
+               setIsLoading(false);
+            } else {
+                setPosts(recentPosts);
+                setIsLoading(false);
+          } 
+
+        }  else if(user.posts !== undefined) {
+            console.log(user.posts); 
+            setPosts(user.posts);
+            setIsLoading(false);
+            return; 
+        } else {
+         if (user.path === 0) {
             // all posts
             axios.get(`http://localhost:8080/api/post/all`)
                 .then(response => {
@@ -50,7 +83,7 @@ const PostsList = (user) => {
                     console.error('There was an error!', error);
                 });
 
-        } else if (user.path === 1) {
+         } else if (user.path === 1) {
             // user posts
             axios.get(`http://localhost:8080/api/post/all/${user_or_book}/${user.user}`)
                 .then(response => {
@@ -98,8 +131,9 @@ const PostsList = (user) => {
                     console.error('There was an error!', error);
                 });
         }
+      }
+    }
 
-    }, [user.username]);
 
     function loadMorePosts() {
         axios.get(`http://localhost:8080/api/post/morePosts/${user_or_book}/${user.user}`)
@@ -110,6 +144,11 @@ const PostsList = (user) => {
                 console.error('There was an error!', error);
             });
     }
+
+    useEffect(() => {
+       showPostList();
+       console.log(posts); 
+    }, [user.posts]);
 
     return (
         <>
@@ -124,7 +163,7 @@ const PostsList = (user) => {
                                     id={post._id}
                                     book_id={post.book_id}
                                     title={post.book_title}
-                                    username={post.username}
+                                    username={post.username? post.username : user.username}
                                     post={post.post}
                                     rating={post.rating}
                                     text={post.review_text}

@@ -6,7 +6,7 @@ import '../App.css';
 import {blue, red} from "@mui/material/colors";
 import axios from "axios";
 
-function CompetitionProfBlock({user}) {
+function CompetitionProfBlock(user) {
     const currentUser = JSON.parse(localStorage.getItem('logged_user'));
     const [competitions, setCompetitions] = useState([]);
     const navigate = useNavigate();
@@ -24,9 +24,20 @@ function CompetitionProfBlock({user}) {
     function drawComp() {
         if (currentUser['_id'] === user && currentUser['competitions'] !== undefined) {
             setCompetitions(currentUser['competitions'])
-        } else {
 
-            axios.get(`http://localhost:8080/api/competition/joinedBy/${user}`)
+        } else if(user.competitionsInfo !== undefined) {
+            console.log(user.competitionsInfo); 
+            console.log(user.user)
+            let competitionInfo = user.competitionsInfo.map(
+                competition => ({
+                        competition_name: competition.competition_name,
+                        tot_pages: competition.tot_pages
+                    }
+                ));
+            setCompetitions(competitionInfo)
+        } else {
+            let username = user.user; 
+            axios.get(`http://localhost:8080/api/competition/joinedBy/${username}`)
                 .then(response => {
                     console.log(response.data)
                     let competitions = response.data.map(
@@ -44,7 +55,7 @@ function CompetitionProfBlock({user}) {
 
     useEffect(() => {
         drawComp();
-    }, [user]);
+    }, [user.competitionsInfo]);
 
     const PaperStyle = {
         backgroundColor: '#f1f7fa',
@@ -71,7 +82,7 @@ function CompetitionProfBlock({user}) {
                     {competitions.length === 0 && (
                         <Grid item>
                             <ListItem>
-                                <Typography>{currentUser['_id'] === user ? "You are " : user + " is "}
+                                <Typography>{currentUser['_id'] === user.user ? "You are " : user.user + " is "}
                                     not participating in any competition</Typography>
                             </ListItem>
                         </Grid>)}

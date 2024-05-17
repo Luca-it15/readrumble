@@ -180,7 +180,7 @@ export default function PostForm() {
 
                     while (competitions[i] != null) {
                         if (competitions[i].tag != null && (competitions[i].tag.toUpperCase() === tag.toUpperCase())) {
-                            competitions[i].pages = parseInt(competitions[i].pages) + parseInt(formData.pages_read);
+                            competitions[i].tot_pages = parseInt(competitions[i].tot_pages) + parseInt(formData.pages_read);
                             competitions_name.push(competitions[i].competition_name);
                             competitions_tag.push(competitions[i].tag);
                         }

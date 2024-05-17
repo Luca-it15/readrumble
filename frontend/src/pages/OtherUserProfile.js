@@ -46,6 +46,9 @@ function OtherUserProfile() {
     const [followeesOpen, setFolloweesOpen] = useState(false);
     const [followers, setFollowers] = useState(0);
     const [followees, setFollowees] = useState(0);
+    const [posts, setPosts] = useState([]);
+    const [competitions, setCompetitions] = useState([]); 
+    const [currentlyReading, setCurrentlyReading] = useState([]); 
 
     const [openRRB, setOpenRRB] = useState(false);
     const [openFBL, setOpenFBL] = useState(false);
@@ -70,8 +73,14 @@ function OtherUserProfile() {
 
     async function fetchUserInformation() {
         try {
-            const response = await axios.get(`http://localhost:8080/api/user/${username}`);
+            const response = await axios.get(`http://localhost:8080/api/user/allUserInfo/${username}`);
             setUserInfo(response.data);
+            setFollowees(response.data['followees']);
+            setFollowers(response.data['followers']);
+            setPosts(response.data['recent_posts']); 
+            setCompetitions(response.data['competitions']); 
+            console.log(response.data['recent_active_books'][0]['books']); 
+            setCurrentlyReading(response.data['recent_active_books'][0]['books']); 
         } catch (error) {
             console.log(error.response)
         }
@@ -140,9 +149,7 @@ function OtherUserProfile() {
 
     useEffect(() => {
         fetchUserInformation();
-        getFollowees();
-        getFollowers();
-    }, [username]);
+    }, []);
 
     const AccordionStyle = {
         backgroundColor: '#f1f7fa',
@@ -196,18 +203,18 @@ function OtherUserProfile() {
                 </Grid>
             </Paper>
 
-            <CurrentlyReading user={username}/>
+            <CurrentlyReading user={username} books={currentlyReading}/>
 
             <Grid container textAlign="center" spacing={1} direction="row" alignItems="flex-start"
                   justifyContent="space-betwwen">
                 <Grid item xs={3.5}>
-                    <CompetitionProfBlock user={username}/>
+                    <CompetitionProfBlock user={username} competitionsInfo={competitions} />
                 </Grid>
 
                 <Grid item xs={5}>
                     <Paper elevation={2} style={PaperStyle}>
                         <Typography variant="h5">Posts</Typography>
-                        <PostsList user={true} username={username} size={12} all={false} path={1}/>
+                        <PostsList user={true} username={username} size={12} all={false} path={1} posts={posts}/>
                     </Paper>
                 </Grid>
 
