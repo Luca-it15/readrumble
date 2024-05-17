@@ -140,8 +140,8 @@ function OtherUserProfile() {
 
     const getFollowers = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/followersCount/${username}`);
-            setFollowers(response.data);
+            //const response = await axios.get(`http://localhost:8080/api/followersCount/${username}`);
+            //setFollowers(response.data);
         } catch (error) {
             console.log(error.response);
         }
@@ -149,8 +149,8 @@ function OtherUserProfile() {
 
     const getFollowees = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/followeesCount/${username}`);
-            setFollowees(response.data);
+            //const response = await axios.get(`http://localhost:8080/api/followeesCount/${username}`);
+            //setFollowees(response.data);
         } catch (error) {
             console.log(error.response);
         }
