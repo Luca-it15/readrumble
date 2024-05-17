@@ -783,7 +783,7 @@ public class RedisToMongo {
     //This is a debugging function that helps to try the code
     @Scheduled(fixedRate = 90000000)
     public void GoGoGo() {
-        List<String> unique_tags = Arrays.asList("crime", "mystery", "fiction", "paranormal", "children", "romance", "non-fiction", "young-adult", "history", "poetry", "thriller", "comics", "biography", "historical fiction", "graphic", "fantasy");
+        //List<String> unique_tags = Arrays.asList("crime", "mystery", "fiction", "paranormal", "children", "romance", "non-fiction", "young-adult", "history", "poetry", "thriller", "comics", "biography", "historical fiction", "graphic", "fantasy");
         //Integer month = 6;
         /*while(month <= 12)
         {
@@ -803,7 +803,7 @@ public class RedisToMongo {
             month=month+1;
         }*/
         //eliminateOldMongoCompetitionsFromRedis();
-        updateMongoCompetitions();
+        //updateMongoCompetitions();
         //updateFriendsPosts();
         //EmptyCompetitionsFromRedis();
     }
