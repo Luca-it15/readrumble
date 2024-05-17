@@ -241,39 +241,15 @@ public class RedisToMongo {
             e.printStackTrace();
         }*/
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
-        mongoCollection = MongoConfig.getCollection("Competitions");
-        Bson end_dateFilter = Filters.gte("end_date", LocalDate.now());
-        Bson start_dateFilter = Filters.lte("start_date", LocalDate.now());
-        Bson dateFilter = Filters.and(start_dateFilter, end_dateFilter);
-        //This block empties the rank field of all the active competitions so that they can be filled with the new rank
-        try (MongoCursor<Document> cursor = mongoCollection.find(/*dateFilter*/).cursor()) {
-            while (cursor.hasNext()) {
-                Document comp_found = cursor.next();
-                Bson filter = Filters.eq("name", comp_found.get("name").toString());
-                Document update = new Document("$set", new Document("rank", new ArrayList<>()));
-                mongoCollection.updateOne(filter, update);
-            }
-        } catch (Exception e) {
-            System.out.println("Catched Exception: " + e.getMessage());
 
-        }
-        logger.info("Cleared the rank field of the active competitions");
-/*
+
         mongoCollection = MongoConfig.getCollection("Users");
-
-        try (MongoCursor<Document> cursor = mongoCollection.find().cursor()) {
-            while (cursor.hasNext()) {
-                Document user = cursor.next();
-                Bson filter2 = Filters.eq("_id", user.get("_id").toString());
-                Document update2 = new Document("$set", new Document("competitions", new ArrayList<>()));
-                mongoCollection.updateOne(filter2, update2);
-            }
-        } catch (Exception e) {
-            System.out.println("Catched Exception: " + e.getMessage());
-        }
+        // clears the competitions field of users
+        Document update2 = new Document("$set", new Document("competitions", new ArrayList<>()));
+        mongoCollection.updateOne(new Document(), update2);
+        logger.info("Cleared the competitions field of the users");
         mongoCollection = MongoConfig.getCollection("Competitions");
 
-        logger.info("Cleared the competitions field of the users");*/
         ArrayList<Document> Competitions_to_change = new ArrayList<>();
         logger.info("Starting to create documents");
         String pattern = "competition:*";
@@ -322,12 +298,22 @@ public class RedisToMongo {
                 }
             }
         }
-
+        HashMap<String, Integer> RequiresCleaning = new HashMap<>();
+        Document update = new Document("$set", new Document("rank", new ArrayList<>()));
+        //topTenForEachCompetition is a list of ordered competition, but there is one document for
+        //each user-competition, it is not a list of lists of documents, but just a list of documents
         for (Document competition : topTenForEachCompetition) {
             String comp_name = competition.get("competition_name").toString();
             competition.remove("competition_name");
             Bson filter = Filters.eq("name", comp_name);
             // Insert the user document into the MongoDB wishlists collection
+
+            if (RequiresCleaning.get(comp_name) == null) {
+                RequiresCleaning.put(comp_name, 1);
+                mongoCollection.updateOne(filter, update);
+                System.out.println("The competition " + comp_name + " was full, now it's cleaned");
+            }
+            //in this way the competitions are cleaned just once
             mongoCollection.updateOne(filter, Updates.push("rank", competition));
         }
         logger.info("MongoDB competitions updated!");
@@ -340,79 +326,131 @@ public class RedisToMongo {
         way to re-fill the DB for debugging purposes.
     */
 
-    public void OldCompetitionsFiller(Integer year,Integer month,Integer limitNumber)
+    public void OldCompetitionsFiller(Integer month2, String tag2)
     {
-        logger.info("Inserting old things into redis for: " + year + " " + month + " " + limitNumber);
-
+        logger.info("Inserting things into redis for: " + "2023 " + month2 + " " + tag2);
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
-
-        mongoCollection = MongoConfig.getCollection("Users");
-
+        mongoCollection = MongoConfig.getCollection("Posts");
+        logger.info("Inserting old competitions into redis");
         //do the query for the posts
-
-    }
-    public void InsertIntoRedisCompetitionsCreated(Integer year3,Integer month3,Integer limitNumber) {
-        Integer year2 = LocalDate.now().getYear();
-        Integer month2 = LocalDate.now().getMonthValue();
-        Integer limitNumber2 = 3000;
-        if(year3 != 0)
-        {
-            year2 = year3;
-        }
-        if(month3!=0)
-        {
-            month2 = month3;
-        }
-        if(limitNumber!=0)
-        {
-            limitNumber2 = limitNumber;
-        }
-        logger.info("Inserting things into redis for: " + year2 + " " + month2 + " " + limitNumber2);
-        JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
-        mongoCollection = MongoConfig.getCollection("Users");
-        AggregateIterable<Document> result = mongoCollection.aggregate(Arrays.asList(
-                new Document("$sample",
-                        new Document("size", limitNumber2)),
-                new Document("$project",
-                        new Document("_id", "$_id")
-                                .append("active_books", "$recent_active_books")),
-                new Document("$unwind",
-                        new Document("path", "$active_books")),
+        //this query returns a document for each user, month, tag containing pages_read,
+        //for each competition of 2023
+        AggregateIterable<Document> result = mongoCollection.aggregate(Arrays.asList(new Document("$addFields",
+                        new Document("month",
+                                new Document("$month", "$date_added"))),
                 new Document("$match",
-                        new Document("$and", Arrays.asList(new Document("active_books.month", month2),
-                                new Document("active_books.year", year2)))),
-                new Document("$unwind",
-                        new Document("path", "$active_books.books")),
-                new Document("$unwind",
-                        new Document("path", "$active_books.books.tags")),
+                        new Document("month", month2)),
+                new Document("$unwind", "$tags"),
+                new Document("$project",
+                        new Document("pages_read", 1L)
+                                .append("username", 1L)
+                                .append("month", 1L)
+                                .append("tag", "$tags")),
                 new Document("$group",
                         new Document("_id",
-                                new Document("year", "$active_books.year")
-                                        .append("month", "$active_books.month")
-                                        .append("_id", "$_id")
-                                        .append("tags", "$active_books.books.tags"))
-                                .append("tot_pages",
-                                        new Document("$sum", "$active_books.books.pages_read"))),
+                                new Document("username", "$username")
+                                        .append("month", "$month")
+                                        .append("tag", "$tag"))
+                                .append("pages_read",
+                                        new Document("$sum", "$pages_read"))),
                 new Document("$project",
-                        new Document("_id", "$_id._id")
-                                .append("year", "$_id.year")
+                        new Document("_id", 0L)
+                                .append("pages_read", 1L)
+                                .append("username", "$_id.username")
                                 .append("month", "$_id.month")
-                                .append("pages_read", "$_id.pages_read")
-                                .append("tag", "$_id.tags")
-                                .append("tot_pages", "$tot_pages")),
-                new Document("$limit", limitNumber2))
+                                .append("tag", "$_id.tag")),
+                new Document("$sample",
+                        new Document("size", 10L)),
+                new Document("$sort",
+                        new Document("pages_read", -1L)))
+        ).allowDiskUse(true);
+        logger.info("aggregation executed");
+        mongoCollection = MongoConfig.getCollection("Competitions");
+        for (Document doc : result) {
+            String username = doc.get("username").toString();
+            String tag = doc.get("tag").toString();
+            String TagTag = tag.substring(0, 1).toUpperCase() + tag.substring(1);
+            Integer month = (Integer) doc.get("month");
+            Integer year = 2023;
+            Integer pages_read = (Integer) doc.get("pages_read");
+            String dataString = year.toString() + "-" + month.toString() + "-" + "15";
+            SimpleDateFormat formatoData = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                //take the name of the competitions active in date frame of time and of that tag
+                Date data = formatoData.parse(dataString);
+                Bson tagFilter = Filters.eq("tag", TagTag);
+                Bson startDateFilter = Filters.lte("start_date", data);
+                Bson endDateFilter = Filters.gte("end_date", data);
+                Bson dateFilter = Filters.and(startDateFilter, endDateFilter);
+                Bson filter = Filters.and(dateFilter, tagFilter);
+                Document Comp = mongoCollection.find(filter).first();
+                if (Comp != null) {
+                    String CompName = (String) Comp.get("name");
+                    if (!CompName.isEmpty()) {
+                        String key = "competition:" + CompName + ":" + TagTag + ":" + username;
+                        jedis.set(key, pages_read.toString());
+                        logger.info(key);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                //logger.info("After inserting");
+                //semaphore.release();
+            }
+
+        }
+        logger.info("finished inserting things into redis");
+
+    }
+
+    public void InsertIntoRedisCompetitionsCreated(Integer year2, Integer month2, String tag2) {
+        logger.info("Inserting things into redis for: " + year2 + " " + month2 + " " + tag2);
+        JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
+        mongoCollection = MongoConfig.getCollection("Users");
+        AggregateIterable<Document> result = mongoCollection.aggregate(
+                Arrays.asList(new Document("$project",
+                                new Document("_id", 1L)
+                                        .append("active_books", "$recent_active_books")),
+                        new Document("$unwind", "$active_books"),
+                        new Document("$match",
+                                new Document("$and", Arrays.asList(
+                                        new Document("active_books.month", month2),
+                                        new Document("active_books.year", year2)))),
+                        new Document("$unwind", "$active_books.books"),
+                        new Document("$unwind", "$active_books.books.tags"),
+                        new Document("$group",
+                                new Document("_id",
+                                        new Document("year", "$active_books.year")
+                                                .append("month", "$active_books.month")
+                                                .append("_id", "$_id")
+                                                .append("tags", "$active_books.books.tags"))
+                                        .append("tot_pages",
+                                                new Document("$sum", "$active_books.books.pages_read"))),
+                        new Document("$project",
+                                new Document("_id", "$_id._id")
+                                        .append("year", "$_id.year")
+                                        .append("month", "$_id.month")
+                                        .append("pages_read", "$_id.pages_read")
+                                        .append("tag", "$_id.tags")
+                                        .append("tot_pages", "$tot_pages")),
+                        new Document("$match",
+                                new Document("$and", Arrays.asList(
+                                        new Document("tag", tag2),
+                                        new Document("tot_pages",
+                                                new Document("$lte", 20000L))))),
+                        new Document("$sample",
+                                new Document("size", 10L)),
+                        new Document("$sort",
+                                new Document("tot_pages", -1L)),
+                        new Document("$limit", 10L))
         ).allowDiskUse(true);
         //this aggregation returns for every user the pages read in this month and year and puts them into redis, this way
         // the loading should be faster
         logger.info("aggregation executed");
-        int i = 0;
-        int c = 0;
-            /*MongoCursor cursor = mongoCollection.find().cursor();
-            while(cursor.hasNext())*/
         for (Document doc : result) {
             //Document doc = (Document) cursor.next();
             mongoCollection = MongoConfig.getCollection("Competitions");
-            i = i + 1;
                 //logger.info("Inserting");
             String username = doc.get("_id").toString();
             String tag = (String) doc.get("tag").toString();
@@ -436,6 +474,7 @@ public class RedisToMongo {
                         if (!CompName.isEmpty()) {
                             String key = "competition:" + CompName + ":" + TagTag + ":" + username;
                             jedis.set(key, pages_read.toString());
+                            logger.info(key);
                         }
                     }
                 } catch (Exception e) {
@@ -443,11 +482,6 @@ public class RedisToMongo {
                 } finally {
                     //logger.info("After inserting");
                     //semaphore.release();
-                }
-            if (i == 1000) {
-                c = c + 1;
-                    i = 0;
-                    logger.info("Thousand :" + c);
                 }
 
         }
@@ -496,22 +530,28 @@ public class RedisToMongo {
         Bson dateFilter1 = Filters.gte("end_date", OneMonthAgo);
         Bson dateFilter2 = Filters.lt("end_date", today.minusDays(5));
         Bson dateFilter = Filters.and(dateFilter1, dateFilter2);
+        List<String> keys = KeysTwo(jedis, "competition:*");
+        HashMap<String, Integer> comp_map = new HashMap<>();
         //if you want to deep clean, substitute .find(dateFilter) with .find(dateFilter2)
-        try (MongoCursor<Document> cursor = mongoCollection.find(dateFilter).cursor()) {
+        try (MongoCursor<Document> cursor = mongoCollection.find(dateFilter2).cursor()) {
             while (cursor.hasNext()) {
                 Document comp_found = cursor.next();
-                String keyFromMongo = "competition:" + comp_found.get("name") + ":*";
-                List<String> keys = KeysTwo(jedis, keyFromMongo);
-                for (String key : keys) {
-                    //Since the competitions are updated in redis and all the fields of competitions in users are emptied
-                    //at each update, there is no need to eliminate old competitions from users
-                    jedis.del(key);
-                }
-                logger.info(comp_found.get("name") + " Competition Eliminated");
+                String comp_name = comp_found.get("name").toString();
+                comp_map.put(comp_name, 1);
+                logger.info(comp_name + " added to HashMap");
             }
         } catch (Exception e) {
             logger.error("Catched Exception: " + e.getMessage());
         } finally {
+            for (String key : keys) {
+                String competition_name = key.split(":")[1];
+                if (comp_map.get(competition_name) != null) {
+                    jedis.del(key);
+                    System.out.println("Eliminated key : " + key);
+                } else {
+                    System.out.println("Not ELiminated key : " + key);
+                }
+            }
             logger.info("Cleared the old competition");
             //semaphore.release();
         }
@@ -743,21 +783,28 @@ public class RedisToMongo {
     //This is a debugging function that helps to try the code
     @Scheduled(fixedRate = 90000000)
     public void GoGoGo() {
-        //updateFriendsPosts();
-        EmptyCompetitionsFromRedis();
-        Integer month = 6;
-        while(month <=12)
+        List<String> unique_tags = Arrays.asList("crime", "mystery", "fiction", "paranormal", "children", "romance", "non-fiction", "young-adult", "history", "poetry", "thriller", "comics", "biography", "historical fiction", "graphic", "fantasy");
+        //Integer month = 6;
+        /*while(month <= 12)
         {
-            InsertIntoRedisCompetitionsCreated(2023,month,300);
+            for(String tag : unique_tags)
+            {
+                OldCompetitionsFiller(month,tag);
+            }
             month=month+1;
         }
         month = 1;
         while(month <=6)
         {
-            InsertIntoRedisCompetitionsCreated(2024,month,300);
+            for(String tag : unique_tags)
+            {
+                InsertIntoRedisCompetitionsCreated(2024,month,tag);
+            }
             month=month+1;
-        }
-        updateMongoCompetitions();
+        }*/
         //eliminateOldMongoCompetitionsFromRedis();
+        updateMongoCompetitions();
+        //updateFriendsPosts();
+        //EmptyCompetitionsFromRedis();
     }
 }
