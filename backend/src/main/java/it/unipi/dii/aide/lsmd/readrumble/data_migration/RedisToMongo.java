@@ -242,14 +242,9 @@ public class RedisToMongo {
         }*/
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
 
-
         mongoCollection = MongoConfig.getCollection("Users");
-        // clears the competitions field of users
-        Document update2 = new Document("$set", new Document("competitions", new ArrayList<>()));
-        mongoCollection.updateOne(new Document(), update2);
-        logger.info("Cleared the competitions field of the users");
-        mongoCollection = MongoConfig.getCollection("Competitions");
-
+        HashMap<String, Integer> RequiresCleaningUsers = new HashMap<>();
+        Document updateUserClean = new Document("$set", new Document("competitions", new ArrayList<>()));
         ArrayList<Document> Competitions_to_change = new ArrayList<>();
         logger.info("Starting to create documents");
         String pattern = "competition:*";
@@ -269,12 +264,21 @@ public class RedisToMongo {
             //this code inserts the competition into the 'competitions' field in the document user
             // this code has a cool feature : since it uses Redis for the values, it is possible to store in the document
             // all the competitions wanted, even the finished ones !
+            if (RequiresCleaningUsers.get(username) == null) {
+                RequiresCleaningUsers.put(username, 1);
+                mongoCollection.updateOne(filter, updateUserClean);
+                //System.out.println("The user " + username + " was full, now it's cleaned");
+                //this interesting use of the hashmap let the system know if the user's competitions field needs to be
+                //flushed or not, because in terms of performance it is easier to empty the field and refill it each time
+                //this daemon goes into execution, instead of searching for each single competition and update the field
+            }
             MongoConfig.getCollection("Users").updateOne(filter, Updates.push("competitions", doc));
             //this other field is inserted to then proceed in the evaluation of the top ten
             doc.append("username", username);
             doc.remove("tag");
             Competitions_to_change.add(doc);
         }
+        logger.info("Cleared the competitions field of the users and set with their competitions updated");
         // Map to keep track of documents for every value of competition_name
         Map<String, List<Document>> mapByCompetitionName = new HashMap<>();
         logger.info("Filling the Map");
@@ -302,6 +306,7 @@ public class RedisToMongo {
         Document update = new Document("$set", new Document("rank", new ArrayList<>()));
         //topTenForEachCompetition is a list of ordered competition, but there is one document for
         //each user-competition, it is not a list of lists of documents, but just a list of documents
+        mongoCollection = MongoConfig.getCollection("Competitions");
         for (Document competition : topTenForEachCompetition) {
             String comp_name = competition.get("competition_name").toString();
             competition.remove("competition_name");
@@ -311,7 +316,7 @@ public class RedisToMongo {
             if (RequiresCleaning.get(comp_name) == null) {
                 RequiresCleaning.put(comp_name, 1);
                 mongoCollection.updateOne(filter, update);
-                System.out.println("The competition " + comp_name + " was full, now it's cleaned");
+                //System.out.println("The competition " + comp_name + " was full, now it's cleaned");
             }
             //in this way the competitions are cleaned just once
             mongoCollection.updateOne(filter, Updates.push("rank", competition));
@@ -533,7 +538,7 @@ public class RedisToMongo {
         List<String> keys = KeysTwo(jedis, "competition:*");
         HashMap<String, Integer> comp_map = new HashMap<>();
         //if you want to deep clean, substitute .find(dateFilter) with .find(dateFilter2)
-        try (MongoCursor<Document> cursor = mongoCollection.find(dateFilter2).cursor()) {
+        try (MongoCursor<Document> cursor = mongoCollection.find(dateFilter).cursor()) {
             while (cursor.hasNext()) {
                 Document comp_found = cursor.next();
                 String comp_name = comp_found.get("name").toString();
@@ -549,7 +554,7 @@ public class RedisToMongo {
                     jedis.del(key);
                     System.out.println("Eliminated key : " + key);
                 } else {
-                    System.out.println("Not ELiminated key : " + key);
+                    System.out.println("Not Eliminated key : " + key);
                 }
             }
             logger.info("Cleared the old competition");

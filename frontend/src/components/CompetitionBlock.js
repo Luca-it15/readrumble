@@ -22,9 +22,9 @@ function CompetitionProfBlock(user) {
     }
 
     function drawComp() {
-        if (currentUser['_id'] === user && currentUser['competitions'] !== undefined) {
+        if (currentUser['_id'] === user.user && currentUser['competitions'] !== undefined) {
             setCompetitions(currentUser['competitions'])
-
+            console.log("Competitions taken from Local Storage")
         } else if(user.competitionsInfo !== undefined) {
             console.log(user.competitionsInfo); 
             console.log(user.user)
@@ -35,21 +35,22 @@ function CompetitionProfBlock(user) {
                     }
                 ));
             setCompetitions(competitionInfo)
+            console.log("Competitions taken from the big document")
         } else {
-            let username = user.user; 
-            axios.get(`http://localhost:8080/api/competition/joinedBy/${username}`)
-                .then(response => {
-                    console.log(response.data)
-                    let competitions = response.data.map(
-                        competition => ({
-                                competition_name: competition.name,
-                                tot_pages: competition.pages
-                            }
-                        ));
-
-                    setCompetitions(competitions)
-                })
-                .catch(error => console.error('Error: ', error));
+            console.log("Competitions would be requested to server but the request is commented")
+            //let username = user.user;
+            //axios.get(`http://localhost:8080/api/competition/joinedBy/${username}`)
+            //    .then(response => {
+            //        console.log(response.data)
+            //        let competitions = response.data.map(
+            //            competition => ({
+            //                    competition_name: competition.name,
+            //                   tot_pages: competition.pages
+            //                }
+            //            ));
+            //        setCompetitions(competitions)
+            //    })
+            //    .catch(error => console.error('Error: ', error));
         }
     }
 
