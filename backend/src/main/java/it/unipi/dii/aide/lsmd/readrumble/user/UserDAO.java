@@ -167,15 +167,25 @@ public class UserDAO {
                                 return yearA - yearB;
                             }
                         });
-
-                        Document latestActiveBooksDoc = latestActiveBooks.get(0);
-
+                        Document latestActiveBooksDoc = new Document();
                         List<Document> currentlyReadingBooks = new ArrayList<>();
-                        for (Document book : (List<Document>) latestActiveBooksDoc.get("books")) {
-                            if (!Objects.equals(book.getInteger("bookmark"), book.getInteger("num_pages"))) {
-                                currentlyReadingBooks.add(book);
+                        if(!latestActiveBooks.isEmpty())
+                        {
+                            latestActiveBooksDoc = latestActiveBooks.get(0);
+                            for (Document book : (List<Document>) latestActiveBooksDoc.get("books")) {
+                                if (!Objects.equals(book.getInteger("bookmark"), book.getInteger("num_pages"))) {
+                                    currentlyReadingBooks.add(book);
+                                }
                             }
                         }
+                        else
+                        {
+                            List<Document> recent_active_books = new ArrayList<Document>();
+                            Document first_month = new Document().append("books",new ArrayList<Document>());
+                            recent_active_books.add(first_month);
+                            registered_user.append("recent_active_books",recent_active_books);
+                        }
+
 
                         registered_user.append("currently_reading_books", currentlyReadingBooks);
 

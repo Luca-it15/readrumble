@@ -11,6 +11,7 @@ import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.post.PostDAO;
+import it.unipi.dii.aide.lsmd.readrumble.user.UserDAO;
 import it.unipi.dii.aide.lsmd.readrumble.utils.SemaphoreRR;
 
 import static it.unipi.dii.aide.lsmd.readrumble.utils.PatternKeyRedis.KeysTwo;
@@ -48,6 +49,7 @@ import org.slf4j.LoggerFactory;
 public class RedisToMongo {
     private static Logger logger = LoggerFactory.getLogger(RedisToMongo.class);
     private MongoCollection<Document> mongoCollection;
+    private UserDAO userDAO;
     private DateTimeFormatter isoFormat;
     private AdminCompetitionDAO adminCompetitionDAO;
     private PostDAO postDAO;
@@ -55,6 +57,7 @@ public class RedisToMongo {
     public RedisToMongo() {
         adminCompetitionDAO = new AdminCompetitionDAO();
         postDAO = new PostDAO();
+        this.userDAO = new UserDAO();
     }
 
     /**
@@ -146,6 +149,7 @@ public class RedisToMongo {
     public void updateFriendsPosts() {
         logger.info("Updating MongoDB Friends Posts ");
         //modify Users in Users
+
         mongoCollection = MongoConfig.getCollection("Users");
         int i = 0;
         int c = 0;
@@ -566,13 +570,15 @@ public class RedisToMongo {
      * the function retrieve the post from redis and update the post in mongoDB
      * it will execute every 30 minutes
      */
-    @Scheduled(fixedRate = 900000, initialDelay = 1800000) // 30 minutes in milliseconds
+    @Scheduled(fixedRate = 900000, initialDelay =300000 /*1800000*/) // 30 minutes in milliseconds
     public void updateMongoPost() {
         SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
 
         try { semaphore.acquire(); }
         catch (InterruptedException e) { e.printStackTrace(); }
-
+        logger.info("Inserting new users in MongoDB");
+        userDAO.saveInMemoryUsers();
+        userDAO.updateChanges();
         logger.info("Starting to update MongoDB Posts...");
 
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();

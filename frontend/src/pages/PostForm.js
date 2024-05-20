@@ -69,9 +69,10 @@ export default function PostForm() {
 
     const handleChange = (e) => {
         const {name, value} = e.target;
-        let book = currentUser['recent_active_books'][0]['books']; 
+        let book = currentUser['currentlyReading']
+        //let book = currentUser['recent_active_books'][0]['books'];
 
-        book = book.filter(book => book.book_title === selectedTitle);
+        book = book.filter(book => book.title === selectedTitle);
 
         let num_pages = book['bookmark'];
         

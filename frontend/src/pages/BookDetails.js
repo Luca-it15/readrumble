@@ -220,6 +220,16 @@ function BookDetails() {
             tags: bookInfo['tags']
         });
 
+        currentUser['recent_active_books'][0]['books'].push(
+        {
+        book_id:bookInfo['id'],
+        book_title:bookInfo['title'],
+        bookmark:0,
+        num_pages:bookInfo['num_pages'],
+        pages_read:0,
+        tags:bookInfo['tags']}
+        )
+
         localStorage.setItem('logged_user', JSON.stringify(currentUser));
 
         setIsActiveBook(true);
