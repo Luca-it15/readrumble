@@ -51,7 +51,7 @@ public class CompetitionDAO {
     }
 
     public List<Document> getPopularCompetitions() {
-        Bson end_dateFilter = Filters.gt("end_date", LocalDate.now());
+        Bson end_dateFilter = Filters.gt("end_date", LocalDate.now().minusDays(5));
         Bson start_dateFilter = Filters.lte("start_date", LocalDate.now());
         Bson dateFilter = Filters.and(start_dateFilter, end_dateFilter);
 
