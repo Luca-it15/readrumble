@@ -238,12 +238,12 @@ public class RedisToMongo {
     @Scheduled(fixedRate = 36000000, initialDelay = 36000000) // 10 hours in milliseconds
     public void updateMongoCompetitions() {
         logger.info("Updating MongoDB competitions");
-        /*SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
+        SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
         try {
             semaphore.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }*/
+        }
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
 
         mongoCollection = MongoConfig.getCollection("Users");
@@ -325,8 +325,8 @@ public class RedisToMongo {
             //in this way the competitions are cleaned just once
             mongoCollection.updateOne(filter, Updates.push("rank", competition));
         }
+        semaphore.release();
         logger.info("MongoDB competitions updated!");
-        //semaphore.release();
     }
 
     /**
@@ -405,7 +405,7 @@ public class RedisToMongo {
                 e.printStackTrace();
             } finally {
                 //logger.info("After inserting");
-                //semaphore.release();
+
             }
 
         }
@@ -490,7 +490,6 @@ public class RedisToMongo {
                     e.printStackTrace();
                 } finally {
                     //logger.info("After inserting");
-                    //semaphore.release();
                 }
 
         }
@@ -522,10 +521,10 @@ public class RedisToMongo {
      */
     @Scheduled(fixedRate = 86400000, initialDelay = 36000000) // 24 hours in milliseconds
     public void eliminateOldMongoCompetitionsFromRedis() {
-        /*SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
+        SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
 
         try { semaphore.acquire(); }
-        catch (InterruptedException e) { e.printStackTrace(); }*/
+        catch (InterruptedException e) { e.printStackTrace(); }
 
         logger.info("Eliminating old MongoDB competitions...");
 
@@ -561,8 +560,8 @@ public class RedisToMongo {
                     System.out.println("Not Eliminated key : " + key);
                 }
             }
+            semaphore.release();
             logger.info("Cleared the old competition");
-            //semaphore.release();
         }
     }
 
@@ -570,7 +569,7 @@ public class RedisToMongo {
      * the function retrieve the post from redis and update the post in mongoDB
      * it will execute every 30 minutes
      */
-    @Scheduled(fixedRate = 900000, initialDelay =300000 /*1800000*/) // 30 minutes in milliseconds
+    @Scheduled(fixedRate = 900000, initialDelay = 1800000) // 30 minutes in milliseconds
     public void updateMongoPost() {
         SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
 
@@ -787,8 +786,8 @@ public class RedisToMongo {
         }catch (MongoException e) {
             e.printStackTrace();
         } finally {
-            logger.info("MongoDB Posts and ActiveBooks updated");
             semaphore.release();
+            logger.info("MongoDB Posts and ActiveBooks updated");
         }
     }
     //This is a debugging function that helps to try the code
