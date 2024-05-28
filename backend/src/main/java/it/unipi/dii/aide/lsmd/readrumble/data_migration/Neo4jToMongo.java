@@ -11,10 +11,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class Neo4jToMongo {
     private static final Logger logger = LoggerFactory.getLogger(Neo4jToMongo.class);
 
@@ -28,8 +30,8 @@ public class Neo4jToMongo {
         MongoCollection<Document> mongoUsers = MongoConfig.getCollection("Users");
 
         try (Session session = Neo4jConfig.getSession()) {
-            Result followers = session.run("MATCH (a:User)-[r:FOLLOWS]->() RETURN a.name as username, COUNT(r) as followers");
-            Result followees = session.run("MATCH (a:User)<-[r:FOLLOWS]-() RETURN a.name as username, COUNT(r) as followees");
+            Result followers = session.run("MATCH (a:User)<-[r:FOLLOWS]-() RETURN a.name as username, COUNT(r) as followers");
+            Result followees = session.run("MATCH (a:User)-[r:FOLLOWS]->() RETURN a.name as username, COUNT(r) as followees");
 
             Map<String, FollowersAndFollowees> followersAndFollowees = new HashMap<>();
 

@@ -208,8 +208,66 @@ public class UserDAO {
     }
 
     public Document allUserInfo(String username) {
-        MongoCollection<Document> collection = MongoConfig.getCollection("Users");
-        return collection.find(eq("_id", username)).first();
+        try (MongoCursor<Document> cursor = MongoConfig.getCollection("Users")
+                .find(eq("_id", username)).iterator()) {
+
+            Document userDoc;
+
+            if (cursor.hasNext()) {
+                userDoc = cursor.next();
+
+                // Return _id, name, surname, isAdmin, isBanned, followers, followees, wishlist, recent_posts,
+                // recent_active_books, competitions, friends_posts
+                userDoc.remove("password");
+
+                // Get the currentlyReadingBooks
+                List<Document> latestActiveBooks = (List<Document>) userDoc.get("recent_active_books");
+
+                latestActiveBooks.sort((a, b) -> {
+                    int yearA = a.getInteger("year");
+                    int yearB = b.getInteger("year");
+                    int monthA = a.getInteger("month");
+                    int monthB = b.getInteger("month");
+
+                    if (yearA == yearB) {
+                        return monthA - monthB;
+                    } else {
+                        return yearA - yearB;
+                    }
+                });
+
+                Document latestActiveBooksDoc = latestActiveBooks.get(0);
+
+                List<Document> currentlyReadingBooks = new ArrayList<>();
+                for (Document book : (List<Document>) latestActiveBooksDoc.get("books")) {
+                    if (!Objects.equals(book.getInteger("bookmark"), book.getInteger("num_pages"))) {
+                        currentlyReadingBooks.add(book);
+                    }
+                }
+
+                userDoc.append("currently_reading_books", currentlyReadingBooks);
+
+                List<Document> recentlyReadBooks = new ArrayList<>();
+
+                for (Document monthDoc : latestActiveBooks) {
+                    List<Document> books = (List<Document>) monthDoc.get("books");
+                    for (Document book : books) {
+                        if (Objects.equals(book.getInteger("bookmark"), book.getInteger("num_pages"))) {
+                            recentlyReadBooks.add(book);
+                        }
+                    }
+                }
+
+                userDoc.append("recently_read_books", recentlyReadBooks);
+            } else {
+                return null;
+            }
+
+            return userDoc;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public ResponseEntity<String> RegUser(Document user) {
@@ -377,7 +435,7 @@ public class UserDAO {
                                 "WITH u1, u2, count(DISTINCT f) AS num_friends " +
                                 "WHERE num_friends > 0.51 * COUNT{(u1)-[:FOLLOWS]->(:User)} " +
                                 "AND NOT EXISTS((u1)-[:FOLLOWS]->(u2)) " +
-                                "RETURN u2.name AS suggested_user ",
+                                "RETURN u2.name AS suggested_user",
                         Values.parameters("username", username)
                 );
                 return getMaps(result);
