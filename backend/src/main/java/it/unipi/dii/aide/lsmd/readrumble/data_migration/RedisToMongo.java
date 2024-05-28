@@ -11,6 +11,7 @@ import it.unipi.dii.aide.lsmd.readrumble.config.database.Neo4jConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.RedisClusterConfig;
 import it.unipi.dii.aide.lsmd.readrumble.config.database.MongoConfig;
 import it.unipi.dii.aide.lsmd.readrumble.post.PostDAO;
+import it.unipi.dii.aide.lsmd.readrumble.user.UserDAO;
 import it.unipi.dii.aide.lsmd.readrumble.utils.SemaphoreRR;
 
 import static it.unipi.dii.aide.lsmd.readrumble.utils.PatternKeyRedis.KeysTwo;
@@ -48,6 +49,7 @@ import org.slf4j.LoggerFactory;
 public class RedisToMongo {
     private static Logger logger = LoggerFactory.getLogger(RedisToMongo.class);
     private MongoCollection<Document> mongoCollection;
+    private UserDAO userDAO;
     private DateTimeFormatter isoFormat;
     private AdminCompetitionDAO adminCompetitionDAO;
     private PostDAO postDAO;
@@ -55,6 +57,7 @@ public class RedisToMongo {
     public RedisToMongo() {
         adminCompetitionDAO = new AdminCompetitionDAO();
         postDAO = new PostDAO();
+        this.userDAO = new UserDAO();
     }
 
     /**
@@ -146,6 +149,7 @@ public class RedisToMongo {
     public void updateFriendsPosts() {
         logger.info("Updating MongoDB Friends Posts ");
         //modify Users in Users
+
         mongoCollection = MongoConfig.getCollection("Users");
         int i = 0;
         int c = 0;
@@ -234,12 +238,12 @@ public class RedisToMongo {
     @Scheduled(fixedRate = 36000000, initialDelay = 36000000) // 10 hours in milliseconds
     public void updateMongoCompetitions() {
         logger.info("Updating MongoDB competitions");
-        /*SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
+        SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
         try {
             semaphore.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }*/
+        }
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
 
         mongoCollection = MongoConfig.getCollection("Users");
@@ -321,8 +325,8 @@ public class RedisToMongo {
             //in this way the competitions are cleaned just once
             mongoCollection.updateOne(filter, Updates.push("rank", competition));
         }
+        semaphore.release();
         logger.info("MongoDB competitions updated!");
-        //semaphore.release();
     }
 
     /**
@@ -401,7 +405,7 @@ public class RedisToMongo {
                 e.printStackTrace();
             } finally {
                 //logger.info("After inserting");
-                //semaphore.release();
+
             }
 
         }
@@ -486,7 +490,6 @@ public class RedisToMongo {
                     e.printStackTrace();
                 } finally {
                     //logger.info("After inserting");
-                    //semaphore.release();
                 }
 
         }
@@ -518,10 +521,10 @@ public class RedisToMongo {
      */
     @Scheduled(fixedRate = 86400000, initialDelay = 36000000) // 24 hours in milliseconds
     public void eliminateOldMongoCompetitionsFromRedis() {
-        /*SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
+        SemaphoreRR semaphore = SemaphoreRR.getInstance(1);
 
         try { semaphore.acquire(); }
-        catch (InterruptedException e) { e.printStackTrace(); }*/
+        catch (InterruptedException e) { e.printStackTrace(); }
 
         logger.info("Eliminating old MongoDB competitions...");
 
@@ -557,8 +560,8 @@ public class RedisToMongo {
                     System.out.println("Not Eliminated key : " + key);
                 }
             }
+            semaphore.release();
             logger.info("Cleared the old competition");
-            //semaphore.release();
         }
     }
 
@@ -572,7 +575,9 @@ public class RedisToMongo {
 
         try { semaphore.acquire(); }
         catch (InterruptedException e) { e.printStackTrace(); }
-
+        logger.info("Inserting new users in MongoDB");
+        userDAO.saveInMemoryUsers();
+        userDAO.updateChanges();
         logger.info("Starting to update MongoDB Posts...");
 
         JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
@@ -781,8 +786,8 @@ public class RedisToMongo {
         }catch (MongoException e) {
             e.printStackTrace();
         } finally {
-            logger.info("MongoDB Posts and ActiveBooks updated");
             semaphore.release();
+            logger.info("MongoDB Posts and ActiveBooks updated");
         }
     }
     //This is a debugging function that helps to try the code

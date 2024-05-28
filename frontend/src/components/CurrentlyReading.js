@@ -13,9 +13,9 @@ function CurrentlyReading(user, books) {
     const navigate = useNavigate();
 
     const fetchBooks = async () => {
-        if (user === JSON.parse(localStorage.getItem('logged_user'))['_id']) {
+        if (user.user === JSON.parse(localStorage.getItem('logged_user'))['_id']) {
             const currentUser = JSON.parse(localStorage.getItem('logged_user'));
-
+             console.log(currentUser); 
             if (currentUser['currentlyReading'] && currentUser['currentlyReading'].length > 0) {
                 setCurrentlyReading(currentUser['currentlyReading']);
                 return;
@@ -64,7 +64,7 @@ function CurrentlyReading(user, books) {
 
     useEffect(() => {
         fetchBooks();
-    }, [user.books]);
+    }, [user.books, user.user]);
 
     const loadAllBooks = () => {
         setDisplayCount(displayCount + 6);
