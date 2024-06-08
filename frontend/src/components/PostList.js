@@ -32,11 +32,11 @@ const PostsList = (user) => {
 
     function showPostList() {
         setIsLoading(true);
-
+        console.log("value of user.path " + user.path);
         let recentPosts = currentUser['recent_posts'];
         console.log(user.posts);
 
-        if (user.username === currentUser['_id'] && recentPosts != null) {
+        if (user.username === currentUser['_id'] && recentPosts != null && user.user != false) {
             let postLocalStorageJson = localStorage.getItem('last_posts');
 
             if (postLocalStorageJson != null) {
@@ -60,14 +60,14 @@ const PostsList = (user) => {
                 let totalPost = [...posts, ...recentPosts];
 
                 setPosts(totalPost);
-               setIsLoading(false);
+                setIsLoading(false);
             } else {
                 setPosts(recentPosts);
                 setIsLoading(false);
           } 
 
         }  else if(user.posts !== undefined) {
-            console.log(user.posts); 
+            console.log(user.posts);
             setPosts(user.posts);
             setIsLoading(false);
             return; 
@@ -83,7 +83,7 @@ const PostsList = (user) => {
                     console.error('There was an error!', error);
                 });
 
-         } else if (user.path === 1) {
+         } else if (user.path == 1) {
             // user posts
             axios.get(`http://localhost:8080/api/post/all/${user_or_book}/${user.user}`)
                 .then(response => {
