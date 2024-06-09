@@ -69,13 +69,7 @@ export default function PostForm() {
 
     const handleChange = (e) => {
         const {name, value} = e.target;
-        let book = currentUser['currentlyReading']
-        //let book = currentUser['recent_active_books'][0]['books'];
-
-        book = book.filter(book => book.title === selectedTitle);
-
-        let num_pages = book['bookmark'];
-        
+        let num_pages = 0;
         if (name === 'bookmark') {
             num_pages = parseInt(value) - parseInt(old_bookmark);
             setFormData({
@@ -196,23 +190,23 @@ export default function PostForm() {
                 localStorage.setItem('logged_user', JSON.stringify(currentUser));
             }
 
-            const response = await axios.post('http://localhost:8080/api/post/submit', formData);
-           
+
 
             // Update the user's currently reading book
-            let books = currentUser['currentlyReading']; 
-            console.log(books); 
+            let books = currentUser['currentlyReading'];
+            console.log(books);
             books.forEach(book => {
                 if (book.title === selectedTitle) {
-                    console.log("sto aggiornando il bookmark"); 
+                    console.log("sto aggiornando il bookmark");
                     console.log(book.bookmark);
-                    console.log(formData.bookmark); 
+                    console.log(formData.bookmark);
                     book.bookmark = formData.bookmark;
                 }
             })
             currentUser['currentlyReading'] = books;
             localStorage.setItem('logged_user', JSON.stringify(currentUser));
 
+            const response = await axios.post('http://localhost:8080/api/post/submit', formData);
             console.log('Post successfully uploaded!');
             setSubmitStatus({
                 message: JSON.stringify(response.data),

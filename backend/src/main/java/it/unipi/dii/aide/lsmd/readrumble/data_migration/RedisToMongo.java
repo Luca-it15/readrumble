@@ -335,81 +335,76 @@ public class RedisToMongo {
         way to re-fill the DB for debugging purposes.
     */
 
-    public void OldCompetitionsFiller(Integer month2, String tag2)
+    public void OldCompetitionsFiller(Integer year2, Integer month2, String tag2)
     {
-        logger.info("Inserting things into redis for: " + "2023 " + month2 + " " + tag2);
-        JedisCluster jedis = RedisClusterConfig.getInstance().getJedisCluster();
+        logger.info("Inserting things into Competitions for: " + year2 + " " + month2 + " " + tag2);
+        String[] months4 = {
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+        };
         mongoCollection = MongoConfig.getCollection("Posts");
-        logger.info("Inserting old competitions into redis");
+        String TagTag = tag2.substring(0, 1).toUpperCase() + tag2.substring(1);
+        String CompName = months4[month2 - 1] + " " + year2 + " " + TagTag;
+        System.out.println(CompName);
         //do the query for the posts
         //this query returns a document for each user, month, tag containing pages_read,
         //for each competition of 2023
-        AggregateIterable<Document> result = mongoCollection.aggregate(Arrays.asList(new Document("$addFields",
-                        new Document("month",
-                                new Document("$month", "$date_added"))),
-                new Document("$match",
-                        new Document("month", month2)),
-                new Document("$unwind", "$tags"),
-                new Document("$project",
-                        new Document("pages_read", 1L)
-                                .append("username", 1L)
-                                .append("month", 1L)
-                                .append("tag", "$tags")),
-                new Document("$group",
-                        new Document("_id",
-                                new Document("username", "$username")
-                                        .append("month", "$month")
-                                        .append("tag", "$tag"))
-                                .append("pages_read",
-                                        new Document("$sum", "$pages_read"))),
-                new Document("$project",
-                        new Document("_id", 0L)
-                                .append("pages_read", 1L)
-                                .append("username", "$_id.username")
-                                .append("month", "$_id.month")
-                                .append("tag", "$_id.tag")),
-                new Document("$sample",
-                        new Document("size", 10L)),
-                new Document("$sort",
-                        new Document("pages_read", -1L)))
+
+        AggregateIterable<Document> result = mongoCollection.aggregate(
+                Arrays.asList(new Document("$addFields",
+                                new Document("month",
+                                        new Document("$month", "$date_added"))
+                                        .append("year",
+                                                new Document("$year", "$date_added"))),
+                        new Document("$match",
+                                new Document("month", month2)
+                                        .append("year", year2)),
+                        new Document("$unwind", "$tags"),
+                        new Document("$project",
+                                new Document("pages_read", 1L)
+                                        .append("username", 1L)
+                                        .append("month", 1L)
+                                        .append("tag", "$tags")),
+                        new Document("$group",
+                                new Document("_id",
+                                        new Document("username", "$username")
+                                                .append("month", "$month")
+                                                .append("tag", "$tag"))
+                                        .append("pages_read",
+                                                new Document("$sum", "$pages_read"))),
+                        new Document("$project",
+                                new Document("_id", 0L)
+                                        .append("pages_read", 1L)
+                                        .append("username", "$_id.username")
+                                        .append("month", "$_id.month")
+                                        .append("tag", "$_id.tag")),
+                        new Document("$match",
+                                new Document("pages_read",
+                                        new Document("$gt", 0L))
+                                        .append("tag", tag2)),
+                        new Document("$sample",
+                                new Document("size", 10L)),
+                        new Document("$limit", 10L),
+                        new Document("$sort",
+                                new Document("pages_read", -1L)))
         ).allowDiskUse(true);
         logger.info("aggregation executed");
+        //write directly into the ranks do not pass from redis
         mongoCollection = MongoConfig.getCollection("Competitions");
+        Boolean control = false;
         for (Document doc : result) {
-            String username = doc.get("username").toString();
-            String tag = doc.get("tag").toString();
-            String TagTag = tag.substring(0, 1).toUpperCase() + tag.substring(1);
-            Integer month = (Integer) doc.get("month");
-            Integer year = 2023;
-            Integer pages_read = (Integer) doc.get("pages_read");
-            String dataString = year.toString() + "-" + month.toString() + "-" + "15";
-            SimpleDateFormat formatoData = new SimpleDateFormat("yyyy-MM-dd");
-            try {
-                //take the name of the competitions active in date frame of time and of that tag
-                Date data = formatoData.parse(dataString);
-                Bson tagFilter = Filters.eq("tag", TagTag);
-                Bson startDateFilter = Filters.lte("start_date", data);
-                Bson endDateFilter = Filters.gte("end_date", data);
-                Bson dateFilter = Filters.and(startDateFilter, endDateFilter);
-                Bson filter = Filters.and(dateFilter, tagFilter);
-                Document Comp = mongoCollection.find(filter).first();
-                if (Comp != null) {
-                    String CompName = (String) Comp.get("name");
-                    if (!CompName.isEmpty()) {
-                        String key = "competition:" + CompName + ":" + TagTag + ":" + username;
-                        jedis.set(key, pages_read.toString());
-                        logger.info(key);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                //logger.info("After inserting");
-
+            if (control==false) {
+                System.out.println("clear rank of " + CompName);
+                control = true;
+                Document update = new Document("$set", new Document("rank", new ArrayList<>()));
+                mongoCollection.updateOne(Filters.eq("name", CompName), Updates.unset("rank"));
+                mongoCollection.updateOne(Filters.eq("name", CompName), Updates.set("rank", new ArrayList<Document>()));
             }
-
+            doc.remove("tag");
+            doc.remove("month");
+            mongoCollection.updateOne(Filters.eq("name", CompName), Updates.push("rank", doc));
         }
-        logger.info("finished inserting things into redis");
+        logger.info("finished inserting things into comps");
 
     }
 
@@ -795,23 +790,23 @@ public class RedisToMongo {
     public void GoGoGo() {
         //List<String> unique_tags = Arrays.asList("crime", "mystery", "fiction", "paranormal", "children", "romance", "non-fiction", "young-adult", "history", "poetry", "thriller", "comics", "biography", "historical fiction", "graphic", "fantasy");
         //Integer month = 6;
-        /*while(month <= 12)
-        {
-            for(String tag : unique_tags)
-            {
-                OldCompetitionsFiller(month,tag);
-            }
-            month=month+1;
-        }
-        month = 1;
-        while(month <=6)
-        {
-            for(String tag : unique_tags)
-            {
-                InsertIntoRedisCompetitionsCreated(2024,month,tag);
-            }
-            month=month+1;
-        }*/
+        //while (month <= 12)
+        //{
+        //    for(String tag : unique_tags)
+        //    {
+        //        OldCompetitionsFiller(2023, month, tag);
+        //    }
+        //    month=month+1;
+        //}
+        //month = 1;
+        //while(month <=6)
+        //{
+        //    for(String tag : unique_tags)
+        //    {
+        //        OldCompetitionsFiller(2024, month, tag);
+        //    }
+        //    month=month+1;
+        //}
         //eliminateOldMongoCompetitionsFromRedis();
         //updateMongoCompetitions();
         //updateFriendsPosts();
