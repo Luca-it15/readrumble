@@ -370,23 +370,23 @@ public class RedisToMongo {
                                         new Document("username", "$username")
                                                 .append("month", "$month")
                                                 .append("tag", "$tag"))
-                                        .append("pages_read",
+                                        .append("tot_pages",
                                                 new Document("$sum", "$pages_read"))),
                         new Document("$project",
                                 new Document("_id", 0L)
-                                        .append("pages_read", 1L)
+                                        .append("tot_pages", 1L)
                                         .append("username", "$_id.username")
                                         .append("month", "$_id.month")
                                         .append("tag", "$_id.tag")),
                         new Document("$match",
-                                new Document("pages_read",
+                                new Document("tot_pages",
                                         new Document("$gt", 0L))
                                         .append("tag", tag2)),
                         new Document("$sample",
                                 new Document("size", 10L)),
                         new Document("$limit", 10L),
                         new Document("$sort",
-                                new Document("pages_read", -1L)))
+                                new Document("tot_pages", -1L)))
         ).allowDiskUse(true);
         logger.info("aggregation executed");
         //write directly into the ranks do not pass from redis
@@ -785,28 +785,32 @@ public class RedisToMongo {
             logger.info("MongoDB Posts and ActiveBooks updated");
         }
     }
+    public void FillCompetitionsDirectlyOnDocumentDB()
+    {
+        List<String> unique_tags = Arrays.asList("crime", "mystery", "fiction", "paranormal", "children", "romance", "non-fiction", "young-adult", "history", "poetry", "thriller", "comics", "biography", "historical fiction", "graphic", "fantasy");
+        Integer month = 6;
+        while (month <= 12)
+        {
+            for(String tag : unique_tags)
+            {
+                OldCompetitionsFiller(2023, month, tag);
+            }
+            month=month+1;
+        }
+        month = 1;
+        while(month <=6)
+        {
+            for(String tag : unique_tags)
+            {
+                OldCompetitionsFiller(2024, month, tag);
+            }
+            month=month+1;
+        }
+    }
     //This is a debugging function that helps to try the code
     @Scheduled(fixedRate = 90000000)
     public void GoGoGo() {
-        //List<String> unique_tags = Arrays.asList("crime", "mystery", "fiction", "paranormal", "children", "romance", "non-fiction", "young-adult", "history", "poetry", "thriller", "comics", "biography", "historical fiction", "graphic", "fantasy");
-        //Integer month = 6;
-        //while (month <= 12)
-        //{
-        //    for(String tag : unique_tags)
-        //    {
-        //        OldCompetitionsFiller(2023, month, tag);
-        //    }
-        //    month=month+1;
-        //}
-        //month = 1;
-        //while(month <=6)
-        //{
-        //    for(String tag : unique_tags)
-        //    {
-        //        OldCompetitionsFiller(2024, month, tag);
-        //    }
-        //    month=month+1;
-        //}
+        //FillCompetitionsDirectlyOnDocumentDB();
         //eliminateOldMongoCompetitionsFromRedis();
         //updateMongoCompetitions();
         //updateFriendsPosts();
